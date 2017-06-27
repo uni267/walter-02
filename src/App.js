@@ -1,19 +1,44 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import { Card } from "material-ui/Card";
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
+import Logo from "./components/Logo";
+import FileBox from "./components/FileBox";
+
+injectTapEventPlugin();
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      files: [],
+    };
+  }
+
+  componentWillMount() {
+    this.get_files();
+  }
+
+  get_files() {
+    const url = "http://localhost:3333";
+    axios.get(url)
+         .then((res) => {
+           this.setState({files: res.data});
+           console.log(this.state.files);
+         })
+         .catch((error) => {
+           console.log(error);
+         });
+  }
+
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+      <Card>
+        <div className="App">
+          <Logo />
+          <FileBox files={this.state.files} />
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      </Card>
     );
   }
 }
