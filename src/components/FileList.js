@@ -6,7 +6,8 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ImageEdit from "material-ui/svg-icons/image/edit";
 
 const FileList = ({
-  files
+  files,
+  onViewClick
 }) => {
   return (
     <div className="file-box">
@@ -26,7 +27,7 @@ const FileList = ({
                 <TableRowColumn>{file.id}</TableRowColumn>
                 <TableRowColumn>{file.name}</TableRowColumn>
                 <TableRowColumn>
-                  <IconButton>
+                  <IconButton data-file={file} onClick={onViewClick}>
                     <ActionInfo />
                   </IconButton>
                   <IconButton>
