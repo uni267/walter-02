@@ -13,7 +13,7 @@ class DirBox extends Component {
     return (
       <div className="dir-box">
         <Card>
-          <CardHeader subtitle="directory" />
+          <CardHeader subtitle="dirs" />
           <CardActions>
             {this.props.dirs.map(dir => this.display_dir(dir))}
           </CardActions>
