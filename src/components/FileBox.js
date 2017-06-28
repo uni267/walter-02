@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 /* import axios from "axios";*/
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import { Card } from "material-ui/Card";
+import { Row, Col } from 'react-flexbox-grid';
 
 import FileAction from "./FileAction";
 import FileSearch from "./FileSearch";
@@ -69,15 +69,21 @@ class FileBox extends Component {
   render() {
     return (
       <div className="file-box">
-        <Card>
-          <FileAction addFiles={this.addFiles} />
-          <FileSearch />
-          <DirBox dirs={this.state.dirs} />
-          <FileList
-            files={this.state.files}
-            onViewClick={this.onFileViewClick}
-          />
-        </Card>
+        <Row>
+          <Col xsOffset={9} xs={3}>
+            <FileAction addFiles={this.addFiles} />
+          </Col>
+        </Row>
+        <Row>
+          <Col xsOffset={9} xs={3}>
+            <FileSearch />
+          </Col>
+        </Row>
+        <DirBox dirs={this.state.dirs} />
+        <FileList
+          files={this.state.files}
+          onViewClick={this.onFileViewClick}
+        />
       </div>
     )
   }

@@ -1,12 +1,14 @@
 import React from "react";
-import { Card, CardHeader } from "material-ui/Card";
+import TextField from "material-ui/TextField";
 
 const FileSearch = () => {
   return (
-    <Card>
-      <CardHeader title="file search">
-      </CardHeader>
-    </Card>
+    <div className="file-search">
+      <TextField
+        hintText=""
+        floatingLabelText="search"
+      />
+    </div>
   );
 };
 

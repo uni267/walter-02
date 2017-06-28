@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Card, CardHeader } from "material-ui/Card";
-import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from "material-ui/Snackbar";
-
+import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
+import IconButton from "material-ui/IconButton";
+import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
+import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 import AddFileDialog from "./AddFileDialog";
 
 class FileAction extends Component {
@@ -62,31 +63,41 @@ class FileAction extends Component {
   }
 
   render() {
+    const upload_button = <IconButton><FileCloudUpload /></IconButton>;
+    const create_folder_button = <IconButton><FileCreateNewFolder /></IconButton>;
 
     return (
       <div className="file-action">
-        <Card>
-          <CardHeader title="file action" />
-          <RaisedButton label="AddFile" onTouchTap={this.handleOpen} />
-          <AddFileDialog
-            files={this.state.files}
-            open={this.state.open}
-            handleClose={this.handleClose}
-            handleUpload={this.handleUpload}
-            onDrop={this.onDrop}
+        <BottomNavigation>
+          <BottomNavigationItem 
+            label="upload" 
+            icon={upload_button}
+            onTouchTap={this.handleOpen}
           />
-          <Snackbar
-            open={this.state.snack.open}
-            message={this.state.snack.message}
-            autoHideDuration={3000}
-            onRequestClose={() => this.setState({
-              snack: {
-                open: false
-              }
-            })}
+          <BottomNavigationItem
+            label="create"
+            icon={create_folder_button}
+            onTouchTap={this.debug}
           />
-          <RaisedButton label="debug" onTouchTap={this.debug} />
-        </Card>
+        </BottomNavigation>
+
+        <AddFileDialog
+          files={this.state.files}
+          open={this.state.open}
+          handleClose={this.handleClose}
+          handleUpload={this.handleUpload}
+          onDrop={this.onDrop}
+        />
+        <Snackbar
+          open={this.state.snack.open}
+          message={this.state.snack.message}
+          autoHideDuration={3000}
+          onRequestClose={() => this.setState({
+            snack: {
+              open: false
+            }
+          })}
+        />
       </div>
     );
   }

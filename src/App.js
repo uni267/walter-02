@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Card } from "material-ui/Card";
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import Logo from "./components/Logo";
 import AppMenu from "./components/AppMenu";
@@ -11,8 +12,16 @@ class App extends Component {
       <div className="App">
         <Card>
           <Logo />
-          <AppMenu />
-          <FileBox />
+          <Grid fluid>
+            <Row>
+              <Col xs={5} sm={4} md={3} lg={1}>
+                <AppMenu />
+              </Col>
+              <Col xs={7} sm={8} md={9} lg={11}>
+                <FileBox />
+              </Col>
+            </Row>
+          </Grid>
         </Card>
       </div>
     );
