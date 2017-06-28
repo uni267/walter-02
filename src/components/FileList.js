@@ -10,7 +10,7 @@ const FileList = ({
   onViewClick
 }) => {
   return (
-    <div className="file-box">
+    <div className="file-list">
       <Table>
         <TableHeader>
           <TableRow>
