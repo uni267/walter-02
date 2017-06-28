@@ -8,6 +8,9 @@ import FileSearch from "./FileSearch";
 import DirBox from "./DirBox";
 import FileList from "./FileList";
 
+import DIRS from "../mock-dirs";
+import FILES from "../mock-files";
+
 injectTapEventPlugin();
 
 class FileBox extends Component {
@@ -31,12 +34,7 @@ class FileBox extends Component {
      * axios.get(url)
      *      .then( res => this.setState({dirs: res.data}))
      *      .catch( err => console.log(err) );*/
-    this.setState({
-      dirs: [
-        {id: 1, name: "dir01"},
-        {id: 2, name: "dir02"},
-      ],
-    });
+    this.setState({dirs: DIRS});
   }
 
   getFiles() {
@@ -44,12 +42,7 @@ class FileBox extends Component {
      * axios.get(url)
      *      .then(res => this.setState({files: res.data}))
      *      .catch( err => console.log(err) );*/
-    this.setState({
-      files: [
-        {id: 1, name: "file01.txt"},
-        {id: 2, name: "file02.txt"},
-      ],
-    });
+    this.setState({files: FILES});
   }
 
   onFileViewClick(e) {
