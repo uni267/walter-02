@@ -9,6 +9,8 @@ const AppMenu = () => {
         <MenuItem primaryText="foo" />
         <MenuItem primaryText="baz" />
         <MenuItem primaryText="bar" />
+        <MenuItem primaryText="hoge" />
+        <MenuItem primaryText="fuga" />
       </Menu>
     </div>
   );
