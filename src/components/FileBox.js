@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import axios from "axios";
+/* import axios from "axios";*/
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Card } from "material-ui/Card";
 
@@ -7,7 +7,6 @@ import FileAction from "./FileAction";
 import FileSearch from "./FileSearch";
 import DirBox from "./DirBox";
 import FileList from "./FileList";
-
 
 injectTapEventPlugin();
 
@@ -18,6 +17,8 @@ class FileBox extends Component {
       files: [],
       dirs: []
     }
+
+    this.addFiles = this.addFiles.bind(this);
   }
 
   componentWillMount() {
@@ -55,11 +56,21 @@ class FileBox extends Component {
     console.log(e.target.dataset.file);
   }
 
+  addFiles(files) {
+    let next_file_id = this.state.files.slice().sort( (a, b) => a.id < b.id)[0].id;
+    next_file_id++;
+
+    let _files = this.state.files.slice();
+
+    files.forEach(f => _files.push({id: next_file_id++, name: f.name}));
+    this.setState({ files: _files });
+  }
+
   render() {
     return (
       <div className="file-box">
         <Card>
-          <FileAction />
+          <FileAction addFiles={this.addFiles} />
           <FileSearch />
           <DirBox dirs={this.state.dirs} />
           <FileList
