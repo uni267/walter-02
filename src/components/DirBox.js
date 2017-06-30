@@ -13,7 +13,7 @@ class DirBox extends Component {
 
   render() {
     return (
-      <div style={{width: '100%', maxWidth: 200}} className="dir-box">
+      <div className="dir-box" style={{width: '100%', maxWidth: 200}}>
         <Stepper connector={<ArrowForwardIcon />}>
           {this.props.dirs.map(dir => this.display_dir(dir))}
         </Stepper>
