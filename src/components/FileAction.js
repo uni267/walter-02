@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import Snackbar from "material-ui/Snackbar";
-import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
-import IconButton from "material-ui/IconButton";
 import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
+import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
 import AddFileDialog from "./AddFileDialog";
 
 class FileAction extends Component {
@@ -63,23 +63,24 @@ class FileAction extends Component {
   }
 
   render() {
-    const upload_button = <IconButton><FileCloudUpload /></IconButton>;
-    const create_folder_button = <IconButton><FileCreateNewFolder /></IconButton>;
+    const upload_button = <FileCloudUpload />;
+    const create_folder_button = <FileCreateNewFolder />;
 
     return (
       <div className="file-action">
-        <BottomNavigation>
-          <BottomNavigationItem 
-            label="upload" 
-            icon={upload_button}
+  
+        <Menu>
+          <MenuItem
+            primaryText="ファイルをアップロード" 
+            leftIcon={upload_button}
             onTouchTap={this.handleOpen}
           />
-          <BottomNavigationItem
-            label="create"
-            icon={create_folder_button}
+          <MenuItem
+            primaryText="新しいフォルダ"
+            leftIcon={create_folder_button}
             onTouchTap={this.debug}
           />
-        </BottomNavigation>
+        </Menu>
 
         <AddFileDialog
           files={this.state.files}

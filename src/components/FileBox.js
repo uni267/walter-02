@@ -2,7 +2,6 @@ import React, { Component } from "react";
 /* import axios from "axios";*/
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Row, Col } from 'react-flexbox-grid';
-
 import FileAction from "./FileAction";
 import FileSearch from "./FileSearch";
 import DirBox from "./DirBox";
@@ -22,6 +21,8 @@ class FileBox extends Component {
     }
 
     this.addFiles = this.addFiles.bind(this);
+    this.onFileViewClick = this.onFileViewClick.bind(this);
+    this.onFileDeleteClick = this.onFileDeleteClick.bind(this);
   }
 
   componentWillMount() {
@@ -59,24 +60,35 @@ class FileBox extends Component {
     this.setState({ files: _files });
   }
 
+  onFileDeleteClick(e, file) {
+    let _files = this.state.files.slice();
+    _files = _files.filter(_file => _file.id !== file.id);
+    this.setState({ files: _files });
+  }
+
   render() {
     return (
       <div className="file-box">
         <Row>
-          <Col xsOffset={9} xs={3}>
-            <FileAction addFiles={this.addFiles} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xsOffset={9} xs={3}>
+          <Col xsOffset={10} xs={2}>
             <FileSearch />
           </Col>
         </Row>
-        <DirBox dirs={this.state.dirs} />
-        <FileList
-          files={this.state.files}
-          onViewClick={this.onFileViewClick}
-        />
+        <Row>
+          <DirBox dirs={this.state.dirs} />
+        </Row>
+        <Row>
+          <Col xs={10} sm={10} md={10} lg={10}>
+            <FileList
+              files={this.state.files}
+              onViewClick={this.onFileViewClick}
+              onDeleteClick={this.onFileDeleteClick}
+            />
+          </Col>
+          <Col xs={2} sm={2} md={2} lg={2}>
+            <FileAction addFiles={this.addFiles} />
+          </Col>
+        </Row>
       </div>
     )
   }
