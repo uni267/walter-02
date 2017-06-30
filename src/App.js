@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Card } from "material-ui/Card";
 import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import Logo from "./components/Logo";
@@ -10,7 +9,6 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Card>
           <Logo />
           <Grid fluid>
             <Row>
@@ -22,7 +20,6 @@ class App extends Component {
               </Col>
             </Row>
           </Grid>
-        </Card>
       </div>
     );
   }
