@@ -1,79 +1,79 @@
-import React from "react";
-import { Table, TableHeader, TableHeaderColumn, TableBody, TableRow, TableRowColumn } from "material-ui/Table";
-import IconButton from 'material-ui/IconButton';
-import ActionInfo from 'material-ui/svg-icons/action/info';
-import ActionDelete from 'material-ui/svg-icons/action/delete';
-import ImageEdit from "material-ui/svg-icons/image/edit";
+import React, { Component } from "react";
+import Snackbar from "material-ui/Snackbar";
 
-const FileList = ({
-  files,
-  onViewClick,
-  onDeleteClick,
-}) => {
-  const styles = {
-    smallIcon: {
-      width: 24,
-      height: 24
-    },
-    small: {
-      width: 42,
-      height: 42,
-      padding: 4
+import {
+  Table,
+  TableHeader,
+  TableHeaderColumn,
+  TableBody,
+  TableRow,
+  TableRowColumn
+} from "material-ui/Table";
+import FileListAction from "./FileListAction";
+
+class FileList extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      open: false,
+      message: "initialize",
+      duration: 3000,
     }
+
   }
 
-  return (
-    <div className="file-list">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHeaderColumn>id</TableHeaderColumn>
-            <TableHeaderColumn>name</TableHeaderColumn>
-            <TableHeaderColumn>action</TableHeaderColumn>
-          </TableRow>
-        </TableHeader>
+  render() {
+    const { files, onDeleteClick } = this.props;
 
-        <TableBody>
-          {files.map(file => {
-            return (
-              <TableRow key={file.id}>
-                <TableRowColumn>{file.id}</TableRowColumn>
-                <TableRowColumn>{file.name}</TableRowColumn>
-                <TableRowColumn>
-                  <IconButton
-                    tooltip="詳細"
-                    data-file={file}
-                    onTouchTap={onViewClick}
-                    iconStyle={styles.smallIcon}
-                    style={styles.small}
-                  >
-                    <ActionInfo />
-                  </IconButton>
-                  <IconButton
-                    tooltip="編集"
-                    data-file={file}
-                    iconStyle={styles.smallIcon}
-                    style={styles.small}
-                  >
-                    <ImageEdit />
-                  </IconButton>
-                  <IconButton
-                    tooltip="削除"
-                    iconStyle={styles.smallIcon}
-                    style={styles.small}
-                    data-file={file}
-                    onTouchTap={(e) => onDeleteClick(e, file)}
-                  >
-                    <ActionDelete />
-                  </IconButton>
-                </TableRowColumn>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
-  );
-};
+    const onDeleteDone = (file) => {
+      this.setState({
+        open: true,
+        message: `${file.name}を削除しました`,
+      });
+    }
+
+    return (
+      <div className="file-list">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHeaderColumn>id</TableHeaderColumn>
+              <TableHeaderColumn>name</TableHeaderColumn>
+              <TableHeaderColumn>action</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {files.map(file => {
+              return (
+                <TableRow key={file.id}>
+                  <TableRowColumn>{file.id}</TableRowColumn>
+                  <TableRowColumn>{file.name}</TableRowColumn>
+                  <TableRowColumn>
+                    <FileListAction
+                      file={file}
+                      onDeleteClick={onDeleteClick}
+                      onDeleteDone={onDeleteDone}
+                    />
+                  </TableRowColumn>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+
+        <Snackbar
+          open={this.state.open}
+          message={this.state.message}
+          autoHideDuration={this.state.duration}
+          onRequestClose={() => this.setState({open: false})}
+        />
+
+      </div>
+    );
+  }
+}
 
 export default FileList;

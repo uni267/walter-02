@@ -9,16 +9,23 @@ class DeleteFile extends Component {
     super(props);
 
     this.state = {
-      open: false
+      open: false,
     }
+
   }
 
   render() {
+    const { file, onDeleteClick, deleteDone, styles } = this.props;
+
     const actions = [
       <FlatButton
         label="Delete"
         primary={true}
-        onTouchTap={() => this.setState({ open: false })}
+        onTouchTap={(e) => {
+          this.setState({ open: false });
+          deleteDone(file);
+          onDeleteClick(e, file);
+        }}
       />,
       <FlatButton
         label="close"
@@ -31,20 +38,22 @@ class DeleteFile extends Component {
       <span className="delete-file">
         <IconButton
           tooltip="削除"
-          iconStyle={this.props.styles.smallIcon}
-          style={this.props.styles.small}
+          iconStyle={styles.smallIcon}
+          style={styles.small}
           onTouchTap={() => { this.setState({open: true}) }}
         >
           <ActionDelete />
         </IconButton>
 
         <Dialog
-          title="ファイル削除"
+          title={`${file.name}を削除しますか？`}
           modal={false}
           actions={actions}
           open={this.state.open}
+          onRequestClose={() => this.setState({open: false})}
         >
         </Dialog>
+
       </span>
     );
   }

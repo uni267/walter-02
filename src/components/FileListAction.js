@@ -4,10 +4,10 @@ import EditFile from "./EditFile";
 import DeleteFile from "./DeleteFile";
 
 class FileListAction extends Component {
-  constructor(props) {
-    super(props);
+  render() {
+    const { file, onDeleteClick, onDeleteDone } = this.props;
 
-    this.styles = {
+    const styles = {
       smallIcon: {
         width: 24,
         height: 24
@@ -19,14 +19,25 @@ class FileListAction extends Component {
       }
     }
 
-  }
-
-  render() {
     return (
       <div className="file-list-action">
-        <ViewFile styles={this.styles} />
-        <EditFile styles={this.styles} />
-        <DeleteFile styles={this.styles} />
+        <ViewFile
+          file={file}
+          styles={styles}
+        />
+
+        <EditFile
+          file={file}
+          styles={styles}
+        />
+
+        <DeleteFile
+          file={file}
+          onDeleteClick={onDeleteClick}
+          deleteDone={onDeleteDone}
+          styles={styles}
+        />
+
       </div>
     );
   }

@@ -18,11 +18,10 @@ class FileBox extends Component {
     this.state = {
       files: [],
       dirs: []
-    }
+    };
 
     this.addFiles = this.addFiles.bind(this);
-    this.onFileViewClick = this.onFileViewClick.bind(this);
-    this.onFileDeleteClick = this.onFileDeleteClick.bind(this);
+    this.deleteFile = this.deleteFile.bind(this);
   }
 
   componentWillMount() {
@@ -46,10 +45,6 @@ class FileBox extends Component {
     this.setState({files: FILES});
   }
 
-  onFileViewClick(e) {
-    console.log(e.target.dataset.file);
-  }
-
   addFiles(files) {
     let next_file_id = this.state.files.slice().sort( (a, b) => a.id < b.id)[0].id;
     next_file_id++;
@@ -60,7 +55,7 @@ class FileBox extends Component {
     this.setState({ files: _files });
   }
 
-  onFileDeleteClick(e, file) {
+  deleteFile(e, file) {
     let _files = this.state.files.slice();
     _files = _files.filter(_file => _file.id !== file.id);
     this.setState({ files: _files });
@@ -81,8 +76,7 @@ class FileBox extends Component {
           <Col xs={10} sm={10} md={10} lg={10}>
             <FileList
               files={this.state.files}
-              onViewClick={this.onFileViewClick}
-              onDeleteClick={this.onFileDeleteClick}
+              onDeleteClick={this.deleteFile}
             />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>

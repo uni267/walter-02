@@ -40,6 +40,7 @@ class ViewFile extends Component {
           open={this.state.open}
           onRequestClose={() => this.setState({open: false}) }
         >
+        {this.props.file.name}
         </Dialog>
       </span>
     );
