@@ -40,7 +40,6 @@ const AddFileDialog = ({
         </Dropzone>
       </div>
       <aside>
-        <h2>Dropped files</h2>
         <ul>
           {files.map( (f, idx) => <li key={idx}>{f.name} - {f.size} bytes</li>)}
         </ul>

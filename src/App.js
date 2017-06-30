@@ -3,7 +3,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import Logo from "./components/Logo";
 import AppMenu from "./components/AppMenu";
-import FileBox from "./components/FileBox";
+import FileBox from "./components/FileBox/";
 
 class App extends Component {
   render() {

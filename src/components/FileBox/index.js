@@ -2,13 +2,13 @@ import React, { Component } from "react";
 /* import axios from "axios";*/
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Row, Col } from 'react-flexbox-grid';
-import FileAction from "./FileAction";
-import FileSearch from "./FileSearch";
-import DirBox from "./DirBox";
-import FileList from "./FileList";
+import FileAction from "./FileAction/";
+import FileSearch from "./FileSearch/";
+import DirBox from "./DirBox/";
+import FileList from "./FileList/";
 
-import DIRS from "../mock-dirs";
-import FILES from "../mock-files";
+import DIRS from "../../mock-dirs";
+import FILES from "../../mock-files";
 
 injectTapEventPlugin();
 
