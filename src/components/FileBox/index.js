@@ -2,12 +2,13 @@ import React, { Component } from "react";
 /* import axios from "axios";*/
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Row, Col } from 'react-flexbox-grid';
+import moment from "moment";
 import FileAction from "./FileAction/";
 import FileSearch from "./FileSearch/";
 import DirBox from "./DirBox/";
 import FileList from "./FileList/";
 
-import DIRS from "../../mock-dirs";
+//import DIRS from "../../mock-dirs";
 import FILES from "../../mock-files";
 
 injectTapEventPlugin();
@@ -34,6 +35,7 @@ class FileBox extends Component {
      * axios.get(url)
      *      .then( res => this.setState({dirs: res.data}))
      *      .catch( err => console.log(err) );*/
+    let DIRS = FILES.filter(f => f.is_dir);
     this.setState({dirs: DIRS});
   }
 
@@ -51,7 +53,14 @@ class FileBox extends Component {
 
     let _files = this.state.files.slice();
 
-    files.forEach(f => _files.push({id: next_file_id++, name: f.name}));
+    files.forEach(f => _files.push({
+      id: next_file_id++,
+      name: f.name,
+      modified: moment().format("YYYY-MM-DD HH:mm"),
+      owner: "user01",
+      is_dir: false,
+    }));
+
     this.setState({ files: _files });
   }
 
