@@ -10,6 +10,17 @@ const AddFileDialog = ({
   handleUpload,
   onDrop,
 }) => {
+  const styles = {
+    dropzone: {
+      width: "80%",
+      height: "80%",
+      borderStyle: "dashed",
+      borderColor: "gray",
+      borderWidth: 3,
+      padding: 50,
+    }
+  };
+
   const actions = [
     <FlatButton
       label="Cancel"
@@ -27,18 +38,17 @@ const AddFileDialog = ({
 
   return (
     <Dialog
-      title="File upload"
+      title="ファイルをアップロード"
       actions={actions}
       modal={false}
       open={open}
       onRequestClose={handleClose}
     >
     <section>
-      <div className="dropzone">
-        <Dropzone onDrop={onDrop}>
-          <p>click or drop</p>
-        </Dropzone>
-      </div>
+      <Dropzone onDrop={onDrop} style={styles.dropzone}>
+        <p>クリックもしくはファイルをドロップ</p>
+      </Dropzone>
+
       <aside>
         <ul>
           {files.map( (f, idx) => <li key={idx}>{f.name} - {f.size} bytes</li>)}

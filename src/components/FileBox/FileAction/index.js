@@ -41,7 +41,7 @@ class FileAction extends Component {
       addFiles(this.state.files);
       this.setState({
         snack: {
-          open: true, message: "file uploaded"
+          open: true, message: "ファイルをアップロードしました"
         }
       });
       this.setState({ files: [] });

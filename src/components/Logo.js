@@ -32,10 +32,6 @@ class Logo extends Component {
       </div>
     );
 
-    const toggleSidebar = () => {
-      console.log("toggle");
-    }
-
     return (
       <div className="logo">
       <AppBar

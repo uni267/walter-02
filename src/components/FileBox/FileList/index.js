@@ -39,9 +39,10 @@ class FileList extends Component {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHeaderColumn>id</TableHeaderColumn>
-              <TableHeaderColumn>name</TableHeaderColumn>
-              <TableHeaderColumn>action</TableHeaderColumn>
+              <TableHeaderColumn>名前</TableHeaderColumn>
+              <TableHeaderColumn>最終更新</TableHeaderColumn>
+              <TableHeaderColumn>所有者</TableHeaderColumn>
+              <TableHeaderColumn>Action</TableHeaderColumn>
             </TableRow>
           </TableHeader>
 
@@ -49,8 +50,9 @@ class FileList extends Component {
             {files.map(file => {
               return (
                 <TableRow key={file.id}>
-                  <TableRowColumn>{file.id}</TableRowColumn>
                   <TableRowColumn>{file.name}</TableRowColumn>
+                  <TableRowColumn>{file.modified}</TableRowColumn>
+                  <TableRowColumn>{file.owner}</TableRowColumn>
                   <TableRowColumn>
                     <FileListAction
                       file={file}
