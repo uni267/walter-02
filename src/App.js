@@ -6,20 +6,28 @@ import AppMenu from "./components/AppMenu";
 import FileBox from "./components/FileBox/";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      menuOpen: false
+    }
+    this.toggleMenu = this.toggleMenu.bind(this);
+  }
+
+  toggleMenu() {
+    console.log("toggle menu!!");
+    this.setState({menuOpen: !this.state.menuOpen});
+  }
+
   render() {
     return (
       <div className="App">
-          <Logo />
-          <Grid fluid>
-            <Row>
-              <Col xs={5} sm={4} md={3} lg={1}>
-                <AppMenu />
-              </Col>
-              <Col xs={7} sm={8} md={9} lg={11}>
-                <FileBox />
-              </Col>
-            </Row>
-          </Grid>
+        <Logo toggleMenu={this.toggleMenu} />
+        <AppMenu
+          open={this.state.menuOpen}
+          toggleMenu={this.toggleMenu}
+         />
+        <FileBox />
       </div>
     );
   }

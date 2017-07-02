@@ -44,7 +44,7 @@ const AddFileDialog = ({
           {files.map( (f, idx) => <li key={idx}>{f.name} - {f.size} bytes</li>)}
         </ul>
       </aside>
-    </section>      
+    </section>
     </Dialog>
   );
 };

@@ -1,20 +1,26 @@
 import React from "react";
+import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
-const AppMenu = () => {
+const AppMenu = ({
+  open,
+  toggleMenu,
+}) => {
   const menus = [
-    {name: "home"},
-    {name: "summary"},
-    {name: "settings"},
-    {name: "logout"},
+    {name: "ファイル一覧"},
+    {name: "管理コンソール"},
   ];
 
   return (
     <div className="menu">
-      <Menu>
+      <Drawer
+        open={open}
+        width={200}
+        openSecondary={true}
+      >
         {menus.map( (menu, idx) => <MenuItem key={idx} primaryText={menu.name} />)}
-      </Menu>
+      </Drawer>
     </div>
   );
 }
