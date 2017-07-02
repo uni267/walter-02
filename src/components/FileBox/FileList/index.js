@@ -17,32 +17,77 @@ class FileList extends Component {
     super(props);
 
     this.state = {
-      open: false,
-      message: "initialize",
-      duration: 3000,
+      snack: {
+        open: false,
+        message: "initialize",
+        duration: 3000,
+      },
+      sort: {
+        sorted: null,
+        desc: false,
+      }
     }
 
+    this.headers = [
+      {name: "名前", sort_key: "name"},
+      {name: "最終更新", sort_key: "modified"},
+      {name: "所有者", sort_key: "owner"},
+      {name: "Action", sort_key: null},
+    ];
   }
 
   render() {
-    const { files, onDeleteClick } = this.props;
+    const { files, onDeleteClick, sortFile } = this.props;
 
     const onDeleteDone = (file) => {
       this.setState({
-        open: true,
-        message: `${file.name}を削除しました`,
+        snack: {
+          open: true,
+          message: `${file.name}を削除しました`,
+        }
       });
+    }
+
+    const renderHeaderColumn = (header, idx) => {
+      return (
+        <TableHeaderColumn
+          key={idx}
+          data-sort-key={header.sort_key}
+        >
+        {header.name}
+        </TableHeaderColumn>
+      );
+    }
+
+    const onSortClick = (e) => {
+      const target = e.target.dataset.sortKey;
+      const { sorted, desc } = this.state.sort;
+
+      // action列などのソート対象は除外
+      if (target === undefined) return;
+
+      if (sorted !== target) {
+        this.setState({sort: {sorted: target, desc: true}});
+        sortFile(this.state.sort);
+        return;
+      }
+
+      if (sorted === target && desc ) {
+        this.setState({sort: {sorted: target, desc: false}});
+      }
+      else {
+        this.setState({sort: {sorted: target, desc: true}})
+      }
+
+      sortFile(this.state.sort);
     }
 
     return (
       <div className="file-list">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHeaderColumn>名前</TableHeaderColumn>
-              <TableHeaderColumn>最終更新</TableHeaderColumn>
-              <TableHeaderColumn>所有者</TableHeaderColumn>
-              <TableHeaderColumn>Action</TableHeaderColumn>
+            <TableRow onCellClick={onSortClick}>
+            {this.headers.map((header, idx) => renderHeaderColumn(header, idx))}
             </TableRow>
           </TableHeader>
 
@@ -50,7 +95,7 @@ class FileList extends Component {
             {files.map(file => {
               return (
                 <TableRow key={file.id}>
-                  <TableRowColumn>{file.name}</TableRowColumn>
+                  <TableRowColumn className="name">{file.name}</TableRowColumn>
                   <TableRowColumn>{file.modified}</TableRowColumn>
                   <TableRowColumn>{file.owner}</TableRowColumn>
                   <TableRowColumn>
@@ -67,10 +112,10 @@ class FileList extends Component {
         </Table>
 
         <Snackbar
-          open={this.state.open}
-          message={this.state.message}
-          autoHideDuration={this.state.duration}
-          onRequestClose={() => this.setState({open: false})}
+          open={this.state.snack.open}
+          message={this.state.snack.message}
+          autoHideDuration={this.state.snack.duration}
+          onRequestClose={() => this.setState({snack: {open: false}})}
         />
 
       </div>

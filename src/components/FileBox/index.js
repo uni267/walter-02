@@ -23,6 +23,7 @@ class FileBox extends Component {
 
     this.addFiles = this.addFiles.bind(this);
     this.deleteFile = this.deleteFile.bind(this);
+    this.sortFile = this.sortFile.bind(this);
   }
 
   componentWillMount() {
@@ -70,6 +71,21 @@ class FileBox extends Component {
     this.setState({ files: _files });
   }
 
+  sortFile(sort) {
+    let _files = this.state.files.slice();
+
+    _files = _files.sort((a, b) => {
+      if (sort.desc) {
+        return a[sort.sorted] > b[sort.sorted];
+      }
+      else {
+        return a[sort.sorted] < b[sort.sorted];
+      }
+    });
+
+    this.setState({ files: _files });
+  }
+
   render() {
     return (
       <div className="file-box">
@@ -89,6 +105,7 @@ class FileBox extends Component {
               <FileList
                 files={this.state.files}
                 onDeleteClick={this.deleteFile}
+                sortFile={this.sortFile}
               />
             </Col>
             <Col xs={2} sm={2} md={2} lg={2}>
