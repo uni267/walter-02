@@ -64,25 +64,28 @@ class FileBox extends Component {
   render() {
     return (
       <div className="file-box">
-        <Row>
-          <Col xsOffset={10} xs={2}>
-            <FileSearch />
-          </Col>
-        </Row>
-        <Row>
-          <DirBox dirs={this.state.dirs} />
-        </Row>
-        <Row>
-          <Col xs={10} sm={10} md={10} lg={10}>
-            <FileList
-              files={this.state.files}
-              onDeleteClick={this.deleteFile}
-            />
-          </Col>
-          <Col xs={2} sm={2} md={2} lg={2}>
-            <FileAction addFiles={this.addFiles} />
-          </Col>
-        </Row>
+          <Row>
+            <Col xs={9} sm={9} md={9} lg={9}>
+              <DirBox dirs={this.state.dirs} />
+            </Col>
+            <Col xs={2} sm={2} md={2} lg={2}>
+              <FileSearch />
+            </Col>
+          </Row>
+          <Row>
+            <div>&nbsp;</div>
+          </Row>
+          <Row>
+            <Col xs={9} sm={9} md={9} lg={9}>
+              <FileList
+                files={this.state.files}
+                onDeleteClick={this.deleteFile}
+              />
+            </Col>
+            <Col xs={2} sm={2} md={2} lg={2}>
+              <FileAction addFiles={this.addFiles} />
+            </Col>
+          </Row>
       </div>
     )
   }
