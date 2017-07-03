@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 /* import axios from "axios";*/
-import injectTapEventPlugin from 'react-tap-event-plugin';
+// import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Row, Col } from 'react-flexbox-grid';
 import moment from "moment";
 import FileAction from "./FileAction/";
@@ -10,7 +10,7 @@ import FileList from "./FileList/";
 
 import FILES from "../../mock-files";
 
-injectTapEventPlugin();
+// injectTapEventPlugin();
 
 class FileBox extends Component {
   constructor(props) {
