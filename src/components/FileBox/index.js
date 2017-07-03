@@ -8,7 +8,6 @@ import FileSearch from "./FileSearch/";
 import DirBox from "./DirBox/";
 import FileList from "./FileList/";
 
-//import DIRS from "../../mock-dirs";
 import FILES from "../../mock-files";
 
 injectTapEventPlugin();
