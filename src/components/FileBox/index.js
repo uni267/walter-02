@@ -6,7 +6,7 @@ import moment from "moment";
 import FileAction from "./FileAction/";
 import FileSearch from "./FileSearch/";
 import DirBox from "./DirBox/";
-import DnD from "../DnD/";
+import FileList from "./FileList/";
 import FILES from "../../mock-files";
 
 // injectTapEventPlugin();
@@ -100,7 +100,7 @@ class FileBox extends Component {
         </Row>
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
-            <DnD
+            <FileList
               files={this.state.files}
               onDeleteClick={this.deleteFile}
               sortFile={this.sortFile}
