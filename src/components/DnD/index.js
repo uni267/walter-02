@@ -1,12 +1,8 @@
 import React, { Component } from "react";
-import { DragDropContextProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import Snackbar from "material-ui/Snackbar";
 import FileListAction from "../FileBox/FileList/FileListAction";
-import Dir from "./Dir";
-import File from "./File";
 import Header from "./Header";
-import FILES from "../../mock-files";
+import TableBody from "./TableBody";
 
 class DnD extends Component {
   constructor(props) {
@@ -26,23 +22,6 @@ class DnD extends Component {
   }
 
   render() {
-    const renderRow = (file, idx) => {
-      if (file.is_dir) {
-        return (
-          <Dir key={idx} dir={file}
-               onDeleteClick={onDeleteClick}
-               onDeleteDone={onDeleteDone} />
-        );
-      }
-      else {
-        return (
-          <File key={idx} file={file}
-            onDeleteClick={onDeleteClick}
-            onDeleteDone={onDeleteDone} />
-        );
-      }
-    };
-
     const onDeleteDone = (file) => {
       this.setState({
         snack: {
@@ -56,12 +35,12 @@ class DnD extends Component {
 
     return (
       <div className="file-list">
-        <DragDropContextProvider backend={HTML5Backend}>
-          <div>
-            <Header sortFile={sortFile} />
-            {files.map((file, idx) => renderRow(file, idx))}
-          </div>
-        </DragDropContextProvider>
+        <Header sortFile={sortFile} />
+        <TableBody
+          files={files}
+          onDeleteClick={onDeleteClick}
+          onDeleteDone={onDeleteDone}
+        />
         <Snackbar
           open={this.state.snack.open}
           message={this.state.snack.message}
