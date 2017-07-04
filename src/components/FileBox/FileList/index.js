@@ -26,7 +26,25 @@ class FileList extends Component {
       });
     };
 
-    const { files, onDeleteClick, sortFile } = this.props;
+    const onMoveDone = () => {
+      this.setState({
+        snack: {
+          open: true,
+          message: `ファイルを移動しました`
+        }
+      });
+    };
+
+    const addFilesDone = () => {
+      this.setState({
+        snack: {
+          open: true,
+          message: `ファイルをアップロードしました`
+        }
+      });
+    };
+
+    const { files, onDeleteClick, sortFile, moveFile, addFiles } = this.props;
 
     return (
       <div className="file-list">
@@ -35,6 +53,10 @@ class FileList extends Component {
           files={files}
           onDeleteClick={onDeleteClick}
           onDeleteDone={onDeleteDone}
+          moveFile={moveFile}
+          onMoveDone={onMoveDone}
+          addFiles={addFiles}
+          addFilesDone={addFilesDone}
         />
         <Snackbar
           open={this.state.snack.open}

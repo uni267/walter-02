@@ -44,7 +44,7 @@ class Dir extends Component {
         </div>
         <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
-        <div style={{...style.cell, width: "20%"}}>edit | delete</div>
+        <div style={{...style.cell, width: "20%"}}>-</div>
       </div>
     );
   }

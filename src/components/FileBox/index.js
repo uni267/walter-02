@@ -22,6 +22,7 @@ class FileBox extends Component {
     this.addFiles = this.addFiles.bind(this);
     this.deleteFile = this.deleteFile.bind(this);
     this.sortFile = this.sortFile.bind(this);
+    this.moveFile = this.moveFile.bind(this);
   }
 
   componentWillMount() {
@@ -105,6 +106,32 @@ class FileBox extends Component {
     this.setState({ files: _files });
   }
 
+  moveFile({file_id, dir_id}) {
+    let _files = this.state.files.slice();
+    let _all_files = this.state.all_files.slice();
+
+    _files = _files.map(file => {
+      if (file.id === file_id) {
+        file.dir_id = dir_id;
+      }
+      return file;
+    });
+
+    _all_files = _all_files.map(file => {
+      if (file.id === file_id) {
+        file.dir_id = dir_id;
+      }
+      return file;
+    });
+
+    this.setState({ files: _files });
+    this.setState({ all_files: _all_files });
+
+    this.getFiles(this.state.all_files);
+    this.getDirs(this.state.all_files);
+
+  }
+
   render() {
     return (
       <div className="file-box">
@@ -125,6 +152,8 @@ class FileBox extends Component {
               files={this.state.files}
               onDeleteClick={this.deleteFile}
               sortFile={this.sortFile}
+              moveFile={this.moveFile}
+              addFiles={this.addFiles}
               />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>

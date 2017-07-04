@@ -38,6 +38,8 @@ const fileSource = {
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
+      props.moveFile({file_id: item.name, dir_id: dropResult.name});
+      props.onMoveDone();
       console.log(`file.id: ${item.name}, dir.id: ${dropResult.name}`);
     }
   }
