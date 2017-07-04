@@ -2,7 +2,6 @@ import React, { Component } from "react";
 /* import axios from "axios";*/
 // import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Row, Col } from 'react-flexbox-grid';
-import moment from "moment";
 import FileAction from "./FileAction/";
 import FileSearch from "./FileSearch/";
 import DirBox from "./DirBox/";
@@ -15,6 +14,7 @@ class FileBox extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      all_files: [],
       files: [],
       dirs: []
     };
@@ -25,25 +25,41 @@ class FileBox extends Component {
   }
 
   componentWillMount() {
-    this.getFiles();
-    this.getDirs();
+    this.setState({all_files: FILES});
+    this.getFiles(FILES);
+    this.getDirs(FILES);
   }
 
-  getDirs() {
+  componentDidUpdate(prevProps) {
+    if (prevProps.dir_id !== this.props.dir_id) {
+      this.getFiles(this.state.all_files);
+      this.getFiles(this.state.all_files);
+    }
+  }
+
+  getDirs(files) {
     /* const url = "http://localhost:3333/dirs";
      * axios.get(url)
      *      .then( res => this.setState({dirs: res.data}))
      *      .catch( err => console.log(err) );*/
-    let DIRS = FILES.filter(f => f.is_dir);
-    this.setState({dirs: DIRS});
+    const { dir_id } = this.props;
+    let dirs = files.filter(f => f.is_dir)
+        .filter(d => d.id <= Number(dir_id));
+
+    this.setState({dirs: dirs});
   }
 
-  getFiles() {
+  getFiles(files) {
     /* const url = "http://localhost:3333/files";
      * axios.get(url)
      *      .then(res => this.setState({files: res.data}))
      *      .catch( err => console.log(err) );*/
-    this.setState({files: FILES});
+    const { dir_id } = this.props;
+    let _files = files
+        .filter(file => file.dir_id === Number(dir_id))
+        .filter(file => file.is_display);
+
+    this.setState({files: _files});
   }
 
   addFiles(files) {
@@ -51,22 +67,27 @@ class FileBox extends Component {
     next_file_id++;
 
     let _files = this.state.files.slice();
+    let _all_files = this.state.all_files.slice();
 
-    files.forEach(f => _files.push({
-      id: next_file_id++,
-      name: f.name,
-      modified: moment().format("YYYY-MM-DD HH:mm"),
-      owner: "user01",
-      is_dir: false
-    }));
+    files.forEach(f => {
+      const push_file = {...f, id: next_file_id++};
+      _files.push(push_file);
+      _all_files.push(push_file);
+    });
 
     this.setState({ files: _files });
+    this.setState({ all_files: _all_files });
   }
 
   deleteFile(e, file) {
     let _files = this.state.files.slice();
+    let _all_files = this.state.all_files.slice();
+
     _files = _files.filter(_file => _file.id !== file.id);
+    _all_files = _all_files.filter(_file => _file.id !== file.id);
+
     this.setState({ files: _files });
+    this.setState({ all_files: _all_files });
   }
 
   sortFile(sort) {
@@ -107,7 +128,9 @@ class FileBox extends Component {
               />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
-            <FileAction addFiles={this.addFiles} />
+            <FileAction
+              addFiles={this.addFiles}
+              dir_id={this.props.dir_id} />
           </Col>
         </Row>
       </div>

@@ -21,6 +21,12 @@ class App extends Component {
   }
 
   render() {
+    const getDirId = () => {
+      const params = new URLSearchParams(this.props.location.search);
+      return (params.get("dir_id") === null) ?
+        0 : params.get("dir_id");
+    };
+
     return (
       <div className="App">
         <Logo toggleMenu={this.toggleMenu} />
@@ -28,7 +34,7 @@ class App extends Component {
           open={this.state.menuOpen}
           toggleMenu={this.toggleMenu}
         />
-        <FileBox />
+        <FileBox dir_id={getDirId()}/>
       </div>
     );
   }

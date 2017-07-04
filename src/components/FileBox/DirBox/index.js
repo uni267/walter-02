@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Chip from 'material-ui/Chip';
+import { Link } from "react-router-dom";
 /* import IconButton from 'material-ui/IconButton';
  * import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';*/
 
@@ -24,9 +25,11 @@ class DirBox extends Component {
       <Chip
         key={dir.id}
         style={this.styles.chips}
-        onTouchTap={() => console.log("click")}
+        onTouchTap={() => console.log(`${dir.id}`)}
       >
-      {dir.name}
+        <Link to={`/?dir_id=${dir.id}`}>
+          {dir.name}
+        </Link>
       </Chip>
     );
   }

@@ -5,6 +5,7 @@ import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import AddFileDialog from "./AddFileDialog";
+import moment from "moment";
 
 class FileAction extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class FileAction extends Component {
       snack: {
         open: false,
         message: " ",
-        hide_duration: 3000,
+        hide_duration: 3000
       }
     };
 
@@ -49,7 +50,19 @@ class FileAction extends Component {
 
     const onDrop = (files) => {
       let _files = this.state.files.slice();
-      files.forEach(f => _files.push({ name: f.name }));
+
+      files.forEach(f => {
+        const push_file = {
+          name: f.name,
+          modified: moment().format("YYYY-MM-DD HH:mm"),
+          owner: "user01",
+          dir_id: Number(this.props.dir_id),
+          is_dir: false,
+          is_display: true
+        };
+
+        _files.push(push_file);
+      });
       this.setState({ files: _files });
     };
 

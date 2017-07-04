@@ -31,7 +31,7 @@ const fileTarget = {
 class Dir extends Component {
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
-    const { onDeleteClick, onDeleteDone, dir } = this.props;
+    const { dir } = this.props;
 
     const isActive = canDrop && isOver;
     let backgroundColor = isActive ? "#ddd" : "#fff";

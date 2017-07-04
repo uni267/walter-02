@@ -47,7 +47,7 @@ class TableHeader extends Component {
     const onSortClick = (e) => {
       const target = e.target.dataset.sortKey;
       const { sorted, desc } = this.state.sort;
-      if (target == undefined) return;
+      if (target === undefined) return;
 
       if (sorted !== target) {
         this.setState({sort: {sorted: target, desc: true}});
