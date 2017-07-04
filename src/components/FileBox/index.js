@@ -33,7 +33,7 @@ class FileBox extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.dir_id !== this.props.dir_id) {
       this.getFiles(this.state.all_files);
-      this.getFiles(this.state.all_files);
+      this.getDirs(this.state.all_files);
     }
   }
 

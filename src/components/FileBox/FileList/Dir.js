@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { DropTarget } from 'react-dnd';
+import { Link } from "react-router-dom";
 
 const style = {
   row: {
@@ -38,7 +39,9 @@ class Dir extends Component {
 
     return connectDropTarget(
       <div style={{...style.row, backgroundColor}}>
-        <div style={{...style.cell, width: "50%"}}>{dir.name}</div>
+        <div style={{...style.cell, width: "50%"}}>
+          <Link to={`/?dir_id=${dir.id}`}>{dir.name}</Link>
+        </div>
         <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
         <div style={{...style.cell, width: "20%"}}>edit | delete</div>
