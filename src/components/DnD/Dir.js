@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { DropTarget } from 'react-dnd';
-import IconButton from 'material-ui/IconButton';
-import ActionInfo from 'material-ui/svg-icons/action/info';
 
 const style = {
   row: {
@@ -33,7 +31,7 @@ const fileTarget = {
 class Dir extends Component {
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
-    const { dir } = this.props;
+    const { onDeleteClick, onDeleteDone, dir } = this.props;
 
     const isActive = canDrop && isOver;
     let backgroundColor = isActive ? "#ddd" : "#fff";
@@ -43,7 +41,7 @@ class Dir extends Component {
         <div style={{...style.cell, width: "50%"}}>{dir.name}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
-        <div style={{...style.cell, width: "20%"}}>view | edit | delete</div>
+        <div style={{...style.cell, width: "20%"}}>edit | delete</div>
       </div>
     );
   }

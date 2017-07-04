@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import { DragSource } from "react-dnd";
+import ViewIcon from "./ViewIcon";
+import EditIcon from "./EditIcon";
+import DeleteIcon from "./DeleteIcon";
 
 const style = {
   row: {
@@ -43,7 +46,7 @@ const fileSource = {
 class File extends Component {
   render() {
     const { isDragging, connectDragSource } = this.props;
-    const { file } = this.props;
+    const { onDeleteClick, onDeleteDone, file } = this.props;
     const opacity = isDragging ? 0.3 : 1;
 
     return connectDragSource(
@@ -51,7 +54,15 @@ class File extends Component {
         <div style={{...style.cell, width: "50%"}}>{file.name}</div>
         <div style={{...style.cell, width: "15%"}}>{file.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
-        <div style={{...style.cell, width: "20%"}}>view | edit | delete</div>
+        <div style={{...style.cell, width: "20%"}}>
+          <ViewIcon file={file} />
+          <EditIcon file={file} />
+          <DeleteIcon
+            file={file}
+            onDeleteClick={onDeleteClick}
+            onDeleteDone={onDeleteDone}
+          />
+        </div>
       </div>
     );
   }

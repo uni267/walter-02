@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Snackbar from "material-ui/Snackbar";
 import FileListAction from "../FileBox/FileList/FileListAction";
-import Header from "./Header";
+import TableHeader from "./TableHeader";
 import TableBody from "./TableBody";
 
 class DnD extends Component {
@@ -13,10 +13,6 @@ class DnD extends Component {
         open: false,
         message: "initialized...",
         duration: 3000
-      },
-      sort: {
-        sorted: null,
-        desc: false
       }
     };
   }
@@ -35,7 +31,7 @@ class DnD extends Component {
 
     return (
       <div className="file-list">
-        <Header sortFile={sortFile} />
+        <TableHeader sortFile={sortFile} />
         <TableBody
           files={files}
           onDeleteClick={onDeleteClick}

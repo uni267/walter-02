@@ -22,7 +22,7 @@ const style = {
   }
 };
 
-class Header extends Component {
+class TableHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -80,4 +80,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default TableHeader;
