@@ -20,13 +20,13 @@ class FileList extends Component {
       snack: {
         open: false,
         message: "initialize",
-        duration: 3000,
+        duration: 3000
       },
       sort: {
         sorted: null,
-        desc: false,
+        desc: false
       }
-    }
+    };
 
     this.headers = [
       {name: "名前", sort_key: "name"},
@@ -43,10 +43,10 @@ class FileList extends Component {
       this.setState({
         snack: {
           open: true,
-          message: `${file.name}を削除しました`,
+          message: `${file.name}を削除しました`
         }
       });
-    }
+    };
 
     const renderHeaderColumn = (header, idx) => {
       return (
@@ -57,7 +57,7 @@ class FileList extends Component {
         {header.name}
         </TableHeaderColumn>
       );
-    }
+    };
 
     const onSortClick = (e) => {
       const target = e.target.dataset.sortKey;
@@ -76,11 +76,11 @@ class FileList extends Component {
         this.setState({sort: {sorted: target, desc: false}});
       }
       else {
-        this.setState({sort: {sorted: target, desc: true}})
+        this.setState({sort: {sorted: target, desc: true}});
       }
 
       sortFile(this.state.sort);
-    }
+    };
 
     return (
       <div className="file-list">

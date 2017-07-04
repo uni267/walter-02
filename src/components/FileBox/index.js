@@ -6,8 +6,7 @@ import moment from "moment";
 import FileAction from "./FileAction/";
 import FileSearch from "./FileSearch/";
 import DirBox from "./DirBox/";
-import FileList from "./FileList/";
-
+import DnD from "../DnD/";
 import FILES from "../../mock-files";
 
 // injectTapEventPlugin();
@@ -58,7 +57,7 @@ class FileBox extends Component {
       name: f.name,
       modified: moment().format("YYYY-MM-DD HH:mm"),
       owner: "user01",
-      is_dir: false,
+      is_dir: false
     }));
 
     this.setState({ files: _files });
@@ -88,31 +87,31 @@ class FileBox extends Component {
   render() {
     return (
       <div className="file-box">
-          <Row>
-            <Col xs={9} sm={9} md={9} lg={9}>
-              <DirBox dirs={this.state.dirs} />
-            </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
-              <FileSearch />
-            </Col>
-          </Row>
-          <Row>
-            <div>&nbsp;</div>
-          </Row>
-          <Row>
-            <Col xs={9} sm={9} md={9} lg={9}>
-              <FileList
-                files={this.state.files}
-                onDeleteClick={this.deleteFile}
-                sortFile={this.sortFile}
+        <Row>
+          <Col xs={9} sm={9} md={9} lg={9}>
+            <DirBox dirs={this.state.dirs} />
+          </Col>
+          <Col xs={2} sm={2} md={2} lg={2}>
+            <FileSearch />
+          </Col>
+        </Row>
+        <Row>
+          <div>&nbsp;</div>
+        </Row>
+        <Row>
+          <Col xs={9} sm={9} md={9} lg={9}>
+            <DnD
+              files={this.state.files}
+              onDeleteClick={this.deleteFile}
+              sortFile={this.sortFile}
               />
-            </Col>
-            <Col xs={2} sm={2} md={2} lg={2}>
-              <FileAction addFiles={this.addFiles} />
-            </Col>
-          </Row>
+          </Col>
+          <Col xs={2} sm={2} md={2} lg={2}>
+            <FileAction addFiles={this.addFiles} />
+          </Col>
+        </Row>
       </div>
-    )
+    );
   }
 }
 

@@ -2,19 +2,31 @@ import React, { Component } from "react";
 import { DragSource } from "react-dnd";
 
 const style = {
-  border: '1px dashed gray',
-  backgroundColor: 'white',
-  padding: '0.5rem 1rem',
-  marginRight: '1.5rem',
-  marginBottom: '1.5rem',
-  cursor: 'move',
-  float: 'left',
+  row: {
+    display: "flex",
+    width: "100%",
+    borderBottom: "1px solid lightgray"
+  },
+
+  cell: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: 24,
+    paddingRight: 24,
+    height: 48,
+    textAlign: "left",
+    fontSize: 13,
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    backgroundColor: "inherit"
+  }
 };
 
 const fileSource = {
   beginDrag(props) {
     return {
-      name: props.name,
+      name: props.file.id
     };
   },
 
@@ -23,7 +35,7 @@ const fileSource = {
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      console.log(`item.name: ${item.name}, dropResult: ${dropResult.name}`);
+      console.log(`file.id: ${item.name}, dir.id: ${dropResult.name}`);
     }
   }
 };
@@ -31,20 +43,21 @@ const fileSource = {
 class File extends Component {
   render() {
     const { isDragging, connectDragSource } = this.props;
-    const { name } = this.props;
-    const opacity = isDragging ? 0.1 : 1;
+    const { file } = this.props;
+    const opacity = isDragging ? 0.3 : 1;
 
-    return (
-      connectDragSource(
-        <div style={{ ...style, opacity }}>
-        {name}
-        </div>,
-      )
+    return connectDragSource(
+      <div style={{...style.row, opacity}}>
+        <div style={{...style.cell, width: "50%"}}>{file.name}</div>
+        <div style={{...style.cell, width: "15%"}}>{file.modified}</div>
+        <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
+        <div style={{...style.cell, width: "20%"}}>view | edit | delete</div>
+      </div>
     );
   }
 }
 
 export default DragSource("file", fileSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging(),
+  isDragging: monitor.isDragging()
 }))(File);

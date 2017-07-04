@@ -1,33 +1,49 @@
 import React, { Component } from "react";
 import { DropTarget } from 'react-dnd';
+import IconButton from 'material-ui/IconButton';
+import ActionInfo from 'material-ui/svg-icons/action/info';
 
 const style = {
-  height: '12rem',
-  width: '12rem',
-  marginRight: '1.5rem',
-  marginBottom: '1.5rem',
-  color: 'white',
-  padding: '1rem',
-  textAlign: 'center',
-  fontSize: '1rem',
-  lineHeight: 'normal',
-  float: 'left',
+  row: {
+    display: "flex",
+    width: "100%",
+    borderBottom: "1px solid lightgray"
+  },
+  cell: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: 24,
+    paddingRight: 24,
+    height: 48,
+    textAlign: "left",
+    fontSize: 13,
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    backgroundColor: "inherit"
+  }
 };
 
 const fileTarget = {
-  drop() {
-    return { name: 'Dir' };
-  },
+  drop(props) {
+    return { name: props.dir.id };
+  }
 };
 
 class Dir extends Component {
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
+    const { dir } = this.props;
+
     const isActive = canDrop && isOver;
-    let backgroundColor = isActive ? "#f00" : "#222";
+    let backgroundColor = isActive ? "#ddd" : "#fff";
+
     return connectDropTarget(
-      <div style={{ ...style, backgroundColor }}>
-        {isActive ? "active" : "not active"}
+      <div style={{...style.row, backgroundColor}}>
+        <div style={{...style.cell, width: "50%"}}>{dir.name}</div>
+        <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
+        <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
+        <div style={{...style.cell, width: "20%"}}>view | edit | delete</div>
       </div>
     );
   }
@@ -36,5 +52,5 @@ class Dir extends Component {
 export default DropTarget("file", fileTarget, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver(),
-  canDrop: monitor.canDrop(),
+  canDrop: monitor.canDrop()
 }))(Dir);
