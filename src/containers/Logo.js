@@ -3,8 +3,8 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
-import Logo from "../components/Logo";
-import AppMenu from "../components/AppMenu";
+import Logo from "../components/Logo/";
+import AppMenu from "../components/AppMenu/";
 
 class LogoContainer extends Component {
   render() {

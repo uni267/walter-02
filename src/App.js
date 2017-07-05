@@ -4,25 +4,12 @@ import React, { Component } from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // app components
-import Logo from "./components/Logo";
-import AppMenu from "./components/AppMenu";
+import LogoContainer from "./containers/Logo";
 import FileBoxContainer from "./containers/FileBox";
 
 injectTapEventPlugin();
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      menuOpen: false
-    };
-    this.toggleMenu = this.toggleMenu.bind(this);
-  }
-
-  toggleMenu() {
-    this.setState({menuOpen: !this.state.menuOpen});
-  }
-
   render() {
     const getDirId = () => {
       const params = new URLSearchParams(this.props.location.search);
@@ -31,12 +18,8 @@ class App extends Component {
     };
 
     return (
-      <div className="App">
-        <Logo toggleMenu={this.toggleMenu} />
-        <AppMenu
-          open={this.state.menuOpen}
-          toggleMenu={this.toggleMenu}
-        />
+      <div className="app">
+        <LogoContainer />
         <FileBoxContainer dir_id={getDirId()}/>
       </div>
     );
