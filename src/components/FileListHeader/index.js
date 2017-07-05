@@ -23,7 +23,7 @@ const style = {
   }
 };
 
-class TableHeader extends Component {
+class FileListHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,7 +32,6 @@ class TableHeader extends Component {
         desc: false
       }
     };
-    console.log(this.props);
   }
 
   render() {
@@ -82,5 +81,5 @@ class TableHeader extends Component {
   }
 }
 
-TableHeader = connect()(TableHeader);
-export default TableHeader;
+FileListHeader = connect()(FileListHeader);
+export default FileListHeader;

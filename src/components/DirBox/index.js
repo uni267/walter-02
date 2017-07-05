@@ -6,9 +6,6 @@ import Chip from 'material-ui/Chip';
 // router
 import { Link } from "react-router-dom";
 
-// store
-import { connect } from "react-redux";
-
 /* import IconButton from 'material-ui/IconButton';
  * import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';*/
 
@@ -18,12 +15,12 @@ class DirBox extends Component {
     this.styles = {
       chips: {
         marginTop: 30,
-        marginLeft: 20,
+        marginLeft: 20
       },
 
       wrapper: {
         display: 'flex',
-        flexWrap: 'wrap',
+        flexWrap: 'wrap'
       }
     };
   }
@@ -39,10 +36,7 @@ class DirBox extends Component {
   }
 
   render() {
-    const { dir_id, files } = this.props;
-    const dirs = files
-          .filter(f => f.is_dir)
-          .filter(d => d.id <= Number(dir_id));
+    const { dirs } = this.props;
 
     return (
       <div className="dir-box" style={this.styles.wrapper}>

@@ -9,13 +9,13 @@ import { connect } from "react-redux";
 
 // app components
 import TableBodyWrapper from "./TableBodyWrapper";
-import Dir from "./Dir";
-import File from "./File";
+import Dir from "../Dir";
+import File from "../File";
 
 // datetime
 import moment from "moment";
 
-class TableBody extends Component {
+class FileListBody extends Component {
   constructor(props) {
     super(props);
     this.handleFileDrop = this.handleFileDrop.bind(this);
@@ -41,13 +41,12 @@ class TableBody extends Component {
   }
 
   render() {
-    const { dir_id, files, dispatch, onDeleteDone, onMoveDone } = this.props;
+    const { dir_id, files, dispatch } = this.props;
 
     const renderRow = (file, idx) => {
       return file.is_dir 
         ? <Dir key={idx} dir={file} />
-        : <File key={idx} dir_id={dir_id} file={file} onDeleteDone={onDeleteDone}
-          moveFile={moveFile} onMoveDone={onMoveDone} />;
+        : <File key={idx} dir_id={dir_id} file={file} moveFile={moveFile} />;
     };
 
     const { FILE } = NativeTypes;
@@ -70,5 +69,5 @@ class TableBody extends Component {
   }
 }
 
-TableBody = connect()(TableBody);
-export default withDragDropContext(TableBody);
+FileListBody = connect()(FileListBody);
+export default withDragDropContext(FileListBody);
