@@ -11,13 +11,10 @@ const fileTarget = {
 
 class TableBodyWrapper extends Component {
   render() {
-    const { accepts, onDrop } = this.props;
-    const { canDrop, isOver, connectDropTarget } = this.props;
-    const isActive = canDrop && isOver;
-
-    const style = {
-      padding: 20
-    };
+    // const { accepts, onDrop } = this.props;
+    // const { canDrop, isOver } = this.props;
+    const { connectDropTarget } = this.props;
+    // const isActive = canDrop && isOver;
 
     return connectDropTarget(
       <div>{this.props.children}</div>

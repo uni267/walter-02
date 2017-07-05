@@ -4,7 +4,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // material
-import Snackbar from "material-ui/Snackbar";
 import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 import Menu from "material-ui/Menu";

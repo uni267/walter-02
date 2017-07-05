@@ -55,7 +55,7 @@ class DeleteIcon extends Component {
       />
     ];
 
-    const { file, onDeleteClick, onDeleteDone, dispatch } = this.props;
+    const { file, dispatch } = this.props;
 
     return (
       <div>
