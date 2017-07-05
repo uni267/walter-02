@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// store
-import { connect } from "react-redux";
-
 /* import axios from "axios";*/
 // import injectTapEventPlugin from 'react-tap-event-plugin';
 

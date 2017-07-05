@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 const style = {
   row: {
@@ -31,12 +32,11 @@ class TableHeader extends Component {
         desc: false
       }
     };
+    console.log(this.props);
   }
 
   render() {
-
-    const { sortFile } = this.props;
-
+    const { dispatch } = this.props;
     const headers = [
       {key: "name", width: "50%", label: "名前"},
       {key: "modified", width: "15%", label: "最終更新"},
@@ -51,8 +51,6 @@ class TableHeader extends Component {
 
       if (sorted !== target) {
         this.setState({sort: {sorted: target, desc: true}});
-        sortFile(this.state.sort);
-        return;
       }
 
       if (sorted === target && desc) {
@@ -60,7 +58,11 @@ class TableHeader extends Component {
       } else {
         this.setState({sort: {sorted: target, desc: true}});
       }
-      sortFile(this.state.sort);
+
+      dispatch({
+        type: "SORT_FILE",
+        sort: this.state.sort
+      });
     };
 
     return (
@@ -80,4 +82,5 @@ class TableHeader extends Component {
   }
 }
 
+TableHeader = connect()(TableHeader);
 export default TableHeader;

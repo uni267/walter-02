@@ -30,11 +30,7 @@ class DirBox extends Component {
 
   renderDir(dir) {
     return (
-      <Chip
-        key={dir.id}
-        style={this.styles.chips}
-        onTouchTap={() => console.log(`${dir.id}`)}
-      >
+      <Chip key={dir.id} style={this.styles.chips}>
         <Link to={`/?dir_id=${dir.id}`}>
           {dir.name}
         </Link>
@@ -43,8 +39,8 @@ class DirBox extends Component {
   }
 
   render() {
-    const { dir_id } = this.props;
-    const dirs = this.props.state.files
+    const { dir_id, files } = this.props;
+    const dirs = files
           .filter(f => f.is_dir)
           .filter(d => d.id <= Number(dir_id));
 
@@ -55,11 +51,5 @@ class DirBox extends Component {
     );
   }
 }
-
-const mapStateToProps = (state) => {
-  return {state};
-};
-
-DirBox = connect(mapStateToProps)(DirBox);
 
 export default DirBox;

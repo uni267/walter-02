@@ -1,11 +1,21 @@
 import React, { Component } from "react";
+
+// store
+import { connect } from "react-redux";
+
+// material
 import Snackbar from "material-ui/Snackbar";
 import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
-import AddFileDialog from "./AddFileDialog";
+
+// datetime
 import moment from "moment";
+
+// app
+import AddFileDialog from "./AddFileDialog";
+
 
 class FileAction extends Component {
   constructor(props) {
@@ -24,8 +34,6 @@ class FileAction extends Component {
   }
 
   render() {
-    const { addFiles } = this.props;
-
     const upload_button = <FileCloudUpload />;
     const create_folder_button = <FileCreateNewFolder />;
 
@@ -39,12 +47,24 @@ class FileAction extends Component {
 
     const handleUpload = () => {
       this.setState({open: false});
-      addFiles(this.state.files);
-      this.setState({
-        snack: {
-          open: true, message: "ファイルをアップロードしました"
-        }
+      this.state.files.forEach(file => {
+        this.props.dispatch({
+          type: "ADD_FILE",
+          name: file.name,
+          modified: file.modified,
+          owner: file.owner,
+          is_dir: file.is_dir,
+          dir_id: file.dir_id,
+          is_display: file.is_display
+        });
+
+        this.setState({
+          snack: {
+            open: true, message: `${file.name}をアップロードしました`
+          }
+        });
       });
+
       this.setState({ files: [] });
     };
 
@@ -104,4 +124,5 @@ class FileAction extends Component {
   }
 };
 
+FileAction = connect()(FileAction);
 export default FileAction;

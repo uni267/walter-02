@@ -1,8 +1,13 @@
 import React, { Component } from "react";
+
+// material
 import Dialog from "material-ui/Dialog";
 // import IconButton from "material-ui/IconButton";
 import FlatButton from "material-ui/FlatButton";
 // import ActionInfo from "material-ui/svg-icons/action/info";
+
+// store
+import { connect } from "react-redux";
 
 class DeleteIcon extends Component {
   constructor(props) {
@@ -33,7 +38,10 @@ class DeleteIcon extends Component {
         onTouchTap={(e) => {
           this.setState({ open: false });
           onDeleteDone(file);
-          onDeleteClick(e, file);
+          dispatch({
+            type: "DELETE_FILE",
+            file: file
+          });
         }}
       />,
       <FlatButton
@@ -43,7 +51,7 @@ class DeleteIcon extends Component {
       />
     ];
 
-        const { file, onDeleteClick, onDeleteDone } = this.props;
+    const { file, onDeleteClick, onDeleteDone, dispatch } = this.props;
 
     return (
       <div>
@@ -64,4 +72,5 @@ class DeleteIcon extends Component {
   }
 }
 
+DeleteIcon = connect()(DeleteIcon);
 export default DeleteIcon;

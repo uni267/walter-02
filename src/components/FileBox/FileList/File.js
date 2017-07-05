@@ -1,5 +1,12 @@
 import React, { Component } from "react";
+
+// DnD
 import { DragSource } from "react-dnd";
+
+// store
+import { connect } from "react-redux";
+
+// material
 import ViewIcon from "./ViewIcon";
 import EditIcon from "./EditIcon";
 import DeleteIcon from "./DeleteIcon";
@@ -38,7 +45,7 @@ const fileSource = {
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      props.moveFile({file_id: item.name, dir_id: dropResult.name});
+      props.moveFile(item.name, dropResult.name);
       props.onMoveDone();
       console.log(`file.id: ${item.name}, dir.id: ${dropResult.name}`);
     }
@@ -47,8 +54,7 @@ const fileSource = {
 
 class File extends Component {
   render() {
-    const { isDragging, connectDragSource } = this.props;
-    const { onDeleteClick, onDeleteDone, file } = this.props;
+    const { isDragging, connectDragSource, file, onDeleteDone } = this.props;
     const opacity = isDragging ? 0.3 : 1;
 
     return connectDragSource(
@@ -59,11 +65,7 @@ class File extends Component {
         <div style={{...style.cell, width: "20%"}}>
           <ViewIcon file={file} />
           <EditIcon file={file} />
-          <DeleteIcon
-            file={file}
-            onDeleteClick={onDeleteClick}
-            onDeleteDone={onDeleteDone}
-          />
+          <DeleteIcon file={file} onDeleteDone={onDeleteDone} />
         </div>
       </div>
     );

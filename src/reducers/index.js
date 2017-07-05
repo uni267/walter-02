@@ -12,9 +12,9 @@ const visibilityFilter = (state = "SHOW_ALL", action) => {
 
 const files = (state = FILES, action) => {
   switch (action.type) {
+
   case "ADD_FILE":
-    // let next_file_id = state.files.slice().sort((a,b) => a.id < b.id[0]).id + 1;
-    let next_file_id = 1;
+    let next_file_id = state.slice().sort((a,b) => a.id < b.id)[0].id + 1;
     return [
       ...state,
       {
@@ -27,8 +27,33 @@ const files = (state = FILES, action) => {
         is_display: action.is_display
       }
     ];
+
   case "DELETE_FILE":
-    return state.filter(file => file.id !== action.file_id);
+    return state.filter(file => file.id !== action.file.id);
+
+  case "SORT_FILE":
+    const { sort } = action;
+
+    let _state = state.slice();
+
+    _state.sort( (a, b) => {
+      if (sort.desc) {
+        return a[sort.sorted] > b[sort.sorted];
+      } else {
+        return a[sort.sorted] < b[sort.sorted];
+      }
+    });
+
+    return _state;
+    
+  case "MOVE_FILE":
+    return state.map(file => {
+      if (file.id === action.file_id) {
+        file.dir_id = action.dir_id;
+      }
+      return file;
+    });
+
   default:
     return state;
   }

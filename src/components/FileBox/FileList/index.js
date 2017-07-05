@@ -35,27 +35,25 @@ class FileList extends Component {
       });
     };
 
-    const addFilesDone = () => {
+    const addFilesDone = (file) => {
       this.setState({
         snack: {
           open: true,
-          message: `ファイルをアップロードしました`
+          message: `ファイル名: ${file.name} をアップロードしました`
         }
       });
     };
 
-    const { files, onDeleteClick, sortFile, moveFile, addFiles } = this.props;
+    const { dir_id, files } = this.props;
 
     return (
       <div className="file-list">
-        <TableHeader sortFile={sortFile} />
+        <TableHeader />
         <TableBody
+          dir_id={dir_id}
           files={files}
-          onDeleteClick={onDeleteClick}
           onDeleteDone={onDeleteDone}
-          moveFile={moveFile}
           onMoveDone={onMoveDone}
-          addFiles={addFiles}
           addFilesDone={addFilesDone}
         />
         <Snackbar

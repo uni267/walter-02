@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 
 // store
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
 import reducer from "./reducers";
 import { Provider } from "react-redux";
+import logger from "redux-logger";
 
 // material
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -16,7 +17,7 @@ import App from './App';
 // router
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-const store = createStore(reducer);
+const store = createStore(reducer, applyMiddleware(logger));
 
 ReactDOM.render(
   <MuiThemeProvider>

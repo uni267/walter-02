@@ -24,49 +24,41 @@ class TableBody extends Component {
   handleFileDrop(item, monitor) {
     if (monitor) {
       const droppedFiles = monitor.getItem().files;
-      this.props.addFiles(droppedFiles.map(file => {
-        return {
+      droppedFiles.forEach(file => {
+        this.props.dispatch({
+          type: "ADD_FILE",
           name: file.name,
           modified: moment().format("YYYY-MM-DD HH:mm"),
-          dir_id: 0,
+          owner: "user01",
+          dir_id: this.props.dir_id,
           is_dir: false,
           is_display: true
-        };
-      }));
-      this.props.addFilesDone();
+        });
+
+        this.props.addFilesDone(file);
+      });
     }
   }
 
   render() {
-    const {
-      onDeleteClick,
-      onDeleteDone,
-      moveFile,
-      onMoveDone
-    } = this.props;
-
-    const files = this.props.state.files;
+    const { dir_id, files, dispatch, onDeleteDone, onMoveDone } = this.props;
 
     const renderRow = (file, idx) => {
-      if (file.is_dir) {
-        return (
-          <Dir key={idx} dir={file}
-               onDeleteClick={onDeleteClick}
-               onDeleteDone={onDeleteDone} />
-        );
-      }
-      else {
-        return (
-          <File key={idx} file={file}
-                onDeleteClick={onDeleteClick}
-                onDeleteDone={onDeleteDone}
-                moveFile={moveFile}
-                onMoveDone={onMoveDone} />
-        );
-      }
+      return file.is_dir 
+        ? <Dir key={idx} dir={file} />
+        : <File key={idx} dir_id={dir_id} file={file} onDeleteDone={onDeleteDone}
+          moveFile={moveFile} onMoveDone={onMoveDone} />;
     };
 
     const { FILE } = NativeTypes;
+
+    const moveFile = (file_id, dir_id) => {
+      dispatch({
+        type: "MOVE_FILE",
+        file_id: file_id,
+        dir_id: dir_id
+      });
+    };
 
     return (
       <TableBodyWrapper
@@ -78,9 +70,5 @@ class TableBody extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {state};
-};
-
-TableBody = connect(mapStateToProps)(TableBody);
+TableBody = connect()(TableBody);
 export default withDragDropContext(TableBody);

@@ -3,13 +3,10 @@ import React, { Component } from 'react';
 // material
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-// store
-import { connect } from "react-redux";
-
 // app components
 import Logo from "./components/Logo";
 import AppMenu from "./components/AppMenu";
-import FileBox from "./components/FileBox/";
+import FileBoxContainer from "./containers/FileBox";
 
 injectTapEventPlugin();
 
@@ -40,16 +37,10 @@ class App extends Component {
           open={this.state.menuOpen}
           toggleMenu={this.toggleMenu}
         />
-        <FileBox dir_id={getDirId()}/>
+        <FileBoxContainer dir_id={getDirId()}/>
       </div>
     );
   }
 }
-
-const mapStateToProps = (state) => {
-  return {state};
-};
-
-App = connect(mapStateToProps)(App);
 
 export default App;
