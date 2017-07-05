@@ -59,5 +59,20 @@ const files = (state = FILES, action) => {
   }
 };
 
-const fileApp = combineReducers({files, visibilityFilter});
+const initial_app_menu = {
+  open: false
+};
+
+const app_menu = (state = initial_app_menu, action) => {
+  switch (action.type) {
+  case "TOGGLE_MENU":
+    return {
+      open: !state.open
+    };
+  default:
+    return state;
+  }
+};
+
+const fileApp = combineReducers({files, app_menu, visibilityFilter});
 export default fileApp;
