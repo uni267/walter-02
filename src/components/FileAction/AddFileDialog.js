@@ -44,18 +44,15 @@ const AddFileDialog = ({
       open={open}
       onRequestClose={handleClose}
     >
-    <section>
       <Dropzone onDrop={onDrop} style={styles.dropzone}>
         <p>クリックもしくはファイルをドロップ</p>
       </Dropzone>
-
-      <aside>
-        <ul>
-          {files.map( (f, idx) => <li key={idx}>{f.name} - {f.size} bytes</li>)}
-        </ul>
-      </aside>
-      </section>
-      </Dialog>
+      <ul>
+        {files.map( (f, idx) => {
+          return <li key={idx}>{f.name} - {f.size} bytes</li>;
+        })}
+      </ul>
+    </Dialog>
   );
 };
 

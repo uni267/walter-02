@@ -7,29 +7,32 @@ import { connect } from "react-redux";
 import { Row, Col } from 'react-flexbox-grid';
 
 // app components
-import FileAction from "../components/FileBox/FileAction";
-import FileSearch from "../components/FileBox/FileSearch";
-import DirBox from "../components/FileBox/DirBox";
-import FileList from "../components/FileBox/FileList";
+import FileAction from "../components/FileAction";
+import FileSearch from "../components/FileSearch";
+import DirBox from "../components/DirBox";
+// import FileList from "../components/FileList";
+import FileListHeader from "../components/FileListHeader";
+import FileListBody from "../components/FileListBody";
+import FileSnackbar from "../components/FileSnackbar";
 
 class FileBox extends Component {
-  constructor(props) {
-    super(props);
-    console.log(props);
-  }
-
   render() {
-    const { files, dir_id } = this.props;
+    const { files, dir_id, snackbar } = this.props;
 
+    // @todo visibilityFilterで実装する
     const _files = files.filter(file => {
       return (file.is_display && Number(file.dir_id) === Number(dir_id));
     });
+
+    const _dirs = files.filter(f => f.is_dir)
+          .filter(f => Number(f.id) <= Number(dir_id))
+          .sort( (a, b) => a.id > b.id);
 
     return (
       <div className="file-box">
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
-            <DirBox files={files} dir_id={dir_id} />
+            <DirBox dirs={_dirs} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
             <FileSearch />
@@ -40,7 +43,9 @@ class FileBox extends Component {
         </Row>
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
-            <FileList dir_id={dir_id} files={_files} />
+            <FileListHeader />
+            <FileListBody dir_id={dir_id} files={_files} />
+            <FileSnackbar state={snackbar} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
             <FileAction dir_id={dir_id} />
@@ -53,7 +58,8 @@ class FileBox extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    files: state.files
+    files: state.files,
+    snackbar: state.snackbar
   };
 };
 

@@ -74,5 +74,34 @@ const app_menu = (state = initial_app_menu, action) => {
   }
 };
 
-const fileApp = combineReducers({files, app_menu, visibilityFilter});
+const initial_snackbar = {
+  open: false,
+  message: "initialize",
+  duration: 3000
+};
+
+const snackbar = (state = initial_snackbar, action) => {
+  switch (action.type) {
+  case "TRIGGER_SNACK":
+    return {
+      open: true,
+      message: action.message
+    };
+  case "CLOSE_SNACK":
+    return {
+      open: false,
+      message: "closed"
+    };
+  default:
+  return state;
+  }
+};
+
+const fileApp = combineReducers({
+  files,
+  app_menu,
+  snackbar,
+  visibilityFilter
+});
+
 export default fileApp;

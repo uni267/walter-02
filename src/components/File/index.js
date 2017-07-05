@@ -3,9 +3,6 @@ import React, { Component } from "react";
 // DnD
 import { DragSource } from "react-dnd";
 
-// store
-import { connect } from "react-redux";
-
 // material
 import ViewIcon from "./ViewIcon";
 import EditIcon from "./EditIcon";
@@ -46,8 +43,6 @@ const fileSource = {
 
     if (dropResult) {
       props.moveFile(item.name, dropResult.name);
-      props.onMoveDone();
-      console.log(`file.id: ${item.name}, dir.id: ${dropResult.name}`);
     }
   }
 };

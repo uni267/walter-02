@@ -35,7 +35,10 @@ class FileListBody extends Component {
           is_display: true
         });
 
-        this.props.addFilesDone(file);
+        this.props.dispatch({
+          type: "TRIGGER_SNACK",
+          message: `${file.name}をアップロードしました`
+        });
       });
     }
   }
@@ -56,6 +59,11 @@ class FileListBody extends Component {
         type: "MOVE_FILE",
         file_id: file_id,
         dir_id: dir_id
+      });
+
+      dispatch({
+        type: "TRIGGER_SNACK",
+        message: "ファイルを移動しました"
       });
     };
 

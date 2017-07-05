@@ -37,7 +37,11 @@ class DeleteIcon extends Component {
         primary={true}
         onTouchTap={(e) => {
           this.setState({ open: false });
-          onDeleteDone(file);
+          dispatch({
+            type: "TRIGGER_SNACK",
+            message: `${file.name}を削除しました`
+          });
+
           dispatch({
             type: "DELETE_FILE",
             file: file

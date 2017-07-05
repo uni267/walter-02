@@ -23,14 +23,8 @@ class FileAction extends Component {
 
     this.state = {
       open: false,
-      files: [],
-      snack: {
-        open: false,
-        message: " ",
-        hide_duration: 3000
-      }
+      files: []
     };
-
   }
 
   render() {
@@ -58,10 +52,9 @@ class FileAction extends Component {
           is_display: file.is_display
         });
 
-        this.setState({
-          snack: {
-            open: true, message: `${file.name}をアップロードしました`
-          }
+        this.props.dispatch({
+          type: "TRIGGER_SNACK",
+          message: `${file.name}をアップロードしました`
         });
       });
 
@@ -88,7 +81,6 @@ class FileAction extends Component {
 
     return (
       <div className="file-action">
-  
         <Menu>
           <MenuItem
             primaryText="ファイルをアップロード" 
@@ -101,23 +93,12 @@ class FileAction extends Component {
             onTouchTap={() => console.log("@todo") }
           />
         </Menu>
-
         <AddFileDialog
           files={this.state.files}
           open={this.state.open}
           handleClose={handleClose}
           handleUpload={handleUpload}
           onDrop={onDrop}
-        />
-        <Snackbar
-          open={this.state.snack.open}
-          message={this.state.snack.message}
-          autoHideDuration={3000}
-          onRequestClose={() => this.setState({
-            snack: {
-              open: false
-            }
-          })}
         />
       </div>
     );
