@@ -1,6 +1,14 @@
 import React, { Component } from "react";
+
+// material
 import Chip from 'material-ui/Chip';
+
+// router
 import { Link } from "react-router-dom";
+
+// store
+import { connect } from "react-redux";
+
 /* import IconButton from 'material-ui/IconButton';
  * import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';*/
 
@@ -17,7 +25,7 @@ class DirBox extends Component {
         display: 'flex',
         flexWrap: 'wrap',
       }
-    }
+    };
   }
 
   renderDir(dir) {
@@ -35,12 +43,23 @@ class DirBox extends Component {
   }
 
   render() {
+    const { dir_id } = this.props;
+    const dirs = this.props.state.files
+          .filter(f => f.is_dir)
+          .filter(d => d.id <= Number(dir_id));
+
     return (
       <div className="dir-box" style={this.styles.wrapper}>
-        {this.props.dirs.map(dir => this.renderDir(dir))}
+        {dirs.map(dir => this.renderDir(dir))}
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {state};
+};
+
+DirBox = connect(mapStateToProps)(DirBox);
 
 export default DirBox;

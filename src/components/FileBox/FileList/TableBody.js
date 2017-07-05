@@ -1,10 +1,19 @@
 import React, { Component } from "react";
+
+// DnD
 import withDragDropContext from "./withDragDropContext";
 import { NativeTypes } from 'react-dnd-html5-backend';
+
+// store
+import { connect } from "react-redux";
+
+// app components
 import TableBodyWrapper from "./TableBodyWrapper";
-import moment from "moment";
 import Dir from "./Dir";
 import File from "./File";
+
+// datetime
+import moment from "moment";
 
 class TableBody extends Component {
   constructor(props) {
@@ -30,12 +39,13 @@ class TableBody extends Component {
 
   render() {
     const {
-      files,
       onDeleteClick,
       onDeleteDone,
       moveFile,
       onMoveDone
     } = this.props;
+
+    const files = this.props.state.files;
 
     const renderRow = (file, idx) => {
       if (file.is_dir) {
@@ -68,4 +78,9 @@ class TableBody extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {state};
+};
+
+TableBody = connect(mapStateToProps)(TableBody);
 export default withDragDropContext(TableBody);
