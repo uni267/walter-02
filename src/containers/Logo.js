@@ -3,18 +3,27 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
+// components
 import Logo from "../components/Logo/";
 import AppMenu from "../components/AppMenu/";
 import Account from "../components/Account/";
 
+// actions
+import { toggleAccount, toggleMenu } from "../actions";
+
 class LogoContainer extends Component {
   render() {
-    const { menu, account } = this.props;
+    const { menu, account, onAccountClick, onMenuIconClick } = this.props;
+
     return (
       <div>
-        <Logo />
+        <Logo
+          onAccountClick={onAccountClick}
+          onMenuIconClick={onMenuIconClick} />
         <AppMenu open={menu.open} />
-        <Account account={account} />
+        <Account 
+          account={account}
+          onAccountClick={onAccountClick} />
       </div>
     );
   }
@@ -27,5 +36,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-LogoContainer = connect(mapStateToProps)(LogoContainer);
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  onAccountClick: () => { dispatch(toggleAccount()) },
+  onMenuIconClick: () => { dispatch(toggleMenu()) }
+});
+
+LogoContainer = connect(mapStateToProps, mapDispatchToProps)(LogoContainer);
 export default LogoContainer;

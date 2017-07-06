@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// store
-import { connect } from "react-redux";
-
 // material
 import Dialog from "material-ui/Dialog";
 import FontIcon from "material-ui/FontIcon";
@@ -12,17 +9,17 @@ import Divider from "material-ui/Divider";
 
 class Account extends Component {
   render() {
-    const { account, dispatch } = this.props;
+    const { account } = this.props;
 
     const actions = [
         <FlatButton
       label="close"
-      onTouchTap={() => dispatch({ type: "TOGGLE_ACCOUNT" })}
+      onTouchTap={this.props.onAccountClick}
         />,
       <FlatButton
         label="save"
         primary={true}
-        onTouchTap={() => dispatch({ type: "TOGGLE_ACCOUNT" })}
+        onTouchTap={this.props.onAccountClick}
         />
         ];
 
@@ -32,7 +29,7 @@ class Account extends Component {
         modal={true}
         actions={actions} 
         open={account.open}
-        onRequestClose={() => dispatch({ type: "TOGGLE_ACCOUNT" })}
+        onRequestClose={this.props.onAccountClick}
         >
         <TextField
           hintText=""
@@ -53,5 +50,4 @@ class Account extends Component {
   }
 }
 
-  Account = connect()(Account);
 export default Account;

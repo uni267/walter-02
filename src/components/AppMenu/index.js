@@ -8,16 +8,20 @@ const AppMenu = ({open}) => {
     {name: "管理コンソール"},
   ];
 
+  const renderMenu = (menu, idx) => {
+    return <MenuItem key={idx} primaryText={menu.name} />;
+  };
+    
   return (
     <div className="menu">
       <Drawer
         open={open}
         width={200}
         openSecondary={true}>
-        {menus.map( (menu, idx) => <MenuItem key={idx} primaryText={menu.name} />)}
-    </Drawer>
-      </div>
+        {menus.map( (menu, idx) => renderMenu(menu, idx) )}
+      </Drawer>
+    </div>
   );
-}
+};
 
 export default AppMenu;

@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// store
-import { connect } from "react-redux";
-
 // material
 import AppBar from "material-ui/AppBar";
 import IconMenu from "material-ui/IconMenu";
@@ -40,10 +37,6 @@ class Logo extends Component {
       <Avatar src="images/shikata.jpg" />
     );
 
-    const toggleAccount = () => {
-      this.props.dispatch({ type: "TOGGLE_ACCOUNT" });
-    };
-
     const right_elements = (
       <div>
         <IconButton style={styles.small} iconStyle={styles.smallIcon}>
@@ -54,28 +47,25 @@ class Logo extends Component {
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
           <MenuItem primaryText="user01" leftIcon={avatar_icon} disabled={true} />
           <Divider />
-          <MenuItem primaryText="アカウント情報変更" onTouchTap={toggleAccount} />
+          <MenuItem
+            primaryText="アカウント情報変更"
+            onTouchTap={this.props.onAccountClick} />
           <Divider />
           <MenuItem primaryText="ログアウト" />
         </IconMenu>
       </div>
     );
 
-    const toggleMenu = () => {
-      this.props.dispatch({type: "TOGGLE_MENU"});
-    };
-
     return (
       <div className="logo">
         <AppBar
           title={title}
           iconElementRight={right_elements}
-          onLeftIconButtonTouchTap={toggleMenu}
+          onLeftIconButtonTouchTap={this.props.onMenuIconClick}
           />
       </div>
     );
   }
 }
 
-Logo = connect()(Logo);
 export default Logo;
