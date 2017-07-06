@@ -4,8 +4,8 @@ import React, { Component } from "react";
 import Menu from "material-ui/Menu";
 
 // components
-import AddFileDialog from "../components/FileAction/AddFileDialog";
-import AddDirDialog from "../components/FileAction/AddDirDialog";
+import AddFileDialog from "../components/AddFileDialog";
+import AddDirDialog from "../components/AddDirDialog";
 
 class FileActionContainer extends Component {
 

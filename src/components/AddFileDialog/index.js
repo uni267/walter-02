@@ -45,7 +45,7 @@ class AddFileDialog extends Component {
           name: f.name,
           modified: moment().format("YYYY-MM-DD HH:mm"),
           owner: "user01",
-          dir_id: Number(this.props.dir_id),
+          dir_id: Number(this.props.dir_id.dir_id),
           is_dir: false,
           is_display: true
         };
@@ -53,7 +53,6 @@ class AddFileDialog extends Component {
         _files.push(push_file);
       });
 
-      console.log(Number(this.props.dir_id));
       this.setState({ files: _files });
     };
 
