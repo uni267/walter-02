@@ -2,9 +2,9 @@ import React, { Component } from "react";
 
 // material
 import Dialog from "material-ui/Dialog";
-// import IconButton from "material-ui/IconButton";
+import IconButton from "material-ui/IconButton";
 import FlatButton from "material-ui/FlatButton";
-// import ActionInfo from "material-ui/svg-icons/action/info";
+import ActionDelete from "material-ui/svg-icons/action/delete";
 
 // store
 import { connect } from "react-redux";
@@ -59,9 +59,9 @@ class DeleteIcon extends Component {
 
     return (
       <div>
-        <span onClick={() => this.setState({open: true})}>
-          delete
-        </span>
+        <IconButton onClick={() => this.setState({open: true})}>
+          <ActionDelete />
+        </IconButton>
         <Dialog
           title={`${file.name}を削除しますか？`}
           modal={false}

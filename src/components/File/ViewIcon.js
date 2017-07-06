@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Dialog from "material-ui/Dialog";
-// import IconButton from "material-ui/IconButton";
+import IconButton from "material-ui/IconButton";
 import FlatButton from "material-ui/FlatButton";
-// import ActionInfo from "material-ui/svg-icons/action/info";
+import ActionInfo from "material-ui/svg-icons/action/info";
 
 class ViewIcon extends Component {
   constructor(props) {
@@ -38,9 +38,9 @@ class ViewIcon extends Component {
 
     return (
       <div>
-        <span onClick={() => this.setState({open: true})}>
-          view | 
-        </span>
+        <IconButton onClick={() => this.setState({open: true})} >
+          <ActionInfo />
+        </IconButton>
 
         <Dialog
           title="ファイル詳細"
