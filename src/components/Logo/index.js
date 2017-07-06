@@ -10,6 +10,8 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from "material-ui/MenuItem";
 import ActionAccountCircle from "material-ui/svg-icons/action/account-circle";
 import SocialNotificationsNone from "material-ui/svg-icons/social/notifications-none.js";
+import Divider from 'material-ui/Divider';
+import Avatar from "material-ui/Avatar";
 
 class Logo extends Component {
   render() {
@@ -34,6 +36,10 @@ class Logo extends Component {
       </IconButton>
     );
 
+    const avatar_icon = (
+      <Avatar src="images/shikata.jpg" />
+    );
+
     const toggleAccount = () => {
       this.props.dispatch({ type: "TOGGLE_ACCOUNT" });
     };
@@ -46,7 +52,10 @@ class Logo extends Component {
         <IconMenu
           iconButtonElement={account_icon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
+          <MenuItem primaryText="user01" leftIcon={avatar_icon} />
+          <Divider />
           <MenuItem primaryText="アカウント情報変更" onTouchTap={toggleAccount} />
+          <Divider />
           <MenuItem primaryText="ログアウト" />
         </IconMenu>
       </div>

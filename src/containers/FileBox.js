@@ -34,7 +34,7 @@ class FileBox extends Component {
         return file.name.match(re) !== null ||
           file.modified.match(re) !== null ||
           file.owner.match(re) !== null;
-      });        
+      }).filter(file => file.is_display);
     }
 
     return (
