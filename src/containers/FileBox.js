@@ -16,6 +16,10 @@ import FileListBody from "../components/FileListBody";
 import FileSnackbar from "../components/FileSnackbar";
 
 class FileBox extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     const { files, dir_id, snackbar } = this.props;
 

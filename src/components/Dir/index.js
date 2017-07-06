@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { DropTarget } from 'react-dnd';
 import { Link } from "react-router-dom";
 
+// material
+import Checkbox from 'material-ui/Checkbox';
+
 const style = {
   row: {
     display: "flex",
@@ -16,6 +19,7 @@ const style = {
     height: 48,
     textAlign: "left",
     fontSize: 13,
+    fontFamily: "Roboto sans-serif",
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
@@ -39,7 +43,10 @@ class Dir extends Component {
 
     return connectDropTarget(
       <div style={{...style.row, backgroundColor}}>
-        <div style={{...style.cell, width: "50%"}}>
+        <div style={{...style.cell, width: "1%"}}>
+          <Checkbox />
+        </div>
+        <div style={{...style.cell, width: "49%"}}>
           <Link to={`/?dir_id=${dir.id}`}>{dir.name}</Link>
         </div>
         <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>

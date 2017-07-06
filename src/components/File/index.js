@@ -7,6 +7,7 @@ import { DragSource } from "react-dnd";
 import ViewIcon from "./ViewIcon";
 import EditIcon from "./EditIcon";
 import DeleteIcon from "./DeleteIcon";
+import Checkbox from 'material-ui/Checkbox';
 
 const style = {
   row: {
@@ -23,6 +24,7 @@ const style = {
     height: 48,
     textAlign: "left",
     fontSize: 13,
+    fontFamily: "Roboto sans-serif",
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
@@ -54,7 +56,10 @@ class File extends Component {
 
     return connectDragSource(
       <div style={{...style.row, opacity}}>
-        <div style={{...style.cell, width: "50%"}}>{file.name}</div>
+        <div style={{...style.cell, width: "1%"}}>
+          <Checkbox />
+        </div>
+        <div style={{...style.cell, width: "49%"}}>{file.name}</div>
         <div style={{...style.cell, width: "15%"}}>{file.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
         <div style={{...style.cell, width: "20%"}}>
