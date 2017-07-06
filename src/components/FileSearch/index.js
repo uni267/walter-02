@@ -1,24 +1,22 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import TextField from "material-ui/TextField";
 
 class FileSearch extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchText: ""
-    };
-  }
-
   render() {
+    const { search } = this.props;
+
     const handleChange = (e) => {
-      this.setState({ searchText: e.target.value });
-      console.log(this.state.searchText);
+      this.props.dispatch({
+        type: "SEARCH",
+        value: e.target.value
+      });
     };
 
     return (
       <div className="file-search">
         <TextField
-          value={this.state.searchText}
+          value={search.value}
           onChange={handleChange}
           hintText=""
           floatingLabelText="search"
@@ -28,4 +26,5 @@ class FileSearch extends Component {
   }
 };
 
+FileSearch = connect()(FileSearch);
 export default FileSearch;

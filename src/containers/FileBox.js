@@ -16,21 +16,26 @@ import FileListBody from "../components/FileListBody";
 import FileSnackbar from "../components/FileSnackbar";
 
 class FileBox extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
-    const { files, dir_id, snackbar } = this.props;
+    const { files, dir_id, snackbar, search } = this.props;
 
-    // @todo visibilityFilterで実装する
-    const _files = files.filter(file => {
+    let _files = files.filter(file => {
       return (file.is_display && Number(file.dir_id) === Number(dir_id));
     });
 
     const _dirs = files.filter(f => f.is_dir)
           .filter(f => Number(f.id) <= Number(dir_id))
           .sort( (a, b) => a.id > b.id);
+
+    if (search.value.trim() !== '') {
+      const re = new RegExp(search.value);
+
+      _files = files.filter(file => {
+        return file.name.match(re) !== null ||
+          file.modified.match(re) !== null ||
+          file.owner.match(re) !== null;
+      });        
+    }
 
     return (
       <div className="file-box">
@@ -39,7 +44,7 @@ class FileBox extends Component {
             <DirBox dirs={_dirs} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
-            <FileSearch />
+            <FileSearch search={search} />
           </Col>
         </Row>
         <Row>
@@ -63,7 +68,8 @@ class FileBox extends Component {
 const mapStateToProps = (state) => {
   return {
     files: state.files,
-    snackbar: state.snackbar
+    snackbar: state.snackbar,
+    search: state.search
   };
 };
 

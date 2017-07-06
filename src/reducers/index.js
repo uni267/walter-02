@@ -114,11 +114,23 @@ const snackbar = (state = initial_snackbar, action) => {
   }
 };
 
+const search = (state = {value: ''}, action) => {
+  switch (action.type) {
+  case "SEARCH":
+    return {
+      value: action.value
+    };
+  default:
+    return state;
+  }
+};
+
 const fileApp = combineReducers({
   files,
   app_menu,
   snackbar,
-  visibilityFilter
+  visibilityFilter,
+  search
 });
 
 export default fileApp;
