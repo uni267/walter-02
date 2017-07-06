@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { Row, Col } from 'react-flexbox-grid';
 
 // app components
-import FileAction from "../components/FileAction";
+import FileActionContainer from "./FileAction";
 import FileSearch from "../components/FileSearch";
 import DirBox from "../components/DirBox";
 // import FileList from "../components/FileList";
@@ -48,7 +48,7 @@ class FileBox extends Component {
             <FileSnackbar state={snackbar} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
-            <FileAction dir_id={dir_id} />
+            <FileActionContainer dir_id={dir_id} />
           </Col>
         </Row>
       </div>

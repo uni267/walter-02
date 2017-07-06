@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
 import FILES from "../mock-files";
 
+import moment from "moment";
+
 const visibilityFilter = (state = "SHOW_ALL", action) => {
   switch (action.type) {
   case "SET_VISIBILITY_FILTER":
@@ -25,6 +27,21 @@ const files = (state = FILES, action) => {
         is_dir: action.is_dir,
         dir_id: action.dir_id,
         is_display: action.is_display
+      }
+    ];
+
+  case "ADD_DIR":
+    let next_dir_id = state.slice().sort((a, b) => a.id < b.id)[0].id + 1;
+    return [
+      ...state,
+      {
+        id: next_dir_id,
+        name: action.name,
+        dir_id: action.dir_id,
+        modified: moment().format("YYYY-MM-DD HH:mm"),
+        owner: "user01",
+        is_dir: true,
+        is_display: true
       }
     ];
 

@@ -14,32 +14,46 @@ import moment from "moment";
 
 // app
 import AddFileDialog from "./AddFileDialog";
-
+import AddDirDialog from "./AddDirDialog";
 
 class FileAction extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      open: false,
-      files: []
+      file: {
+        open: false,
+        files: []
+      },
+      dir: {
+        open: false
+      }
     };
+
   }
 
   render() {
     const upload_button = <FileCloudUpload />;
     const create_folder_button = <FileCreateNewFolder />;
 
-    const handleOpen = () => {
-      this.setState({ open: true });
+    const handleFileOpen = () => {
+      this.setState({ file: { open: true, files: [] }});
     };
 
-    const handleClose = () => {
-      this.setState({open: false, files: []});
+    const handleDirOpen = () => {
+      this.setState({ dir: { open: true }});
+    };
+
+    const handleFileClose = () => {
+      this.setState({ file: { open: false, files: [] }});
+    };
+
+    const handleDirClose = () => {
+      this.setState({ dir: { open: false }});
     };
 
     const handleUpload = () => {
-      this.setState({open: false});
+      this.setState({ file: { open: false }});
       this.state.files.forEach(file => {
         this.props.dispatch({
           type: "ADD_FILE",
@@ -57,11 +71,15 @@ class FileAction extends Component {
         });
       });
 
-      this.setState({ files: [] });
+      this.setState({ file: { files: [] }});
+    };
+
+    const handleDirCreate = (e) => {
+      console.log(e);
     };
 
     const onDrop = (files) => {
-      let _files = this.state.files.slice();
+      let _files = this.state.file.files.slice();
 
       files.forEach(f => {
         const push_file = {
@@ -75,7 +93,7 @@ class FileAction extends Component {
 
         _files.push(push_file);
       });
-      this.setState({ files: _files });
+      this.setState({ file: { files: _files }});
     };
 
     return (
@@ -84,20 +102,25 @@ class FileAction extends Component {
           <MenuItem
             primaryText="ファイルをアップロード" 
             leftIcon={upload_button}
-            onTouchTap={handleOpen}
+            onTouchTap={handleFileOpen}
           />
           <MenuItem
             primaryText="新しいフォルダ"
             leftIcon={create_folder_button}
-            onTouchTap={() => console.log("@todo") }
+            onTouchTap={handleDirOpen}
           />
         </Menu>
         <AddFileDialog
-          files={this.state.files}
-          open={this.state.open}
-          handleClose={handleClose}
+          files={this.state.file.files}
+          open={this.state.file.open}
+          handleClose={handleFileClose}
           handleUpload={handleUpload}
           onDrop={onDrop}
+        />
+        <AddDirDialog
+          open={this.state.dir.open}
+          handleClose={handleDirClose}
+          handleCreate={handleDirCreate}
         />
       </div>
     );
