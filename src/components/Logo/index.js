@@ -52,7 +52,7 @@ class Logo extends Component {
         <IconMenu
           iconButtonElement={account_icon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-          <MenuItem primaryText="user01" leftIcon={avatar_icon} />
+          <MenuItem primaryText="user01" leftIcon={avatar_icon} disabled={true} />
           <Divider />
           <MenuItem primaryText="アカウント情報変更" onTouchTap={toggleAccount} />
           <Divider />
