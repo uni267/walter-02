@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// store
-import { connect } from "react-redux";
-
 // material
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
@@ -11,38 +8,26 @@ import MenuItem from "material-ui/MenuItem";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
 class AddDirDialog extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false
-    };
-  }
-
   render() {
     const handleCreate = (e) => {
       e.preventDefault();
       const dir_name = this.refs.dirName.getValue();
-      if (dir_name === "") this.setState({ open: false });
 
-      this.props.dispatch({
-        type: "ADD_DIR",
-        name: dir_name,
-        dir_id: this.props.dir_id.dir_id
-      });
+      if (dir_name === "") {
+        this.props.toggleAddDir();
+        return;
+      }
 
-      this.setState({ open: false });
-      this.props.dispatch({
-        type: "TRIGGER_SNACK",
-        message: `${dir_name}を作成しました`
-      });
-
+      this.props.createDir(dir_name);
+      this.props.toggleAddDir();
+      this.props.triggerSnackbar(`${dir_name}を作成しました`);
     };
 
     const actions = [
         <FlatButton
       label="Cancel"
       primary={true}
-      onTouchTap={() => this.setState({ open: false })}
+      onTouchTap={this.props.toggleAddDir}
         />,
 
       <FlatButton
@@ -58,26 +43,22 @@ class AddDirDialog extends Component {
         <MenuItem
           primaryText="新しいフォルダ"
           leftIcon={<FileCreateNewFolder />}
-          onTouchTap={() => this.setState({ open: true})}
-          />
+          onTouchTap={this.props.toggleAddDir} />
 
-          <Dialog
-            title="フォルダを作成"
-            actions={actions}
-            modal={false}
-            open={this.state.open}
-            onRequestClose={() => this.setState({ open: false })}
-            >
-            <TextField
-              ref="dirName"
-              hintText=""
-              floatingLabelText="フォルダ名"
-              />
-          </Dialog>
+        <Dialog
+          title="フォルダを作成"
+          actions={actions}
+          modal={false}
+          open={this.props.open}
+          onRequestClose={this.props.toggleAddDir} >
+          <TextField
+            ref="dirName"
+            hintText=""
+            floatingLabelText="フォルダ名" />
+        </Dialog>
       </div>
     );
   }
 }
 
-AddDirDialog = connect()(AddDirDialog);
 export default AddDirDialog;

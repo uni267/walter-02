@@ -136,13 +136,25 @@ const search = (state = {value: ''}, action) => {
   }
 };
 
+const add_dir = (state = { open: false }, action) => {
+  switch (action.type) {
+  case "TOGGLE_ADD_DIR":
+    return {
+      open: !state.open
+    };
+  default:
+    return state;
+  }
+};
+
 const fileApp = combineReducers({
   files,
   app_menu,
   account,
   snackbar,
   visibilityFilter,
-  search
+  search,
+  add_dir
 });
 
 export default fileApp;
