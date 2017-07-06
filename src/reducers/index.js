@@ -91,6 +91,17 @@ const app_menu = (state = initial_app_menu, action) => {
   }
 };
 
+const account = (state = { open: false }, action) => {
+  switch (action.type) {
+  case "TOGGLE_ACCOUNT":
+    return {
+      open: !state.open
+    };
+  default:
+    return state;
+  }
+};
+
 const initial_snackbar = {
   open: false,
   message: "initialize",
@@ -128,6 +139,7 @@ const search = (state = {value: ''}, action) => {
 const fileApp = combineReducers({
   files,
   app_menu,
+  account,
   snackbar,
   visibilityFilter,
   search

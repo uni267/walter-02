@@ -5,7 +5,9 @@ import { connect } from "react-redux";
 
 // material
 import AppBar from "material-ui/AppBar";
+import IconMenu from "material-ui/IconMenu";
 import IconButton from 'material-ui/IconButton';
+import MenuItem from "material-ui/MenuItem";
 import ActionAccountCircle from "material-ui/svg-icons/action/account-circle";
 import SocialNotificationsNone from "material-ui/svg-icons/social/notifications-none.js";
 
@@ -26,14 +28,27 @@ class Logo extends Component {
     };
 
     const title = "walter";
+    const account_icon = (
+      <IconButton style={styles.small} iconStyle={styles.smallIcon}>
+        <ActionAccountCircle />
+      </IconButton>
+    );
+
+    const toggleAccount = () => {
+      this.props.dispatch({ type: "TOGGLE_ACCOUNT" });
+    };
+
     const right_elements = (
       <div>
         <IconButton style={styles.small} iconStyle={styles.smallIcon}>
           <SocialNotificationsNone />
         </IconButton>
-        <IconButton style={styles.small} iconStyle={styles.smallIcon}>
-          <ActionAccountCircle />
-        </IconButton>
+        <IconMenu
+          iconButtonElement={account_icon}
+          anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
+          <MenuItem primaryText="アカウント情報変更" onTouchTap={toggleAccount} />
+          <MenuItem primaryText="ログアウト" />
+        </IconMenu>
       </div>
     );
 
