@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 // material
 import Checkbox from 'material-ui/Checkbox';
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
+import ActionFavorite from 'material-ui/svg-icons/action/favorite';
+import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
 const style = {
   row: {
@@ -33,7 +35,13 @@ const style = {
   dir_icon: {
     padding: 0,
     marginRight: 10
+  },
+  checkbox: {
+    display: "flex",
+    margin: 0,
+    padding: 0
   }
+
 };
 
 const fileTarget = {
@@ -61,12 +69,29 @@ class Dir extends Component {
     const isActive = canDrop && isOver;
     let backgroundColor = isActive || this.state.checked ? "#ddd" : "#fff";
 
+    const favorite_icon = (
+      <ActionFavorite />
+    );
+
+    const favorite_icon_border = (
+      <ActionFavoriteBorder />
+    );
+
     return connectDropTarget(
       <div style={{...style.row, backgroundColor}}>
-        <div style={{...style.cell, width: "1%"}}>
-          <Checkbox onCheck={onClickCheckBox} />
+        <div style={{...style.cell, width: "5%"}}>
+          <Checkbox
+            style={style.checkbox}
+            onCheck={onClickCheckBox} />
+
+          <Checkbox
+            disabled={true}
+            style={style.checkbox}
+            checkedIcon={favorite_icon}
+            uncheckedIcon={favorite_icon_border} />
+
         </div>
-        <div style={{...style.cell, width: "49%"}}>
+        <div style={{...style.cell, width: "45%"}}>
           <FileFolderOpen style={style.dir_icon} />
           <Link to={`/?dir_id=${dir.id}`} style={style.dir}>
             {dir.name}
