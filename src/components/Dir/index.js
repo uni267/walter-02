@@ -43,17 +43,28 @@ const fileTarget = {
 };
 
 class Dir extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      checked: false
+    };
+  }
+
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
     const { dir } = this.props;
 
+    const onClickCheckBox = () => {
+      this.setState({ checked: !this.state.checked });
+    };
+
     const isActive = canDrop && isOver;
-    let backgroundColor = isActive ? "#ddd" : "#fff";
+    let backgroundColor = isActive || this.state.checked ? "#ddd" : "#fff";
 
     return connectDropTarget(
       <div style={{...style.row, backgroundColor}}>
         <div style={{...style.cell, width: "1%"}}>
-          <Checkbox />
+          <Checkbox onCheck={onClickCheckBox} />
         </div>
         <div style={{...style.cell, width: "49%"}}>
           <FileFolderOpen style={style.dir_icon} />
