@@ -42,7 +42,8 @@ class FileListBody extends Component {
             file={file}
             moveFile={this.moveFile}
             deleteFile={this.props.deleteFile}
-            triggerSnackbar={this.props.triggerSnackbar} />
+            triggerSnackbar={this.props.triggerSnackbar}
+            toggleStar={this.props.toggleStar} />
     );
 
     return file.is_dir ? dir_component : file_component;

@@ -9,6 +9,8 @@ import IconMenu from "material-ui/IconMenu";
 import IconButton from "material-ui/IconButton";
 import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import MenuItem from "material-ui/MenuItem";
+import ActionFavorite from 'material-ui/svg-icons/action/favorite';
+import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
 // components
 import EditIcon from "./EditIcon";
@@ -35,6 +37,12 @@ const style = {
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
     backgroundColor: "inherit"
+  },
+
+  checkbox: {
+    display: "flex",
+    margin: 0,
+    padding: 0
   }
 };
 
@@ -63,6 +71,16 @@ class File extends Component {
     };
   }
 
+  onClickStar(file) {
+    this.props.toggleStar(file);
+
+    const message = file.is_star
+          ? `${file.name}をマーク解除しました`
+          : `${file.name}をマークしました`;
+
+    this.props.triggerSnackbar(message);
+  }
+
   render() {
     const { isDragging, connectDragSource, file, onDeleteDone } = this.props;
 
@@ -79,14 +97,35 @@ class File extends Component {
       </IconButton>
     );
 
+    const favorite_icon = (
+      <ActionFavorite />
+    );
+
+    const favorite_icon_border = (
+      <ActionFavoriteBorder />
+    );
+
     return connectDragSource(
       <div style={{...style.row, opacity, backgroundColor}}>
-        <div style={{...style.cell, width: "1%"}}>
-          <Checkbox onCheck={onClickCheckBox} />
+        <div style={{...style.cell, width: "5%"}}>
+          <Checkbox
+            style={style.checkbox}
+            onCheck={onClickCheckBox} />
+
+          <Checkbox
+            style={style.checkbox}
+            checkedIcon={favorite_icon}
+            uncheckedIcon={favorite_icon_border}
+            data-file={file}
+            onCheck={() => this.onClickStar(file)} />
         </div>
-        <div style={{...style.cell, width: "49%"}}>{file.name}</div>
+
+        <div style={{...style.cell, width: "45%"}}>{file.name}</div>
+
         <div style={{...style.cell, width: "15%"}}>{file.modified}</div>
+
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
+
         <div style={{...style.cell, width: "20%"}}>
           <EditIcon file={file} />
           <DeleteIcon file={file}

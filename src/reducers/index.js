@@ -26,7 +26,8 @@ const files = (state = FILES, action) => {
         owner: "user01",
         is_dir: false,
         dir_id: action.dir_id,
-        is_display: true
+        is_display: true,
+        is_star: false
       }
     ];
 
@@ -41,9 +42,19 @@ const files = (state = FILES, action) => {
         modified: moment().format("YYYY-MM-DD HH:mm"),
         owner: "user01",
         is_dir: true,
-        is_display: true
+        is_display: true,
+        is_star: false
       }
     ];
+
+  case "TOGGLE_STAR":
+    return state.map(file => {
+      if (file.id === action.file_id) {
+        return {...file, is_star: !file.is_star};
+      } else {
+        return file;
+      }
+    });
 
   case "DELETE_FILE":
     return state.filter(file => file.id !== action.file.id);

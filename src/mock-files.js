@@ -15,7 +15,8 @@ const FILES = [
     owner: "user01",
     is_dir: false,
     dir_id: 0,
-    is_display: true
+    is_display: true,
+    is_star: false
   },
   {
     id: 2,
@@ -24,7 +25,8 @@ const FILES = [
     owner: "user01",
     is_dir: false,
     dir_id: 0,
-    is_display: true
+    is_display: true,
+    is_star: false
   },
   {
     id: 3,
@@ -33,7 +35,8 @@ const FILES = [
     owner: "user01",
     is_dir: false,
     dir_id: 0,
-    is_display: true
+    is_display: true,
+    is_star: true
   },
   {
     id: 4,
@@ -42,7 +45,8 @@ const FILES = [
     owner: "user01",
     is_dir: true,
     dir_id: 0,
-    is_display: true
+    is_display: true,
+    is_star: false
   }
 ];
 
