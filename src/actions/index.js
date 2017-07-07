@@ -61,3 +61,8 @@ export const sortFile = (sorted, desc) => ({
   desc: desc
 });
 
+export const moveFile = (dir_id, file_id) => ({
+  type: "MOVE_FILE",
+  dir_id: dir_id,
+  file_id: file_id
+});

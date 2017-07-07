@@ -34,10 +34,9 @@ class FileListHeader extends Component {
   render() {
     const onSortClick = (e) => {
       const target = e.target.dataset.sortKey;
-      let { sorted, desc } = this.props.fileSortTarget;
       if (target === undefined) return;
 
-      if (sorted !== target) {
+      if (this.props.fileSortTarget.sorted !== target) {
         this.props.setSortTarget(target);
       } else {
         this.props.toggleSortTarget();

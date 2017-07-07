@@ -21,9 +21,10 @@ import {
   toggleSortTarget,
   sortFile,
   triggerSnackbar,
-  closeSnackbar
+  closeSnackbar,
+  addFile,
+  moveFile
 } from "../actions";
-
 
 class FileBox extends Component {
   render() {
@@ -64,7 +65,11 @@ class FileBox extends Component {
 
             <FileListBody
               dir_id={this.props.dir_id}
-              files={_files} />
+              files={_files}
+              addFile={this.props.addFile}
+              moveFile={this.props.moveFile}
+              triggerSnackbar={this.props.triggerSnackbar}
+              />
 
             <FileSnackbar
               closeSnackbar={this.props.closeSnackbar}
@@ -98,7 +103,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
-  closeSnackbar: () => { dispatch(closeSnackbar()); }
+  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
+  closeSnackbar: () => { dispatch(closeSnackbar()); },
+  addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
+  moveFile: (dir_id, file_id) => { dispatch(moveFile(dir_id, file_id)); }
 });
 
 const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);
