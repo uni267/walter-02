@@ -14,25 +14,18 @@ import FileListHeader from "../components/FileListHeader";
 import FileListBody from "../components/FileListBody";
 import FileSnackbar from "../components/FileSnackbar";
 
+// actions
 import { searchFile } from "../actions";
 
 
 class FileBox extends Component {
   render() {
-    const { files, dir_id, snackbar, search } = this.props;
-
-    let _files = files.filter(file => {
-      return (file.is_display && Number(file.dir_id) === Number(dir_id));
-    });
-
-    const _dirs = files.filter(f => f.is_dir)
-          .filter(f => Number(f.id) <= Number(dir_id))
-          .sort( (a, b) => a.id > b.id);
+    let _files = this.props.files.slice();
 
     if (this.props.searchWord.value.trim() !== '') {
       const re = new RegExp(this.props.searchWord.value);
 
-      _files = files.filter(file => {
+      _files = this.props.files.filter(file => {
         return file.name.match(re) !== null ||
           file.modified.match(re) !== null ||
           file.owner.match(re) !== null;
@@ -43,7 +36,7 @@ class FileBox extends Component {
       <div className="file-box">
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
-            <DirBox dirs={_dirs} />
+            <DirBox dirs={this.props.dirs} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
             <FileSearch
@@ -57,11 +50,11 @@ class FileBox extends Component {
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
             <FileListHeader />
-            <FileListBody dir_id={dir_id} files={_files} />
-            <FileSnackbar state={snackbar} />
+            <FileListBody dir_id={this.props.dir_id} files={_files} />
+            <FileSnackbar state={this.props.snackbar} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
-            <FileActionContainer dir_id={dir_id} />
+            <FileActionContainer dir_id={this.props.dir_id} />
           </Col>
         </Row>
       </div>
@@ -69,11 +62,15 @@ class FileBox extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   return {
-    files: state.files,
     snackbar: state.snackbar,
-    searchWord: state.searchFile
+    searchWord: state.searchFile,
+    files: state.files.filter(f => f.is_display)
+      .filter(f => Number(f.dir_id) === Number(ownProps.dir_id)),
+    dirs: state.files.filter(f => f.is_dir)
+      .filter(f => Number(f.id) <= Number(ownProps.dir_id))
+      .sort( (a, b) => a.id > b.id)
   };
 };
 
