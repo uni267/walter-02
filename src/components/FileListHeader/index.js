@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// store
-import { connect } from "react-redux";
-
 const style = {
   row: {
     display: "flex",
@@ -25,46 +22,31 @@ const style = {
   }
 };
 
+const headers = [
+  {key: "checkbox", width: "1%", label: ""},
+  {key: "name", width: "49%", label: "名前"},
+  {key: "modified", width: "15%", label: "最終更新"},
+  {key: "owner", width: "15%", label: "所有者"},
+  {key: false, width: "20%", label: "Action"},
+];
+
 class FileListHeader extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      sort: {
-        sorted: null,
-        desc: false
-      }
-    };
-  }
-
   render() {
-    const { dispatch } = this.props;
-    const headers = [
-      {key: "checkbox", width: "1%", label: ""},
-      {key: "name", width: "49%", label: "名前"},
-      {key: "modified", width: "15%", label: "最終更新"},
-      {key: "owner", width: "15%", label: "所有者"},
-      {key: false, width: "20%", label: "Action"},
-    ];
-
     const onSortClick = (e) => {
       const target = e.target.dataset.sortKey;
-      const { sorted, desc } = this.state.sort;
+      let { sorted, desc } = this.props.fileSortTarget;
       if (target === undefined) return;
 
       if (sorted !== target) {
-        this.setState({sort: {sorted: target, desc: true}});
-      }
-
-      if (sorted === target && desc) {
-        this.setState({sort: {sorted: target, desc: false}});
+        this.props.setSortTarget(target);
       } else {
-        this.setState({sort: {sorted: target, desc: true}});
+        this.props.toggleSortTarget();
       }
 
-      dispatch({
-        type: "SORT_FILE",
-        sort: this.state.sort
-      });
+      this.props.sortFile(
+        this.props.fileSortTarget.sorted, 
+        this.props.fileSortTarget.desc
+      );
     };
 
     return (
@@ -84,5 +66,4 @@ class FileListHeader extends Component {
   }
 }
 
-FileListHeader = connect()(FileListHeader);
 export default FileListHeader;

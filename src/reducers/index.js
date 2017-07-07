@@ -49,15 +49,13 @@ const files = (state = FILES, action) => {
     return state.filter(file => file.id !== action.file.id);
 
   case "SORT_FILE":
-    const { sort } = action;
-
     let _state = state.slice();
 
     _state.sort( (a, b) => {
-      if (sort.desc) {
-        return a[sort.sorted] > b[sort.sorted];
+      if (action.desc) {
+        return a[action.sorted] > b[action.sorted];
       } else {
-        return a[sort.sorted] < b[sort.sorted];
+        return a[action.sorted] < b[action.sorted];
       }
     });
 
@@ -177,6 +175,23 @@ const filesBuffer = (state = [], action) => {
   }
 };
 
+const fileSortTarget = (state = { sorted: null, desc: false }, action) => {
+  switch (action.type) {
+  case "SET_SORT_TARGET":
+    return {
+      sorted: action.sorted,
+      desc: !state.desc
+    };
+  case "TOGGLE_SORT_TARGET":
+    return {
+      sorted: state.sorted,
+      desc: !state.desc
+    };
+  default:
+    return state;
+  }
+};
+
 const fileApp = combineReducers({
   files,
   app_menu,
@@ -186,7 +201,8 @@ const fileApp = combineReducers({
   searchFile,
   add_dir,
   add_file,
-  filesBuffer
+  filesBuffer,
+  fileSortTarget
 });
 
 export default fileApp;

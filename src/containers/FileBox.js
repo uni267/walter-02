@@ -15,7 +15,12 @@ import FileListBody from "../components/FileListBody";
 import FileSnackbar from "../components/FileSnackbar";
 
 // actions
-import { searchFile } from "../actions";
+import {
+  searchFile,
+  setSortTarget,
+  toggleSortTarget,
+  sortFile
+} from "../actions";
 
 
 class FileBox extends Component {
@@ -49,7 +54,12 @@ class FileBox extends Component {
         </Row>
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
-            <FileListHeader />
+            <FileListHeader
+              setSortTarget={this.props.setSortTarget}
+              toggleSortTarget={this.props.toggleSortTarget}
+              fileSortTarget={this.props.fileSortTarget} 
+              sortFile={this.props.sortFile} />
+
             <FileListBody dir_id={this.props.dir_id} files={_files} />
             <FileSnackbar state={this.props.snackbar} />
           </Col>
@@ -66,6 +76,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     snackbar: state.snackbar,
     searchWord: state.searchFile,
+    fileSortTarget: state.fileSortTarget,
     files: state.files.filter(f => f.is_display)
       .filter(f => Number(f.dir_id) === Number(ownProps.dir_id)),
     dirs: state.files.filter(f => f.is_dir)
@@ -75,7 +86,10 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFile: (keyword) => { dispatch(searchFile(keyword)); }
+  searchFile: (keyword) => { dispatch(searchFile(keyword)); },
+  setSortTarget: (target) => { dispatch(setSortTarget(target)); },
+  toggleSortTarget: () => { dispatch(toggleSortTarget()); },
+  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); }
 });
 
 const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);

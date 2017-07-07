@@ -41,3 +41,18 @@ export const searchFile = (keyword) => ({
   type: "SEARCH_FILE",
   value: keyword
 });
+
+export const setSortTarget = (target) => ({
+  type: "SET_SORT_TARGET",
+  sorted: target
+});
+
+export const toggleSortTarget = () => ({
+  type: "TOGGLE_SORT_TARGET"
+});
+
+export const sortFile = (sorted, desc) => ({
+  type: "SORT_FILE",
+  sorted: sorted,
+  desc: desc
+});
