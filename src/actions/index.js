@@ -71,3 +71,4 @@ export const deleteFile = (file) => ({
   type: "DELETE_FILE",
   file: file
 });
+
