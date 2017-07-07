@@ -11,7 +11,14 @@ import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
 
 // actions
-import { toggleAddDir, createDir, triggerSnackbar } from "../actions";
+import {
+  toggleAddDir,
+  createDir,
+  triggerSnackbar,
+  toggleAddFile,
+  pushFileToBuffer,
+  addFile
+} from "../actions";
 
 class FileActionContainer extends Component {
 
@@ -19,12 +26,20 @@ class FileActionContainer extends Component {
     return (
       <div>
         <Menu>
-          <AddFileDialog dir_id={this.props.dir_id}/>
+          <AddFileDialog
+            dir_id={this.props.dir_id}
+            open={this.props.open_file}
+            toggleAddFile={this.props.toggleAddFile}
+            filesBuffer={this.props.filesBuffer}
+            pushFileToBuffer={this.props.pushFileToBuffer}
+            addFile={this.props.addFile}
+            triggerSnackbar={this.props.triggerSnackbar}
+            />
           <AddDirDialog
             dir_id={this.props.dir_id}
             toggleAddDir={this.props.toggleAddDir}
             createDir={this.props.createDir}
-            open={this.props.open}
+            open={this.props.open_dir}
             triggerSnackbar={this.props.triggerSnackbar}
             />
         </Menu>
@@ -35,14 +50,21 @@ class FileActionContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    open: state.add_dir.open
+    open_dir: state.add_dir.open,
+    open_file: state.add_file.open,
+    filesBuffer: state.filesBuffer
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  toggleAddDir: () => { dispatch(toggleAddDir()) },
-  createDir: (dir_name) => { dispatch(createDir(ownProps.dir_id, dir_name)) },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)) }
+  toggleAddDir: () => { dispatch(toggleAddDir()); },
+  createDir: (dir_name) => { dispatch(createDir(ownProps.dir_id, dir_name)); },
+  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
+  toggleAddFile: () => { dispatch(toggleAddFile()); },
+  pushFileToBuffer: (dir_id, file_name) => { 
+    dispatch(pushFileToBuffer(dir_id, file_name));
+  },
+  addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); }
 });
 
 FileActionContainer = connect(

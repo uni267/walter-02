@@ -22,11 +22,11 @@ const files = (state = FILES, action) => {
       {
         id: next_file_id,
         name: action.name,
-        modified: action.modified,
-        owner: action.owner,
-        is_dir: action.is_dir,
+        modified: moment().format("YYYY-MM-DD HH:mm"),
+        owner: "user01",
+        is_dir: false,
         dir_id: action.dir_id,
-        is_display: action.is_display
+        is_display: true
       }
     ];
 
@@ -147,6 +147,36 @@ const add_dir = (state = { open: false }, action) => {
   }
 };
 
+const add_file = (state = { open: false }, action) => {
+  switch (action.type) {
+  case "TOGGLE_ADD_FILE":
+    return {
+      open: !state.open
+    };
+  default:
+    return state;
+  }
+};
+
+const filesBuffer = (state = [], action) => {
+  switch (action.type) {
+  case "PUSH_FILE_TO_BUFFER":
+    return [
+      ...state,
+      {
+        name: action.name,
+        dir_id: action.dir_id,
+        modified: moment().format("YYYY-MM-DD HH:mm"),
+        owner: "user01",
+        is_dir: false,
+        is_display: true
+      }
+    ];
+  default:
+    return state;
+  }
+};
+
 const fileApp = combineReducers({
   files,
   app_menu,
@@ -154,7 +184,9 @@ const fileApp = combineReducers({
   snackbar,
   visibilityFilter,
   search,
-  add_dir
+  add_dir,
+  add_file,
+  filesBuffer
 });
 
 export default fileApp;
