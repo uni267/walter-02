@@ -6,14 +6,16 @@ import { connect } from "react-redux";
 // material grid
 import { Row, Col } from 'react-flexbox-grid';
 
-// app components
+// components
 import FileActionContainer from "./FileAction";
 import FileSearch from "../components/FileSearch";
 import DirBox from "../components/DirBox";
-// import FileList from "../components/FileList";
 import FileListHeader from "../components/FileListHeader";
 import FileListBody from "../components/FileListBody";
 import FileSnackbar from "../components/FileSnackbar";
+
+import { searchFile } from "../actions";
+
 
 class FileBox extends Component {
   render() {
@@ -27,8 +29,8 @@ class FileBox extends Component {
           .filter(f => Number(f.id) <= Number(dir_id))
           .sort( (a, b) => a.id > b.id);
 
-    if (search.value.trim() !== '') {
-      const re = new RegExp(search.value);
+    if (this.props.searchWord.value.trim() !== '') {
+      const re = new RegExp(this.props.searchWord.value);
 
       _files = files.filter(file => {
         return file.name.match(re) !== null ||
@@ -44,7 +46,9 @@ class FileBox extends Component {
             <DirBox dirs={_dirs} />
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
-            <FileSearch search={search} />
+            <FileSearch
+              searchWord={this.props.searchWord}
+              searchFile={this.props.searchFile} />
           </Col>
         </Row>
         <Row>
@@ -69,9 +73,13 @@ const mapStateToProps = (state) => {
   return {
     files: state.files,
     snackbar: state.snackbar,
-    search: state.search
+    searchWord: state.searchFile
   };
 };
 
-const FileBoxContainer = connect(mapStateToProps)(FileBox);
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  searchFile: (keyword) => { dispatch(searchFile(keyword)); }
+});
+
+const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);
 export default FileBoxContainer;

@@ -2,10 +2,8 @@ import React, { Component } from "react";
 
 // material
 import Dialog from "material-ui/Dialog";
-import FontIcon from "material-ui/FontIcon";
 import FlatButton from 'material-ui/FlatButton';
 import TextField from "material-ui/TextField";
-import Divider from "material-ui/Divider";
 
 class Account extends Component {
   render() {

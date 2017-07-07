@@ -125,9 +125,9 @@ const snackbar = (state = initial_snackbar, action) => {
   }
 };
 
-const search = (state = {value: ''}, action) => {
+const searchFile = (state = {value: ''}, action) => {
   switch (action.type) {
-  case "SEARCH":
+  case "SEARCH_FILE":
     return {
       value: action.value
     };
@@ -183,7 +183,7 @@ const fileApp = combineReducers({
   account,
   snackbar,
   visibilityFilter,
-  search,
+  searchFile,
   add_dir,
   add_file,
   filesBuffer

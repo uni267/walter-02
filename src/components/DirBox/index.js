@@ -3,33 +3,30 @@ import React, { Component } from "react";
 // router
 import { Link } from "react-router-dom";
 
-class DirBox extends Component {
-  constructor(props) {
-    super(props);
-    this.styles = {
-      wrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        marginTop: 10,
-        marginLeft: 20
-      },
-      dir_list: {
-        marginTop: 10,
-        marginLeft: 10,
-        padding: 10
-      },
-      dir: {
-        color: "#555",
-        fontSize: 18,
-        textDecoration: "none"
-      }
-    };
+const styles = {
+  wrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginTop: 10,
+    marginLeft: 20
+  },
+  dir_list: {
+    marginTop: 10,
+    marginLeft: 10,
+    padding: 10
+  },
+  dir: {
+    color: "#555",
+    fontSize: 18,
+    textDecoration: "none"
   }
+};
 
+class DirBox extends Component {
   renderDir(dir) {
     return (
-      <div key={dir.id} style={this.styles.dir_list}>
-        <Link to={`/?dir_id=${dir.id}`} style={this.styles.dir}>
+      <div key={dir.id} style={styles.dir_list}>
+        <Link to={`/?dir_id=${dir.id}`} style={styles.dir}>
           {dir.name}
         </Link>
       </div>
@@ -38,7 +35,7 @@ class DirBox extends Component {
 
   render() {
     return (
-      <div className="dir-box" style={this.styles.wrapper}>
+      <div className="dir-box" style={styles.wrapper}>
         {this.props.dirs.map((dir, idx) => this.renderDir(dir, idx))}
       </div>
     );

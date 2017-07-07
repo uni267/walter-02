@@ -4,14 +4,15 @@ import React, { Component } from "react";
 import { DragSource } from "react-dnd";
 
 // material
-import ViewIcon from "./ViewIcon";
-import EditIcon from "./EditIcon";
-import DeleteIcon from "./DeleteIcon";
 import Checkbox from 'material-ui/Checkbox';
 import IconMenu from "material-ui/IconMenu";
 import IconButton from "material-ui/IconButton";
 import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import MenuItem from "material-ui/MenuItem";
+
+// components
+import EditIcon from "./EditIcon";
+import DeleteIcon from "./DeleteIcon";
 
 const style = {
   row: {

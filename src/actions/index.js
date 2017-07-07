@@ -36,3 +36,8 @@ export const addFile = (dir_id, name) => ({
   dir_id: Number(dir_id),
   name: name
 });
+
+export const searchFile = (keyword) => ({
+  type: "SEARCH_FILE",
+  value: keyword
+});
