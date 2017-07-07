@@ -19,7 +19,9 @@ import {
   searchFile,
   setSortTarget,
   toggleSortTarget,
-  sortFile
+  sortFile,
+  triggerSnackbar,
+  closeSnackbar
 } from "../actions";
 
 
@@ -60,8 +62,14 @@ class FileBox extends Component {
               fileSortTarget={this.props.fileSortTarget} 
               sortFile={this.props.sortFile} />
 
-            <FileListBody dir_id={this.props.dir_id} files={_files} />
-            <FileSnackbar state={this.props.snackbar} />
+            <FileListBody
+              dir_id={this.props.dir_id}
+              files={_files} />
+
+            <FileSnackbar
+              closeSnackbar={this.props.closeSnackbar}
+              snackbar={this.props.snackbar} />
+
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
             <FileActionContainer dir_id={this.props.dir_id} />
@@ -89,7 +97,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFile: (keyword) => { dispatch(searchFile(keyword)); },
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
-  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); }
+  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
+  closeSnackbar: () => { dispatch(closeSnackbar()); }
 });
 
 const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);

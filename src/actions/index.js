@@ -21,6 +21,10 @@ export const triggerSnackbar = (message) => ({
   message: message
 });
 
+export const closeSnackbar = () => ({
+  type: "CLOSE_SNACK"
+});
+
 export const toggleAddFile = () => ({
   type: "TOGGLE_ADD_FILE"
 });
@@ -56,3 +60,4 @@ export const sortFile = (sorted, desc) => ({
   sorted: sorted,
   desc: desc
 });
+

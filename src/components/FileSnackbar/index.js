@@ -3,28 +3,17 @@ import React, { Component } from "react";
 // material
 import Snackbar from "material-ui/Snackbar";
 
-// store
-import { connect } from "react-redux";
-
-
 class FileSnackbar extends Component {
   render() {
-    const { state, dispatch } = this.props;
     return (
       <Snackbar
-        open={state.open}
-        message={state.message}
-        autoHideDuration={state.duration}
-        onRequestClose={() => {
-          dispatch({
-            type: "CLOSE_SNACK"
-          });
-        }}
-      />
+        open={this.props.snackbar.open}
+        message={this.props.snackbar.message}
+        autoHideDuration={this.props.snackbar.duration}
+        onRequestClose={this.props.closeSnackbar} />
     );    
   }
 }
 
-FileSnackbar = connect()(FileSnackbar);
 export default FileSnackbar;
 
