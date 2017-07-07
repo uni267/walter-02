@@ -23,7 +23,8 @@ import {
   triggerSnackbar,
   closeSnackbar,
   addFile,
-  moveFile
+  moveFile,
+  deleteFile
 } from "../actions";
 
 class FileBox extends Component {
@@ -69,7 +70,7 @@ class FileBox extends Component {
               addFile={this.props.addFile}
               moveFile={this.props.moveFile}
               triggerSnackbar={this.props.triggerSnackbar}
-              />
+              deleteFile={this.props.deleteFile} />
 
             <FileSnackbar
               closeSnackbar={this.props.closeSnackbar}
@@ -106,7 +107,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   closeSnackbar: () => { dispatch(closeSnackbar()); },
   addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
-  moveFile: (dir_id, file_id) => { dispatch(moveFile(dir_id, file_id)); }
+  moveFile: (dir_id, file_id) => { dispatch(moveFile(dir_id, file_id)); },
+  deleteFile: (file) => { dispatch(deleteFile(file)); }
 });
 
 const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);

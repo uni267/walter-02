@@ -75,7 +75,10 @@ class File extends Component {
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
         <div style={{...style.cell, width: "20%"}}>
           <EditIcon file={file} />
-          <DeleteIcon file={file} onDeleteDone={onDeleteDone} />
+          <DeleteIcon file={file}
+                      onDeleteDone={onDeleteDone}
+                      triggerSnackbar={this.props.triggerSnackbar}
+                      deleteFile={this.props.deleteFile} />
           <IconMenu
             iconButtonElement={action_menu_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>

@@ -6,9 +6,6 @@ import IconButton from "material-ui/IconButton";
 import FlatButton from "material-ui/FlatButton";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 
-// store
-import { connect } from "react-redux";
-
 class DeleteIcon extends Component {
   constructor(props) {
     super(props);
@@ -37,15 +34,8 @@ class DeleteIcon extends Component {
         primary={true}
         onTouchTap={(e) => {
           this.setState({ open: false });
-          dispatch({
-            type: "TRIGGER_SNACK",
-            message: `${file.name}を削除しました`
-          });
-
-          dispatch({
-            type: "DELETE_FILE",
-            file: file
-          });
+          this.props.deleteFile(this.props.file);
+          this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
         }}
       />,
       <FlatButton
@@ -55,15 +45,13 @@ class DeleteIcon extends Component {
       />
     ];
 
-    const { file, dispatch } = this.props;
-
     return (
       <div>
         <IconButton onClick={() => this.setState({open: true})}>
           <ActionDelete />
         </IconButton>
         <Dialog
-          title={`${file.name}を削除しますか？`}
+          title={`${this.props.file.name}を削除しますか？`}
           modal={false}
           actions={actions}
           open={this.state.open}
@@ -76,5 +64,4 @@ class DeleteIcon extends Component {
   }
 }
 
-DeleteIcon = connect()(DeleteIcon);
 export default DeleteIcon;

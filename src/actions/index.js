@@ -66,3 +66,8 @@ export const moveFile = (dir_id, file_id) => ({
   dir_id: dir_id,
   file_id: file_id
 });
+
+export const deleteFile = (file) => ({
+  type: "DELETE_FILE",
+  file: file
+});

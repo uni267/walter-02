@@ -32,10 +32,15 @@ class FileListBody extends Component {
   };
 
   renderRow(file, idx) {
-    return file.is_dir 
-      ? <Dir key={idx} dir={file} />
-      : <File key={idx} dir_id={this.props.dir_id}
-    file={file} moveFile={this.moveFile} />;
+    const dir_component = <Dir key={idx} dir={file} />;
+    const file_component = (
+      <File key={idx} dir_id={this.props.dir_id}
+            file={file} moveFile={this.moveFile}
+            deleteFile={this.props.deleteFile}
+            triggerSnackbar={this.props.triggerSnackbar} />
+    );
+
+    return file.is_dir ? dir_component : file_component;
   }
 
   render() {
