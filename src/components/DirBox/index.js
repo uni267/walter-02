@@ -1,46 +1,45 @@
 import React, { Component } from "react";
 
-// material
-import Chip from 'material-ui/Chip';
-
 // router
 import { Link } from "react-router-dom";
-
-/* import IconButton from 'material-ui/IconButton';
- * import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';*/
 
 class DirBox extends Component {
   constructor(props) {
     super(props);
     this.styles = {
-      chips: {
-        marginTop: 30,
-        marginLeft: 20
-      },
-
       wrapper: {
         display: 'flex',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        marginTop: 10,
+        marginLeft: 20
+      },
+      dir_list: {
+        marginTop: 10,
+        marginLeft: 10,
+        padding: 10
+      },
+      dir: {
+        color: "#555",
+        fontSize: 18,
+        textDecoration: "none"
       }
     };
   }
 
   renderDir(dir) {
     return (
-      <Chip key={dir.id} style={this.styles.chips}>
-        <Link to={`/?dir_id=${dir.id}`}>
+      <div key={dir.id} style={this.styles.dir_list}>
+        <Link to={`/?dir_id=${dir.id}`} style={this.styles.dir}>
           {dir.name}
         </Link>
-      </Chip>
+      </div>
     );
   }
 
   render() {
-    const { dirs } = this.props;
-
     return (
       <div className="dir-box" style={this.styles.wrapper}>
-        {dirs.map(dir => this.renderDir(dir))}
+        {this.props.dirs.map((dir, idx) => this.renderDir(dir, idx))}
       </div>
     );
   }

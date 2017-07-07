@@ -37,7 +37,7 @@ const FILES = [
   },
   {
     id: 4,
-    name: "ChildDir",
+    name: "フォルダ1",
     modified: "2017-01-01 10:00",
     owner: "user01",
     is_dir: true,

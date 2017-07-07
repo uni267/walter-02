@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 // material
 import Checkbox from 'material-ui/Checkbox';
+import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 
 const style = {
   row: {
@@ -24,6 +25,14 @@ const style = {
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
     backgroundColor: "inherit"
+  },
+  dir: {
+    textDecoration: "none",
+    color: "#555"
+  },
+  dir_icon: {
+    padding: 0,
+    marginRight: 10
   }
 };
 
@@ -47,7 +56,10 @@ class Dir extends Component {
           <Checkbox />
         </div>
         <div style={{...style.cell, width: "49%"}}>
-          <Link to={`/?dir_id=${dir.id}`}>{dir.name}</Link>
+          <FileFolderOpen style={style.dir_icon} />
+          <Link to={`/?dir_id=${dir.id}`} style={style.dir}>
+            {dir.name}
+          </Link>
         </div>
         <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
