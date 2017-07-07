@@ -13,6 +13,7 @@ class FileListBody extends Component {
   constructor(props) {
     super(props);
     this.handleFileDrop = this.handleFileDrop.bind(this);
+    this.moveFile = this.moveFile.bind(this);
   }
 
   handleFileDrop(item, monitor) {
@@ -25,25 +26,25 @@ class FileListBody extends Component {
     }
   }
 
+  moveFile(dir_id, file_id) {
+    this.props.moveFile(file_id, dir_id);
+    this.props.triggerSnackbar("ファイルを移動しました");
+  };
+
+  renderRow(file, idx) {
+    return file.is_dir 
+      ? <Dir key={idx} dir={file} />
+      : <File key={idx} dir_id={this.props.dir_id}
+    file={file} moveFile={this.moveFile} />;
+  }
+
   render() {
-    const renderRow = (file, idx) => {
-      return file.is_dir 
-        ? <Dir key={idx} dir={file} />
-        : <File key={idx} dir_id={this.props.dir_id} file={file} moveFile={moveFile} />;
-    };
-
     const { FILE } = NativeTypes;
-
-    const moveFile = (dir_id, file_id) => {
-      this.props.moveFile(file_id, dir_id);
-      this.props.triggerSnackbar("ファイルを移動しました");
-    };
-
     return (
       <TableBodyWrapper
         accepts={[FILE]}
         onDrop={this.handleFileDrop}>
-        {this.props.files.map((file, idx) => renderRow(file, idx))}
+        {this.props.files.map((file, idx) => this.renderRow(file, idx))}
       </TableBodyWrapper>
     );
   }
