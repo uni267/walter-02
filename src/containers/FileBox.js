@@ -11,7 +11,7 @@ import FileActionContainer from "./FileAction";
 import FileSearch from "../components/FileSearch";
 import DirBox from "../components/DirBox";
 import FileListHeader from "../components/FileListHeader";
-import FileListBody from "../components/FileListBody";
+import FileListBodyContainer from "./FileListBodyContainer";
 import FileSnackbar from "../components/FileSnackbar";
 
 // actions
@@ -21,10 +21,7 @@ import {
   toggleSortTarget,
   sortFile,
   triggerSnackbar,
-  closeSnackbar,
-  addFile,
-  moveFile,
-  deleteFile
+  closeSnackbar
 } from "../actions";
 
 class FileBox extends Component {
@@ -64,13 +61,9 @@ class FileBox extends Component {
               fileSortTarget={this.props.fileSortTarget} 
               sortFile={this.props.sortFile} />
 
-            <FileListBody
+            <FileListBodyContainer
               dir_id={this.props.dir_id}
-              files={_files}
-              addFile={this.props.addFile}
-              moveFile={this.props.moveFile}
-              triggerSnackbar={this.props.triggerSnackbar}
-              deleteFile={this.props.deleteFile} />
+              files={_files} />
 
             <FileSnackbar
               closeSnackbar={this.props.closeSnackbar}
@@ -105,10 +98,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  closeSnackbar: () => { dispatch(closeSnackbar()); },
-  addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
-  moveFile: (dir_id, file_id) => { dispatch(moveFile(dir_id, file_id)); },
-  deleteFile: (file) => { dispatch(deleteFile(file)); }
+  closeSnackbar: () => { dispatch(closeSnackbar()); }
 });
 
 const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);

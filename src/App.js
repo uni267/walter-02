@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // app components
-import LogoContainer from "./containers/Logo";
+import NavigationContainer from "./containers/NavigationContainer";
 import FileBoxContainer from "./containers/FileBox";
 
 injectTapEventPlugin();
@@ -19,7 +19,7 @@ class App extends Component {
 
     return (
       <div className="app">
-        <LogoContainer />
+        <NavigationContainer />
         <FileBoxContainer dir_id={getDirId()}/>
       </div>
     );

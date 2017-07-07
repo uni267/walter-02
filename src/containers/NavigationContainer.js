@@ -11,7 +11,7 @@ import Account from "../components/Account/";
 // actions
 import { toggleAccount, toggleMenu } from "../actions";
 
-class LogoContainer extends Component {
+class NavigationContainer extends Component {
   render() {
     const { menu, account, onAccountClick, onMenuIconClick } = this.props;
 
@@ -41,5 +41,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onMenuIconClick: () => { dispatch(toggleMenu()) }
 });
 
-LogoContainer = connect(mapStateToProps, mapDispatchToProps)(LogoContainer);
-export default LogoContainer;
+NavigationContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NavigationContainer);
+
+export default NavigationContainer;
