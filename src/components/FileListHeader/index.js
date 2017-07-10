@@ -23,8 +23,8 @@ const style = {
 };
 
 const headers = [
-  {key: "checkbox", width: "1%", label: ""},
-  {key: "name", width: "49%", label: "名前"},
+  {key: "checkbox", width: "5%", label: ""},
+  {key: "name", width: "45%", label: "名前"},
   {key: "modified", width: "15%", label: "最終更新"},
   {key: "owner", width: "15%", label: "所有者"},
   {key: false, width: "20%", label: "Action"},
