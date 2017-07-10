@@ -10,6 +10,7 @@ import Divider from 'material-ui/Divider';
 import Avatar from "material-ui/Avatar";
 import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
 
 class Logo extends Component {
@@ -20,7 +21,7 @@ class Logo extends Component {
       }
     };
 
-    const title = "walter";
+    const title = "cloud storage";
     const account_icon = (
       <IconButton iconStyle={styles.smallIcon}>
         <ActionAccountCircle />
@@ -31,6 +32,12 @@ class Logo extends Component {
       <Avatar src="images/shikata.jpg" />
     );
 
+    const notification_icon = (
+      <IconButton iconStyle={styles.smallIcon}>
+        <NotificationsIcon />
+      </IconButton>
+    );
+
     const right_elements = (
       <div style={{paddingRight: 30}}>
         <Badge
@@ -38,10 +45,22 @@ class Logo extends Component {
           style={{padding: 5}}
           secondary={true} >
 
-          <IconButton iconStyle={styles.smallIcon}>
-            <NotificationsIcon />
-          </IconButton>
+          <IconMenu
+            iconButtonElement={notification_icon}
+            anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
+            {this.props.notifications.map( (n, idx) => {
+              return (
+                <Card key={n.id}>
+                  <CardHeader
+                    title={n.title}
+                    subtitle={n.modified} />
+
+                  <CardText>{n.body}</CardText>
+                </Card>
+              );
+            })}
+          </IconMenu>
         </Badge>
 
         <IconMenu
