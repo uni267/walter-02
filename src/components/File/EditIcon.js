@@ -3,6 +3,7 @@ import Dialog from "material-ui/Dialog";
 import IconButton from "material-ui/IconButton";
 import FlatButton from "material-ui/FlatButton";
 import EditorModeEdit from "material-ui/svg-icons/editor/mode-edit";
+import TextField from "material-ui/TextField";
 
 class EditIcon extends Component {
   constructor(props) {
@@ -26,13 +27,31 @@ class EditIcon extends Component {
   }
 
   render() {
-    const actions = 
+    const actions = [
         <FlatButton
-          label="close"
-          primary={true}
-          onTouchTap={() => this.setState({ open: false })}
+      label="save"
+      primary={true}
+      onTouchTap={(e) => {
+        e.preventDefault();
+        const file_name = this.refs.fileName.getValue();
+        if ( file_name === "" ) {
+          this.setState({ open: false });
+          return;
+        }
+
+        let file = this.props.file;
+        file.name = file_name;
+        this.props.editFile(file);
+        this.setState({ open: false });
+        this.props.triggerSnackbar("ファイル名を変更しました");
+      }}
+        />,
+      <FlatButton
+        label="close"
+        primary={false}
+        onTouchTap={() => this.setState({ open: false })}
         />
-      ;
+        ];
 
     const { file } = this.props;
 
@@ -42,13 +61,16 @@ class EditIcon extends Component {
           <EditorModeEdit />
         </IconButton>
         <Dialog
-          title="ファイル編集"
+          title="ファイル名を変更"
           modal={false}
           actions={actions}
           open={this.state.open}
           onRequestClose={() => this.setState({open: false}) }
         >
-          ファイル名: {file.name}
+          <TextField
+            ref="fileName"
+            defaultValue={this.props.file.name}
+            floatingLabelText="ファイル名を変更" />
         </Dialog>
 
       </div>

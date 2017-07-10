@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 // material
 import Checkbox from 'material-ui/Checkbox';
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
+import MenuItem from "material-ui/MenuItem";
+import IconButton from "material-ui/IconButton";
+import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import IconMenu from "material-ui/IconMenu";
 
 const style = {
   row: {
@@ -77,6 +81,12 @@ class Dir extends Component {
       <ActionFavoriteBorder />
     );
 
+    const action_menu_icon = (
+      <IconButton>
+        <NavigationMenu />
+      </IconButton>
+    );
+
     return connectDropTarget(
       <div style={{...style.row, backgroundColor}}>
         <div style={{...style.cell, width: "5%"}}>
@@ -89,17 +99,29 @@ class Dir extends Component {
             style={style.checkbox}
             checkedIcon={favorite_icon}
             uncheckedIcon={favorite_icon_border} />
-
         </div>
+
         <div style={{...style.cell, width: "45%"}}>
           <FileFolderOpen style={style.dir_icon} />
           <Link to={`/?dir_id=${dir.id}`} style={style.dir}>
             {dir.name}
           </Link>
         </div>
+
         <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
-        <div style={{...style.cell, width: "20%"}}>-</div>
+        <div style={{...style.cell, width: "20%"}}>
+          <IconMenu
+            iconButtonElement={action_menu_icon}
+            anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
+            <MenuItem primaryText="詳細を表示" />
+            <MenuItem primaryText="ダウンロード" />
+            <MenuItem primaryText="コピー" />
+            <MenuItem primaryText="移動" />
+            <MenuItem primaryText="権限を変更" />
+          </IconMenu>
+        </div>
+
       </div>
     );
   }

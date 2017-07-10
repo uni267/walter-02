@@ -33,8 +33,8 @@ class DeleteIcon extends Component {
         label="Delete"
         primary={true}
         onTouchTap={(e) => {
-          this.setState({ open: false });
           this.props.deleteFile(this.props.file);
+          this.setState({ open: false });
           this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
         }}
       />,

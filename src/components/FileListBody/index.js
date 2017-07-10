@@ -42,6 +42,7 @@ class FileListBody extends Component {
             file={file}
             moveFile={this.moveFile}
             deleteFile={this.props.deleteFile}
+            editFile={this.props.editFile}
             triggerSnackbar={this.props.triggerSnackbar}
             toggleStar={this.props.toggleStar} />
     );
