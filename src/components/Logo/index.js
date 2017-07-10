@@ -12,16 +12,16 @@ import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
+const title = "cloud storage";
+
+const styles = {
+  smallIcon: {
+    color: "white"
+  }
+};
 
 class Logo extends Component {
   render() {
-    const styles = {
-      smallIcon: {
-        color: "white"
-      }
-    };
-
-    const title = "cloud storage";
     const account_icon = (
       <IconButton iconStyle={styles.smallIcon}>
         <ActionAccountCircle />
@@ -39,7 +39,7 @@ class Logo extends Component {
     );
 
     const right_elements = (
-      <div style={{paddingRight: 30}}>
+      <div style={{paddingRight: 70}}>
         <Badge
           badgeContent={this.props.notifications.length}
           style={{padding: 5}}
