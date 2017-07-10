@@ -13,17 +13,18 @@ import { toggleAccount, toggleMenu } from "../actions";
 
 class NavigationContainer extends Component {
   render() {
-    const { menu, account, onAccountClick, onMenuIconClick } = this.props;
-
     return (
       <div>
         <Logo
-          onAccountClick={onAccountClick}
-          onMenuIconClick={onMenuIconClick} />
-        <AppMenu open={menu.open} />
+          onAccountClick={this.props.onAccountClick}
+          onMenuIconClick={this.props.onMenuIconClick}
+          notifications={this.props.notifications} />
+
+        <AppMenu open={this.props.menu.open} />
+
         <Account 
-          account={account}
-          onAccountClick={onAccountClick} />
+          account={this.props.account}
+          onAccountClick={this.props.onAccountClick} />
       </div>
     );
   }
@@ -32,7 +33,8 @@ class NavigationContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     menu: state.app_menu,
-    account: state.account
+    account: state.account,
+    notifications: state.notifications
   };
 };
 

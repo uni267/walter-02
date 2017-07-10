@@ -82,3 +82,6 @@ export const toggleStar = (file) => ({
   file_id: Number(file.id)
 });
 
+export const notifications = () => ({
+  type: "SHOW_ALL"
+});

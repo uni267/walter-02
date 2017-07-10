@@ -6,7 +6,6 @@ import IconMenu from "material-ui/IconMenu";
 import IconButton from 'material-ui/IconButton';
 import MenuItem from "material-ui/MenuItem";
 import ActionAccountCircle from "material-ui/svg-icons/action/account-circle";
-import SocialNotificationsNone from "material-ui/svg-icons/social/notifications-none.js";
 import Divider from 'material-ui/Divider';
 import Avatar from "material-ui/Avatar";
 import Badge from 'material-ui/Badge';
@@ -35,12 +34,14 @@ class Logo extends Component {
     const right_elements = (
       <div style={{paddingRight: 30}}>
         <Badge
-          badgeContent={3}
+          badgeContent={this.props.notifications.length}
           style={{padding: 5}}
           secondary={true} >
+
           <IconButton iconStyle={styles.smallIcon}>
             <NotificationsIcon />
           </IconButton>
+
         </Badge>
 
         <IconMenu

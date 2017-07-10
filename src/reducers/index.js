@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import FILES from "../mock-files";
-
+import NOTIFICATIONS from "../mock-notifications";
 import moment from "moment";
 
 const visibilityFilter = (state = "SHOW_ALL", action) => {
@@ -209,6 +209,15 @@ const fileSortTarget = (state = { sorted: null, desc: false }, action) => {
   }
 };
 
+const notifications = (state = NOTIFICATIONS, action) => {
+  switch (action.type) {
+  case "SHOW_ALL":
+    return state;
+  default:
+    return state;
+  }
+};
+
 const fileApp = combineReducers({
   files,
   app_menu,
@@ -219,7 +228,8 @@ const fileApp = combineReducers({
   add_dir,
   add_file,
   filesBuffer,
-  fileSortTarget
+  fileSortTarget,
+  notifications
 });
 
 export default fileApp;
