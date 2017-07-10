@@ -116,6 +116,7 @@ class File extends Component {
             style={style.checkbox}
             checkedIcon={favorite_icon}
             uncheckedIcon={favorite_icon_border}
+            checked={file.is_star}
             onCheck={() => this.onClickStar(file)} />
         </div>
 

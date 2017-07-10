@@ -53,8 +53,6 @@ class EditIcon extends Component {
         />
         ];
 
-    const { file } = this.props;
-
     return (
       <div>
         <IconButton onClick={() => this.setState({open: true})}>

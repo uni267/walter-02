@@ -9,26 +9,21 @@ import ActionAccountCircle from "material-ui/svg-icons/action/account-circle";
 import SocialNotificationsNone from "material-ui/svg-icons/social/notifications-none.js";
 import Divider from 'material-ui/Divider';
 import Avatar from "material-ui/Avatar";
+import Badge from 'material-ui/Badge';
+import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+
 
 class Logo extends Component {
   render() {
     const styles = {
       smallIcon: {
-        width: 32,
-        height: 32,
         color: "white"
-      },
-
-      small: {
-        width: 55,
-        height: 55,
-        marginRight: 20
       }
     };
 
     const title = "walter";
     const account_icon = (
-      <IconButton style={styles.small} iconStyle={styles.smallIcon}>
+      <IconButton iconStyle={styles.smallIcon}>
         <ActionAccountCircle />
       </IconButton>
     );
@@ -38,10 +33,16 @@ class Logo extends Component {
     );
 
     const right_elements = (
-      <div>
-        <IconButton style={styles.small} iconStyle={styles.smallIcon}>
-          <SocialNotificationsNone />
-        </IconButton>
+      <div style={{paddingRight: 30}}>
+        <Badge
+          badgeContent={3}
+          style={{padding: 5}}
+          secondary={true} >
+          <IconButton iconStyle={styles.smallIcon}>
+            <NotificationsIcon />
+          </IconButton>
+        </Badge>
+
         <IconMenu
           iconButtonElement={account_icon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
