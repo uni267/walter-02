@@ -36,15 +36,6 @@ const filesReducer = (state = FILES, action) => {
       }
     ];
 
-  case "TOGGLE_STAR":
-    return state.map(file => {
-      if (file.id === action.file_id) {
-        return {...file, is_star: !file.is_star};
-      } else {
-        return file;
-      }
-    });
-
   case "DELETE_FILE":
     return state.filter(file => file.id !== action.file.id);
 
@@ -73,6 +64,15 @@ const filesReducer = (state = FILES, action) => {
         file.dir_id = action.dir_id;
       }
       return file;
+    });
+
+  case "TOGGLE_STAR":
+    return state.map(file => {
+      if (file.id === action.file_id) {
+        return {...file, is_star: !file.is_star};
+      } else {
+        return file;
+      }
     });
 
   default:
