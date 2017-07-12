@@ -54,4 +54,4 @@ class DirBox extends Component {
 }
 
 export default DirBox;
-// [].concat.apply([], [...Array(5).keys()].map( (v, i) => [v, ">"]))
+
