@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 
 // material grid
 import { Row, Col } from 'react-flexbox-grid';
+import { Card } from 'material-ui/Card';
 
 // components
 import FileActionContainer from "./FileAction";
@@ -39,7 +40,7 @@ class FileBox extends Component {
     }
 
     return (
-      <div className="file-box">
+      <Card>
         <Row>
           <Col xs={9} sm={9} md={9} lg={9}>
             <DirBox dirs={this.props.dirs} />
@@ -74,7 +75,7 @@ class FileBox extends Component {
             <FileActionContainer dir_id={this.props.dir_id} />
           </Col>
         </Row>
-      </div>
+      </Card>
     );
   }
 }
