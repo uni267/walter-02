@@ -97,8 +97,10 @@ class File extends Component {
     const { isDragging, connectDragSource, file, onDeleteDone } = this.props;
 
     const opacity = isDragging ? 0.3 : 1;
-    const backgroundColor = this.state.checked || this.state.hover
-          ? "rgb(224, 224, 224)" : "inherit";
+
+    const backgroundColor = this.state.checked ? "rgb(232, 232, 232)" : "inherit";
+
+    const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const action_menu_icon = (
       <IconButton>
@@ -133,7 +135,9 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...style.cell, width: "45%"}}>{file.name}</div>
+        <div style={{...style.cell, width: "45%", color}}>
+          {file.name}
+        </div>
 
         <div style={{...style.cell, width: "15%"}}>{file.modified}</div>
 
