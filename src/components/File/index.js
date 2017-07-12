@@ -67,8 +67,12 @@ class File extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: false
+      checked: false,
+      hover: false
     };
+
+    this.onClickCheckBox = this.onClickCheckBox.bind(this);
+    this.toggleHover = this.toggleHover.bind(this);
   }
 
   onClickStar(file) {
@@ -81,15 +85,20 @@ class File extends Component {
     this.props.triggerSnackbar(message);
   }
 
+  onClickCheckBox() {
+    this.setState({ checked: !this.state.checked });
+  };
+
+  toggleHover() {
+    this.setState({ hover: !this.state.hover });
+  };
+
   render() {
     const { isDragging, connectDragSource, file, onDeleteDone } = this.props;
 
-    const onClickCheckBox = () => {
-      this.setState({ checked: !this.state.checked });
-    };
-
     const opacity = isDragging ? 0.3 : 1;
-    const backgroundColor = this.state.checked ? "rgb(224, 224, 224)" : "inherit";
+    const backgroundColor = this.state.checked || this.state.hover
+          ? "rgb(224, 224, 224)" : "inherit";
 
     const action_menu_icon = (
       <IconButton>
@@ -106,11 +115,15 @@ class File extends Component {
     );
 
     return connectDragSource(
-      <div style={{...style.row, opacity, backgroundColor}}>
+      <div
+        onMouseEnter={this.toggleHover}
+        onMouseLeave={this.toggleHover}
+        style={{...style.row, opacity, backgroundColor}}>
+
         <div style={{...style.cell, width: "5%"}}>
           <Checkbox
             style={style.checkbox}
-            onCheck={onClickCheckBox} />
+            onCheck={this.onClickCheckBox} />
 
           <Checkbox
             style={style.checkbox}
