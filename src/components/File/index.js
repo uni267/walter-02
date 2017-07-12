@@ -141,8 +141,8 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...style.cell, width: "45%", color}}>
-          <Link to={`/file-detail/${file.id}`} style={style.file} >
+        <div style={{...style.cell, width: "45%"}}>
+          <Link to={`/file-detail/${file.id}`} style={{...style.file, color}} >
             {file.name}
           </Link>
         </div>
