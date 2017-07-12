@@ -20,7 +20,7 @@ class NavigationContainer extends Component {
           onMenuIconClick={this.props.onMenuIconClick}
           notifications={this.props.notifications} />
 
-        <AppMenu open={this.props.menu.open} />
+        <AppMenu open={this.props.appMenu.open} />
 
         <Account 
           account={this.props.account}
@@ -32,7 +32,7 @@ class NavigationContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    menu: state.app_menu,
+    appMenu: state.appMenu,
     account: state.account,
     notifications: state.notifications
   };

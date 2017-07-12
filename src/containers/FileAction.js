@@ -50,8 +50,8 @@ class FileActionContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    open_dir: state.add_dir.open,
-    open_file: state.add_file.open,
+    open_dir: state.addDir.open,
+    open_file: state.addFile.open,
     filesBuffer: state.filesBuffer
   };
 };
