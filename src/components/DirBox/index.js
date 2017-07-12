@@ -23,14 +23,14 @@ const styles = {
 };
 
 class DirBox extends Component {
-  renderDir(dir) {
+  renderDir(dir, idx) {
     if (dir === "sep") {
       return (
-        <div style={styles.dir_list}>&gt;</div>
+        <div key={idx} style={styles.dir_list}>&gt;</div>
       );
     } else {
       return (
-        <div key={dir.id} style={styles.dir_list}>
+        <div key={idx} style={styles.dir_list}>
           <Link to={`/?dir_id=${dir.id}`} style={styles.dir}>
             {dir.name}
           </Link>
