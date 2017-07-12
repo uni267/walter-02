@@ -10,6 +10,7 @@ import logger from "redux-logger";
 
 // material
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // app components
 import App from './App';
@@ -18,6 +19,8 @@ import App from './App';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 const store = createStore(reducer, applyMiddleware(logger));
+
+injectTapEventPlugin();
 
 ReactDOM.render(
   <MuiThemeProvider>

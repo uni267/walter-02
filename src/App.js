@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 
-// material
-import injectTapEventPlugin from 'react-tap-event-plugin';
-
 // app components
 import NavigationContainer from "./containers/NavigationContainer";
 import FileBoxContainer from "./containers/FileBox";
-
-injectTapEventPlugin();
 
 class App extends Component {
   render() {
