@@ -10,7 +10,7 @@ import Divider from 'material-ui/Divider';
 import Avatar from "material-ui/Avatar";
 import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardHeader, CardText} from 'material-ui/Card';
 
 const title = "cloud storage";
 
