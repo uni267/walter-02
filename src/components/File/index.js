@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 // DnD
 import { DragSource } from "react-dnd";
@@ -43,6 +44,11 @@ const style = {
     display: "flex",
     margin: 0,
     padding: 0
+  },
+
+  file: {
+    textDecoration: "none",
+    color: "#111"
   }
 };
 
@@ -136,7 +142,9 @@ class File extends Component {
         </div>
 
         <div style={{...style.cell, width: "45%", color}}>
-          {file.name}
+          <Link to={`/file-detail/${file.id}`} style={style.file} >
+            {file.name}
+          </Link>
         </div>
 
         <div style={{...style.cell, width: "15%"}}>{file.modified}</div>

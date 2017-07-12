@@ -118,7 +118,7 @@ class Dir extends Component {
 
         <div style={{...style.cell, width: "45%"}}>
           <FileFolderOpen style={style.dir_icon} />
-          <Link to={`/?dir_id=${dir.id}`} style={{...style.dir, color}}>
+          <Link to={`/home/?dir_id=${dir.id}`} style={{...style.dir, color}}>
             {dir.name}
           </Link>
         </div>

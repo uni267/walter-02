@@ -15,20 +15,15 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // app components
 import App from './App';
 
-// router
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-
 const store = createStore(reducer, applyMiddleware(logger));
 
 injectTapEventPlugin();
 
 ReactDOM.render(
   <MuiThemeProvider>
-    <Router>
-      <Provider store={store}>
-        <Route exact path="/" component={App} />
-      </Provider>
-    </Router>
+    <Provider store={store}>
+      <App />
+    </Provider>
   </MuiThemeProvider>,
   document.getElementById('root')
 );
