@@ -141,13 +141,13 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...style.cell, width: "45%"}}>
+        <div style={{...style.cell, width: "40%"}}>
           <Link to={`/file-detail/${file.id}`} style={{...style.file, color}} >
             {file.name}
           </Link>
         </div>
 
-        <div style={{...style.cell, width: "15%"}}>{file.modified}</div>
+        <div style={{...style.cell, width: "20%"}}>{file.modified}</div>
 
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
 
@@ -168,6 +168,7 @@ class File extends Component {
             <MenuItem primaryText="コピー" />
             <MenuItem primaryText="移動" />
             <MenuItem primaryText="権限を変更" />
+            <MenuItem primaryText="タイムスタンプ発行" />
           </IconMenu>
         </div>
       </div>

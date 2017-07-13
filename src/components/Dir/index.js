@@ -116,14 +116,14 @@ class Dir extends Component {
             uncheckedIcon={favorite_icon_border} />
         </div>
 
-        <div style={{...style.cell, width: "45%"}}>
+        <div style={{...style.cell, width: "40%"}}>
           <FileFolderOpen style={style.dir_icon} />
           <Link to={`/home/?dir_id=${dir.id}`} style={{...style.dir, color}}>
             {dir.name}
           </Link>
         </div>
 
-        <div style={{...style.cell, width: "15%"}}>{dir.modified}</div>
+        <div style={{...style.cell, width: "20%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
         <div style={{...style.cell, width: "20%"}}>
           <IconMenu
