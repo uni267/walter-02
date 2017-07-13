@@ -12,6 +12,7 @@ class App extends Component {
     return (
       <Router>
         <div>
+          <Route exact path="/" component={HomeContainer} />
           <Route exact path="/home" component={HomeContainer} />
           <Route path="/file-detail/:id" component={FileDetailContainer} />
         </div>
