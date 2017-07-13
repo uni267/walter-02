@@ -6,11 +6,12 @@ const FILES = [
     owner: "user01",
     is_dir: true,
     dir_id: 0,
-    is_display: false
+    is_display: false,
+    authorities: []
   },
   {
     id: 1,
-    name: "xxx様の仕様書2017_01.doc",
+    name: "交通費領収書2017-01-20.pdf",
     modified: "2017-01-20 9:30",
     owner: "user01",
     is_dir: false,
@@ -42,44 +43,17 @@ const FILES = [
     ],
     authorities: [
       {
-        group: {
-          id: 1,
-          name: "営業部",
-          members: [
-            {id: 1, name: "user01"},
-            {id: 2, name: "user02"}
-          ]
-        },
-        role: {
-          read: true,
-          modify: true,
-          delete: false,
-          restore: false,
-          authory: false
-        }
-      },
-      {
-        group: {
-          id: 2,
-          name: "情報システム部",
-          members: [
-            {id: 3, name: "admin01"},
-            {id: 4, name: "admin02"}
-          ]
-        },
-        role: {
-          read: true,
-          modify: true,
-          delete: true,
-          restore: true,
-          authory: true
-        }
+        id: 1,
+        user: { name: "user01" },
+        group: null,
+        role: { id: 1, name: "フルコントロール" },
+        is_owner: true
       }
     ]
   },
   {
     id: 2,
-    name: "2017年2月1日領収書.pdf",
+    name: "宿泊領収書2017-02-01.pdf",
     modified: "2017-02-01 10:30",
     owner: "user01",
     is_dir: false,
@@ -101,47 +75,11 @@ const FILES = [
         modified: "2016-06-01 10:00",
         body: "旧: xxx.doc, 新: xxy.doc"
       }
-    ],
-    authorities: [
-      {
-        group: {
-          id: 1,
-          name: "営業部",
-          members: [
-            {id: 1, name: "user01"},
-            {id: 2, name: "user02"}
-          ]
-        },
-        role: {
-          read: true,
-          modify: true,
-          delete: false,
-          restore: false,
-          authory: false
-        }
-      },
-      {
-        group: {
-          id: 2,
-          name: "情報システム部",
-          members: [
-            {id: 3, name: "admin01"},
-            {id: 4, name: "admin02"}
-          ]
-        },
-        role: {
-          read: true,
-          modify: true,
-          delete: true,
-          restore: true,
-          authory: true
-        }
-      }
     ]
   },
   {
     id: 3,
-    name: "2017年2月3日領収書.pdf",
+    name: "領収書2017-02-03.pdf",
     modified: "2017-02-03 14:00",
     owner: "user01",
     is_dir: false,
@@ -163,33 +101,11 @@ const FILES = [
         modified: "2016-06-01 10:00",
         body: "旧: xxx.doc, 新: xxy.doc"
       }
-    ],
-    authorities: [
-      {
-        group: { id: 1, name: "営業部" },
-        role: {
-          read: true,
-          modify: true,
-          delete: false,
-          restore: false,
-          authory: false
-        }
-      },
-      {
-        group: { id: 1, name: "情報システム部" },
-        role: {
-          read: true,
-          modify: true,
-          delete: true,
-          restore: true,
-          authory: true
-        }
-      }
     ]
   },
   {
     id: 4,
-    name: "フォルダ1",
+    name: "新しいフォルダ",
     modified: "2017-01-01 10:00",
     owner: "user01",
     is_dir: true,
