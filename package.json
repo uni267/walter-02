@@ -22,7 +22,7 @@
     "sinon": "^2.3.7"
   },
   "devDependencies": {
-    "react-scripts": "1.0.7"
+    "react-scripts": "1.0.8"
   },
   "scripts": {
     "start": "react-scripts start",
