@@ -3,7 +3,6 @@ import React, { Component } from "react";
 // material-ui
 import { Card, CardTitle, CardText } from 'material-ui/Card';
 import { Tabs, Tab } from "material-ui/Tabs";
-import { Table, TableBody, TableRow, TableRowColumn } from "material-ui/Table";
 
 // components
 import BasicInfo from "./BasicInfo";
@@ -28,11 +27,6 @@ class FileDetail extends Component {
     });
   }
 
-  renderAuthorities(file) {
-    return file.authorities.map( (auth, idx) => {
-      return <Authority key={idx} auth={auth} />;
-    });
-  }
   render() {
     const { file } = this.props;
 
@@ -46,15 +40,7 @@ class FileDetail extends Component {
                 <BasicInfo file={file} />
               </Tab>
               <Tab label="権限">
-                <Table selectable={false}>
-                  <TableBody
-                    selectable={false}
-                    displayRowCheckbox={false}>
-
-                    {this.renderAuthorities(file)}
-
-                  </TableBody>
-                </Table>
+                <Authority file={file} />
               </Tab>
               <Tab label="履歴情報">
                 {this.renderHistories(file)}
