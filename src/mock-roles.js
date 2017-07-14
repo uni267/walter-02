@@ -8,6 +8,7 @@ const roleIcon = (<HardwareSecurity />);
 const ROLES = [
   {
     text: "読み取り専用",
+    role: { id: 1, actions: ["read"], name: "読み取り専用" },
     value: (
       <MenuItem
         primaryText="読み取り専用"
@@ -16,6 +17,7 @@ const ROLES = [
   },
   {
     text: "読み取り、編集可能",
+    role: { id: 2, actions: ["read", "write"], name: "読み取り、編集可能" },
     value: (
       <MenuItem
         primaryText="読み取り、編集可能"
@@ -24,6 +26,7 @@ const ROLES = [
   },
   {
     text: "フルコントロール",
+    role: { id: 3, actions: ["read", "write", "authority"], name: "フルコントロール" },
     value: (
       <MenuItem
         primaryText="フルコントロール"

@@ -11,15 +11,17 @@ const groupIcon = (<SocialGroup />);
 
 const USER_GROUPS = [
   {
-    text: "user01",
+    text: "ユーザ 太郎",
+    user: { id: 1, name: "user01", name_jp: "ユーザ 太郎" },
     value: (
       <MenuItem
-        primaryText="ユーザ 太郎"
+        primaryText="ユーザ太郎"
         leftIcon={personIcon} />
     )
   },
   {
-    text: "user02",
+    text: "ユーザ 次郎",
+    user: { id: 2, name: "user02", name_jp: "ユーザ 次郎" },
     value: (
       <MenuItem
         primaryText="ユーザ 次郎"
@@ -27,7 +29,8 @@ const USER_GROUPS = [
     )
   },
   {
-    text: "soumu-grp",
+    text: "総務グループ",
+    user: { id: 1, name: "grp_soumu", name_jp: "総務グループ" },
     value: (
       <MenuItem
         primaryText="総務グループ"
