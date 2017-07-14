@@ -12,13 +12,20 @@ import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 
-const title = "cloud storage";
+// router
+import { Link } from "react-router-dom";
 
 const styles = {
   smallIcon: {
     color: "white"
+  },
+  title: {
+    textDecoration: "none",
+    color: "white"
   }
 };
+
+const title = <Link to={`/home/`} style={styles.title}>cloud storage</Link>;
 
 class Logo extends Component {
   render() {
