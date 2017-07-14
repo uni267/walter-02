@@ -173,4 +173,51 @@ describe("filesReducer", () => {
 
   });
 
+  describe("ADD_AUTHORITY", () => {
+
+    it("ファイルの権限が1件追加される", () => {
+      const addUser = {
+        id: 1,
+        name: "user01",
+        name_jp: "ユーザ 太郎",
+        type: "user"
+      };
+
+      const addRole = {
+        id: 3,
+        name: "フルコントロール",
+        actions: ["read", "write", "authority"]
+      };
+
+      const result = filesReducer(FILES, {
+        type: "ADD_AUTHORITY",
+        file_id: 1,
+        user: addUser,
+        role: addRole
+      }).filter(file => file.id === 1)[0];
+
+      const expected = FILES.filter( file => file.id === 1 )[0];
+      expect(result.authorities.length).toEqual(expected.authorities.length + 1);
+    });
+    
+  });
+
+  describe("DELETE_AUTHORITY", () => {
+
+    it("ファイルの権限が1件削除される", () => {
+      const file_id = 1;
+      const authority_id = 2;
+
+      const result = filesReducer(FILES, {
+        type: "DELETE_AUTHORITY",
+        file_id: file_id,
+        authority_id: authority_id
+      });
+
+      expect(result[1].authorities.length).toEqual(1);
+
+    });
+
+  });
+  
 });
