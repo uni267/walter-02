@@ -53,6 +53,12 @@ class AddFileDialog extends Component {
         />,
     ];
 
+    const renderFilesBuffer = () => {
+      return this.props.filesBuffer.map( (f, idx) => {
+        return <li key={idx}> {f.name} - {f.size} bytes</li>;
+      });
+    };
+
     return (
       <div>
         <MenuItem
@@ -72,9 +78,7 @@ class AddFileDialog extends Component {
             <p>クリックもしくはファイルをドロップ</p>
           </Dropzone>
           <ul>
-            {this.props.filesBuffer.map( (f, idx) => {
-              return <li key={idx}>{f.name} - {f.size} bytes</li>;
-            })}
+            {renderFilesBuffer()}
           </ul>
         </Dialog>
       </div>
