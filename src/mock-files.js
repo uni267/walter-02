@@ -98,6 +98,23 @@ const FILES = [
         modified: "2016-06-01 10:00",
         body: "旧: xxx.doc, 新: xxy.doc"
       }
+    ],
+    authorities: [
+      {
+        id: 1,
+        user: {
+          id: 1,
+          type: "user",
+          name: "user01",
+          name_jp: "ユーザ 太郎",
+          is_owner: true
+        },
+        role: {
+          id: 3,
+          name: "フルコントロール",
+          actions: ["read", "write", "authority"]
+        }
+      }
     ]
   },
   {
@@ -123,6 +140,38 @@ const FILES = [
         action: "ファイル名変更",
         modified: "2016-06-01 10:00",
         body: "旧: xxx.doc, 新: xxy.doc"
+      }
+    ],
+    authorities: [
+      {
+        id: 1,
+        user: {
+          id: 1,
+          type: "user",
+          name: "user01",
+          name_jp: "ユーザ 太郎",
+          is_owner: true
+        },
+        role: {
+          id: 3,
+          name: "フルコントロール",
+          actions: ["read", "write", "authority"]
+        }
+      },
+      {
+        id: 2,
+        user: {
+          id: 2,
+          type: "user",
+          name: "user02",
+          name_jp: "ユーザ 次郎",
+          is_owner: false
+        },
+        role: {
+          id: 1,
+          name: "読み取り専用",
+          actions: ["read"]
+        }
       }
     ]
   },
