@@ -28,22 +28,27 @@ class FileDetail extends Component {
   }
 
   render() {
-    const { file } = this.props;
-
     return (
       <Card style={{paddingBottom: 10}}>
-        <CardTitle title="ファイル詳細" subtitle={file.name} />
+        <CardTitle title="ファイル詳細" subtitle={this.props.file.name} />
         <Card style={styles.innerCard}>
           <CardText>
             <Tabs>
               <Tab label="基本情報">
-                <BasicInfo file={file} />
+                <BasicInfo file={this.props.file} />
               </Tab>
               <Tab label="権限">
-                <Authority file={file} />
+                <Authority
+                  file={this.props.file}
+                  users={this.props.users}
+                  roles={this.props.roles}
+                  addAuthority={this.props.addAuthority}
+                  deleteAuthority={this.props.deleteAuthority}
+                  triggerSnackbar={this.props.triggerSnackbar}
+                  />
               </Tab>
               <Tab label="履歴情報">
-                {this.renderHistories(file)}
+                {this.renderHistories(this.props.file)}
               </Tab>
             </Tabs>
           </CardText>

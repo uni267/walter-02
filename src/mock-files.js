@@ -44,8 +44,33 @@ const FILES = [
     authorities: [
       {
         id: 1,
-        user: { name: "user01", name_jp: "ユーザ 太郎", is_owner: true },
-        role: { id: 1, name: "フルコントロール" }
+        user: {
+          id: 1,
+          type: "user",
+          name: "user01",
+          name_jp: "ユーザ 太郎",
+          is_owner: true
+        },
+        role: {
+          id: 3,
+          name: "フルコントロール",
+          actions: ["read", "write", "authority"]
+        }
+      },
+      {
+        id: 2,
+        user: {
+          id: 2,
+          type: "user",
+          name: "user02",
+          name_jp: "ユーザ 次郎",
+          is_owner: false
+        },
+        role: {
+          id: 1,
+          name: "読み取り専用",
+          actions: ["read"]
+        }
       }
     ]
   },
