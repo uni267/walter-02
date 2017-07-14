@@ -2,12 +2,7 @@ import React, { Component } from "react";
 
 // material-uis
 import AutoComplete from "material-ui/AutoComplete";
-import FlatButton from "material-ui/FlatButton";
-import Divider from "material-ui/Divider";
 import RaisedButton from 'material-ui/RaisedButton';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
-import Avatar from "material-ui/Avatar";
-import ListItem from 'material-ui/List/ListItem';
 import MenuItem from "material-ui/MenuItem";
 
 // icons
@@ -144,7 +139,7 @@ class Authority extends Component {
       const deleteDisabled = auth.user.is_owner;
 
       return (
-        <div style={style.row}>
+        <div key={idx} style={style.row}>
           <div style={{...style.cell, width: "160px"}}>
             {auth.user.name_jp}
             {auth.user.is_owner ? "(所有者)" : null}

@@ -14,8 +14,7 @@ import FileSnackbar from "../components/FileSnackbar";
 import {
   addAuthority,
   deleteAuthority,
-  triggerSnackbar,
-  closeSnackbar
+  triggerSnackbar
 } from "../actions";
 
 class FileDetailContainer extends Component {
