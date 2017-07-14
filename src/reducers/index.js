@@ -11,6 +11,8 @@ import addFile from "./addFileReducer";
 import notifications from "./notificationsReducer";
 import filesBuffer from "./filesBufferReducer";
 import fileSortTarget from "./fileSortTargetReducer";
+import users from "./usersReducer";
+import roles from "./rolesReducer";
 
 const fileApp = combineReducers({
   files,
@@ -22,7 +24,9 @@ const fileApp = combineReducers({
   addFile,
   filesBuffer,
   fileSortTarget,
-  notifications
+  notifications,
+  users,
+  roles
 });
 
 export default fileApp;

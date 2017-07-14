@@ -12,13 +12,13 @@ export const toggleAddDir = () => ({
 
 export const createDir = (dir_id, dir_name) => ({
   type: "ADD_DIR",
-  dir_id: dir_id,
+  dir_id,
   name: dir_name
 });
 
 export const triggerSnackbar = (message) => ({
   type: "TRIGGER_SNACK",
-  message: message
+  message
 });
 
 export const closeSnackbar = () => ({
@@ -32,13 +32,13 @@ export const toggleAddFile = () => ({
 export const pushFileToBuffer = (dir_id, name) => ({
   type: "PUSH_FILE_TO_BUFFER",
   dir_id: Number(dir_id),
-  name: name
+  name
 });
 
 export const addFile = (dir_id, name) => ({
   type: "ADD_FILE",
   dir_id: Number(dir_id),
-  name: name
+  name
 });
 
 export const searchFile = (keyword) => ({
@@ -57,14 +57,14 @@ export const toggleSortTarget = () => ({
 
 export const sortFile = (sorted, desc) => ({
   type: "SORT_FILE",
-  sorted: sorted,
-  desc: desc
+  sorted,
+  desc
 });
 
 export const moveFile = (dir_id, file_id) => ({
   type: "MOVE_FILE",
-  dir_id: dir_id,
-  file_id: file_id
+  dir_id,
+  file_id
 });
 
 export const deleteFile = (file) => ({
@@ -84,4 +84,17 @@ export const toggleStar = (file) => ({
 
 export const notifications = () => ({
   type: "SHOW_ALL"
+});
+
+export const addAuthority = (file_id, user, role) => ({
+  type: "ADD_AUTHORITY",
+  file_id,
+  user,
+  role
+});
+
+export const deleteAuthority = (file_id, authority_id) => ({
+  type: "DELETE_AUTHORITY",
+  file_id,
+  authority_id
 });

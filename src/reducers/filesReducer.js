@@ -75,6 +75,40 @@ const filesReducer = (state = FILES, action) => {
       }
     });
 
+  case "ADD_AUTHORITY":
+    return state.map(file => {
+      if (file.id === action.file_id) {
+
+        const next_authority_id = file.authorities.slice()
+              .sort( (a, b) => a.id < b.id)[0].id + 1;
+
+        const addAuthority = {
+          id: next_authority_id,
+          user: { ...action.user, is_owner: false },
+          role: action.role
+        };
+
+        return {
+          ...file,
+          authorities: [...file.authorities, addAuthority]
+        };
+
+      }
+
+      return file;
+    });
+
+  case "DELETE_AUTHORITY":
+    return state.map(file => {
+      if (Number(file.id) === Number(action.file_id)) {
+        const authorities = file.authorities
+              .filter(auth => Number(auth.id) !== Number(action.authority_id));
+
+        return {...file, authorities};
+      }
+      return file;
+    });
+
   default:
     return state;
   }
