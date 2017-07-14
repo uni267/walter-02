@@ -34,6 +34,7 @@ class AddFileDialog extends Component {
         this.props.triggerSnackbar(`${file.name}をアップロードしました`);
       });
       this.setState(this.props.toggleAddFile);
+      this.props.clearFilesBuffer();
     };
 
     const upload_button = <FileCloudUpload />;

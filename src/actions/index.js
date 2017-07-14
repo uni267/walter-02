@@ -35,6 +35,10 @@ export const pushFileToBuffer = (dir_id, name) => ({
   name
 });
 
+export const clearFilesBuffer = () => ({
+  type: "CLEAR_FILES_BUFFER"
+});
+
 export const addFile = (dir_id, name) => ({
   type: "ADD_FILE",
   dir_id: Number(dir_id),

@@ -14,6 +14,9 @@ const filesBufferReducer = (state = [], action) => {
         is_display: true
       }
     ];
+  case "CLEAR_FILES_BUFFER":
+    return [];
+
   default:
     return state;
   }
