@@ -55,32 +55,31 @@ describe("material-ui test", () => {
   // const testChildren = <div className="unique">Hello World</div>;
 
   it('renders children by default', () => {
-    const muiTheme = getMuiTheme();
+    // const muiTheme = getMuiTheme();
 
-    const shallowWithContext = (node) => {
-      mount(
-        node,
-        {
-          context: {muiTheme}
-        }
-      );
-    };
+    // const shallowWithContext = (node) => {
+    //   mount(
+    //     node,
+    //     {
+    //       context: {muiTheme}
+    //     }
+    //   );
+    // };
 
-    const testChildren = <div className="unique">Hello World</div>;
+    // const testChildren = <div className="unique">Hello World</div>;
 
-    const wrapper = shallowWithContext(
-      <div>
-        <AddDirDialog
-          dir_id={0}
-          toggleAddDir={() => true}
-          createDir={() => true}
-          open={true}
-          triggerSnackbar={() => true} />
-      </div>
-    );
+    // const wrapper = shallowWithContext(
+    //   <div>
+    //     <AddDirDialog
+    //       dir_id={0}
+    //       toggleAddDir={() => true}
+    //       createDir={() => true}
+    //       open={true}
+    //       triggerSnackbar={() => true} />
+    //   </div>
+    // );
 
     // assert.ok(wrapper.contains(testChildren), 'should contain the children');
-    console.log(wrapper.html());
   });
   
 });
