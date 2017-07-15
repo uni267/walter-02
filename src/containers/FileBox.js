@@ -42,20 +42,19 @@ class FileBox extends Component {
     return (
       <Card>
         <Row>
-          <Col xs={9} sm={9} md={9} lg={9}>
+          <Col xs={5} sm={5} md={5} lg={5}>
             <DirBox dirs={this.props.dirs} />
           </Col>
-          <Col xs={2} sm={2} md={2} lg={2}>
+
+          <Col xs={7} sm={7} md={7} lg={7}>
             <FileSearch
               searchWord={this.props.searchWord}
               searchFile={this.props.searchFile} />
+
           </Col>
         </Row>
         <Row>
-          <div>&nbsp;</div>
-        </Row>
-        <Row>
-          <Col xs={9} sm={9} md={9} lg={9}>
+          <Col xs={10} sm={10} md={10} lg={10}>
             <FileListHeader
               setSortTarget={this.props.setSortTarget}
               toggleSortTarget={this.props.toggleSortTarget}
@@ -72,7 +71,9 @@ class FileBox extends Component {
 
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
+
             <FileActionContainer dir_id={this.props.dir_id} />
+
           </Col>
         </Row>
       </Card>

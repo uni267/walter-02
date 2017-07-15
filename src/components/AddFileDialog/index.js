@@ -63,7 +63,7 @@ class AddFileDialog extends Component {
     return (
       <div>
         <MenuItem
-          primaryText="ファイルをアップロード"
+          primaryText="アップロード"
           leftIcon={upload_button}
           onTouchTap={this.props.toggleAddFile}
           />

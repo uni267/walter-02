@@ -7,7 +7,7 @@ const styles = {
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap',
-    marginTop: 10,
+    marginTop: 30,
     marginLeft: 20
   },
   dir_list: {

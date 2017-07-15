@@ -25,7 +25,7 @@ class FileActionContainer extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{marginRight: 30}}>
         <Menu>
           <AddFileDialog
             dir_id={this.props.dir_id}

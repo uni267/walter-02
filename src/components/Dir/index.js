@@ -15,7 +15,8 @@ import IconMenu from "material-ui/IconMenu";
 const style = {
   row: {
     display: "flex",
-    width: "100%",
+    width: "95%",
+    marginLeft: 30,
     borderBottom: "1px solid lightgray"
   },
   cell: {
