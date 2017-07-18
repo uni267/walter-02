@@ -10,16 +10,20 @@ class Account extends Component {
     const { account } = this.props;
 
     const actions = [
+      (
         <FlatButton
-      label="close"
-      onTouchTap={this.props.onAccountClick}
-        />,
-      <FlatButton
-        label="save"
-        primary={true}
-        onTouchTap={this.props.onAccountClick}
-        />
-        ];
+          label="close"
+          onTouchTap={this.props.onAccountClick}
+          />
+      ),
+      (
+        <FlatButton
+          label="save"
+          primary={true}
+          onTouchTap={this.props.onAccountClick}
+          />
+      )
+    ];
 
     return (
       <Dialog

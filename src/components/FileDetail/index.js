@@ -35,7 +35,10 @@ class FileDetail extends Component {
 
     return (
       <Card style={{paddingBottom: 10}}>
-        <CardTitle title="ファイル詳細" subtitle={this.props.file.name} />
+        <CardTitle
+          title="ファイル詳細"
+          subtitle={this.props.file.name} />
+
         <div style={styles.fileImageWrapper}>
 
           <Card style={styles.innerCard}>

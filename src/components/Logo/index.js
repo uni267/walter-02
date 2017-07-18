@@ -25,10 +25,30 @@ const styles = {
   }
 };
 
-const title = <Link to={`/home/`} style={styles.title}>cloud storage</Link>;
-
 class Logo extends Component {
+  renderNotification(notification, idx) {
+    return (
+      <Card key={idx}>
+        <CardHeader
+          title={notification.title}
+          subtitle={notification.modified} />
+
+        <CardText>{notification.body}</CardText>
+      </Card>
+    );
+  }
+
   render() {
+    const title = (
+      <Link
+        to={`/home/`}
+        style={styles.title}>
+
+        cloud storage
+
+      </Link>
+    );
+
     const account_icon = (
       <IconButton iconStyle={styles.smallIcon}>
         <ActionAccountCircle />
@@ -36,7 +56,7 @@ class Logo extends Component {
     );
 
     const avatar_icon = (
-      <Avatar src="images/shikata.jpg" />
+      <Avatar src="/images/shikata.jpg" />
     );
 
     const notification_icon = (
@@ -56,17 +76,9 @@ class Logo extends Component {
             iconButtonElement={notification_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
-            {this.props.notifications.map( (n, idx) => {
-              return (
-                <Card key={n.id}>
-                  <CardHeader
-                    title={n.title}
-                    subtitle={n.modified} />
+            {this.props.notifications.map(
+            (notification, idx) => this.renderNotification(notification, idx))}
 
-                  <CardText>{n.body}</CardText>
-                </Card>
-              );
-            })}
           </IconMenu>
         </Badge>
 

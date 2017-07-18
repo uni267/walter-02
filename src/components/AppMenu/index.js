@@ -18,7 +18,9 @@ const AppMenu = ({open}) => {
         open={open}
         width={200}
         openSecondary={true}>
+
         {menus.map( (menu, idx) => renderMenu(menu, idx) )}
+
       </Drawer>
     </div>
   );

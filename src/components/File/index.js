@@ -135,20 +135,24 @@ class File extends Component {
     );
 
     const deleteActions = [
-      <FlatButton
-        label="Delete"
-        primary={true}
-        onTouchTap={(e) => {
-          this.props.deleteFile(this.props.file);
-          this.setState({ deleteFile: { open: false } });
-          this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
-        }}
-      />,
-      <FlatButton
-        label="close"
-        primary={false}
-        onTouchTap={() => this.setState({ deleteFile: { open: false } })}
-      />
+      (
+        <FlatButton
+          label="Delete"
+          primary={true}
+          onTouchTap={(e) => {
+            this.props.deleteFile(this.props.file);
+            this.setState({ deleteFile: { open: false } });
+            this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
+          }}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          primary={false}
+          onTouchTap={() => this.setState({ deleteFile: { open: false } })}
+          />
+      )
     ];
 
     const editAuthorities = (
@@ -159,31 +163,34 @@ class File extends Component {
     );
 
     const editActions = [
+      (
         <FlatButton
-      label="save"
-      primary={true}
-      onTouchTap={(e) => {
-        e.preventDefault();
-        const file_name = this.refs.fileName.getValue();
-        if ( file_name === "" ) {
-          this.setState({ editFile: { open: false } });
-          return;
-        }
+          label="save"
+          primary={true}
+          onTouchTap={(e) => {
+            e.preventDefault();
+            const file_name = this.refs.fileName.getValue();
+            if ( file_name === "" ) {
+              this.setState({ editFile: { open: false } });
+              return;
+            }
 
-        let file = this.props.file;
-        file.name = file_name;
-        this.props.editFile(file);
-        this.setState({ editFile: { open: false } });
-        this.props.triggerSnackbar("ファイル名を変更しました");
-      }}
-        />,
-      <FlatButton
-        label="close"
-        primary={false}
-        onTouchTap={() => this.setState({ editFile: { open: false } })}
-        />
-        ];
-
+            let file = this.props.file;
+            file.name = file_name;
+            this.props.editFile(file);
+            this.setState({ editFile: { open: false } });
+            this.props.triggerSnackbar("ファイル名を変更しました");
+          }}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          primary={false}
+          onTouchTap={() => this.setState({ editFile: { open: false } })}
+          />
+      )
+    ];
 
     return connectDragSource(
       <div

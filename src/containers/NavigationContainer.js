@@ -39,8 +39,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onAccountClick: () => { dispatch(toggleAccount()) },
-  onMenuIconClick: () => { dispatch(toggleMenu()) }
+  onAccountClick: () => { dispatch(toggleAccount()); },
+  onMenuIconClick: () => { dispatch(toggleMenu()); }
 });
 
 NavigationContainer = connect(
