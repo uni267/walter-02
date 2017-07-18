@@ -8,21 +8,21 @@ import MenuItem from "material-ui/MenuItem";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
 class AddDirDialog extends Component {
-  render() {
-    const handleCreate = (e) => {
-      e.preventDefault();
-      const dir_name = this.refs.dirName.getValue();
+  onCreateClick = (e) => {
+    e.preventDefault();
+    const dir_name = this.refs.dirName.getValue();
 
-      if (dir_name === "") {
-        this.props.toggleAddDir();
-        return;
-      }
-
-      this.props.createDir(dir_name);
+    if (dir_name === "") {
       this.props.toggleAddDir();
-      this.props.triggerSnackbar(`${dir_name}を作成しました`);
-    };
+      return;
+    }
 
+    this.props.createDir(dir_name);
+    this.props.toggleAddDir();
+    this.props.triggerSnackbar(`${dir_name}を作成しました`);
+  };
+
+  render() {
     const actions = [
       (
         <FlatButton
@@ -36,7 +36,7 @@ class AddDirDialog extends Component {
           label="Create"
           primary={true}
           keyboardFocused={true}
-          onTouchTap={handleCreate}
+          onTouchTap={this.onCreateClick}
           />
       )
     ];
