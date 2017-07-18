@@ -12,7 +12,7 @@ const filesReducer = (state = FILES, action) => {
         id: next_file_id,
         name: action.name,
         modified: moment().format("YYYY-MM-DD HH:mm"),
-        owner: "user01",
+        owner: "ユーザ 太郎",
         is_dir: false,
         dir_id: action.dir_id,
         is_display: true,
@@ -55,7 +55,7 @@ const filesReducer = (state = FILES, action) => {
         name: action.name,
         dir_id: action.dir_id,
         modified: moment().format("YYYY-MM-DD HH:mm"),
-        owner: "user01",
+        owner: "ユーザ 太郎",
         is_dir: true,
         is_display: true,
         is_star: false
