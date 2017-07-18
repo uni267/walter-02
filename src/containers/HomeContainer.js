@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 // containers
 import NavigationContainer from "./NavigationContainer";
-import FileBoxContainer from "./FileBox";
+import FileBoxContainer from "./FileBoxContainer";
 
 class HomeContainer extends Component {
   constructor(props) {

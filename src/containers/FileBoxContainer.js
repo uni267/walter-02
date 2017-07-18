@@ -25,7 +25,7 @@ import {
   closeSnackbar
 } from "../actions";
 
-class FileBox extends Component {
+class FileBoxContainer extends Component {
   render() {
     let _files = this.props.files.slice();
 
@@ -103,5 +103,5 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   closeSnackbar: () => { dispatch(closeSnackbar()); }
 });
 
-const FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBox);
+FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBoxContainer);
 export default FileBoxContainer;
