@@ -1,13 +1,10 @@
 import React, { Component } from "react";
 
 // material-ui
-import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
-import { Tabs, Tab } from "material-ui/Tabs";
+import { Card, CardHeader, CardTitle, CardText, CardMedia } from 'material-ui/Card';
 
 // components
-import BasicInfo from "./BasicInfo";
 import History from "./History";
-import Authority from "./Authority";
 
 const styles = {
   fileImageWrapper: {
@@ -35,19 +32,19 @@ class FileDetail extends Component {
 
     return (
       <Card style={{paddingBottom: 10}}>
-        <CardTitle
+        <CardHeader
           title="ファイル詳細"
           subtitle={this.props.file.name} />
 
         <div style={styles.fileImageWrapper}>
 
-          <Card style={styles.innerCard}>
+          <Card style={{...styles.innerCard, width: "70%"}}>
             <CardMedia overlay={cardOverlay}>
               <img src="/images/baibaikihon.png" />
             </CardMedia>
           </Card>
 
-          <Card style={styles.innerCard}>
+          <Card style={{...styles.innerCard, width: "30%"}}>
             <CardText>
               {this.renderHistories(this.props.file)}
             </CardText>
