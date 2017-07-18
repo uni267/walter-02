@@ -15,9 +15,11 @@ import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
+import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
 
 // components
 import Authority from "../FileDetail/Authority";
+import DirTree from "../DirTree";
 
 const style = {
   row: {
@@ -86,6 +88,12 @@ class File extends Component {
       },
       deleteFile: {
         open: false
+      },
+      moveFile: {
+        open: false
+      },
+      copyFile: {
+        open: false
       }
     };
 
@@ -134,7 +142,7 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
-    const deleteActions = [
+    const deleteFileActions = [
       (
         <FlatButton
           label="Delete"
@@ -155,14 +163,14 @@ class File extends Component {
       )
     ];
 
-    const editAuthorities = (
+    const editAuthoryActions = (
       <FlatButton
         label="close"
         onTouchTap={() => this.setState({ editAuthority: { open: false } })}
         />
     );
 
-    const editActions = [
+    const editFileActions = [
       (
         <FlatButton
           label="save"
@@ -188,6 +196,36 @@ class File extends Component {
           label="close"
           primary={false}
           onTouchTap={() => this.setState({ editFile: { open: false } })}
+          />
+      )
+    ];
+
+    const moveFileActions = [
+      (
+        <FlatButton
+          label="移動"
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={() => this.setState({ moveFile: { open: false } })}
+          />
+      )
+    ];
+
+    const copyFileActions = [
+      (
+        <FlatButton
+          label="コピー"
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={() => this.setState({ copyFile: { open: false } })}
           />
       )
     ];
@@ -226,9 +264,9 @@ class File extends Component {
             iconButtonElement={action_menu_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
-            <MenuItem primaryText="ダウンロード" />
-
-            <MenuItem primaryText="コピー" />
+            <MenuItem
+              onTouchTap={() => this.setState({ copyFile: { open: true } })}
+              primaryText="コピー" />
 
             <MenuItem
               primaryText="ファイル名変更"
@@ -238,7 +276,9 @@ class File extends Component {
               primaryText="ファイル削除"
               onTouchTap={() => this.setState({ deleteFile: { open: true } })} />
 
-            <MenuItem primaryText="移動" />
+            <MenuItem
+              primaryText="移動"
+              onTouchTap={() => this.setState({ moveFile: { open: true } })} />
 
             <MenuItem
               primaryText="権限を変更"
@@ -252,7 +292,7 @@ class File extends Component {
         <Dialog
           title="ファイル名を変更"
           modal={false}
-          actions={editActions}
+          actions={editFileActions}
           open={this.state.editFile.open}
           onRequestClose={() => this.setState({ editFile: { open: false } })} >
 
@@ -266,7 +306,7 @@ class File extends Component {
         <Dialog
           title="権限を変更"
           modal={false}
-          actions={editAuthorities}
+          actions={editAuthoryActions}
           open={this.state.editAuthority.open}
           onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
 
@@ -283,10 +323,30 @@ class File extends Component {
         <Dialog
           title={`${this.props.file.name}を削除しますか？`}
           modal={false}
-          actions={deleteActions}
+          actions={deleteFileActions}
           open={this.state.deleteFile.open}
           onRequestClose={() => this.setState({ deleteFile: {open: false} })}
         >
+        </Dialog>
+
+        <Dialog
+          title="ファイルを移動"
+          open={this.state.moveFile.open}
+          modal={false}
+          actions={moveFileActions} >
+
+          <DirTree />
+
+        </Dialog>
+
+        <Dialog
+          title="ファイルをコピー"
+          open={this.state.copyFile.open}
+          modal={false}
+          actions={copyFileActions} >
+
+          <DirTree />
+
         </Dialog>
 
       </div>
