@@ -12,10 +12,12 @@ import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import MenuItem from "material-ui/MenuItem";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import Dialog from "material-ui/Dialog";
+import FlatButton from "material-ui/FlatButton";
+import TextField from "material-ui/TextField";
 
 // components
-import EditIcon from "./EditIcon";
-import DeleteIcon from "./DeleteIcon";
+import Authority from "../FileDetail/Authority";
 
 const style = {
   row: {
@@ -75,7 +77,16 @@ class File extends Component {
     super(props);
     this.state = {
       checked: false,
-      hover: false
+      hover: false,
+      editFile: {
+        open: false
+      },
+      editAuthority: {
+        open: false
+      },
+      deleteFile: {
+        open: false
+      }
     };
 
     this.onClickCheckBox = this.onClickCheckBox.bind(this);
@@ -123,6 +134,57 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
+    const deleteActions = [
+      <FlatButton
+        label="Delete"
+        primary={true}
+        onTouchTap={(e) => {
+          this.props.deleteFile(this.props.file);
+          this.setState({ deleteFile: { open: false } });
+          this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
+        }}
+      />,
+      <FlatButton
+        label="close"
+        primary={false}
+        onTouchTap={() => this.setState({ deleteFile: { open: false } })}
+      />
+    ];
+
+    const editAuthorities = (
+      <FlatButton
+        label="close"
+        onTouchTap={() => this.setState({ editAuthority: { open: false } })}
+        />
+    );
+
+    const editActions = [
+        <FlatButton
+      label="save"
+      primary={true}
+      onTouchTap={(e) => {
+        e.preventDefault();
+        const file_name = this.refs.fileName.getValue();
+        if ( file_name === "" ) {
+          this.setState({ open: false });
+          return;
+        }
+
+        let file = this.props.file;
+        file.name = file_name;
+        this.props.editFile(file);
+        this.setState({ editFile: { open: false } });
+        this.props.triggerSnackbar("ファイル名を変更しました");
+      }}
+        />,
+      <FlatButton
+        label="close"
+        primary={false}
+        onTouchTap={() => this.setState({ open: false })}
+        />
+        ];
+
+
     return connectDragSource(
       <div
         onMouseEnter={this.toggleHover}
@@ -153,25 +215,73 @@ class File extends Component {
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
 
         <div style={{...style.cell, width: "20%"}}>
-          <EditIcon file={file}
-                    triggerSnackbar={this.props.triggerSnackbar}
-                    editFile={this.props.editFile} />
-
-          <DeleteIcon file={file}
-                      onDeleteDone={onDeleteDone}
-                      triggerSnackbar={this.props.triggerSnackbar}
-                      deleteFile={this.props.deleteFile} />
           <IconMenu
             iconButtonElement={action_menu_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-            <MenuItem primaryText="詳細を表示" />
+
             <MenuItem primaryText="ダウンロード" />
+
             <MenuItem primaryText="コピー" />
+
+            <MenuItem
+              primaryText="ファイル名変更"
+              onTouchTap={() => this.setState({ editFile: { open: true } })} />
+
+            <MenuItem
+              primaryText="ファイル削除"
+              onTouchTap={() => this.setState({ deleteFile: { open: true } })} />
+
             <MenuItem primaryText="移動" />
-            <MenuItem primaryText="権限を変更" />
+
+            <MenuItem
+              primaryText="権限を変更"
+              onTouchTap={() => this.setState({ editAuthority: { open: true } })} />
+
             <MenuItem primaryText="タイムスタンプ発行" />
+
           </IconMenu>
         </div>
+
+        <Dialog
+          title="ファイル名を変更"
+          modal={false}
+          actions={editActions}
+          open={this.state.editFile.open}
+          onRequestClose={() => this.setState({ editFile: { open: false } })} >
+
+          <TextField
+            ref="fileName"
+            defaultValue={this.props.file.name}
+            floatingLabelText="ファイル名を変更" />
+
+        </Dialog>
+
+        <Dialog
+          title="権限を変更"
+          modal={false}
+          actions={editAuthorities}
+          open={this.state.editAuthority.open}
+          onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
+
+          <Authority
+            file={this.props.file}
+            users={this.props.users}
+            roles={this.props.roles}
+            addAuthority={this.props.addAuthority}
+            deleteAuthority={this.props.deleteAuthority}
+            triggerSnackbar={this.props.triggerSnackbar} />
+
+        </Dialog>
+
+        <Dialog
+          title={`${this.props.file.name}を削除しますか？`}
+          modal={false}
+          actions={deleteActions}
+          open={this.state.deleteFile.open}
+          onRequestClose={() => this.setState({ deleteFile: {open: false} })}
+        >
+        </Dialog>
+
       </div>
     );
   }
