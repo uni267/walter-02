@@ -11,7 +11,7 @@ const FILES = [
   },
   {
     id: 1,
-    name: "交通費領収書2017-01-20.pdf",
+    name: "契約書2017-01-20.pdf",
     modified: "2017-01-20 9:30",
     owner: "user01",
     is_dir: false,

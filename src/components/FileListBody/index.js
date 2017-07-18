@@ -44,7 +44,11 @@ class FileListBody extends Component {
             deleteFile={this.props.deleteFile}
             editFile={this.props.editFile}
             triggerSnackbar={this.props.triggerSnackbar}
-            toggleStar={this.props.toggleStar} />
+            toggleStar={this.props.toggleStar}
+            addAuthority={this.props.addAuthority}
+            deleteAuthority={this.props.deleteAuthority}
+            roles={this.props.roles}
+            users={this.props.users} />
     );
 
     return file.is_dir ? dir_component : file_component;

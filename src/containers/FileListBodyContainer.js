@@ -13,7 +13,9 @@ import {
   deleteFile,
   editFile,
   triggerSnackbar,
-  toggleStar
+  toggleStar,
+  addAuthority,
+  deleteAuthority
 } from "../actions";
 
 class FileListBodyContainer extends Component {
@@ -27,12 +29,19 @@ class FileListBodyContainer extends Component {
         deleteFile={this.props.deleteFile}
         editFile={this.props.editFile}
         triggerSnackbar={this.props.triggerSnackbar}
-        toggleStar={this.props.toggleStar} />
+        toggleStar={this.props.toggleStar}
+        addAuthority={this.props.addAuthority}
+        deleteAuthority={this.props.deleteAuthority}
+        roles={this.props.roles}
+        users={this.props.users} />
     );
   }
 }
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    roles: state.roles,
+    users: state.users
+  };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -41,7 +50,13 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteFile: (file) => { dispatch(deleteFile(file)); },
   editFile: (file) => { dispatch(editFile(file)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  toggleStar: (file) => { dispatch(toggleStar(file)); }
+  toggleStar: (file) => { dispatch(toggleStar(file)); },
+  addAuthority: (file_id, user, role) => {
+    dispatch(addAuthority(file_id, user, role));
+  },
+  deleteAuthority: (file_id, authority_id) => {
+    dispatch(deleteAuthority(file_id, authority_id));
+  }
 });
 
 FileListBodyContainer = connect(
