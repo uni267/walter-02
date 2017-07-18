@@ -50,7 +50,6 @@ class FileBoxContainer extends Component {
             <FileSearch
               searchWord={this.props.searchWord}
               searchFile={this.props.searchFile} />
-
           </Col>
         </Row>
         <Row>
@@ -71,9 +70,7 @@ class FileBoxContainer extends Component {
 
           </Col>
           <Col xs={2} sm={2} md={2} lg={2}>
-
             <FileActionContainer dir_id={this.props.dir_id} />
-
           </Col>
         </Row>
       </Card>
