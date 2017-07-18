@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import AutoComplete from "material-ui/AutoComplete";
 import RaisedButton from 'material-ui/RaisedButton';
 import MenuItem from "material-ui/MenuItem";
+import Dialog from "material-ui/Dialog";
 
 // icons
 import SocialPerson from "material-ui/svg-icons/social/person";
@@ -57,6 +58,11 @@ class Authority extends Component {
       },
       role: {
         text: ""
+      },
+      deleteDialog: {
+        open: false,
+        file_id: null,
+        auth_id: null
       }
     };
 
@@ -151,7 +157,13 @@ class Authority extends Component {
             <RaisedButton
               label="削除"
               disabled={deleteDisabled}              
-              onClick={() => this.onDeleteClick(file.id, auth.id)}
+              onClick={() => this.setState({
+                deleteDialog: {
+                  open: true,
+                  file_id: file.id,
+                  auth_id: auth.id
+                }
+              })}
               />
           </div>
         </div>
@@ -160,6 +172,29 @@ class Authority extends Component {
   }
 
   render() {
+    const deleteDialogActions = [
+      (
+        <RaisedButton
+          label="OK"
+          primary={true} 
+          onTouchTap={() => {
+            this.setState({ deleteDialog: { open: false } });
+            this.onDeleteClick(
+              this.state.deleteDialog.file_id,
+              this.state.deleteDialog.auth_id
+            );
+          }}
+          />
+      ),
+      (
+        <RaisedButton
+          label="cancel"
+          primary={false}
+          onTouchTap={() => this.setState({ deleteDialog: { open: false } })}
+          />
+      )
+    ];
+
     let addClickable = this.state.user.text !== "" && this.state.role.text !== "";
 
     return (
@@ -197,6 +232,14 @@ class Authority extends Component {
         <div style={style.roleListWrapper}>
           {this.renderAuthorities(this.props.file)}
         </div>
+
+        <Dialog
+          title="削除してもよろしいですか"
+          open={this.state.deleteDialog.open}
+          modal={true}
+          actions={deleteDialogActions} >
+        </Dialog>
+
       </div>
     );
   }
