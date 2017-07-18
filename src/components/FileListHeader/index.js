@@ -32,35 +32,37 @@ const headers = [
 ];
 
 class FileListHeader extends Component {
+  onSortClick = (e) => {
+    const target = e.target.dataset.sortKey;
+    if (target === undefined) return;
+
+    if (this.props.fileSortTarget.sorted !== target) {
+      this.props.setSortTarget(target);
+    } else {
+      this.props.toggleSortTarget();
+    }
+
+    this.props.sortFile(
+      this.props.fileSortTarget.sorted, 
+      this.props.fileSortTarget.desc
+    );
+  }
+
+  renderHeader(header, idx) {
+    return (
+      <div key={idx}
+           onClick={this.onSortClick}
+           data-sort-key={header.key}
+           style={{...style.cell, width: header.width}}>
+        {header.label}
+      </div>
+    );
+  }
+
   render() {
-    const onSortClick = (e) => {
-      const target = e.target.dataset.sortKey;
-      if (target === undefined) return;
-
-      if (this.props.fileSortTarget.sorted !== target) {
-        this.props.setSortTarget(target);
-      } else {
-        this.props.toggleSortTarget();
-      }
-
-      this.props.sortFile(
-        this.props.fileSortTarget.sorted, 
-        this.props.fileSortTarget.desc
-      );
-    };
-
     return (
       <div style={style.row}>
-        {headers.map( (header, idx) => {
-          return (
-            <div key={idx}
-                 onClick={onSortClick}
-                 data-sort-key={header.key}
-                 style={{...style.cell, width: header.width}}>
-              {header.label}
-            </div>
-          );
-        })}
+        {headers.map( (header, idx) => this.renderHeader(header, idx) )}
       </div>
     );
   }

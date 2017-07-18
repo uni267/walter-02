@@ -24,18 +24,21 @@ class AddDirDialog extends Component {
     };
 
     const actions = [
+      (
         <FlatButton
-      label="Cancel"
-      primary={true}
-      onTouchTap={this.props.toggleAddDir}
-        />,
-
-      <FlatButton
-        label="Create"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={handleCreate}
-        />,
+          label="Cancel"
+          primary={true}
+          onTouchTap={this.props.toggleAddDir}
+          />
+      ),
+      (
+        <FlatButton
+          label="Create"
+          primary={true}
+          keyboardFocused={true}
+          onTouchTap={handleCreate}
+          />
+      )
     ];
 
     return (
