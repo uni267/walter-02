@@ -3,8 +3,15 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
+// router
+import { Link } from "react-router-dom";
+
 // material
 import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
+
+// icon
+import ActionDelete from "material-ui/svg-icons/action/delete";
 
 // components
 import AddFileDialog from "../components/AddFileDialog";
@@ -24,6 +31,10 @@ import {
 class FileActionContainer extends Component {
 
   render() {
+    const deleteIcon = (
+      <ActionDelete />
+    );
+
     return (
       <div style={{marginRight: 30}}>
         <Menu>
@@ -44,6 +55,12 @@ class FileActionContainer extends Component {
             open={this.props.open_dir}
             triggerSnackbar={this.props.triggerSnackbar}
             />
+          <Link to={"/home/?dir_id=9999"} style={{textDecoration: "none"}}>
+            <MenuItem
+              primaryText="ごみ箱"
+              leftIcon={deleteIcon}
+              />
+          </Link>
         </Menu>
       </div>
     );

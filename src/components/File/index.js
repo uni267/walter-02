@@ -15,7 +15,6 @@ import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
 
 // components
 import Authority from "../FileDetail/Authority";
@@ -120,7 +119,7 @@ class File extends Component {
   };
 
   render() {
-    const { isDragging, connectDragSource, file, onDeleteDone } = this.props;
+    const { isDragging, connectDragSource, file } = this.props;
 
     const opacity = isDragging ? 0.3 : 1;
 

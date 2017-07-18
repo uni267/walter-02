@@ -63,7 +63,13 @@ const filesReducer = (state = FILES, action) => {
     ];
 
   case "DELETE_FILE":
-    return state.filter(file => file.id !== action.file.id);
+    return state.map(file => {
+      if (file.id === action.file.id) {
+        file.dir_id = 9999;
+        return file;
+      }
+      return file;
+    });
 
   case "EDIT_FILE":
     return state.map(file => {
