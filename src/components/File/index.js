@@ -166,7 +166,7 @@ class File extends Component {
         e.preventDefault();
         const file_name = this.refs.fileName.getValue();
         if ( file_name === "" ) {
-          this.setState({ open: false });
+          this.setState({ editFile: { open: false } });
           return;
         }
 
@@ -180,7 +180,7 @@ class File extends Component {
       <FlatButton
         label="close"
         primary={false}
-        onTouchTap={() => this.setState({ open: false })}
+        onTouchTap={() => this.setState({ editFile: { open: false } })}
         />
         ];
 
