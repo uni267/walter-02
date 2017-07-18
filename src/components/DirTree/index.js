@@ -100,33 +100,9 @@ class DirTree extends Component {
   };
 
   render() {
-    const nodes = {
-      id: 1,
-      name: "1",
-      children: [
-        { id: 11, name: "1-1" },
-        { id: 12, name: "1-2",
-          children: [
-            { id: 121, name: "1-2-1" },
-            { id: 122, name: "1-2-2" }
-          ]
-        },
-        { id: 13, name: "1-3",
-          children: [
-            { id: 131, name: "1-3-1" },
-            { id: 132, name: "1-3-2",
-              children: [
-                { id: 1321, name: "1-3-2-1" }
-              ]
-            }
-          ]
-        }
-      ]
-    };
-
     return (
       <TreeNode
-        nodes={nodes}
+        nodes={this.props.nodes}
         onClickSelect={this.onClickSelect}
         selectedId={this.state.selectedId} />
     );

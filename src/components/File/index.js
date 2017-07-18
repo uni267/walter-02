@@ -19,7 +19,7 @@ import { Card, CardTitle, CardText, CardMedia } from 'material-ui/Card';
 
 // components
 import Authority from "../FileDetail/Authority";
-import DirTree from "../DirTree";
+import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const style = {
   row: {
@@ -335,7 +335,7 @@ class File extends Component {
           modal={false}
           actions={moveFileActions} >
 
-          <DirTree />
+          <DirTreeContainer />
 
         </Dialog>
 
@@ -345,7 +345,7 @@ class File extends Component {
           modal={false}
           actions={copyFileActions} >
 
-          <DirTree />
+          <DirTreeContainer />
 
         </Dialog>
 
