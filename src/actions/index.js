@@ -102,3 +102,8 @@ export const deleteAuthority = (file_id, authority_id) => ({
   file_id,
   authority_id
 });
+
+export const addDirTree = (file) => ({
+  type: "ADD_DIR_TREE",
+  file
+});

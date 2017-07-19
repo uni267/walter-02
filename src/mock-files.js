@@ -184,16 +184,6 @@ const FILES = [
     dir_id: 0,
     is_display: true,
     is_star: false
-  },
-  {
-    id: 9999,
-    name: "ごみ箱",
-    modified: "2017-01-01 00:00",
-    owner: "ユーザ 太郎",
-    is_dir: true,
-    dir_id: 0,
-    is_display: false,
-    is_star: false
   }
 ];
 

@@ -60,15 +60,14 @@ describe("filesReducer", () => {
 
   describe("DELETE_FILE", () => {
 
-    it("削除後の一覧が返却される", () => {
+    it("ごみ箱(id:9999)に1つのファイルが存在する", () => {
       const deletedFile = FILES[FILES.length - 1];
       const result = filesReducer(FILES, {
         type: "DELETE_FILE",
         file: deletedFile
-      }).length;
+      });
 
-      const expected = FILES.length - 1;
-      expect(result).toEqual(expected);
+      expect(result.filter(r => r.dir_id === 9999).length).toEqual(1);
     });
 
   });
