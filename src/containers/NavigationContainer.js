@@ -20,7 +20,8 @@ class NavigationContainer extends Component {
           onMenuIconClick={this.props.onMenuIconClick}
           notifications={this.props.notifications} />
 
-        <AppMenu open={this.props.appMenu.open} />
+        <AppMenu open={this.props.appMenu.open}
+                 toggleDrawer={this.props.onMenuIconClick} />
 
         <Account 
           account={this.props.account}
