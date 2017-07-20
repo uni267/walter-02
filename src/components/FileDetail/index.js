@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 
+// router
+import { Link } from "react-router-dom";
+
 // material-ui
 import { Card, CardHeader, CardTitle, CardText, CardMedia } from 'material-ui/Card';
+import IconButton from "material-ui/IconButton";
+
+// material icon
+import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
 
 // components
 import History from "./History";
@@ -30,11 +37,21 @@ class FileDetail extends Component {
       <CardTitle subtitle={this.props.file.name} />
     );
 
+    const fileTitle = (
+      <div style={{display: "flex", alignItems: "center"}}>
+        <Link to={"/home"} style={{textDecoration: "none"}}>
+          <IconButton>
+            <HardwareKeyboardArrowLeft />
+          </IconButton>
+        </Link>
+        {this.props.file.name}
+      </div>
+    );
+
     return (
       <Card style={{paddingBottom: 10}}>
         <CardHeader
-          title="ファイル詳細"
-          subtitle={this.props.file.name} />
+          title={fileTitle} />
 
         <div style={styles.fileImageWrapper}>
 
