@@ -103,7 +103,12 @@ export const deleteAuthority = (file_id, authority_id) => ({
   authority_id
 });
 
-export const addDirTree = (file) => ({
+export const dirRoute = (dir) => ({
+  type: "DIR_TREE"
+});
+
+export const addDirTree = (parent, dir) => ({
   type: "ADD_DIR_TREE",
-  file
+  parent,
+  dir
 });

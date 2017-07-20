@@ -44,7 +44,6 @@ class DirBox extends Component {
       return (idx === 0) ? dir : ["sep", dir];
     }));
 
-
     return (
       <div className="dir-box" style={styles.wrapper}>
         {dirs.map((dir, idx) => this.renderDir(dir, idx))}

@@ -26,6 +26,31 @@ import {
 } from "../actions";
 
 class FileBoxContainer extends Component {
+
+  dirRoute = (dir) => {
+    let result = [];
+
+    this.props.dirs.slice()
+      .sort( (a, b) => a.depth < b.depth)
+      .filter(d => {
+        return d.descendant === Number(dir.id) && d.depth !== 0;
+      })
+      .forEach(d => {
+        result = [...result, { id: d.ancestor }];
+        result = [...result, { id: d.descendant }];
+      });
+
+    return [
+      ...result.filter(r => r.id !== Number(dir.id)),
+      { id: Number(dir.id) }
+    ];
+
+  };
+
+  addDirName = (dir) => {
+    return this.props.allFiles.filter(file => dir.id == file.id)[0];
+  };
+
   render() {
     let _files = this.props.files.slice();
 
@@ -39,11 +64,14 @@ class FileBoxContainer extends Component {
       }).filter(file => file.is_display);
     }
 
+    const dirs = this.dirRoute({ id: this.props.dir_id })
+        .map(this.addDirName);
+
     return (
       <Card>
         <Row>
           <Col xs={5} sm={5} md={5} lg={5}>
-            <DirBox dirs={this.props.dirs} />
+            <DirBox dirs={dirs} />
           </Col>
 
           <Col xs={7} sm={7} md={7} lg={7}>
@@ -85,9 +113,8 @@ const mapStateToProps = (state, ownProps) => {
     fileSortTarget: state.fileSortTarget,
     files: state.files.filter(f => f.is_display)
       .filter(f => Number(f.dir_id) === Number(ownProps.dir_id)),
-    dirs: state.files.filter(f => f.is_dir)
-      .filter(f => Number(f.id) <= Number(ownProps.dir_id))
-      .sort( (a, b) => a.id > b.id)
+    allFiles: state.files,
+    dirs: state.dirs
   };
 };
 
