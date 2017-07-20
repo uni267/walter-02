@@ -167,6 +167,7 @@ class FileSearch extends Component {
       <div style={{display: "flex"}}>
 
         <IconButton
+          style={{marginTop: 23}}
           onClick={() => onTouchTapDelete(menu) } >
           <ContentRemoveCircleOutline />
         </IconButton>
