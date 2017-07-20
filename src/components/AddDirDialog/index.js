@@ -18,7 +18,15 @@ class AddDirDialog extends Component {
     }
 
     this.props.createDir(dir_name);
+
+    this.props.createDirTree(
+      {
+        id: this.props.allDirs.sort( (a, b) => a.id < b.id )[0].id + 1
+      }
+    );
+
     this.props.toggleAddDir();
+
     this.props.triggerSnackbar(`${dir_name}を作成しました`);
   };
 

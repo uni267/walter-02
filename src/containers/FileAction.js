@@ -21,6 +21,7 @@ import AddDirDialog from "../components/AddDirDialog";
 import {
   toggleAddDir,
   createDir,
+  createDirTree,
   triggerSnackbar,
   toggleAddFile,
   pushFileToBuffer,
@@ -50,8 +51,10 @@ class FileActionContainer extends Component {
             />
           <AddDirDialog
             dir_id={this.props.dir_id}
+            allDirs={this.props.allDirs}
             toggleAddDir={this.props.toggleAddDir}
             createDir={this.props.createDir}
+            createDirTree={this.props.createDirTree}
             open={this.props.open_dir}
             triggerSnackbar={this.props.triggerSnackbar}
             />
@@ -71,13 +74,17 @@ const mapStateToProps = (state) => {
   return {
     open_dir: state.addDir.open,
     open_file: state.addFile.open,
-    filesBuffer: state.filesBuffer
+    filesBuffer: state.filesBuffer,
+    allDirs: state.files.filter(file => file.is_dir)
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleAddDir: () => { dispatch(toggleAddDir()); },
   createDir: (dir_name) => { dispatch(createDir(ownProps.dir_id, dir_name)); },
+  createDirTree: (dir) => {
+    dispatch(createDirTree({id: Number(ownProps.dir_id)}, dir));
+  },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   toggleAddFile: () => { dispatch(toggleAddFile()); },
   pushFileToBuffer: (dir_id, file_name) => { 

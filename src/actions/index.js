@@ -107,7 +107,7 @@ export const dirRoute = (dir) => ({
   type: "DIR_TREE"
 });
 
-export const addDirTree = (parent, dir) => ({
+export const createDirTree = (parent, dir) => ({
   type: "ADD_DIR_TREE",
   parent,
   dir
