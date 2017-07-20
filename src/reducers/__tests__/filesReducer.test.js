@@ -4,9 +4,9 @@ import FILES from "../../mock-files";
 describe("filesReducer", () => {
 
   describe("default", () => {
-    it("CI test", () => {
-      expect(false).toEqual(true);
-    });
+    // it("CI test", () => {
+    //   expect(false).toEqual(true);
+    // });
 
     it("ファイル一覧が返却される", () => {
       const result = filesReducer(FILES, {});
