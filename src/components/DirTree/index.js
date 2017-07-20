@@ -30,7 +30,7 @@ class TreeNode extends Component {
   };
 
   toggleIcon = () => {
-    if (this.props.nodes.children === undefined) {
+    if (this.props.nodes.children.length === 0) {
       return <span style={styles.noToggleIcon}></span>;
     }
 
