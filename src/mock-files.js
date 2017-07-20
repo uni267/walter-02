@@ -177,14 +177,35 @@ const FILES = [
   },
   {
     id: 4,
-    name: "新しいフォルダ",
+    name: "folder1",
     modified: "2017-01-01 10:00",
     owner: "ユーザ 太郎",
     is_dir: true,
     dir_id: 0,
     is_display: true,
     is_star: false
+  },
+  {
+    id: 5,
+    name: "folder2",
+    modified: "2017-01-01 10:00",
+    owner: "ユーザ 太郎",
+    is_dir: true,
+    dir_id: 0,
+    is_display: true,
+    is_star: false
+  },
+  {
+    id: 6,
+    name: "folder1-1",
+    modified: "2017-01-01 10:00",
+    owner: "ユーザ 太郎",
+    is_dir: true,
+    dir_id: 4,
+    is_display: true,
+    is_star: false
   }
+
 ];
 
 export default FILES;
