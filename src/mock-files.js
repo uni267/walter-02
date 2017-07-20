@@ -204,8 +204,17 @@ const FILES = [
     dir_id: 4,
     is_display: true,
     is_star: false
+  },
+  {
+    id: 9999,
+    name: "ごみ箱",
+    modified: "0000-00-00 00:00",
+    owner: "ユーザ 太郎",
+    is_dir: true,
+    dir_id: 0,
+    is_diplay: false,
+    is_star: false
   }
-
 ];
 
 export default FILES;
