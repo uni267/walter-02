@@ -25,10 +25,10 @@ const style = {
 
 const headers = [
   {key: "checkbox", width: "5%", label: ""},
-  {key: "name", width: "40%", label: "名前"},
+  {key: "name", width: "50%", label: "名前"},
   {key: "modified", width: "20%", label: "最終更新"},
   {key: "owner", width: "15%", label: "所有者"},
-  {key: false, width: "20%", label: "Action"},
+  {key: false, width: "10%", label: "Action"},
 ];
 
 class FileListHeader extends Component {

@@ -97,7 +97,7 @@ class FileSearch extends Component {
     return (
       <div>
         <TextField
-          style={{width: 200}}
+          style={{width: 270}}
           value={this.props.searchWord.value}
           onChange={this.handleChange}
           hintText="簡易検索"

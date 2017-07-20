@@ -24,10 +24,11 @@ const style = {
     alignItems: "center",
     paddingLeft: 24,
     paddingRight: 24,
-    height: 48,
+    height: 70,
     textAlign: "left",
     fontSize: 13,
     fontFamily: "Roboto sans-serif",
+    color: "rgb(80, 80, 80)",
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
@@ -117,7 +118,7 @@ class Dir extends Component {
             uncheckedIcon={favorite_icon_border} />
         </div>
 
-        <div style={{...style.cell, width: "40%"}}>
+        <div style={{...style.cell, width: "50%"}}>
           <FileFolderOpen style={style.dir_icon} />
           <Link to={`/home/?dir_id=${dir.id}`} style={{...style.dir, color}}>
             {dir.name}
@@ -126,7 +127,7 @@ class Dir extends Component {
 
         <div style={{...style.cell, width: "20%"}}>{dir.modified}</div>
         <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
-        <div style={{...style.cell, width: "20%"}}>
+        <div style={{...style.cell, width: "10%"}}>
           <IconMenu
             iconButtonElement={action_menu_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>

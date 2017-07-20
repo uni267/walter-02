@@ -34,10 +34,11 @@ const style = {
     alignItems: "center",
     paddingLeft: 24,
     paddingRight: 24,
-    height: 48,
+    height: 70,
     textAlign: "left",
     fontSize: 13,
     fontFamily: "Roboto sans-serif",
+    color: "rgb(80, 80, 80)",
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
@@ -248,7 +249,7 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...style.cell, width: "40%"}}>
+        <div style={{...style.cell, width: "50%"}}>
           <Link to={`/file-detail/${file.id}`} style={{...style.file, color}} >
             {file.name}
           </Link>
@@ -258,7 +259,7 @@ class File extends Component {
 
         <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
 
-        <div style={{...style.cell, width: "20%"}}>
+        <div style={{...style.cell, width: "10%"}}>
           <IconMenu
             iconButtonElement={action_menu_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>

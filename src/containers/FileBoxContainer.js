@@ -4,7 +4,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // material grid
-import { Row, Col } from 'react-flexbox-grid';
 import { Card } from 'material-ui/Card';
 
 // components
@@ -24,6 +23,12 @@ import {
   triggerSnackbar,
   closeSnackbar
 } from "../actions";
+
+const styles = {
+  row: {
+    display: "flex"
+  }
+};
 
 class FileBoxContainer extends Component {
 
@@ -69,19 +74,20 @@ class FileBoxContainer extends Component {
 
     return (
       <Card>
-        <Row>
-          <Col xs={5} sm={5} md={5} lg={5}>
+        <div style={{display: "flex"}}>
+          <div style={{width: "40%"}}>
             <DirBox dirs={dirs} />
-          </Col>
+          </div>
 
-          <Col xs={7} sm={7} md={7} lg={7}>
+          <div style={{width: "60%"}}>
             <FileSearch
               searchWord={this.props.searchWord}
               searchFile={this.props.searchFile} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={10} sm={10} md={10} lg={10}>
+          </div>
+        </div>
+
+        <div style={{display: "flex"}}>
+          <div style={{width: "78%"}}>
             <FileListHeader
               setSortTarget={this.props.setSortTarget}
               toggleSortTarget={this.props.toggleSortTarget}
@@ -95,12 +101,13 @@ class FileBoxContainer extends Component {
             <FileSnackbar
               closeSnackbar={this.props.closeSnackbar}
               snackbar={this.props.snackbar} />
+          </div>
 
-          </Col>
-          <Col xs={2} sm={2} md={2} lg={2}>
+          <div style={{width: "22%"}}>
             <FileActionContainer dir_id={this.props.dir_id} />
-          </Col>
-        </Row>
+          </div>
+
+        </div>
       </Card>
     );
   }
