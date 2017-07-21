@@ -103,6 +103,22 @@ class Dir extends Component {
 
   };
 
+  renderMember = () => {
+    const { authorities } = this.props.dir;
+
+    const member = authorities.length > 1
+          ? `${authorities.length} 人のメンバー`
+          : `${authorities[0].user.name_jp} のみ`;
+
+    return (
+      <span
+        onClick={() => this.setState({ editAuthority: { open: true } })}>
+        {member}
+      </span>
+    );
+
+  };
+
   renderMoveDialog = () => {
     const actions = [
       (
@@ -340,7 +356,11 @@ class Dir extends Component {
         </div>
 
         <div style={{...style.cell, width: "20%"}}>{dir.modified}</div>
-        <div style={{...style.cell, width: "15%"}}>{dir.owner}</div>
+
+        <div style={{...style.cell, width: "15%"}}>
+          {this.renderMember()}
+        </div>
+
         <div style={{...style.cell, width: "10%"}}>
           <IconMenu
             iconButtonElement={action_menu_icon}
