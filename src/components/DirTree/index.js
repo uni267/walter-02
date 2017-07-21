@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import FileFolder from "material-ui/svg-icons/file/folder";
+import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import HardwareKeyboardArrowRight from "material-ui/svg-icons/hardware/keyboard-arrow-right";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
 
@@ -68,7 +68,7 @@ class TreeNode extends Component {
           style={{color: textColor, verticalAlign: "top"}}
           onClick={() => onClickSelect(nodes)}>
 
-          <FileFolder
+          <FileFolderOpen
             style={{...styles.folderIcon, color: folderColor}}
             onClick={this.toggleSelect} />
 
