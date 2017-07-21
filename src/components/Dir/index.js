@@ -13,6 +13,7 @@ import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import IconMenu from "material-ui/IconMenu";
 import Dialog from "material-ui/Dialog";
 import TextField from "material-ui/TextField";
+import FlatButton from "material-ui/FlatButton";
 
 const style = {
   row: {
@@ -136,6 +137,28 @@ class Dir extends Component {
             </Link>
           );
 
+    const deleteDirActions = [
+      (
+        <FlatButton
+          label="Delete"
+          primary={true}
+          onTouchTap={() => {
+            this.props.deleteDir(this.props.dir);
+            this.props.deleteDirTree(this.props.dir);
+            this.props.triggerSnackbar(`${this.props.dir.name}を削除しました`);
+            this.setState({ deleteDir: { open: false } });
+          }}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          primary={false}
+          onTouchTap={() => this.setState({ deleteDir: { open: false } })}
+          />
+      )
+    ];
+
     return connectDropTarget(
       <div
         onMouseEnter={this.toggleHover}
@@ -172,11 +195,24 @@ class Dir extends Component {
 
             <MenuItem primaryText="移動" />
             <MenuItem primaryText="コピー" />
-            <MenuItem primaryText="削除" />
+
+            <MenuItem
+              onTouchTap={() => this.setState({ deleteDir: { open: true } })}
+              primaryText="削除" />
+
             <MenuItem primaryText="権限を変更" />
             <MenuItem primaryText="履歴を閲覧" />
           </IconMenu>
         </div>
+
+        <Dialog
+          title={`${this.props.dir.name}を削除しますか？`}
+          modal={false}
+          actions={deleteDirActions}
+          open={this.state.deleteDir.open}
+          onRequestClose={() => this.setState({ deleteDir: {open: false} })}
+        >
+        </Dialog>
 
       </div>
     );

@@ -72,6 +72,10 @@ const dirsReducer = (state = DIRS, action) => {
     return dirRoute(action.dir);
   case "ADD_DIR_TREE":
     return addDirTree(action.parent, action.dir);
+  case "DELETE_DIR_TREE":
+    return state.filter(
+      dir => !(dir.ancestor === action.dir.id || dir.descendant === action.dir.id)
+    );
   default:
     return state;
   }

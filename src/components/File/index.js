@@ -273,7 +273,7 @@ class File extends Component {
               primaryText="コピー" />
 
             <MenuItem
-              primaryText="ファイル削除"
+              primaryText="削除"
               onTouchTap={() => this.setState({ deleteFile: { open: true } })} />
 
             <MenuItem

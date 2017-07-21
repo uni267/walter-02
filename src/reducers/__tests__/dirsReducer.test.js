@@ -161,4 +161,20 @@ describe("dirsReducer", () => {
 
   });
 
+  describe("DELETE_DIR_TREE", () => {
+    it("削除後の一覧が返却される", () => {
+
+      const dir = { id: 4 };
+      const result = dirsReducer(DIRS, {
+        type: "DELETE_DIR_TREE",
+        dir
+      });
+
+      expect(
+        result.filter(r => r.ancestor === dir.id || r.descendant === dir.id).length
+      ).toEqual(0);
+
+    });
+  });
+
 });

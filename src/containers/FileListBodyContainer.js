@@ -15,7 +15,8 @@ import {
   triggerSnackbar,
   toggleStar,
   addAuthority,
-  deleteAuthority
+  deleteAuthority,
+  deleteDirTree
 } from "../actions";
 
 class FileListBodyContainer extends Component {
@@ -27,6 +28,7 @@ class FileListBodyContainer extends Component {
         addFile={this.props.addFile}
         moveFile={this.props.moveFile}
         deleteFile={this.props.deleteFile}
+        deleteDirTree={this.props.deleteDirTree}
         editFile={this.props.editFile}
         triggerSnackbar={this.props.triggerSnackbar}
         toggleStar={this.props.toggleStar}
@@ -48,6 +50,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
   moveFile: (dir_id, file_id) =>  { dispatch(moveFile(dir_id, file_id)); },
   deleteFile: (file) => { dispatch(deleteFile(file)); },
+  deleteDirTree: (dir) => { dispatch(deleteDirTree(dir)); },
   editFile: (file) => { dispatch(editFile(file)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   toggleStar: (file) => { dispatch(toggleStar(file)); },

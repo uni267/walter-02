@@ -112,3 +112,8 @@ export const createDirTree = (parent, dir) => ({
   parent,
   dir
 });
+
+export const deleteDirTree = (dir) => ({
+  type: "DELETE_DIR_TREE",
+  dir
+});

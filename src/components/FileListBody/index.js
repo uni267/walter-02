@@ -36,6 +36,8 @@ class FileListBody extends Component {
       <Dir dir={file}
            triggerSnackbar={this.props.triggerSnackbar}
            editDir={this.props.editFile}
+           deleteDir={this.props.deleteFile}
+           deleteDirTree={this.props.deleteDirTree}
            key={idx} />
     );
 
