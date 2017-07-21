@@ -7,36 +7,44 @@ import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/MenuItem";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
+// components
+import Authority from "../FileDetail/Authority";
+
 class AddDirDialog extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      addDir: { open: false },
+      addAuthority: { open: false }
+    };
+  }
+
   onCreateClick = (e) => {
     e.preventDefault();
     const dir_name = this.refs.dirName.getValue();
 
     if (dir_name === "") {
-      this.props.toggleAddDir();
+      this.setState({ addDir: { open: false } });
       return;
     }
 
     this.props.createDir(dir_name);
+    this.props.createDirTree({
+      id: this.props.allDirs.sort( (a, b) => a.id < b.id )[0].id + 1
+    });
 
-    this.props.createDirTree(
-      {
-        id: this.props.allDirs.sort( (a, b) => a.id < b.id )[0].id + 1
-      }
-    );
-
-    this.props.toggleAddDir();
-
+    this.setState({ addDir: { open: false } });
     this.props.triggerSnackbar(`${dir_name}を作成しました`);
+    this.setState({ addAuthority: { open: true } });
   };
 
-  render() {
+  renderCreateDirDialog = () => {
     const actions = [
       (
         <FlatButton
           label="Cancel"
           primary={true}
-          onTouchTap={this.props.toggleAddDir}
+          onTouchTap={() => this.setState({ addDir: { open: false } })}
           />
       ),
       (
@@ -48,25 +56,67 @@ class AddDirDialog extends Component {
           />
       )
     ];
+    
+    return (
+      <Dialog
+        title="フォルダを作成"
+        actions={actions}
+        modal={false}
+        open={this.state.addDir.open}
+        onRequestClose={() => this.setState({ addDir: { open: false } })} >
 
+        <TextField
+          ref="dirName"
+          hintText=""
+          floatingLabelText="フォルダ名" />
+
+      </Dialog>
+    );
+  };
+
+  renderAddAuthorityDialog = () => {
+    const actions = (
+      <FlatButton
+        label="閉じる"
+        primary={true}
+        onTouchTap={() => this.setState({ addAuthority: { open: false } })}
+        />
+    );
+
+    const createdDir = this.props.allDirs.slice().sort((a, b) => a.id < b.id)[0];
+
+    return (
+      <Dialog
+        title="権限を変更"
+        actions={actions}
+        modal={true}
+        open={this.state.addAuthority.open}
+        onRequestClose={() => this.setState({ addAuthority: { open: false } })} >
+
+        <Authority
+          file={createdDir}
+          users={this.props.users}
+          roles={this.props.roles}
+          addAuthority={this.props.addAuthority}
+          deleteAuthority={this.props.deleteAuthority}
+          triggerSnackbar={this.props.triggerSnackbar} />
+
+      </Dialog>
+    );
+  };
+
+  render() {
     return (
       <div>
         <MenuItem
           primaryText="新しいフォルダ"
           leftIcon={<FileCreateNewFolder />}
-          onTouchTap={this.props.toggleAddDir} />
+          onTouchTap={() => this.setState({
+            addDir: { open: true }
+          })} />
 
-        <Dialog
-          title="フォルダを作成"
-          actions={actions}
-          modal={false}
-          open={this.props.open}
-          onRequestClose={this.props.toggleAddDir} >
-          <TextField
-            ref="dirName"
-            hintText=""
-            floatingLabelText="フォルダ名" />
-        </Dialog>
+          {this.renderCreateDirDialog()}
+          {this.renderAddAuthorityDialog()}
       </div>
     );
   }

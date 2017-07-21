@@ -19,14 +19,14 @@ import AddDirDialog from "../components/AddDirDialog";
 
 // actions
 import {
-  toggleAddDir,
   createDir,
   createDirTree,
   triggerSnackbar,
-  toggleAddFile,
   pushFileToBuffer,
   clearFilesBuffer,
-  addFile
+  addFile,
+  addAuthority,
+  deleteAuthority
 } from "../actions";
 
 class FileActionContainer extends Component {
@@ -51,11 +51,13 @@ class FileActionContainer extends Component {
             />
           <AddDirDialog
             dir_id={this.props.dir_id}
+            roles={this.props.roles}
+            users={this.props.users}
+            addAuthority={this.props.addAuthority}
+            deleteAuthority={this.props.deleteAuthority}
             allDirs={this.props.allDirs}
-            toggleAddDir={this.props.toggleAddDir}
             createDir={this.props.createDir}
             createDirTree={this.props.createDirTree}
-            open={this.props.open_dir}
             triggerSnackbar={this.props.triggerSnackbar}
             />
           <Link to={"/home/?dir_id=9999"} style={{textDecoration: "none"}}>
@@ -72,26 +74,30 @@ class FileActionContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    open_dir: state.addDir.open,
-    open_file: state.addFile.open,
     filesBuffer: state.filesBuffer,
-    allDirs: state.files.filter(file => file.is_dir)
+    allDirs: state.files.filter(file => file.is_dir),
+    roles: state.roles,
+    users: state.users
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  toggleAddDir: () => { dispatch(toggleAddDir()); },
   createDir: (dir_name) => { dispatch(createDir(ownProps.dir_id, dir_name)); },
   createDirTree: (dir) => {
     dispatch(createDirTree({id: Number(ownProps.dir_id)}, dir));
   },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  toggleAddFile: () => { dispatch(toggleAddFile()); },
   pushFileToBuffer: (dir_id, file_name) => { 
     dispatch(pushFileToBuffer(dir_id, file_name));
   },
   addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
-  clearFilesBuffer: () => { dispatch(clearFilesBuffer()); }
+  clearFilesBuffer: () => { dispatch(clearFilesBuffer()); },
+  addAuthority: (file_id, user, role) => {
+    dispatch(addAuthority(file_id, user, role));
+  },
+  deleteAuthority: (file_id, authority_id) => {
+    dispatch(deleteAuthority(file_id, authority_id));
+  }
 });
 
 FileActionContainer = connect(

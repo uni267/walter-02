@@ -126,7 +126,8 @@ class File extends Component {
   renderAuthorityDialog = () => {
     const editAuthorityActions = (
       <FlatButton
-        label="close"
+        label="閉じる"
+        primary={true}
         onTouchTap={() => this.setState({ editAuthority: { open: false } })}
         />
     );
