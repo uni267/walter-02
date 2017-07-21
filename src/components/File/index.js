@@ -261,23 +261,27 @@ class File extends Component {
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
             <MenuItem
-              onTouchTap={() => this.setState({ copyFile: { open: true } })}
-              primaryText="コピー" />
-
-            <MenuItem
               primaryText="ファイル名変更"
               onTouchTap={() => this.setState({ editFile: { open: true } })} />
-
-            <MenuItem
-              primaryText="ファイル削除"
-              onTouchTap={() => this.setState({ deleteFile: { open: true } })} />
 
             <MenuItem
               primaryText="移動"
               onTouchTap={() => this.setState({ moveFile: { open: true } })} />
 
             <MenuItem
+              onTouchTap={() => this.setState({ copyFile: { open: true } })}
+              primaryText="コピー" />
+
+            <MenuItem
+              primaryText="ファイル削除"
+              onTouchTap={() => this.setState({ deleteFile: { open: true } })} />
+
+            <MenuItem
               primaryText="権限を変更"
+              onTouchTap={() => this.setState({ editAuthority: { open: true } })} />
+
+            <MenuItem
+              primaryText="履歴を閲覧"
               onTouchTap={() => this.setState({ editAuthority: { open: true } })} />
 
             <MenuItem primaryText="タイムスタンプ発行" />

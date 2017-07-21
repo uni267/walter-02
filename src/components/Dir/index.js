@@ -11,6 +11,8 @@ import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import IconMenu from "material-ui/IconMenu";
+import Dialog from "material-ui/Dialog";
+import TextField from "material-ui/TextField";
 
 const style = {
   row: {
@@ -61,7 +63,12 @@ class Dir extends Component {
     super(props);
     this.state = {
       checked: false,
-      hover: false
+      hover: false,
+      editDir: { open: false },
+      editAuthority: { open: false },
+      deleteDir: { open: false },
+      moveDir: { open: false },
+      copyDir: { open: false }
     };
 
     this.onClickCheckBox = this.onClickCheckBox.bind(this);
@@ -74,6 +81,19 @@ class Dir extends Component {
 
   toggleHover() {
     this.setState({ hover: !this.state.hover });
+  };
+
+  changeDirName = () => {
+    const dirName = this.refs.dirName.getValue();
+    if ( dirName === "" ) {
+      this.setState({ editDir: { open: false } });
+      return;
+    }
+
+    this.props.editDir({...this.props.dir, name: dirName});
+    this.setState({ editDir: { open: false } });
+    this.props.triggerSnackbar("フォルダ名を変更しました");
+
   };
 
   render() {
@@ -100,6 +120,22 @@ class Dir extends Component {
       </IconButton>
     );
 
+    const dirNameArea = this.state.editDir.open ?
+          (
+            <TextField
+              ref="dirName"
+              defaultValue={this.props.dir.name}
+              onKeyDown={e => e.key === "Enter" ? this.changeDirName() : null } />
+          )
+          :
+          (
+            <Link
+              to={`/home/?dir_id=${this.props.dir.id}`}
+              style={{...style.dir, color}} >
+              {this.props.dir.name}
+            </Link>
+          );
+
     return connectDropTarget(
       <div
         onMouseEnter={this.toggleHover}
@@ -120,9 +156,7 @@ class Dir extends Component {
 
         <div style={{...style.cell, width: "50%"}}>
           <FileFolderOpen style={style.dir_icon} />
-          <Link to={`/home/?dir_id=${dir.id}`} style={{...style.dir, color}}>
-            {dir.name}
-          </Link>
+          {dirNameArea}
         </div>
 
         <div style={{...style.cell, width: "20%"}}>{dir.modified}</div>
@@ -131,11 +165,16 @@ class Dir extends Component {
           <IconMenu
             iconButtonElement={action_menu_icon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-            <MenuItem primaryText="詳細を表示" />
-            <MenuItem primaryText="ダウンロード" />
-            <MenuItem primaryText="コピー" />
+
+            <MenuItem
+              primaryText="フォルダ名変更"
+              onTouchTap={() => this.setState({ editDir: { open: true } })} />
+
             <MenuItem primaryText="移動" />
+            <MenuItem primaryText="コピー" />
+            <MenuItem primaryText="削除" />
             <MenuItem primaryText="権限を変更" />
+            <MenuItem primaryText="履歴を閲覧" />
           </IconMenu>
         </div>
 

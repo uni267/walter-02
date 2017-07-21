@@ -33,7 +33,10 @@ class FileListBody extends Component {
 
   renderRow(file, idx) {
     const dir_component = (
-      <Dir key={idx} dir={file} />
+      <Dir dir={file}
+           triggerSnackbar={this.props.triggerSnackbar}
+           editDir={this.props.editFile}
+           key={idx} />
     );
 
     const file_component = (
