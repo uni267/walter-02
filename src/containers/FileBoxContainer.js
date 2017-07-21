@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { Card } from 'material-ui/Card';
 
 // components
-import FileActionContainer from "./FileAction";
+import FileActionContainer from "./FileActionContainer";
 import FileSearch from "../components/FileSearch";
 import DirBox from "../components/DirBox";
 import FileListHeader from "../components/FileListHeader";
