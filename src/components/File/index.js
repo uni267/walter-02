@@ -119,6 +119,18 @@ class File extends Component {
     this.setState({ hover: !this.state.hover });
   };
 
+  changeFileName = () => {
+    const fileName = this.refs.fileName.getValue();
+    if ( fileName === "" ) {
+      this.setState({ editFile: { open: false } });
+      return;
+    }
+
+    this.props.editFile({ ...this.props.file, name: fileName });
+    this.setState({ editFile: { open: false } });
+    this.props.triggerSnackbar("ファイル名を変更しました");
+  };
+
   render() {
     const { isDragging, connectDragSource, file } = this.props;
 
@@ -170,36 +182,6 @@ class File extends Component {
         />
     );
 
-    const editFileActions = [
-      (
-        <FlatButton
-          label="save"
-          primary={true}
-          onTouchTap={(e) => {
-            e.preventDefault();
-            const file_name = this.refs.fileName.getValue();
-            if ( file_name === "" ) {
-              this.setState({ editFile: { open: false } });
-              return;
-            }
-
-            let file = this.props.file;
-            file.name = file_name;
-            this.props.editFile(file);
-            this.setState({ editFile: { open: false } });
-            this.props.triggerSnackbar("ファイル名を変更しました");
-          }}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          primary={false}
-          onTouchTap={() => this.setState({ editFile: { open: false } })}
-          />
-      )
-    ];
-
     const moveFileActions = [
       (
         <FlatButton
@@ -230,6 +212,22 @@ class File extends Component {
       )
     ];
 
+    const fileNameArea = this.state.editFile.open ?
+          (
+            <TextField
+              ref="fileName"
+              defaultValue={this.props.file.name}
+              onKeyDown={e => e.key === "Enter" ? this.changeFileName() : null} />
+          )
+          :
+          (
+            <Link
+              to={`/file-detail/${this.props.file.id}`}
+              style={{...style.file, color}} >
+              {file.name}
+            </Link>
+          );
+
     return connectDragSource(
       <div
         onMouseEnter={this.toggleHover}
@@ -250,9 +248,7 @@ class File extends Component {
         </div>
 
         <div style={{...style.cell, width: "50%"}}>
-          <Link to={`/file-detail/${file.id}`} style={{...style.file, color}} >
-            {file.name}
-          </Link>
+          {fileNameArea}
         </div>
 
         <div style={{...style.cell, width: "20%"}}>{file.modified}</div>
@@ -288,20 +284,6 @@ class File extends Component {
 
           </IconMenu>
         </div>
-
-        <Dialog
-          title="ファイル名を変更"
-          modal={false}
-          actions={editFileActions}
-          open={this.state.editFile.open}
-          onRequestClose={() => this.setState({ editFile: { open: false } })} >
-
-          <TextField
-            ref="fileName"
-            defaultValue={this.props.file.name}
-            floatingLabelText="ファイル名を変更" />
-
-        </Dialog>
 
         <Dialog
           title="権限を変更"
