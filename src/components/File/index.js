@@ -350,7 +350,7 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
-    const checkOpacity = this.state.hover ? 1 : 0.1;
+    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
 
     return connectDragSource(
       <div
