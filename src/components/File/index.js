@@ -123,18 +123,6 @@ class File extends Component {
     this.setState({ hover: !this.state.hover });
   };
 
-  changeFileName = () => {
-    const fileName = this.refs.fileName.getValue();
-    if ( fileName === "" ) {
-      this.setState({ editFile: { open: false } });
-      return;
-    }
-
-    this.props.editFile({ ...this.props.file, name: fileName });
-    this.setState({ editFile: { open: false } });
-    this.props.triggerSnackbar("ファイル名を変更しました");
-  };
-
   renderAuthorityDialog = () => {
     const editAuthorityActions = (
       <FlatButton
@@ -286,14 +274,48 @@ class File extends Component {
     );
   };
 
+  renderFileName = () => {
+    const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
+
+    const changeFileName = () => {
+      console.log(this.refs);
+      const fileName = this.refs.fileName.getValue();
+
+      if ( fileName === "" ) {
+        this.setState({ editFile: { open: false } });
+        return;
+      }
+
+      this.props.editFile({ ...this.props.file, name: fileName });
+      this.setState({ editFile: { open: false } });
+      this.props.triggerSnackbar("ファイル名を変更しました");
+    };
+
+    const fileInput = (
+      <TextField
+        ref="fileName"
+        defaultValue={this.props.file.name}
+        onKeyDown={e => e.key === "Enter" ? changeFileName() : null} />
+
+    );
+
+    const fileView = (
+      <Link
+        to={`/file-detail/${this.props.file.id}`}
+        style={{...style.file, color}} >
+        {this.props.file.name}
+      </Link>
+    );
+
+    return this.state.editFile.open ? fileInput : fileView;
+  };
+
   render() {
     const { isDragging, connectDragSource, file } = this.props;
 
     const opacity = isDragging ? 0.3 : 1;
 
     const backgroundColor = this.state.checked ? "rgb(232, 232, 232)" : "inherit";
-
-    const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const action_menu_icon = (
       <IconButton>
@@ -308,22 +330,6 @@ class File extends Component {
     const favorite_icon_border = (
       <ActionFavoriteBorder />
     );
-
-    const fileNameArea = this.state.editFile.open ?
-          (
-            <TextField
-              ref="fileName"
-              defaultValue={this.props.file.name}
-              onKeyDown={e => e.key === "Enter" ? this.changeFileName() : null} />
-          )
-          :
-          (
-            <Link
-              to={`/file-detail/${this.props.file.id}`}
-              style={{...style.file, color}} >
-              {file.name}
-            </Link>
-          );
 
     return connectDragSource(
       <div
@@ -345,7 +351,7 @@ class File extends Component {
         </div>
 
         <div style={{...style.cell, width: "50%"}}>
-          {fileNameArea}
+          {this.renderFileName()}
         </div>
 
         <div style={{...style.cell, width: "20%"}}>{file.modified}</div>
