@@ -38,6 +38,10 @@ class FileListBody extends Component {
            editDir={this.props.editFile}
            deleteDir={this.props.deleteFile}
            deleteDirTree={this.props.deleteDirTree}
+           addAuthority={this.props.addAuthority}
+           deleteAuthority={this.props.deleteAuthority}
+           roles={this.props.roles}
+           users={this.props.users}
            key={idx} />
     );
 

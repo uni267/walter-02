@@ -15,6 +15,11 @@ import Dialog from "material-ui/Dialog";
 import TextField from "material-ui/TextField";
 import FlatButton from "material-ui/FlatButton";
 
+// components
+import DirTreeContainer from "../../containers/DirTreeContainer";
+import Authority from "../FileDetail/Authority";
+import History from "../FileDetail/History";
+
 const style = {
   row: {
     display: "flex",
@@ -69,7 +74,8 @@ class Dir extends Component {
       editAuthority: { open: false },
       deleteDir: { open: false },
       moveDir: { open: false },
-      copyDir: { open: false }
+      copyDir: { open: false },
+      historiesDir: { open: false }
     };
 
     this.onClickCheckBox = this.onClickCheckBox.bind(this);
@@ -95,6 +101,157 @@ class Dir extends Component {
     this.setState({ editDir: { open: false } });
     this.props.triggerSnackbar("フォルダ名を変更しました");
 
+  };
+
+  renderMoveDialog = () => {
+    const actions = [
+      (
+        <FlatButton
+          label="移動"
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={() => this.setState({ moveDir: { open: false } })}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title="フォルダを移動"
+        open={this.state.moveDir.open}
+        modal={false}
+        actions={actions} >
+
+        <DirTreeContainer />
+
+      </Dialog>
+    );
+  };
+
+  renderCopyDialog = () => {
+    const actions = [
+      (
+        <FlatButton
+          label="コピー"
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={() => this.setState({ copyDir: { open: false } })}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title="フォルダをコピー"
+        open={this.state.copyDir.open}
+        modal={false}
+        actions={actions} >
+
+        <DirTreeContainer />
+
+      </Dialog>
+    );
+  };
+
+  renderDeleteDialog = () => {
+    const actions = [
+      (
+        <FlatButton
+          label="Delete"
+          primary={true}
+          onTouchTap={(e) => {
+            this.props.deleteDir(this.props.dir);
+            this.setState({ deleteDir: { open: false } });
+            this.props.triggerSnackbar(`${this.props.dir.name}を削除しました`);
+          }}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          primary={false}
+          onTouchTap={() => this.setState({ deleteDir: { open: false } })}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title={`${this.props.dir.name}を削除しますか？`}
+        modal={false}
+        actions={actions}
+        open={this.state.deleteDir.open}
+        onRequestClose={() => this.setState({ deleteDir: {open: false} })}
+        >
+      </Dialog>
+    );
+  };
+
+  renderAuthorityDialog = () => {
+    const actions = (
+      <FlatButton
+        label="close"
+        onTouchTap={() => this.setState({ editAuthority: { open: false } })}
+        />
+    );
+    
+    return (
+      <Dialog
+        title="権限を変更"
+        modal={false}
+        actions={actions}
+        open={this.state.editAuthority.open}
+        onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
+
+        <Authority
+          file={this.props.dir}
+          users={this.props.users}
+          roles={this.props.roles}
+          addAuthority={this.props.addAuthority}
+          deleteAuthority={this.props.deleteAuthority}
+          triggerSnackbar={this.props.triggerSnackbar} />
+
+      </Dialog>
+    );
+  };
+
+  renderHistoryDialog = () => {
+    
+    const actions = (
+      <FlatButton
+        label="close"
+        primary={false}
+        onTouchTap={() => this.setState({ historiesDir: { open: false } })}
+        />
+    );
+
+    const renderHistory = (idx, history) => {
+      return (
+        <History key={idx} history={history} />        
+      );
+    };
+
+    return (
+      <Dialog
+        title="履歴"
+        open={this.state.historiesDir.open}
+        modal={false}
+        actions={actions} >
+
+        {this.props.dir.histories.map(
+        (history, idx) => renderHistory(idx, history))}
+
+      </Dialog>
+      
+    );
   };
 
   render() {
@@ -191,29 +348,42 @@ class Dir extends Component {
 
             <MenuItem
               primaryText="フォルダ名変更"
-              onTouchTap={() => this.setState({ editDir: { open: true } })} />
-
-            <MenuItem primaryText="移動" />
-            <MenuItem primaryText="コピー" />
+              onTouchTap={() => this.setState({ editDir: { open: true } })}
+              />
 
             <MenuItem
-              onTouchTap={() => this.setState({ deleteDir: { open: true } })}
-              primaryText="削除" />
+              primaryText="移動"
+              onTouchTap={() => this.setState({ moveDir: { open: true } })}
+              />
 
-            <MenuItem primaryText="権限を変更" />
-            <MenuItem primaryText="履歴を閲覧" />
+            <MenuItem
+              primaryText="コピー"
+              onTouchTap={() => this.setState({ copyDir: { open: true } })}
+              />
+
+            <MenuItem
+              primaryText="削除" 
+              onTouchTap={() => this.setState({ deleteDir: { open: true } })}
+              />
+
+            <MenuItem
+              primaryText="権限を変更"
+              onTouchTap={() => this.setState({ editAuthority: { open: true } })}
+              />
+
+            <MenuItem
+              primaryText="履歴を閲覧"
+              onTouchTap={() => this.setState({ historiesDir: { open: true } })}
+              />
+
           </IconMenu>
         </div>
 
-        <Dialog
-          title={`${this.props.dir.name}を削除しますか？`}
-          modal={false}
-          actions={deleteDirActions}
-          open={this.state.deleteDir.open}
-          onRequestClose={() => this.setState({ deleteDir: {open: false} })}
-        >
-        </Dialog>
-
+        <this.renderMoveDialog />
+        <this.renderCopyDialog />
+        <this.renderDeleteDialog />
+        <this.renderAuthorityDialog />
+        <this.renderHistoryDialog />
       </div>
     );
   }
