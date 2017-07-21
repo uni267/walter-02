@@ -73,8 +73,7 @@ class FileBoxContainer extends Component {
 
       _files = this.props.files.filter(file => {
         return file.name.match(re) !== null ||
-          file.modified.match(re) !== null ||
-          file.owner.match(re) !== null;
+          file.modified.match(re) !== null;
       }).filter(file => file.is_display);
     }
 
