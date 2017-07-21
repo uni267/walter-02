@@ -58,7 +58,34 @@ const filesReducer = (state = FILES, action) => {
         owner: "ユーザ 太郎",
         is_dir: true,
         is_display: true,
-        is_star: false
+        is_star: false,
+        histories: [
+          {
+            id: 1,
+            user: { name: "user01" },
+            action: "新規作成",
+            modified: moment().format("YYYY-MM-DD HH:mm"),
+            body: `新ファイル名は${action.name}`
+          }
+        ],
+        authorities: [
+          {
+            id: 1,
+            user: {
+              id: 1,
+              type: "user",
+              name: "user01",
+              name_jp: "ユーザ太郎",
+              is_owner: true
+            },
+            role: {
+              id: 3,
+              name: "フルコントロール",
+              actions: ["read", "write", "authority"]
+            }
+          }
+        ]
+
       }
     ];
 
