@@ -18,6 +18,7 @@ import TextField from "material-ui/TextField";
 
 // components
 import Authority from "../FileDetail/Authority";
+import History from "../FileDetail/History";
 import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const style = {
@@ -94,6 +95,9 @@ class File extends Component {
       },
       copyFile: {
         open: false
+      },
+      historiesFile: {
+        open: false
       }
     };
 
@@ -131,6 +135,157 @@ class File extends Component {
     this.props.triggerSnackbar("ファイル名を変更しました");
   };
 
+  renderAuthorityDialog = () => {
+    const editAuthorityActions = (
+      <FlatButton
+        label="close"
+        onTouchTap={() => this.setState({ editAuthority: { open: false } })}
+        />
+    );
+    
+    return (
+      <Dialog
+        title="権限を変更"
+        modal={false}
+        actions={editAuthorityActions}
+        open={this.state.editAuthority.open}
+        onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
+
+        <Authority
+          file={this.props.file}
+          users={this.props.users}
+          roles={this.props.roles}
+          addAuthority={this.props.addAuthority}
+          deleteAuthority={this.props.deleteAuthority}
+          triggerSnackbar={this.props.triggerSnackbar} />
+
+      </Dialog>
+    );
+  };
+
+  renderDeleteDialog = () => {
+    const deleteFileActions = [
+      (
+        <FlatButton
+          label="Delete"
+          primary={true}
+          onTouchTap={(e) => {
+            this.props.deleteFile(this.props.file);
+            this.setState({ deleteFile: { open: false } });
+            this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
+          }}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          primary={false}
+          onTouchTap={() => this.setState({ deleteFile: { open: false } })}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title={`${this.props.file.name}を削除しますか？`}
+        modal={false}
+        actions={deleteFileActions}
+        open={this.state.deleteFile.open}
+        onRequestClose={() => this.setState({ deleteFile: {open: false} })}
+        >
+      </Dialog>
+    );
+  };
+
+  renderMoveDialog = () => {
+    const moveFileActions = [
+      (
+        <FlatButton
+          label="移動"
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={() => this.setState({ moveFile: { open: false } })}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title="ファイルを移動"
+        open={this.state.moveFile.open}
+        modal={false}
+        actions={moveFileActions} >
+
+        <DirTreeContainer />
+
+      </Dialog>
+    );
+  };
+
+  renderCopyDialog = () => {
+    const copyFileActions = [
+      (
+        <FlatButton
+          label="コピー"
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={() => this.setState({ copyFile: { open: false } })}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title="ファイルをコピー"
+        open={this.state.copyFile.open}
+        modal={false}
+        actions={copyFileActions} >
+
+        <DirTreeContainer />
+
+      </Dialog>
+    );
+  };
+
+  renderHistoryDialog = () => {
+    
+    const actions = (
+      <FlatButton
+        label="close"
+        primary={false}
+        onTouchTap={() => this.setState({ historiesFile: { open: false } })}
+        />
+    );
+
+    const renderHistory = (idx, history) => {
+      return (
+        <History key={idx} history={history} />        
+      );
+    };
+
+    return (
+      <Dialog
+        title="履歴"
+        open={this.state.historiesFile.open}
+        modal={false}
+        actions={actions} >
+
+        {this.props.file.histories.map(
+        (history, idx) => renderHistory(idx, history))}
+
+      </Dialog>
+      
+    );
+  };
+
   render() {
     const { isDragging, connectDragSource, file } = this.props;
 
@@ -153,64 +308,6 @@ class File extends Component {
     const favorite_icon_border = (
       <ActionFavoriteBorder />
     );
-
-    const deleteFileActions = [
-      (
-        <FlatButton
-          label="Delete"
-          primary={true}
-          onTouchTap={(e) => {
-            this.props.deleteFile(this.props.file);
-            this.setState({ deleteFile: { open: false } });
-            this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
-          }}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          primary={false}
-          onTouchTap={() => this.setState({ deleteFile: { open: false } })}
-          />
-      )
-    ];
-
-    const editAuthoryActions = (
-      <FlatButton
-        label="close"
-        onTouchTap={() => this.setState({ editAuthority: { open: false } })}
-        />
-    );
-
-    const moveFileActions = [
-      (
-        <FlatButton
-          label="移動"
-          primary={true}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={() => this.setState({ moveFile: { open: false } })}
-          />
-      )
-    ];
-
-    const copyFileActions = [
-      (
-        <FlatButton
-          label="コピー"
-          primary={true}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={() => this.setState({ copyFile: { open: false } })}
-          />
-      )
-    ];
 
     const fileNameArea = this.state.editFile.open ?
           (
@@ -282,58 +379,18 @@ class File extends Component {
 
             <MenuItem
               primaryText="履歴を閲覧"
-              onTouchTap={() => this.setState({ editAuthority: { open: true } })} />
+              onTouchTap={() => this.setState({ historiesFile: { open: true } })} />
 
             <MenuItem primaryText="タイムスタンプ発行" />
 
           </IconMenu>
         </div>
 
-        <Dialog
-          title="権限を変更"
-          modal={false}
-          actions={editAuthoryActions}
-          open={this.state.editAuthority.open}
-          onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
-
-          <Authority
-            file={this.props.file}
-            users={this.props.users}
-            roles={this.props.roles}
-            addAuthority={this.props.addAuthority}
-            deleteAuthority={this.props.deleteAuthority}
-            triggerSnackbar={this.props.triggerSnackbar} />
-
-        </Dialog>
-
-        <Dialog
-          title={`${this.props.file.name}を削除しますか？`}
-          modal={false}
-          actions={deleteFileActions}
-          open={this.state.deleteFile.open}
-          onRequestClose={() => this.setState({ deleteFile: {open: false} })}
-        >
-        </Dialog>
-
-        <Dialog
-          title="ファイルを移動"
-          open={this.state.moveFile.open}
-          modal={false}
-          actions={moveFileActions} >
-
-          <DirTreeContainer />
-
-        </Dialog>
-
-        <Dialog
-          title="ファイルをコピー"
-          open={this.state.copyFile.open}
-          modal={false}
-          actions={copyFileActions} >
-
-          <DirTreeContainer />
-
-        </Dialog>
+        <this.renderAuthorityDialog />
+        <this.renderDeleteDialog />
+        <this.renderMoveDialog />
+        <this.renderCopyDialog />
+        <this.renderHistoryDialog />
 
       </div>
     );
