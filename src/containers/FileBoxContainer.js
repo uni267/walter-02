@@ -35,21 +35,30 @@ class FileBoxContainer extends Component {
   dirRoute = (dir) => {
     let result = [];
 
-    this.props.dirs.slice()
-      .sort( (a, b) => a.depth < b.depth)
-      .filter(d => {
-        return d.descendant === Number(dir.id) && d.depth !== 0;
-      })
-      .forEach(d => {
-        result = [...result, { id: d.ancestor }];
-        result = [...result, { id: d.descendant }];
-      });
+    const walk = (dir) => {
+      if (Number(dir.id) === 0) {
+        result = [{ id: 0 }];
+        return;
+      }
 
-    return [
-      ...result.filter(r => r.id !== Number(dir.id)),
-      { id: Number(dir.id) }
-    ];
+      const dirs = this.props.dirs.slice();
+      const target = dirs
+            .filter(d => d.descendant === Number(dir.id) && d.depth === 1)[0];
 
+      // top node
+      if (target.ancestor === 0) {
+        result = [{ id: target.descendant }, ...result];
+        result = [{ id: target.ancestor }, ...result];
+        return;
+      } else {
+        result = [{ id: target.descendant }, ...result];
+        walk({ id: target.ancestor });
+      }
+
+    };
+
+    walk(dir);
+    return result;
   };
 
   addDirName = (dir) => {
