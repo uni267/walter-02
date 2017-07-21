@@ -30,7 +30,6 @@ import {
 } from "../actions";
 
 class FileActionContainer extends Component {
-
   render() {
     const deleteIcon = (
       <ActionDelete />
@@ -42,7 +41,6 @@ class FileActionContainer extends Component {
           <AddFileDialog
             dir_id={this.props.dir_id}
             open={this.props.open_file}
-            toggleAddFile={this.props.toggleAddFile}
             filesBuffer={this.props.filesBuffer}
             pushFileToBuffer={this.props.pushFileToBuffer}
             addFile={this.props.addFile}

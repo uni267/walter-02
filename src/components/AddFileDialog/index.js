@@ -9,17 +9,33 @@ import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 // DnD
 import Dropzone from "react-dropzone";
 
+const styles = {
+  dropzone: {
+    width: "80%",
+    height: "80%",
+    borderStyle: "dashed",
+    borderColor: "gray",
+    borderWidth: 3,
+    padding: 50
+  }
+};
+
 class AddFileDialog extends Component {
-  render() {
-    const styles = {
-      dropzone: {
-        width: "80%",
-        height: "80%",
-        borderStyle: "dashed",
-        borderColor: "gray",
-        borderWidth: 3,
-        padding: 50
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      addFile: { open: false }
+    };
+  }
+
+  renderUploadFileDialog = () => {
+    const handleUpload = () => {
+      this.props.filesBuffer.forEach(file => {
+        this.props.addFile(this.props.dir_id, file.name);
+        this.props.triggerSnackbar(`${file.name}をアップロードしました`);
+      });
+      this.props.clearFilesBuffer();
+      this.setState({ addFile: { open: false } });
     };
 
     const onDrop = (files) => {
@@ -28,60 +44,58 @@ class AddFileDialog extends Component {
       });
     };
 
-    const handleUpload = () => {
-      this.props.filesBuffer.forEach(file => {
-        this.props.addFile(this.props.dir_id, file.name);
-        this.props.triggerSnackbar(`${file.name}をアップロードしました`);
-      });
-      this.setState(this.props.toggleAddFile);
-      this.props.clearFilesBuffer();
-    };
-
-    const upload_button = <FileCloudUpload />;
-
-    const actions = [
-        <FlatButton
-      label="Cancel"
-      primary={true}
-      onTouchTap={this.props.toggleAddFile}
-        />,
-
-      <FlatButton
-        label="Upload"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={handleUpload}
-        />,
-    ];
-
     const renderFilesBuffer = () => {
       return this.props.filesBuffer.map( (f, idx) => {
         return <li key={idx}> {f.name} - {f.size} bytes</li>;
       });
     };
 
+    const actions = [
+      (
+        <FlatButton
+          label="Cancel"
+          primary={true}
+          onTouchTap={() => this.setState({ addFile: { open: false } })}
+          />
+      ),
+      (
+        <FlatButton
+          label="Upload"
+          primary={true}
+          keyboardFocused={true}
+          onTouchTap={handleUpload}
+          />
+      )
+    ];
+
+    return (
+      <Dialog
+        title="ファイルをアップロード"
+        actions={actions}
+        modal={false}
+        open={this.state.addFile.open}
+        onRequestClose={() => this.setState({ addFile: { open: false } })}
+        >
+        <Dropzone onDrop={onDrop} style={styles.dropzone}>
+          <p>クリックもしくはファイルをドロップ</p>
+        </Dropzone>
+        <ul>
+          {renderFilesBuffer()}
+        </ul>
+      </Dialog>
+    );
+  };
+
+  render() {
     return (
       <div>
         <MenuItem
           primaryText="アップロード"
-          leftIcon={upload_button}
-          onTouchTap={this.props.toggleAddFile}
-          />
+          leftIcon={<FileCloudUpload />}
+          onTouchTap={() => this.setState({ addFile: { open: true } })} />
 
-        <Dialog
-          title="ファイルをアップロード"
-          actions={actions}
-          modal={false}
-          open={this.props.open}
-          onRequestClose={this.props.toggleAddFile}
-          >
-          <Dropzone onDrop={onDrop} style={styles.dropzone}>
-            <p>クリックもしくはファイルをドロップ</p>
-          </Dropzone>
-          <ul>
-            {renderFilesBuffer()}
-          </ul>
-        </Dialog>
+          {this.renderUploadFileDialog()}
+
       </div>
     );
   }
