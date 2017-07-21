@@ -333,11 +333,14 @@ class File extends Component {
 
     const backgroundColor = this.state.checked ? "rgb(232, 232, 232)" : "inherit";
 
-    const action_menu_icon = (
-      <IconButton>
-        <NavigationMenu />
-      </IconButton>
-    );
+    const action_menu_icon = () => {
+      const opacity = this.state.hover ? 1 : 0.1;
+      return (
+        <IconButton style={{ opacity }}>
+          <NavigationMenu />
+        </IconButton>
+      );
+    };
 
     const favorite_icon = (
       <ActionFavorite />
@@ -347,6 +350,8 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
+    const checkOpacity = this.state.hover ? 1 : 0.1;
+
     return connectDragSource(
       <div
         onMouseEnter={this.toggleHover}
@@ -355,7 +360,7 @@ class File extends Component {
 
         <div style={{...style.cell, width: "5%"}}>
           <Checkbox
-            style={style.checkbox}
+            style={{...style.checkbox, opacity: checkOpacity}}
             onCheck={this.onClickCheckBox} />
 
           <Checkbox
@@ -378,7 +383,7 @@ class File extends Component {
 
         <div style={{...style.cell, width: "10%"}}>
           <IconMenu
-            iconButtonElement={action_menu_icon}
+            iconButtonElement={action_menu_icon()}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
             <MenuItem

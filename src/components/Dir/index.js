@@ -288,11 +288,14 @@ class Dir extends Component {
       <ActionFavoriteBorder />
     );
 
-    const action_menu_icon = (
-      <IconButton>
-        <NavigationMenu />
-      </IconButton>
-    );
+    const action_menu_icon = () => {
+      const opacity = this.state.hover ? 1 : 0.1;
+      return (
+        <IconButton style={{ opacity }}>
+          <NavigationMenu />
+        </IconButton>
+      );
+    };
 
     const dirNameArea = this.state.editDir.open ?
           (
@@ -332,6 +335,8 @@ class Dir extends Component {
       )
     ];
 
+    const checkOpacity = this.state.hover ? 1 : 0.1;
+
     return connectDropTarget(
       <div
         onMouseEnter={this.toggleHover}
@@ -340,7 +345,7 @@ class Dir extends Component {
 
         <div style={{...style.cell, width: "5%"}}>
           <Checkbox
-            style={style.checkbox}
+            style={{...style.checkbox, opacity: checkOpacity}}
             onCheck={this.onClickCheckBox} />
 
           <Checkbox
@@ -363,7 +368,7 @@ class Dir extends Component {
 
         <div style={{...style.cell, width: "10%"}}>
           <IconMenu
-            iconButtonElement={action_menu_icon}
+            iconButtonElement={action_menu_icon()}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
             <MenuItem
