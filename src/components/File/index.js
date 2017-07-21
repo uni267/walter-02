@@ -310,6 +310,21 @@ class File extends Component {
     return this.state.editFile.open ? fileInput : fileView;
   };
 
+  renderMember = () => {
+    const { authorities } = this.props.file;
+
+    const member = authorities.length > 1
+          ? `${authorities.length} 人のメンバー`
+          : `${authorities[0].user.name_jp} のみ`;
+
+    return (
+      <span
+        onClick={() => this.setState({ editAuthority: { open: true } })}>
+        {member}
+      </span>
+    );
+  };
+
   render() {
     const { isDragging, connectDragSource, file } = this.props;
 
@@ -356,7 +371,9 @@ class File extends Component {
 
         <div style={{...style.cell, width: "20%"}}>{file.modified}</div>
 
-        <div style={{...style.cell, width: "15%"}}>{file.owner}</div>
+        <div style={{...style.cell, width: "15%"}}>
+          {this.renderMember()}
+        </div>
 
         <div style={{...style.cell, width: "10%"}}>
           <IconMenu
