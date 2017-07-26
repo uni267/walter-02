@@ -16,6 +16,7 @@ const filesReducer = (state = FILES, action) => {
         dir_id: action.dir_id,
         is_display: true,
         is_star: false,
+        tags: [],
         histories: [
           {
             id: 1,
