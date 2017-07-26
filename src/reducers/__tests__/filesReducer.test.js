@@ -266,5 +266,41 @@ describe("filesReducer", () => {
     });
 
   });
+
+  describe("COPY_FILE", () => {
+
+    it("コピーされたファイルを含めて返却される", () => {
+      const target = FILES.filter(file => !file.is_dir)[0];
+
+      const expected = FILES.filter(file => file.name === target.name).length + 1;
+
+      const result = filesReducer(FILES, {
+        type: "COPY_FILE",
+        dir_id: 0,
+        file: target
+      }).filter(file => file.name === target.name);
+
+      expect(result.length).toEqual(expected);
+
+    });
+
+    it("コピーされたファイルはuniqなidが付与される", () => {
+      const target = FILES.filter(file => !file.is_dir)[0];
+
+      const expected = FILES.filter(file => file.name === target.name).length + 1;
+
+      const result = filesReducer(FILES, {
+        type: "COPY_FILE",
+        dir_id: 0,
+        file: target
+      }).filter(file => file.name === target.name)
+            .map(file => file.id);
+
+      expect((new Set(result)).size).toEqual(expected);
+
+    });
+
+  });
   
 });
+

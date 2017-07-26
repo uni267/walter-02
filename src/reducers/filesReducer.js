@@ -188,6 +188,13 @@ const filesReducer = (state = FILES, action) => {
 
       return file;
     });
+
+  case "COPY_FILE":
+    const nextFileId = state.slice().sort((a,b) => b.id - a.id)[0].id + 1;
+
+    let file = {...action.file, dir_id: action.dir_id};
+    file = {...file, id: nextFileId};
+    return [...state, file];
   default:
     return state;
   }
