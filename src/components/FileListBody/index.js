@@ -51,6 +51,7 @@ class FileListBody extends Component {
             dir_id={this.props.dir_id}
             file={file}
             moveFile={this.moveFile}
+            copyFile={this.props.copyFile}
             deleteFile={this.props.deleteFile}
             editFile={this.props.editFile}
             triggerSnackbar={this.props.triggerSnackbar}

@@ -10,6 +10,7 @@ import FileListBody from "../components/FileListBody";
 import {
   addFile,
   moveFile,
+  copyFile,
   deleteFile,
   editFile,
   triggerSnackbar,
@@ -27,6 +28,7 @@ class FileListBodyContainer extends Component {
         files={this.props.files}
         addFile={this.props.addFile}
         moveFile={this.props.moveFile}
+        copyFile={this.props.copyFile}
         deleteFile={this.props.deleteFile}
         deleteDirTree={this.props.deleteDirTree}
         editFile={this.props.editFile}
@@ -50,7 +52,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
-  moveFile: (dir_id, file_id) =>  { dispatch(moveFile(dir_id, file_id)); },
+  moveFile: (dir_id, file_id) => { dispatch(moveFile(dir_id, file_id)); },
+  copyFile: (dir_id, file) => { dispatch(copyFile(dir_id, file)); },
   deleteFile: (file) => { dispatch(deleteFile(file)); },
   deleteDirTree: (dir) => { dispatch(deleteDirTree(dir)); },
   editFile: (file) => { dispatch(editFile(file)); },

@@ -227,10 +227,17 @@ class File extends Component {
   };
 
   renderCopyDialog = () => {
+    const handleCopy = () => {
+      this.props.copyFile(this.props.selectedDir.id, this.props.file);
+      this.setState({ copyFile: { open: false } });
+      this.props.triggerSnackbar("ファイルをコピーしました");
+    };
+
     const copyFileActions = [
       (
         <FlatButton
           label="コピー"
+          onTouchTap={handleCopy}
           primary={true}
           />
       ),

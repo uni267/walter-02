@@ -134,3 +134,9 @@ export const selectDirTree = (dir) => ({
   type: "SELECT_DIR_TREE",
   dir
 });
+
+export const copyFile = (dir_id, file) => ({
+  type: "COPY_FILE",
+  dir_id,
+  file
+});
