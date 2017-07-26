@@ -91,7 +91,8 @@ class File extends Component {
         open: false
       },
       moveFile: {
-        open: false
+        open: false,
+        dirId: null
       },
       copyFile: {
         open: false
@@ -187,10 +188,20 @@ class File extends Component {
   };
 
   renderMoveDialog = () => {
+    const handleMove = () => {
+      this.props.moveFile(
+        this.props.file.id, this.props.selectedDir.id
+      );
+
+      this.setState({ moveFile: { open: false } });
+      this.props.triggerSnackbar("ファイルを移動しました");
+    };
+
     const moveFileActions = [
       (
         <FlatButton
           label="移動"
+          onTouchTap={handleMove}
           primary={true}
           />
       ),

@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+
+// material icons
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import HardwareKeyboardArrowRight from "material-ui/svg-icons/hardware/keyboard-arrow-right";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
@@ -25,10 +27,12 @@ class TreeNode extends Component {
     };
   }
 
+  // ディレクトリ ツリーを展開する
   toggleOpen = () => {
     this.setState({ open: !this.state.open });
   };
 
+  // ディレクトリ ツリー展開用の部品
   toggleIcon = () => {
     if (this.props.nodes.children.length === 0) {
       return <span style={styles.noToggleIcon}></span>;
@@ -40,9 +44,9 @@ class TreeNode extends Component {
   };
 
   render() {
-    const { nodes, onClickSelect, selectedId } = this.props;
-    const textColor = selectedId === nodes.id ? "rgb(0, 188, 212)" : "inherit";
-    const folderColor = selectedId === nodes.id ? "rgb(0, 188, 212)" : "inherit";
+    const { nodes, onClickSelect, selectedDir } = this.props;
+    const textColor = selectedDir.id === nodes.id ? "rgb(0, 188, 212)" : "inherit";
+    const folderColor = selectedDir.id === nodes.id ? "rgb(0, 188, 212)" : "inherit";
 
     let childNodes;
 
@@ -55,7 +59,7 @@ class TreeNode extends Component {
             key={idx}
             nodes={child}
             onClickSelect={onClickSelect}
-            selectedId={selectedId}
+            selectedDir={selectedDir}
             />
         );
       });
@@ -82,29 +86,12 @@ class TreeNode extends Component {
 }
 
 class DirTree extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedId: null
-    };
-
-    this.onClickSelect = this.onClickSelect.bind(this);
-  }
-
-  onClickSelect = (node) => {
-    console.log(this.state.selectedId);
-
-    this.setState({
-      selectedId: node.id
-    });
-  };
-
   render() {
     return (
       <TreeNode
         nodes={this.props.nodes}
-        onClickSelect={this.onClickSelect}
-        selectedId={this.state.selectedId} />
+        onClickSelect={this.props.selectDirTree}
+        selectedDir={this.props.selectedDir} />
     );
   }
 }

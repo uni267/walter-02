@@ -130,4 +130,7 @@ export const addTag = (file_id, tag) => ({
   tag
 });
 
-
+export const selectDirTree = (dir) => ({
+  type: "SELECT_DIR_TREE",
+  dir
+});

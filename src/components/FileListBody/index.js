@@ -42,6 +42,7 @@ class FileListBody extends Component {
            deleteAuthority={this.props.deleteAuthority}
            roles={this.props.roles}
            users={this.props.users}
+           selectedDir={this.props.selectedDir}
            key={idx} />
     );
 
@@ -57,7 +58,8 @@ class FileListBody extends Component {
             addAuthority={this.props.addAuthority}
             deleteAuthority={this.props.deleteAuthority}
             roles={this.props.roles}
-            users={this.props.users} />
+            users={this.props.users}
+            selectedDir={this.props.selectedDir} />
     );
 
     return file.is_dir ? dir_component : file_component;

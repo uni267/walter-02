@@ -6,6 +6,9 @@ import { connect } from "react-redux";
 // components
 import DirTree from "../components/DirTree";
 
+// actions
+import { selectDirTree } from "../actions";
+
 class DirTreeContainer extends Component {
   walk = (tree) => {
     
@@ -33,7 +36,10 @@ class DirTreeContainer extends Component {
     const nodes = this.walk({id: 0, name: "Top", children: []});
 
     return (
-      <DirTree nodes={nodes} />
+      <DirTree
+        selectedDir={this.props.selectedDir}
+        selectDirTree={this.props.selectDirTree}
+        nodes={nodes} />
     );
   }
 }
@@ -41,12 +47,13 @@ class DirTreeContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     dirs: state.dirs,
-    allFiles: state.files
+    allFiles: state.files,
+    selectedDir: state.selectedDir
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  
+  selectDirTree: (dir) => { dispatch(selectDirTree(dir)); }
 });
 
 DirTreeContainer = connect(mapStateToProps, mapDispatchToProps)(DirTreeContainer);

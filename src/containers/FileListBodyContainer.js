@@ -35,14 +35,16 @@ class FileListBodyContainer extends Component {
         addAuthority={this.props.addAuthority}
         deleteAuthority={this.props.deleteAuthority}
         roles={this.props.roles}
-        users={this.props.users} />
+        users={this.props.users}
+        selectedDir={this.props.selectedDir} />
     );
   }
 }
 const mapStateToProps = (state, ownProps) => {
   return {
     roles: state.roles,
-    users: state.users
+    users: state.users,
+    selectedDir: state.selectedDir
   };
 };
 
