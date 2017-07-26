@@ -5,7 +5,8 @@ const filesReducer = (state = FILES, action) => {
   switch ( action.type ) {
 
   case "ADD_FILE":
-    let next_file_id = state.slice().sort((a,b) => a.id < b.id)[0].id + 1;
+    let next_file_id = state.slice().sort((a,b) => b.id - a.id)[0].id + 1;
+
     return [
       ...state,
       {
@@ -47,7 +48,7 @@ const filesReducer = (state = FILES, action) => {
     ];
 
   case "ADD_DIR":
-    const next_dir_id = state.slice().sort((a, b) => a.id < b.id)[0].id + 1;
+    const next_dir_id = state.slice().sort((a, b) => b.id - a.id)[0].id + 1;
 
     return [
       ...state,
