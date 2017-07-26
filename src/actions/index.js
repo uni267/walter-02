@@ -117,3 +117,17 @@ export const deleteDirTree = (dir) => ({
   type: "DELETE_DIR_TREE",
   dir
 });
+
+export const deleteTag = (file_id, tag) => ({
+  type: "DELETE_TAG",
+  file_id,
+  tag
+});
+
+export const addTag = (file_id, tag) => ({
+  type: "ADD_TAG",
+  file_id,
+  tag
+});
+
+

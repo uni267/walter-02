@@ -1,5 +1,6 @@
 import filesReducer from "../filesReducer";
 import FILES from "../../mock-files";
+import TAGS from "../../mock-tags";
 
 describe("filesReducer", () => {
 
@@ -218,6 +219,49 @@ describe("filesReducer", () => {
       });
 
       expect(result[1].authorities.length).toEqual(1);
+
+    });
+
+  });
+
+  describe("DELETE_TAG", () => {
+
+    it("タグが削除される", () => {
+      const expression = (file) => { 
+        return !file.is_dir && file.tags.length > 0;
+      };
+
+      const target = FILES.filter(expression)[0];
+
+      const expected = target.tags.length - 1;
+
+      const result = filesReducer(FILES, {
+        type: "DELETE_TAG",
+        file_id: target.id,
+        tag: target.tags[0]
+      }).filter(expression)[0];
+
+      expect(result.tags.length).toEqual(expected);
+    });
+
+  });
+
+  describe("ADD_TAG", () => {
+
+    it("タグが追加される", () => {
+      const target = FILES.filter(file => !file.is_dir)[0];
+
+      const expected = target.tags.length + 1;
+
+      const addedTag = TAGS[2];
+
+      const result = filesReducer(FILES, {
+        type: "ADD_TAG",
+        file_id: target.id,
+        tag: addedTag
+      }).filter(file => file.id === target.id)[0];
+
+      expect(result.tags.length).toEqual(expected);
 
     });
 

@@ -12,7 +12,6 @@ const filesReducer = (state = FILES, action) => {
         id: next_file_id,
         name: action.name,
         modified: moment().format("YYYY-MM-DD HH:mm"),
-        owner: "ユーザ 太郎",
         is_dir: false,
         dir_id: action.dir_id,
         is_display: true,
@@ -47,15 +46,15 @@ const filesReducer = (state = FILES, action) => {
     ];
 
   case "ADD_DIR":
-    let next_dir_id = state.slice().sort((a, b) => a.id < b.id)[0].id + 1;
+    const next_dir_id = state.slice().sort((a, b) => a.id < b.id)[0].id + 1;
+
     return [
       ...state,
       {
         id: next_dir_id,
         name: action.name,
-        dir_id: action.dir_id,
+        dir_id: Number(action.dir_id),
         modified: moment().format("YYYY-MM-DD HH:mm"),
-        owner: "ユーザ 太郎",
         is_dir: true,
         is_display: true,
         is_star: false,
@@ -168,6 +167,25 @@ const filesReducer = (state = FILES, action) => {
       return file;
     });
 
+  case "DELETE_TAG":
+    return state.map(file => {
+      if (file.id === action.file_id) {
+        const tags = file.tags.slice().filter( tag => tag.id !== action.tag.id );
+        return {...file, tags};
+      }
+
+      return file;
+    });
+
+  case "ADD_TAG":
+    return state.map(file => {
+      if (file.id === action.file_id) {
+        const tags = [...file.tags.slice(), action.tag];
+        return {...file, tags};
+      }
+
+      return file;
+    });
   default:
     return state;
   }

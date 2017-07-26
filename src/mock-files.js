@@ -16,6 +16,18 @@ const FILES = [
     dir_id: 0,
     is_display: true,
     is_star: false,
+    tags: [
+      {
+        id: 1,
+        color: "#c62828",
+        label: "重要"
+      },
+      {
+        id: 2,
+        color: "#42A5F5",
+        label: "業務"
+      }
+    ],
     histories: [
       {
         id: 3,
@@ -80,6 +92,7 @@ const FILES = [
     dir_id: 0,
     is_display: true,
     is_star: false,
+    tags: [],
     histories: [
       {
         id: 2,
@@ -122,6 +135,7 @@ const FILES = [
     dir_id: 0,
     is_display: true,
     is_star: true,
+    tags: [],
     histories: [
       {
         id: 2,
@@ -179,6 +193,7 @@ const FILES = [
     dir_id: 0,
     is_display: true,
     is_star: false,
+    tags: [],
     histories: [
       {
         id: 1,
@@ -214,6 +229,7 @@ const FILES = [
     dir_id: 0,
     is_display: true,
     is_star: false,
+    tags: [],
     histories: [
       {
         id: 1,
@@ -249,6 +265,7 @@ const FILES = [
     dir_id: 4,
     is_display: true,
     is_star: false,
+    tags: [],
     histories: [
       {
         id: 1,
@@ -284,6 +301,7 @@ const FILES = [
     dir_id: 6,
     is_display: true,
     is_star: false,
+    tags: [],
     histories: [
       {
         id: 1,
