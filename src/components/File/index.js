@@ -52,7 +52,7 @@ const style = {
     padding: 0
   },
 
-  file: {
+  fileDetail: {
     textDecoration: "none",
     color: "#111"
   }
@@ -303,7 +303,7 @@ class File extends Component {
     const fileView = (
       <Link
         to={`/file-detail/${this.props.file.id}`}
-        style={{...style.file, color}} >
+        style={{...style.fileDetail, color}} >
         {this.props.file.name}
       </Link>
     );
