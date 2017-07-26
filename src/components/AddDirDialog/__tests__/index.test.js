@@ -26,20 +26,15 @@ describe("AddDirDialog", () => {
   it("without crashing", () => {
     const div = document.createElement("div");
 
-    const dir_id = 0;
-    const toggleAddDir = () => { console.log("toggleAddDir"); };
-    const createDir = () => { console.log("createDir"); };
-    const open = false;
-    const triggerSnackbar = () => { console.log("triggerSnackbar"); };
-
     ReactDOM.render(
       <MuiThemeProvider>
         <AddDirDialog
-          dir_id={dir_id}
-          toggleAddDir={toggleAddDir}
-          createDir={createDir}
-          open={open}
-          triggerSnackbar={triggerSnackbar} />
+          dir_id={0}
+          toggleAddDir={() => console.log("")}
+          createDir={() => console.log("")}
+          open={false}
+          allDirs={[]}
+          triggerSnackbar={() => console.log("")} />
       </MuiThemeProvider>,
       div
     );
