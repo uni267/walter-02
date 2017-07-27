@@ -354,7 +354,7 @@ class File extends Component {
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        style={{...this.props.rowStyle, opacity, backgroundColor}}>
+        style={{...rowStyle, opacity, backgroundColor}}>
 
         <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox

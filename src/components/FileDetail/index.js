@@ -18,7 +18,6 @@ import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
-import Avatar from "material-ui/Avatar";
 import SelectField from "material-ui/SelectField";
 import MenuItem from "material-ui/MenuItem";
 

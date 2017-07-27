@@ -55,7 +55,7 @@ class DirBox extends Component {
   };
 
   addDirName = (dir) => {
-    return this.props.allFiles.filter(file => dir.id == file.id)[0];
+    return this.props.allFiles.filter(file => dir.id === file.id)[0];
   };
 
   renderDir = (dir, idx) => {

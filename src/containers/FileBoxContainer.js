@@ -11,25 +11,15 @@ import { Card } from 'material-ui/Card';
 import FileActionContainer from "./FileActionContainer";
 import FileSearch from "../components/FileSearch";
 import DirBox from "../components/DirBox";
-import FileListHeader from "../components/FileListHeader";
 import FileListContainer from "./FileListContainer";
 import FileSnackbar from "../components/FileSnackbar";
 
 // actions
 import {
-  searchFile,
-  setSortTarget,
-  toggleSortTarget,
-  sortFile,
   triggerSnackbar,
   closeSnackbar
 } from "../actions";
 
-const styles = {
-  row: {
-    display: "flex"
-  }
-};
 
 class FileBoxContainer extends Component {
 

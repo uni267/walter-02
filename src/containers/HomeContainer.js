@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 
 // containers
 import NavigationContainer from "./NavigationContainer";
@@ -26,8 +25,5 @@ class HomeContainer extends Component {
     );
   }
 }
-
-HomeContainer.propTypes = {
-};
 
 export default HomeContainer;

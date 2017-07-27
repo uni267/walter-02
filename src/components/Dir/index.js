@@ -298,35 +298,13 @@ class Dir extends Component {
             </Link>
           );
 
-    const deleteDirActions = [
-      (
-        <FlatButton
-          label="Delete"
-          primary={true}
-          onTouchTap={() => {
-            this.props.deleteDir(this.props.dir);
-            this.props.deleteDirTree(this.props.dir);
-            this.props.triggerSnackbar(`${this.props.dir.name}を削除しました`);
-            this.setState({ deleteDir: { open: false } });
-          }}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          primary={false}
-          onTouchTap={() => this.setState({ deleteDir: { open: false } })}
-          />
-      )
-    ];
-
     const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
 
     return connectDropTarget(
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        style={{...this.props.rowStyle, backgroundColor}}>
+        style={{...rowStyle, backgroundColor}}>
 
         <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
