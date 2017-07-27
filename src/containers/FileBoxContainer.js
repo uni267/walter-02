@@ -12,7 +12,7 @@ import FileActionContainer from "./FileActionContainer";
 import FileSearch from "../components/FileSearch";
 import DirBox from "../components/DirBox";
 import FileListHeader from "../components/FileListHeader";
-import FileListBodyContainer from "./FileListBodyContainer";
+import FileListContainer from "./FileListContainer";
 import FileSnackbar from "../components/FileSnackbar";
 
 // actions
@@ -64,24 +64,20 @@ class FileBoxContainer extends Component {
 
         <div style={{display: "flex"}}>
           <div style={{width: "78%"}}>
-            <FileListHeader
-              setSortTarget={this.props.setSortTarget}
-              toggleSortTarget={this.props.toggleSortTarget}
-              fileSortTarget={this.props.fileSortTarget} 
-              sortFile={this.props.sortFile} />
 
-            <FileListBodyContainer
+            <FileListContainer
               dir_id={this.props.dir_id}
               files={_files} />
 
-            <FileSnackbar
-              closeSnackbar={this.props.closeSnackbar}
-              snackbar={this.props.snackbar} />
           </div>
 
           <div style={{width: "22%"}}>
             <FileActionContainer dir_id={this.props.dir_id} />
           </div>
+
+          <FileSnackbar
+            closeSnackbar={this.props.closeSnackbar}
+            snackbar={this.props.snackbar} />
 
         </div>
       </Card>
@@ -102,10 +98,6 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFile: (keyword) => { dispatch(searchFile(keyword)); },
-  setSortTarget: (target) => { dispatch(setSortTarget(target)); },
-  toggleSortTarget: () => { dispatch(toggleSortTarget()); },
-  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   closeSnackbar: () => { dispatch(closeSnackbar()); }
 });
