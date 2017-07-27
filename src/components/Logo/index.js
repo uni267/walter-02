@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // material
 import AppBar from "material-ui/AppBar";
@@ -214,5 +215,9 @@ class Logo extends Component {
     );
   }
 }
+
+Logo.propTypes = {
+  notifications: PropTypes.array
+};
 
 export default Logo;
