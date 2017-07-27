@@ -10,7 +10,7 @@ import Divider from 'material-ui/Divider';
 import Avatar from "material-ui/Avatar";
 import Badge from 'material-ui/Badge';
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 
 // router
 import { Link } from "react-router-dom";
@@ -26,46 +26,37 @@ const styles = {
 };
 
 class Logo extends Component {
-  renderNotification(notification, idx) {
-    return (
-      <Card key={idx}>
-        <CardHeader
-          title={notification.title}
-          subtitle={notification.modified} />
+  renderRightElements = () => {
 
-        <CardText>{notification.body}</CardText>
-      </Card>
-    );
-  }
-
-  render() {
-    const title = (
-      <Link
-        to={`/home/`}
-        style={styles.title}>
-
-        cloud storage
-
-      </Link>
-    );
-
-    const account_icon = (
-      <IconButton iconStyle={styles.smallIcon}>
-        <ActionAccountCircle />
-      </IconButton>
-    );
-
-    const avatar_icon = (
-      <Avatar src="/images/shikata.jpg" />
-    );
-
-    const notification_icon = (
+    const notificationIcon = (
       <IconButton iconStyle={styles.smallIcon}>
         <NotificationsIcon />
       </IconButton>
     );
 
-    const right_elements = (
+    const accountIcon = (
+      <IconButton iconStyle={styles.smallIcon}>
+        <ActionAccountCircle />
+      </IconButton>
+    );
+
+    const avatarIcon = (
+      <Avatar src="/images/shikata.jpg" />
+    );
+
+    const renderNotification = (notification, idx) => {
+      return (
+        <Card key={idx}>
+          <CardHeader
+            title={notification.title}
+            subtitle={notification.modified} />
+
+          <CardText>{notification.body}</CardText>
+        </Card>
+      );
+    };
+
+    return (
       <div style={{paddingRight: 70}}>
         <Badge
           badgeContent={this.props.notifications.length}
@@ -73,19 +64,19 @@ class Logo extends Component {
           secondary={true} >
 
           <IconMenu
-            iconButtonElement={notification_icon}
+            iconButtonElement={notificationIcon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
             {this.props.notifications.map(
-            (notification, idx) => this.renderNotification(notification, idx))}
+            (notification, idx) => renderNotification(notification, idx))}
 
           </IconMenu>
         </Badge>
 
         <IconMenu
-          iconButtonElement={account_icon}
+          iconButtonElement={accountIcon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-          <MenuItem primaryText="user01" leftIcon={avatar_icon} disabled={true} />
+          <MenuItem primaryText="user01" leftIcon={avatarIcon} disabled={true} />
           <Divider />
           <MenuItem
             primaryText="アカウント情報変更"
@@ -95,12 +86,19 @@ class Logo extends Component {
         </IconMenu>
       </div>
     );
+  }
+  render() {
+    const title = (
+      <Link to={`/home/`} style={styles.title}>
+        cloud storage
+      </Link>
+    );
 
     return (
       <div className="logo">
         <AppBar
           title={title}
-          iconElementRight={right_elements}
+          iconElementRight={this.renderRightElements}
           onLeftIconButtonTouchTap={this.props.onMenuIconClick}
           />
       </div>
