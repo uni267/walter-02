@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // material
 import Dialog from "material-ui/Dialog";
@@ -100,5 +101,14 @@ class AddFileDialog extends Component {
     );
   }
 }
+
+AddFileDialog.propTypes = {
+  dir_id: PropTypes.number.isRequired,
+  filesBuffer: PropTypes.array.isRequired,
+  pushFileToBuffer: PropTypes.func.isRequired,
+  addFile: PropTypes.func.isRequired,
+  triggerSnackbar: PropTypes.func.isRequired,
+  clearFilesBuffer: PropTypes.func.isRequired
+};
 
 export default AddFileDialog;

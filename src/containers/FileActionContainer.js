@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // store
 import { connect } from "react-redux";
@@ -40,7 +41,6 @@ class FileActionContainer extends Component {
         <Menu>
           <AddFileDialog
             dir_id={this.props.dir_id}
-            open={this.props.open_file}
             filesBuffer={this.props.filesBuffer}
             pushFileToBuffer={this.props.pushFileToBuffer}
             addFile={this.props.addFile}
@@ -102,5 +102,9 @@ FileActionContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(FileActionContainer);
+
+FileActionContainer.propTypes = {
+  dir_id: PropTypes.number.isRequired
+};
 
 export default FileActionContainer;
