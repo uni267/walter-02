@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // material
 import Dialog from "material-ui/Dialog";
@@ -121,5 +122,17 @@ class AddDirDialog extends Component {
     );
   }
 }
+
+AddDirDialog.propTypes = {
+  dir_id: PropTypes.number.isRequired,
+  roles: PropTypes.array.isRequired,
+  users: PropTypes.array.isRequired,
+  addAuthority: PropTypes.func.isRequired,
+  deleteAuthority: PropTypes.func.isRequired,
+  allDirs: PropTypes.array.isRequired,
+  createDir: PropTypes.func.isRequired,
+  createDirTree: PropTypes.func.isRequired,
+  triggerSnackbar: PropTypes.func.isRequired
+};
 
 export default AddDirDialog;

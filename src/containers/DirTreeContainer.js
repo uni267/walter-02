@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // store
 import { connect } from "react-redux";
@@ -57,4 +58,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 DirTreeContainer = connect(mapStateToProps, mapDispatchToProps)(DirTreeContainer);
+
+DirTreeContainer.propTypes = {
+  
+};
+
 export default DirTreeContainer;

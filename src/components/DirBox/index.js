@@ -91,9 +91,9 @@ class DirBox extends Component {
 }
 
 DirBox.propTypes = {
-  dirs: PropTypes.array,
-  dirId: PropTypes.number,
-  allFiles: PropTypes.array
+  dirs: PropTypes.array.isRequired,
+  dirId: PropTypes.number.isRequired,
+  allFiles: PropTypes.array.isRequired
 };
 
 export default DirBox;
