@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // store
 import { connect } from "react-redux";
@@ -110,4 +111,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBoxContainer);
+
+FileBoxContainer.propTypes = {
+  dir_id: PropTypes.number
+};
+
 export default FileBoxContainer;
