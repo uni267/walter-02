@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // store
 import { connect } from "react-redux";
@@ -209,5 +210,10 @@ FileListContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(FileListContainer);
+
+FileListContainer.propTypes = {
+  dir_id: PropTypes.number.isRequired,
+  files: PropTypes.array.isRequired
+};
 
 export default withDragDropContext(FileListContainer);

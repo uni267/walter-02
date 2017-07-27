@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+
+// router
 import { Link } from "react-router-dom";
 
 // DnD
@@ -422,6 +425,28 @@ class File extends Component {
     );
   }
 }
+
+File.propTypes = {
+  dir_id: PropTypes.number.isRequired,
+  rowStyle: PropTypes.object.isRequired,
+  cellStyle: PropTypes.object.isRequired,
+  headers: PropTypes.array.isRequired,
+  file: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired
+  }).isRequired,
+  moveFile: PropTypes.func.isRequired,
+  copyFile: PropTypes.func.isRequired,
+  deleteFile: PropTypes.func.isRequired,
+  editFile: PropTypes.func.isRequired,
+  triggerSnackbar: PropTypes.func.isRequired,
+  toggleStar: PropTypes.func.isRequired,
+  addAuthority: PropTypes.func.isRequired,
+  deleteAuthority: PropTypes.func.isRequired,
+  roles: PropTypes.array.isRequired,
+  users: PropTypes.array.isRequired,
+  selectedDir: PropTypes.object.isRequired
+};
 
 export default DragSource("file", fileSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),

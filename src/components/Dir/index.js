@@ -1,5 +1,10 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+
+// DnD
 import { DropTarget } from 'react-dnd';
+
+// router
 import { Link } from "react-router-dom";
 
 // material
@@ -393,6 +398,22 @@ class Dir extends Component {
     );
   }
 }
+
+Dir.propTypes = {
+  dir: PropTypes.object.isRequired,
+  rowStyle: PropTypes.object.isRequired,
+  cellStyle: PropTypes.object.isRequired,
+  headers: PropTypes.array.isRequired,
+  triggerSnackbar: PropTypes.func.isRequired,
+  editDir: PropTypes.func.isRequired,
+  deleteDir: PropTypes.func.isRequired,
+  deleteDirTree: PropTypes.func.isRequired,
+  addAuthority: PropTypes.func.isRequired,
+  deleteAuthority: PropTypes.func.isRequired,
+  roles: PropTypes.array.isRequired,
+  users: PropTypes.array.isRequired,
+  selectedDir: PropTypes.object.isRequired
+};
 
 export default DropTarget("file", fileTarget, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 class FileListHeader extends Component {
   onSortClick = (e) => {
@@ -30,5 +31,14 @@ class FileListHeader extends Component {
     );
   }
 }
+
+FileListHeader.propTypes = {
+  header: PropTypes.object.isRequired,
+  style: PropTypes.object.isRequired,
+  setSortTarget: PropTypes.func.isRequired,
+  toggleSortTarget: PropTypes.func.isRequired,
+  fileSortTarget: PropTypes.object.isRequired,
+  sortFile: PropTypes.func.isRequired
+};
 
 export default FileListHeader;
