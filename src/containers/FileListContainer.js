@@ -3,9 +3,15 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
+// DnD
+import TableBodyWrapper from "../components/FileListBody/TableBodyWrapper";
+import withDragDropContext from "../components/FileListBody/withDragDropContext";
+import { NativeTypes } from "react-dnd-html5-backend";
+
 // components
 import FileListHeader from "../components/FileListHeader";
-import FileListBody from "../components/FileListBody";
+import Dir from "../components/Dir";
+import File from "../components/File";
 
 // actions
 import {
@@ -30,76 +36,139 @@ const styles = {
     display: "flex",
     width: "95%",
     marginLeft: 30,
-    borderBottom: "1px solid lightgray"
+    borderBottom: "1px solid lightgray",
+    backgroundColor: "inherit"
   },
   cell: {
     display: "flex",
     alignItems: "center",
     paddingLeft: 24,
     paddingRight: 24,
-    height: 48,
     textAlign: "left",
-    fontSize: 12,
+    fontFamily: "Roboto sans-serif",
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
-    backgroundColor: "inherit",
-    color: "rgb(158, 158, 158)"
+    backgroundColor: "inherit"
   }
 };
 
+const headers = [
+  {key: "checkbox", width: "5%", label: ""},
+  {key: "name", width: "50%", label: "名前"},
+  {key: "modified", width: "20%", label: "最終更新"},
+  {key: "owner", width: "15%", label: "メンバー"},
+  {key: false, width: "10%", label: "Action"},
+];
+
 class FileListContainer extends Component {
-  renderHeaders = () => {
-    const headers = [
-      {key: "checkbox", width: "5%", label: ""},
-      {key: "name", width: "50%", label: "名前"},
-      {key: "modified", width: "20%", label: "最終更新"},
-      {key: "owner", width: "15%", label: "メンバー"},
-      {key: false, width: "10%", label: "Action"},
-    ];
+  handleFileDrop = (item, monitor) => {
+    if (monitor) {
+      const droppedFiles = monitor.getItem().files;
+      droppedFiles.forEach(file => {
+        this.props.addFile(this.props.dir_id, file.name);
+        this.props.triggerSnackbar(`${file.name}をアップロードしました`);
+      });
+    }
+  }
+
+  moveFile = (dir_id, file_id) => {
+    this.props.moveFile(file_id, dir_id);
+    this.props.triggerSnackbar("ファイルを移動しました");
+  };
+
+  renderHeader = (header, idx) => {
     
-    const renderHeader = (header, idx) => {
-      return (
-        <FileListHeader
-          key={idx} 
-          header={header}
-          style={styles.cell}
-          setSortTarget={this.props.setSortTarget}
-          toggleSortTarget={this.props.toggleSortTarget}
-          fileSortTarget={this.props.fileSortTarget}
-          sortFile={this.props.sortFile}
-          />
-      );
+    const headerStyle = {
+      ...styles.cell,
+      color: "rgb(158, 158, 158)",
+      fontSize: 12,
+      height: 48
     };
 
-    return headers.map( (header, idx) => renderHeader(header, idx) );
+    return (
+      <FileListHeader
+        key={idx} 
+        header={header}
+        style={headerStyle}
+        setSortTarget={this.props.setSortTarget}
+        toggleSortTarget={this.props.toggleSortTarget}
+        fileSortTarget={this.props.fileSortTarget}
+        sortFile={this.props.sortFile}
+        />
+    );
+
+  };
+
+  renderRow = (file, idx) => {
+    const cellStyle = {
+      ...styles.cell,
+      height: 70,
+      color: "rgb(80, 80, 80)",
+      fontSize: 13
+    };
+
+    const dirComponent = (
+      <Dir 
+        key={idx} 
+        dir={file}
+        rowStyle={styles.row}
+        cellStyle={cellStyle}
+        headers={headers}
+        triggerSnackbar={this.props.triggerSnackbar}
+        editDir={this.props.editFile}
+        deleteDir={this.props.deleteFile}
+        deleteDirTree={this.props.deleteDirTree}
+        addAuthority={this.props.addAuthority}
+        deleteAuthority={this.props.deleteAuthority}
+        roles={this.props.roles}
+        users={this.props.users}
+        selectedDir={this.props.selectedDir}
+        />
+    );
+
+    const fileComponent = (
+      <File
+        key={idx}
+        dir_id={this.props.dir_id}
+        rowStyle={styles.row}
+        cellStyle={cellStyle}
+        headers={headers}
+        file={file}
+        moveFile={this.moveFile}
+        copyFile={this.props.copyFile}
+        deleteFile={this.props.deleteFile}
+        editFile={this.props.editFile}
+        triggerSnackbar={this.props.triggerSnackbar}
+        toggleStar={this.props.toggleStar}
+        addAuthority={this.props.addAuthority}
+        deleteAuthority={this.props.deleteAuthority}
+        roles={this.props.roles}
+        users={this.props.users}
+        selectedDir={this.props.selectedDir}
+        />
+    );
+
+    return file.is_dir ? dirComponent : fileComponent;
   };
 
   render() {
+    const { FILE } = NativeTypes;
 
     return (
       <div>
         <div style={styles.row}>
-          {this.renderHeaders()}
+          {headers.map( (header, idx) => this.renderHeader(header, idx) )}
         </div>
 
-        <FileListBody
-          dir_id={this.props.dir_id}
-          files={this.props.files}
-          addFile={this.props.addFile}
-          moveFile={this.props.moveFile}
-          copyFile={this.props.copyFile}
-          deleteFile={this.props.deleteFile}
-          deleteDirTree={this.props.deleteDirTree}
-          editFile={this.props.editFile}
-          triggerSnackbar={this.props.triggerSnackbar}
-          toggleStar={this.props.toggleStar}
-          addAuthority={this.props.addAuthority}
-          deleteAuthority={this.props.deleteAuthority}
-          roles={this.props.roles}
-          users={this.props.users}
-          selectedDir={this.props.selectedDir}
-          />
+        <TableBodyWrapper
+          accepts={[FILE]}
+          onDrop={this.handleFileDrop}
+          >
+
+          {this.props.files.map( (file, idx) => this.renderRow(file, idx) )}
+
+        </TableBodyWrapper>
 
       </div>
     );
@@ -141,4 +210,4 @@ FileListContainer = connect(
   mapDispatchToProps
 )(FileListContainer);
 
-export default FileListContainer;
+export default withDragDropContext(FileListContainer);

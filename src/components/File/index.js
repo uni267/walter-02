@@ -22,30 +22,6 @@ import History from "../FileDetail/History";
 import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const style = {
-  row: {
-    display: "flex",
-    width: "95%",
-    marginLeft: 30,
-    borderBottom: "1px solid lightgray",
-    backgroundColor: "inherit"
-  },
-
-  cell: {
-    display: "flex",
-    alignItems: "center",
-    paddingLeft: 24,
-    paddingRight: 24,
-    height: 70,
-    textAlign: "left",
-    fontSize: 13,
-    fontFamily: "Roboto sans-serif",
-    color: "rgb(80, 80, 80)",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    backgroundColor: "inherit"
-  },
-
   checkbox: {
     display: "flex",
     margin: 0,
@@ -297,7 +273,7 @@ class File extends Component {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const changeFileName = () => {
-      console.log(this.refs);
+
       const fileName = this.refs.fileName.getValue();
 
       if ( fileName === "" ) {
@@ -346,10 +322,13 @@ class File extends Component {
 
   render() {
     const { isDragging, connectDragSource, file } = this.props;
+    const { rowStyle, cellStyle, headers } = this.props;
 
     const opacity = isDragging ? 0.3 : 1;
 
     const backgroundColor = this.state.checked ? "rgb(232, 232, 232)" : "inherit";
+
+    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
 
     const action_menu_icon = () => {
       const opacity = this.state.hover ? 1 : 0.1;
@@ -368,15 +347,13 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
-    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
-
     return connectDragSource(
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        style={{...style.row, opacity, backgroundColor}}>
+        style={{...this.props.rowStyle, opacity, backgroundColor}}>
 
-        <div style={{...style.cell, width: "5%"}}>
+        <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
             style={{...style.checkbox, opacity: checkOpacity}}
             onCheck={this.onClickCheckBox} />
@@ -389,17 +366,19 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...style.cell, width: "50%"}}>
+        <div style={{...cellStyle, width: headers[1].width}}>
           {this.renderFileName()}
         </div>
 
-        <div style={{...style.cell, width: "20%"}}>{file.modified}</div>
+        <div style={{...cellStyle, width: headers[2].width}}>
+          {file.modified}
+        </div>
 
-        <div style={{...style.cell, width: "15%"}}>
+        <div style={{...cellStyle, width: headers[3].width}}>
           {this.renderMember()}
         </div>
 
-        <div style={{...style.cell, width: "10%"}}>
+        <div style={{...cellStyle, width: headers[4].width}}>
           <IconMenu
             iconButtonElement={action_menu_icon()}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>

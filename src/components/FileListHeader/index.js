@@ -20,7 +20,6 @@ class FileListHeader extends Component {
   render() {
     const { idx, header, style } = this.props;
 
-    console.log(this.props);
     return (
       <div key={idx}
            onClick={this.onSortClick}

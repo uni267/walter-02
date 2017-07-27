@@ -21,27 +21,6 @@ import Authority from "../FileDetail/Authority";
 import History from "../FileDetail/History";
 
 const style = {
-  row: {
-    display: "flex",
-    width: "95%",
-    marginLeft: 30,
-    borderBottom: "1px solid lightgray"
-  },
-  cell: {
-    display: "flex",
-    alignItems: "center",
-    paddingLeft: 24,
-    paddingRight: 24,
-    height: 70,
-    textAlign: "left",
-    fontSize: 13,
-    fontFamily: "Roboto sans-serif",
-    color: "rgb(80, 80, 80)",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    backgroundColor: "inherit"
-  },
   dir: {
     textDecoration: "none",
     color: "#555"
@@ -273,6 +252,7 @@ class Dir extends Component {
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
     const { dir } = this.props;
+    const { rowStyle, cellStyle, headers } = this.props;
 
     const isActive = canDrop && isOver;
     const backgroundColor = isActive || this.state.checked 
@@ -341,9 +321,9 @@ class Dir extends Component {
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        style={{...style.row, backgroundColor}}>
+        style={{...this.props.rowStyle, backgroundColor}}>
 
-        <div style={{...style.cell, width: "5%"}}>
+        <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
             style={{...style.checkbox, opacity: checkOpacity}}
             onCheck={this.onClickCheckBox} />
@@ -355,18 +335,18 @@ class Dir extends Component {
             uncheckedIcon={favorite_icon_border} />
         </div>
 
-        <div style={{...style.cell, width: "50%"}}>
+        <div style={{...cellStyle, width: headers[1].width}}>
           <FileFolderOpen style={style.dir_icon} />
           {dirNameArea}
         </div>
 
-        <div style={{...style.cell, width: "20%"}}>{dir.modified}</div>
+        <div style={{...cellStyle, width: headers[2].width}}>{dir.modified}</div>
 
-        <div style={{...style.cell, width: "15%"}}>
+        <div style={{...cellStyle, width: headers[3].width}}>
           {this.renderMember()}
         </div>
 
-        <div style={{...style.cell, width: "10%"}}>
+        <div style={{...cellStyle, width: headers[4].width}}>
           <IconMenu
             iconButtonElement={action_menu_icon()}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
