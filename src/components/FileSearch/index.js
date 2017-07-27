@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // material ui
 import TextField from "material-ui/TextField";
@@ -222,6 +223,11 @@ class FileSearch extends Component {
       </div>
     );
   }
+};
+
+FileSearch.propTypes = {
+  searchWord: PropTypes.object,
+  searchFile: PropTypes.func
 };
 
 export default FileSearch;
