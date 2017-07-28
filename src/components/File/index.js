@@ -23,6 +23,7 @@ import TextField from "material-ui/TextField";
 import Authority from "../FileDetail/Authority";
 import History from "../FileDetail/History";
 import DirTreeContainer from "../../containers/DirTreeContainer";
+import Tag from "../Tag";
 
 const style = {
   checkbox: {
@@ -275,6 +276,33 @@ class File extends Component {
     );
   };
 
+  renderTagDialog = () => {
+    const actions = (
+      <FlatButton
+        label="close"
+        primary={true}
+        onTouchTap={() => this.setState({ editTag: { open: false } })}
+        />
+    );
+
+    return (
+      <Dialog
+        title="タグ編集"
+        open={this.state.editTag.open}
+        modal={false}
+        actions={actions} >
+
+        <Tag 
+          file={this.props.file}
+          addTag={this.props.addTag}
+          deleteTag={this.props.deleteTag}
+          triggerSnackbar={this.props.triggerSnackbar}
+          />
+
+        </Dialog>
+    );
+  };
+
   renderFileName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
@@ -434,6 +462,7 @@ class File extends Component {
         <this.renderMoveDialog />
         <this.renderCopyDialog />
         <this.renderHistoryDialog />
+        <this.renderTagDialog />
 
       </div>
     );

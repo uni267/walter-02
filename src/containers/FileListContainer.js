@@ -29,7 +29,9 @@ import {
   searchFile,
   setSortTarget,
   toggleSortTarget,
-  sortFile
+  sortFile,
+  addTag,
+  deleteTag
 } from "../actions";
 
 const styles = {
@@ -148,6 +150,8 @@ class FileListContainer extends Component {
         roles={this.props.roles}
         users={this.props.users}
         selectedDir={this.props.selectedDir}
+        addTag={this.props.addTag}
+        deleteTag={this.props.deleteTag}
         />
     );
 
@@ -204,7 +208,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFile: (keyword) => { dispatch(searchFile(keyword)); },
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
-  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); }
+  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
+  addTag: (file_id, tag) => { dispatch(addTag(file_id, tag)); },
+  deleteTag: (file_id, tag) => { dispatch(deleteTag(file_id, tag)); }
 });
 
 FileListContainer = connect(
