@@ -78,6 +78,9 @@ class File extends Component {
       },
       historiesFile: {
         open: false
+      },
+      editTag: {
+        open: false
       }
     };
 
@@ -290,19 +293,28 @@ class File extends Component {
     };
 
     const fileInput = (
-      <TextField
-        ref="fileName"
-        defaultValue={this.props.file.name}
-        onKeyDown={e => e.key === "Enter" ? changeFileName() : null} />
+      <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}>
+        
+        <TextField
+          ref="fileName"
+          defaultValue={this.props.file.name}
+          onKeyDown={e => e.key === "Enter" ? changeFileName() : null} />
 
+      </div>
     );
 
+    const handleClick = () => {
+      this.props.history.push(`/file-detail/${this.props.file.id}`);
+    };
+
     const fileView = (
-      <Link
-        to={`/file-detail/${this.props.file.id}`}
-        style={{...style.fileDetail, color}} >
+      <div
+        onClick={handleClick}
+        style={{...this.props.cellStyle, width: this.props.headers[1].width, color}}>
+        
         {this.props.file.name}
-      </Link>
+
+      </div>
     );
 
     return this.state.editFile.open ? fileInput : fileView;
@@ -369,9 +381,7 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...cellStyle, width: headers[1].width}}>
-          {this.renderFileName()}
-        </div>
+        {this.renderFileName()}
 
         <div style={{...cellStyle, width: headers[2].width}}>
           {file.modified}
@@ -405,6 +415,10 @@ class File extends Component {
             <MenuItem
               primaryText="権限を変更"
               onTouchTap={() => this.setState({ editAuthority: { open: true } })} />
+
+            <MenuItem
+              primaryText="タグを編集"
+              onTouchTap={() => this.setState({ editTag: { open: true } })} />
 
             <MenuItem
               primaryText="履歴を閲覧"

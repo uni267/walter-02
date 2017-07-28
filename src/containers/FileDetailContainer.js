@@ -26,6 +26,7 @@ class FileDetailContainer extends Component {
       <div>
         <NavigationContainer />
         <FileDetail
+          history={this.props.history}
           file={this.props.file}
           roles={this.props.roles}
           users={this.props.users}

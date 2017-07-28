@@ -218,12 +218,14 @@ class FileDetail extends Component {
     );
 
     const fileTitle = (
-      <div style={{display: "flex", alignItems: "center"}}>
-        <Link to={"/home"} style={{textDecoration: "none"}}>
-          <IconButton>
-            <HardwareKeyboardArrowLeft />
-          </IconButton>
-        </Link>
+      <div
+        style={{display: "flex", alignItems: "center"}}>
+        <IconButton
+          onTouchTap={() => {
+            this.props.history.goBack();
+          }}>
+          <HardwareKeyboardArrowLeft />
+        </IconButton>
         {this.props.file.name}
       </div>
     );
