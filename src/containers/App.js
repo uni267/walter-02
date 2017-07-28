@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 // app components
-import HomeContainer from "./containers/HomeContainer";
-import FileDetailContainer from "./containers/FileDetailContainer";
+import HomeContainer from "./HomeContainer";
+import FileDetailContainer from "./FileDetailContainer";
 
 class App extends Component {
   render() {

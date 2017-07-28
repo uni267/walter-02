@@ -13,7 +13,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // app components
-import App from './App';
+import App from './containers/App';
 
 const store = createStore(reducer, applyMiddleware(logger));
 
