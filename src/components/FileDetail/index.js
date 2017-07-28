@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// router
-import { Link } from "react-router-dom";
-
 // material-ui
 import { 
   Card, 
@@ -13,13 +10,10 @@ import {
   CardActions
 } from 'material-ui/Card';
 import IconButton from "material-ui/IconButton";
-import Chip from "material-ui/Chip";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
-import SelectField from "material-ui/SelectField";
-import MenuItem from "material-ui/MenuItem";
 
 // material icon
 import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
@@ -27,9 +21,7 @@ import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-a
 // components
 import Authority from "./Authority";
 import History from "./History";
-
-// mock
-import TAGS from "../../mock-tags";
+import Tag from "../Tag";
 
 const styles = {
   fileImageWrapper: {
@@ -122,57 +114,6 @@ class FileDetail extends Component {
     };
 
     return file.authorities.map( (auth, idx) => renderAuthority(auth, idx));
-
-  };
-
-  renderTags = (file) => {
-    const handleDelete = (file_id, tag) => {
-      this.props.deleteTag(file_id, tag);
-      this.props.triggerSnackbar("タグを削除しました");
-    };
-
-    const renderTag = (tag, idx) => {
-      return (
-        <Chip
-          key={idx}
-          style={{marginLeft: 10}}
-          onRequestDelete={() => handleDelete(this.props.file.id, tag)}
-          >
-          {tag.label}
-        </Chip>
-      );
-    };
-
-    const handleChange = (event, index, value) => {
-      this.props.addTag(file.id, value);
-      this.props.triggerSnackbar("タグを追加しました");
-    };
-
-    const renderMenuItem = (tag, idx) => {
-      return (
-        <MenuItem key={idx} value={tag} primaryText={tag.label} />
-      );
-    };
-
-    const tags = TAGS.filter(
-      tag => !this.props.file.tags.map(t => t.id).includes(tag.id)
-    );
-
-    return (
-      <div>
-        <div style={{...styles.metaRow, display: "flex"}}>
-          {file.tags.map( (tag, idx) => renderTag(tag, idx) )}
-        </div>
-
-        <SelectField
-          floatingLabelText="タグを追加"
-          value={this.state.editTag.value}
-          onChange={handleChange} >
-          {tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
-        </SelectField>
-
-      </div>
-    );
 
   };
 
@@ -277,7 +218,13 @@ class FileDetail extends Component {
             <Card style={styles.innerCard}>
               <CardHeader title="タグ" />
               <CardText>
-                {this.renderTags(this.props.file)}
+
+                <Tag 
+                  file={this.props.file}
+                  addTag={this.props.addTag}
+                  deleteTag={this.props.deleteTag}
+                  triggerSnackbar={this.props.triggerSnackbar} />
+
               </CardText>
             </Card>
 
