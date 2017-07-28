@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-// router
-import { Link } from "react-router-dom";
-
 // DnD
 import { DragSource } from "react-dnd";
 
