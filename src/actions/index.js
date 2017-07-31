@@ -132,3 +132,15 @@ export const copyFile = (dir_id, file) => ({
   dir_id,
   file
 });
+
+export const addMetaInfo = (file, metaInfo) => ({
+  type: "ADD_META_INFO",
+  file,
+  metaInfo
+});
+
+export const deleteMetaInfo = (file, metaInfo) => ({
+  type: "DELETE_META_INFO",
+  file,
+  metaInfo
+});

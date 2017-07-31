@@ -17,7 +17,9 @@ import {
   triggerSnackbar,
   editFile,
   deleteTag,
-  addTag
+  addTag,
+  addMetaInfo,
+  deleteMetaInfo
 } from "../actions";
 
 class FileDetailContainer extends Component {
@@ -36,6 +38,8 @@ class FileDetailContainer extends Component {
           editFile={this.props.editFile}
           deleteTag={this.props.deleteTag}
           addTag={this.props.addTag}
+          addMetaInfo={this.props.addMetaInfo}
+          deleteMetaInfo={this.props.deleteMetaInfo}
           />
         <FileSnackbar
           closeSnackbar={this.props.closeSnackbar}
@@ -64,7 +68,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   editFile: (file) => { dispatch(editFile(file)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   deleteTag: (file_id, tag) => { dispatch(deleteTag(file_id, tag)); },
-  addTag: (file_id, tag) => { dispatch(addTag(file_id, tag)); }
+  addTag: (file_id, tag) => { dispatch(addTag(file_id, tag)); },
+  addMetaInfo: (file, metaInfo) => { dispatch(addMetaInfo(file, metaInfo)); },
+  deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); }
 });
 
 FileDetailContainer = connect(

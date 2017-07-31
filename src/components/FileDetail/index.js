@@ -22,6 +22,7 @@ import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-a
 import Authority from "./Authority";
 import History from "./History";
 import Tag from "../Tag";
+import MetaInfo from "../MetaInfo";
 
 const styles = {
   fileImageWrapper: {
@@ -55,6 +56,9 @@ class FileDetail extends Component {
       },
       editTag: {
         value: ""
+      },
+      editMetaInfo: {
+        open: false
       }
     };
   }
@@ -153,6 +157,46 @@ class FileDetail extends Component {
     
   };
 
+  renderMetaInfos = (file) => {
+    const render = (meta, idx) => {
+      return (
+        <div key={idx} style={styles.metaRow}>
+          <div style={styles.metaCell}>{meta.key}</div>
+          <div style={styles.metaCell}>{meta.value}</div>
+        </div>
+      );
+    };
+
+    return file.metaInfo.map( (meta, idx) => render(meta, idx) );
+  };
+
+  renderMetaInfoDialog = () => {
+    const actions = (
+      <FlatButton
+        label="閉じる"
+        primary={true}
+        onTouchTap={() => this.setState({ editMetaInfo: { open: false } })}
+        />
+    );
+
+    return (
+      <Dialog
+        title="メタ情報を編集"
+        actions={actions}
+        modal={false}
+        open={this.state.editMetaInfo.open}
+        onRequestClose={() => this.setState({ editMetaInfo: { open: false } })} >
+
+        <MetaInfo
+          file={this.props.file}
+          addMetaInfo={this.props.addMetaInfo}
+          deleteMetaInfo={this.props.deleteMetaInfo}
+          triggerSnackbar={this.props.triggerSnackbar} />
+
+      </Dialog>
+    );
+  };
+
   render() {
     const cardOverlay = (
       <CardTitle subtitle={this.props.file.name} />
@@ -231,10 +275,12 @@ class FileDetail extends Component {
             <Card style={styles.innerCard}>
               <CardHeader title="メタ情報" />
               <CardText>
-                ...
+                {this.renderMetaInfos(this.props.file)}
               </CardText>
               <CardActions>
-                <RaisedButton label="編集" />
+                <RaisedButton
+                  label="編集"
+                  onTouchTap={() => this.setState({ editMetaInfo: { open: true } })} />
               </CardActions>
             </Card>
 
@@ -250,6 +296,7 @@ class FileDetail extends Component {
         </div>
 
         {this.renderAuthorityDialog()}
+        {this.renderMetaInfoDialog()}
 
       </Card>
     );
