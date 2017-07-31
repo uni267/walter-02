@@ -195,10 +195,27 @@ const filesReducer = (state = FILES, action) => {
     file = {...file, id: nextFileId};
     return [...state, file];
 
+  case "ADD_META_INFO":
+    return state.map(file => {
+      if (file.id === action.file.id) {
+        file.metaInfo = [...file.metaInfo, action.metaInfo];
+      }
+      return file;
+    });
+
+  case "DELETE_META_INFO":
+    return state.map(file => {
+      if (file.id === action.file.id) {
+        file.metaInfo = file.metaInfo.filter(
+          meta => meta.id !== action.metaInfo.id
+        );
+      }
+      return file;
+    });
+
   default:
     return state;
   }
-
 };
 
 export default filesReducer;
