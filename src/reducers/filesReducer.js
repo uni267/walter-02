@@ -43,7 +43,8 @@ const filesReducer = (state = FILES, action) => {
               actions: ["read", "write", "authority"]
             }
           }
-        ]
+        ],
+        metaInfo: []
       }
     ];
 
