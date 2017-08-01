@@ -114,6 +114,7 @@ class FileListContainer extends Component {
     const dirComponent = (
       <Dir 
         key={idx} 
+        history={this.props.history}
         dir={file}
         rowStyle={styles.row}
         cellStyle={cellStyle}

@@ -254,6 +254,35 @@ class Dir extends Component {
     );
   };
 
+  renderDirName = () => {
+    const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
+
+    const handleClick = () => {
+      this.props.history.push(`/home/?dir_id=${this.props.dir.id}`);
+    };
+
+    const editable = (
+      <TextField
+        ref="dirName"
+        defaultValue={this.props.dir.name}
+        onKeyDown={e => e.key === "Enter" ? this.changeDirName() : null } />
+    );
+
+    const view = (
+      <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}
+           onClick={handleClick} >
+
+        <Link
+          to={`/home/?dir_id=${this.props.dir.id}`}
+          style={{...style.dir, color}} >
+          {this.props.dir.name}
+        </Link>
+      </div>
+    );
+
+    return this.state.editDir.open ? editable : view;
+  };
+
   render() {
     const { canDrop, isOver, connectDropTarget } = this.props;
     const { dir } = this.props;
@@ -282,22 +311,6 @@ class Dir extends Component {
       );
     };
 
-    const dirNameArea = this.state.editDir.open ?
-          (
-            <TextField
-              ref="dirName"
-              defaultValue={this.props.dir.name}
-              onKeyDown={e => e.key === "Enter" ? this.changeDirName() : null } />
-          )
-          :
-          (
-            <Link
-              to={`/home/?dir_id=${this.props.dir.id}`}
-              style={{...style.dir, color}} >
-              {this.props.dir.name}
-            </Link>
-          );
-
     const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
 
     return connectDropTarget(
@@ -318,10 +331,7 @@ class Dir extends Component {
             uncheckedIcon={favorite_icon_border} />
         </div>
 
-        <div style={{...cellStyle, width: headers[1].width}}>
-          <FileFolderOpen style={style.dir_icon} />
-          {dirNameArea}
-        </div>
+        {this.renderDirName()}
 
         <div style={{...cellStyle, width: headers[2].width}}>{dir.modified}</div>
 
