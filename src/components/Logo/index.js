@@ -20,6 +20,9 @@ import Drawer from 'material-ui/Drawer';
 // router
 import { Link } from "react-router-dom";
 
+// components
+import AccountDialog from "../Account/AccountDialog";
+
 const styles = {
   smallIcon: {
     color: "white"
@@ -51,54 +54,10 @@ class Logo extends Component {
     });
   };
 
-  renderAccount = () => {
-
-    const onAccountClose = () => {
-      this.setState({
-        account: { open: false }
-      });
-    };
-
-    const actions = [
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={onAccountClose}
-          />
-      ),
-      (
-        <FlatButton
-          label="save"
-          primary={true}
-          onTouchTap={onAccountClose}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title="アカウント情報変更"
-        modal={true}
-        actions={actions}
-        open={this.state.account.open}
-        onRequestClose={onAccountClose}
-        >
-        <TextField
-          hintText=""
-          floatingLabelText="current password"
-          type="password"
-          />
-
-        <br />
-        
-        <TextField
-          hintText=""
-          floatingLabelText="new password"
-          type="password"
-          />
-
-      </Dialog>
-    );
+  handleAccountClose = () => {
+    this.setState({
+      account: { open: false }
+    });
   };
 
   renderMenu = () => {
@@ -209,7 +168,10 @@ class Logo extends Component {
           onLeftIconButtonTouchTap={this.toggleAppMenu} />
 
         {this.renderMenu()}
-        {this.renderAccount()}
+
+        <AccountDialog
+          open={this.state.account.open}
+          handleClose={this.handleAccountClose} />
 
       </div>
     );
