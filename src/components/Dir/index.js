@@ -22,8 +22,8 @@ import FlatButton from "material-ui/FlatButton";
 
 // components
 import DirTreeContainer from "../../containers/DirTreeContainer";
-import Authority from "../FileDetail/Authority";
-import History from "../FileDetail/History";
+import Authority from "../Authority";
+import History from "../History";
 
 const style = {
   dir: {
@@ -39,7 +39,6 @@ const style = {
     margin: 0,
     padding: 0
   }
-
 };
 
 const fileTarget = {

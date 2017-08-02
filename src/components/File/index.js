@@ -17,8 +17,8 @@ import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 
 // components
-import Authority from "../FileDetail/Authority";
-import History from "../FileDetail/History";
+import Authority from "../Authority";
+import History from "../History";
 import DirTreeContainer from "../../containers/DirTreeContainer";
 import Tag from "../Tag";
 

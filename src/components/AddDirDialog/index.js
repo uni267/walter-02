@@ -9,7 +9,7 @@ import MenuItem from "material-ui/MenuItem";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
 // components
-import Authority from "../FileDetail/Authority";
+import Authority from "../Authority";
 
 class AddDirDialog extends Component {
   constructor(props) {

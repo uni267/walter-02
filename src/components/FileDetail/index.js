@@ -19,8 +19,8 @@ import FlatButton from "material-ui/FlatButton";
 import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
 
 // components
-import Authority from "./Authority";
-import History from "./History";
+import Authority from "../Authority";
+import History from "../History";
 import Tag from "../Tag";
 import MetaInfo from "../MetaInfo";
 
