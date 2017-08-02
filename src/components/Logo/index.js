@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 // components
 import AccountDialog from "../Account/AccountDialog";
 import AppMenu from "../AppMenu";
+import Notification from "../Notification";
 
 const styles = {
   smallIcon: {
@@ -83,18 +84,6 @@ class Logo extends Component {
       <Avatar src="/images/shikata.jpg" />
     );
 
-    const renderNotification = (notification, idx) => {
-      return (
-        <Card key={idx}>
-          <CardHeader
-            title={notification.title}
-            subtitle={notification.modified} />
-
-          <CardText>{notification.body}</CardText>
-        </Card>
-      );
-    };
-
     return (
       <div style={{paddingRight: 70}}>
         <Badge
@@ -106,8 +95,7 @@ class Logo extends Component {
             iconButtonElement={notificationIcon}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
-            {this.props.notifications.map(
-            (notification, idx) => renderNotification(notification, idx))}
+            <Notification notifications={this.props.notifications} />
 
           </IconMenu>
         </Badge>
