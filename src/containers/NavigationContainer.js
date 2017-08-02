@@ -4,13 +4,64 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // components
-import Logo from "../components/Logo/";
+import AccountDialog from "../components/Account/AccountDialog";
+import AppMenu from "../components/AppMenu";
+import AppNavBar from "../components/AppNavBar";
+
+const menus = [
+  {name: "ファイル一覧"},
+  {name: "管理コンソール"},
+];
+
+const appTitle = "cloud storage";
 
 class NavigationContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      menu: {
+        open: false
+      },
+      account: {
+        open: false
+      }
+    };
+  }
+
+  toggleAppMenu = () => {
+    this.setState({
+      menu: {
+        open: !this.state.menu.open
+      }
+    });
+  };
+
+  toggleAccount = () => {
+    this.setState({
+      account: { open: !this.state.account.open }
+    });
+  };
+
   render() {
     return (
       <div>
-        <Logo notifications={this.props.notifications} />
+        <AppNavBar
+          appTitle={appTitle}
+          notifications={this.props.notifications}
+          toggleAppMenu={this.props.toggleAppMenu}
+          handleAccountOpen={this.toggleAccount}
+          toggleMenu={this.toggleAppMenu} />
+
+        <AppMenu
+          open={this.state.menu.open}
+          menus={menus}
+          toggle={this.toggleAppMenu}
+          />
+
+        <AccountDialog
+          open={this.state.account.open}
+          handleClose={this.toggleAccount} />
+
       </div>
     );
   }
