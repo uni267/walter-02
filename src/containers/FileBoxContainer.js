@@ -17,7 +17,8 @@ import FileSnackbar from "../components/FileSnackbar";
 // actions
 import {
   triggerSnackbar,
-  closeSnackbar
+  closeSnackbar,
+  searchFile
 } from "../actions";
 
 class FileBoxContainer extends Component {
@@ -89,7 +90,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  closeSnackbar: () => { dispatch(closeSnackbar()); }
+  closeSnackbar: () => { dispatch(closeSnackbar()); },
+  searchFile: (value) => { dispatch(searchFile(value)); }
 });
 
 FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBoxContainer);

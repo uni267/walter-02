@@ -226,8 +226,8 @@ class FileSearch extends Component {
 };
 
 FileSearch.propTypes = {
-  searchWord: PropTypes.object,
-  searchFile: PropTypes.func
+  searchWord: PropTypes.object.isRequired,
+  searchFile: PropTypes.func.isRequired
 };
 
 export default FileSearch;
