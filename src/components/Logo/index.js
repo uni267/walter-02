@@ -15,13 +15,13 @@ import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Dialog from "material-ui/Dialog";
 import FlatButton from 'material-ui/FlatButton';
 import TextField from "material-ui/TextField";
-import Drawer from 'material-ui/Drawer';
 
 // router
 import { Link } from "react-router-dom";
 
 // components
 import AccountDialog from "../Account/AccountDialog";
+import AppMenu from "../AppMenu";
 
 const styles = {
   smallIcon: {
@@ -32,6 +32,11 @@ const styles = {
     color: "white"
   }
 };
+
+const menus = [
+  {name: "ファイル一覧"},
+  {name: "管理コンソール"},
+];
 
 class Logo extends Component {
   constructor(props) {
@@ -58,37 +63,6 @@ class Logo extends Component {
     this.setState({
       account: { open: false }
     });
-  };
-
-  renderMenu = () => {
-    const menus = [
-      {name: "ファイル一覧"},
-      {name: "管理コンソール"},
-    ];
-
-    const renderMenu = (menu, idx) => {
-      return (
-        <MenuItem
-          key={idx}
-          onTouchTap={this.toggleAppMenu}
-          primaryText={menu.name}
-          />
-      );
-    };
-
-    return (
-      <Drawer
-        docked={false}
-        open={this.state.menu.open}
-        width={200}
-        onRequestChange={this.toggleAppMenu}
-        >
-
-        {menus.map( (menu, idx) => renderMenu(menu, idx) )}
-
-      </Drawer>
-      
-    );
   };
 
   renderRightElements = () => {
@@ -167,12 +141,16 @@ class Logo extends Component {
           iconElementRight={this.renderRightElements()}
           onLeftIconButtonTouchTap={this.toggleAppMenu} />
 
-        {this.renderMenu()}
+        <AppMenu
+          open={this.state.menu.open}
+          menus={menus}
+          toggle={this.toggleAppMenu}
+          />
 
         <AccountDialog
           open={this.state.account.open}
           handleClose={this.handleAccountClose} />
-
+        
       </div>
     );
   }
