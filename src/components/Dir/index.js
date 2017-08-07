@@ -268,7 +268,7 @@ class Dir extends Component {
     const view = (
       <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}
            onClick={handleClick} >
-
+        <FileFolderOpen style={style.dir_icon} />
         <Link
           to={`/home/?dir_id=${this.props.dir.id}`}
           style={{...style.dir, color}} >
