@@ -11,7 +11,12 @@ import { NativeTypes } from "react-dnd-html5-backend";
 
 // components
 import FileListHeader from "../components/FileListHeader";
+
 import Dir from "../components/Dir";
+import MoveDirDialog from "../components/Dir/MoveDirDialog";
+import CopyDirDialog from "../components/Dir/CopyDirDialog";
+import DeleteDirDialog from "../components/Dir/DeleteDirDialog";
+
 import File from "../components/File";
 
 // actions
@@ -65,6 +70,22 @@ const headers = [
 ];
 
 class FileListContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      moveDirDialog: {
+        open: false
+      },
+      copyDirDialog: {
+        open: false
+      },
+      deleteDirDialog: {
+        open: false,
+        dir: {}
+      }
+    };
+  }
+
   handleFileDrop = (item, monitor) => {
     if (monitor) {
       const droppedFiles = monitor.getItem().files;
@@ -103,6 +124,22 @@ class FileListContainer extends Component {
 
   };
 
+  handleDeleteDir = (dir) => {
+    this.setState({
+      deleteDirDialog: {
+        open: true,
+        dir: dir
+      }
+    });
+  };
+
+  deleteDir = (dir) => {
+    this.setState({ deleteDirDialog: { open: false } });
+    this.props.deleteFile(dir);
+    this.setState({ deleteDirDialog: { dir: {} } });
+    this.props.triggerSnackbar(`${dir.name}を削除しました`);
+  }
+
   renderRow = (file, idx) => {
     const cellStyle = {
       ...styles.cell,
@@ -128,6 +165,9 @@ class FileListContainer extends Component {
         roles={this.props.roles}
         users={this.props.users}
         selectedDir={this.props.selectedDir}
+        handleMoveDir={() => this.setState({ moveDirDialog: { open: true } })}
+        handleCopyDir={() => this.setState({ copyDirDialog: { open: true } })}
+        handleDeleteDir={this.handleDeleteDir}
         />
     );
 
@@ -176,6 +216,22 @@ class FileListContainer extends Component {
           {this.props.files.map( (file, idx) => this.renderRow(file, idx) )}
 
         </TableBodyWrapper>
+
+        <MoveDirDialog
+          open={this.state.moveDirDialog.open}
+          handleClose={() => this.setState({ moveDirDialog: { open: false } })} />
+
+          <CopyDirDialog
+            open={this.state.copyDirDialog.open}
+            handleClose={() => this.setState({ copyDirDialog: { open: false } })}
+            />            
+
+            <DeleteDirDialog
+              dir={this.state.deleteDirDialog.dir}
+              open={this.state.deleteDirDialog.open}
+              deleteDir={this.deleteDir}
+              handleClose={() => this.setState({ deleteDirDialog: { open: false } })}
+              />
 
       </div>
     );

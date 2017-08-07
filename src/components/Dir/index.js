@@ -55,9 +55,6 @@ class Dir extends Component {
       hover: false,
       editDir: { open: false },
       editAuthority: { open: false },
-      deleteDir: { open: false },
-      moveDir: { open: false },
-      copyDir: { open: false },
       historiesDir: { open: false }
     };
 
@@ -98,98 +95,6 @@ class Dir extends Component {
       </span>
     );
 
-  };
-
-  renderMoveDialog = () => {
-    const actions = [
-      (
-        <FlatButton
-          label="移動"
-          primary={true}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={() => this.setState({ moveDir: { open: false } })}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title="フォルダを移動"
-        open={this.state.moveDir.open}
-        modal={false}
-        actions={actions} >
-
-        <DirTreeContainer />
-
-      </Dialog>
-    );
-  };
-
-  renderCopyDialog = () => {
-    const actions = [
-      (
-        <FlatButton
-          label="コピー"
-          primary={true}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={() => this.setState({ copyDir: { open: false } })}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title="フォルダをコピー"
-        open={this.state.copyDir.open}
-        modal={false}
-        actions={actions} >
-
-        <DirTreeContainer />
-
-      </Dialog>
-    );
-  };
-
-  renderDeleteDialog = () => {
-    const actions = [
-      (
-        <FlatButton
-          label="Delete"
-          primary={true}
-          onTouchTap={(e) => {
-            this.props.deleteDir(this.props.dir);
-            this.setState({ deleteDir: { open: false } });
-            this.props.triggerSnackbar(`${this.props.dir.name}を削除しました`);
-          }}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          primary={false}
-          onTouchTap={() => this.setState({ deleteDir: { open: false } })}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title={`${this.props.dir.name}を削除しますか？`}
-        modal={false}
-        actions={actions}
-        open={this.state.deleteDir.open}
-        onRequestClose={() => this.setState({ deleteDir: {open: false} })}
-        >
-      </Dialog>
-    );
   };
 
   renderAuthorityDialog = () => {
@@ -348,17 +253,17 @@ class Dir extends Component {
 
             <MenuItem
               primaryText="移動"
-              onTouchTap={() => this.setState({ moveDir: { open: true } })}
+              onTouchTap={this.props.handleMoveDir}
               />
 
             <MenuItem
               primaryText="コピー"
-              onTouchTap={() => this.setState({ copyDir: { open: true } })}
+              onTouchTap={this.props.handleCopyDir}
               />
 
             <MenuItem
               primaryText="削除" 
-              onTouchTap={() => this.setState({ deleteDir: { open: true } })}
+              onTouchTap={() => this.props.handleDeleteDir(dir)}
               />
 
             <MenuItem
@@ -374,9 +279,6 @@ class Dir extends Component {
           </IconMenu>
         </div>
 
-        <this.renderMoveDialog />
-        <this.renderCopyDialog />
-        <this.renderDeleteDialog />
         <this.renderAuthorityDialog />
         <this.renderHistoryDialog />
       </div>
