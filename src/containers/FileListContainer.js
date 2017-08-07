@@ -242,13 +242,11 @@ class FileListContainer extends Component {
   render() {
     const { FILE } = NativeTypes;
 
-    const filterAuthorityDir = (file) => {
-      return file.id === this.state.authorityDirDialog.dir.id;
-    };
+    const filterAuthorityDir = (file) => 
+          file.id === this.state.authorityDirDialog.dir.id;
 
-    const filterHistoryDir = (file) => {
-      return file.id === this.state.historyDirDialog.dir.id;
-    };
+    const filterHistoryDir = (file) => 
+          file.id === this.state.historyDirDialog.dir.id;
 
     return (
       <div>

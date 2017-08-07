@@ -181,33 +181,27 @@ class Dir extends Component {
 
             <MenuItem
               primaryText="フォルダ名変更"
-              onTouchTap={() => this.setState({ editDir: { open: true } })}
-              />
+              onTouchTap={() => this.setState({ editDir: { open: true } })} />
 
             <MenuItem
               primaryText="移動"
-              onTouchTap={this.props.handleMoveDir}
-              />
+              onTouchTap={this.props.handleMoveDir} />
 
             <MenuItem
               primaryText="コピー"
-              onTouchTap={this.props.handleCopyDir}
-              />
+              onTouchTap={this.props.handleCopyDir} />
 
             <MenuItem
               primaryText="削除" 
-              onTouchTap={() => this.props.handleDeleteDir(dir)}
-              />
+              onTouchTap={() => this.props.handleDeleteDir(dir)} />
 
             <MenuItem
               primaryText="権限を変更"
-              onTouchTap={() => this.props.handleAuthorityDir(dir)}
-              />
+              onTouchTap={() => this.props.handleAuthorityDir(dir)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
-              onTouchTap={() => this.props.handleHistoryDir(dir)}
-              />
+              onTouchTap={() => this.props.handleHistoryDir(dir)} />
 
           </IconMenu>
         </div>
