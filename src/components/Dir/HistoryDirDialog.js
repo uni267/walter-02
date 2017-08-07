@@ -39,9 +39,7 @@ const HistoryDirDialog = ({
         : null
       }
 
-
     </Dialog>
-    
   );
 };
 

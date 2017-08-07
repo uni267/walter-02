@@ -218,13 +218,19 @@ class Dir extends Component {
 }
 
 Dir.propTypes = {
+  history: PropTypes.object.isRequired,
   dir: PropTypes.object.isRequired,
   rowStyle: PropTypes.object.isRequired,
   cellStyle: PropTypes.object.isRequired,
   headers: PropTypes.array.isRequired,
   triggerSnackbar: PropTypes.func.isRequired,
   editDir: PropTypes.func.isRequired,
-  selectedDir: PropTypes.object.isRequired
+  selectedDir: PropTypes.object.isRequired,
+  handleMoveDir: PropTypes.func.isRequired,
+  handleCopyDir: PropTypes.func.isRequired,  
+  handleDeleteDir: PropTypes.func.isRequired,
+  handleAuthorityDir: PropTypes.func.isRequired,
+  handleHistoryDir: PropTypes.func.isRequired
 };
 
 export default DropTarget("file", fileTarget, (connect, monitor) => ({
