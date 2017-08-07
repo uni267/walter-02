@@ -23,6 +23,7 @@ import Authority from "../Authority";
 import History from "../History";
 import Tag from "../Tag";
 import MetaInfo from "../MetaInfo";
+import FileBasic from "../FileBasic";
 
 const styles = {
   fileImageWrapper: {
@@ -63,47 +64,18 @@ class FileDetail extends Component {
     };
   }
 
-  renderBasic = (file) => {
-    const changeFileName = () => {
-      const fileName = this.refs.fileName.getValue();
+  changeFileName = (ref) => {
+    const fileName = ref.getValue();
 
-      if ( fileName === "" ) {
-        this.setState({ editBasic: { open: false } });
-        return;
-      }
-
-      this.props.editFile({ ...this.props.file, name: fileName });
+    if ( fileName === "" ) {
       this.setState({ editBasic: { open: false } });
-      this.props.triggerSnackbar("ファイル名を変更しました");
-    };
+      return;
+    }
 
-    const fileName = this.state.editBasic.open
-          ? (
-            <TextField
-              ref="fileName"
-              defaultValue={file.name}
-              onKeyDown={ e => e.key === "Enter" ? changeFileName() : null }
-              />
-          )
-          : <div>{file.name}</div>;
-
-    return (
-      <div>
-        <div style={styles.metaRow}>
-          <div style={styles.metaCell}>ファイル名</div>
-          {fileName}
-        </div>
-        <div style={styles.metaRow}>
-          <div style={styles.metaCell}>サイズ</div>
-          <div>10.0KB</div>
-        </div>
-        <div style={styles.metaRow}>
-          <div style={styles.metaCell}>最終更新</div>
-          <div>{file.modified}</div>
-        </div>
-      </div>
-    );
-  };
+    this.props.editFile({ ...this.props.file, name: fileName });
+    this.setState({ editBasic: { open: false } });
+    this.props.triggerSnackbar("ファイル名を変更しました");
+  }
 
   renderAuthorities = (file) => {
     const renderAuthority = (auth, idx) => {
@@ -237,7 +209,13 @@ class FileDetail extends Component {
             <Card style={styles.innerCard}>
               <CardHeader title="基本情報" />
               <CardText>
-                {this.renderBasic(this.props.file)}
+
+                <FileBasic
+                  file={this.props.file}
+                  open={this.state.editBasic.open}
+                  changeFileName={this.changeFileName}
+                  />
+
               </CardText>
               <CardActions>
                 <RaisedButton
