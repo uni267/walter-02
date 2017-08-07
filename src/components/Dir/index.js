@@ -61,15 +61,13 @@ class Dir extends Component {
       historiesDir: { open: false }
     };
 
-    this.onClickCheckBox = this.onClickCheckBox.bind(this);
-    this.toggleHover = this.toggleHover.bind(this);
   }
 
-  onClickCheckBox() {
+  onClickCheckBox = () => {
     this.setState({ checked: !this.state.checked });
   }
 
-  toggleHover() {
+  toggleHover = () => {
     this.setState({ hover: !this.state.hover });
   };
 
