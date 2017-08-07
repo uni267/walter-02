@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 import RaisedButton from 'material-ui/RaisedButton';
@@ -25,7 +25,6 @@ const AddFilterBtn =({
     );
   };
 
-  console.log(anchorEl);
   return (
     <div>
       <RaisedButton
