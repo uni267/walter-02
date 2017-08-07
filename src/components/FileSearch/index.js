@@ -14,6 +14,9 @@ import IconButton from "material-ui/IconButton";
 // material icon
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 
+// components
+import AddFilterBtn from "./AddFilterBtn";
+
 const styles = {
   buttonContainer: {
     display: "flex",
@@ -31,6 +34,7 @@ class FileSearch extends Component {
     super(props);
     this.state = {
       open: false,
+      anchorEl: {},
       searchItems: [
         {
           id: 1,
@@ -55,7 +59,7 @@ class FileSearch extends Component {
 
   }
 
-  handleTouchTap = (event) => {
+  handleOpen = (event) => {
     event.preventDefault();
 
     this.setState({
@@ -64,7 +68,7 @@ class FileSearch extends Component {
     });
   }
 
-  handleRequestClose = () => {
+  handleClose = () => {
     this.setState({
       open: false
     });
@@ -74,25 +78,13 @@ class FileSearch extends Component {
     this.props.searchFile(e.target.value);
   }
 
-  renderMenu(menu, idx) {
-
-    const onTouchTapMenu = (menu) => {
-      this.setState({
-        searchItems: this.state.searchItems.map(m => {
-          return m.id === menu.id ? {...m, picked: true} : m;
-        })
-      });
-    };
-
-    return (
-      <MenuItem
-        key={idx}
-        data-menu={menu}
-        primaryText={menu.label}
-        onTouchTap={() => onTouchTapMenu(menu)}
-        />
-    );
-  }
+  handleMenuTouchTap = (menu) => {
+    this.setState({
+      searchItems: this.state.searchItems.map(item => {
+        return item.id === menu.id ? {...item, picked: true} : item;
+      })
+    });
+  };
 
   renderSearchSimple() {
     return (
@@ -187,23 +179,14 @@ class FileSearch extends Component {
         {/* フィルタ追加ボタン */}
         <div style={styles.buttonContainer}>
           <div>
-            <RaisedButton style={styles.button} label="フィルタ追加"
-                          onTouchTap={this.handleTouchTap} />
-
-            <Popover 
+            <AddFilterBtn
+              searchItems={this.state.searchItems}
               open={this.state.open}
               anchorEl={this.state.anchorEl}
-              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-              targetOrigin={{horizontal: 'left', vertical: 'top'}}
-              onRequestClose={this.handleRequestClose}
-              >
-
-              <Menu>
-                {this.state.searchItems.map(
-                  (menu, idx) => !menu.picked ? this.renderMenu(menu, idx) : null
-                )}
-              </Menu>
-            </Popover>
+              handleOpen={this.handleOpen}
+              handleClose={this.handleClose}
+              handleMenuTouchTap={this.handleMenuTouchTap}
+              />
           </div>
         </div>
 
@@ -217,9 +200,7 @@ class FileSearch extends Component {
             (menu, idx) => menu.picked ? this.renderSearchDetail(menu, idx) : null
           )}
 
-
         </div>
-
       </div>
     );
   }
