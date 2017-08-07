@@ -16,6 +16,8 @@ import Dir from "../components/Dir";
 import MoveDirDialog from "../components/Dir/MoveDirDialog";
 import CopyDirDialog from "../components/Dir/CopyDirDialog";
 import DeleteDirDialog from "../components/Dir/DeleteDirDialog";
+import AuthorityDirDialog from "../components/Dir/AuthorityDirDialog";
+import HistoryDirDialog from "../components/Dir/HistoryDirDialog";
 
 import File from "../components/File";
 
@@ -82,6 +84,14 @@ class FileListContainer extends Component {
       deleteDirDialog: {
         open: false,
         dir: {}
+      },
+      authorityDirDialog: {
+        open: false,
+        dir: {}
+      },
+      historyDirDialog: {
+        open: false,
+        dir: {}
       }
     };
   }
@@ -124,10 +134,44 @@ class FileListContainer extends Component {
 
   };
 
-  handleDeleteDir = (dir) => {
+  toggleDeleteDirDialog = (dir = {}) => {
     this.setState({
       deleteDirDialog: {
-        open: true,
+        open: !this.state.deleteDirDialog.open,
+        dir: dir
+      }
+    });
+  };
+
+  toggleAuthorityDirDialog = (dir = {}) => {
+    this.setState({
+      authorityDirDialog: {
+        open: !this.state.authorityDirDialog.open,
+        dir: dir
+      }
+    });
+  };
+
+  toggleMoveDirDialog = () => {
+    this.setState({
+      moveDirDialog: {
+        open: !this.state.moveDirDialog.open
+      }
+    });
+  };
+
+  toggleCopyDirDialog = () => {
+    this.setState({
+      copyDirDialog: {
+        open: !this.state.copyDirDialog.open
+      }
+    });
+  };
+
+  toggleHistoryDirDialog = (dir = {}) => {
+    this.setState({
+      historyDirDialog: {
+        open: !this.state.historyDirDialog.open,
         dir: dir
       }
     });
@@ -138,7 +182,7 @@ class FileListContainer extends Component {
     this.props.deleteFile(dir);
     this.setState({ deleteDirDialog: { dir: {} } });
     this.props.triggerSnackbar(`${dir.name}を削除しました`);
-  }
+  };
 
   renderRow = (file, idx) => {
     const cellStyle = {
@@ -158,16 +202,12 @@ class FileListContainer extends Component {
         headers={headers}
         triggerSnackbar={this.props.triggerSnackbar}
         editDir={this.props.editFile}
-        deleteDir={this.props.deleteFile}
-        deleteDirTree={this.props.deleteDirTree}
-        addAuthority={this.props.addAuthority}
-        deleteAuthority={this.props.deleteAuthority}
-        roles={this.props.roles}
-        users={this.props.users}
         selectedDir={this.props.selectedDir}
-        handleMoveDir={() => this.setState({ moveDirDialog: { open: true } })}
-        handleCopyDir={() => this.setState({ copyDirDialog: { open: true } })}
-        handleDeleteDir={this.handleDeleteDir}
+        handleMoveDir={this.toggleMoveDirDialog}
+        handleCopyDir={this.toggleCopyDirDialog}
+        handleDeleteDir={this.toggleDeleteDirDialog}
+        handleAuthorityDir={this.toggleAuthorityDirDialog}
+        handleHistoryDir={this.toggleHistoryDirDialog}
         />
     );
 
@@ -202,6 +242,14 @@ class FileListContainer extends Component {
   render() {
     const { FILE } = NativeTypes;
 
+    const filterAuthorityDir = (file) => {
+      return file.id === this.state.authorityDirDialog.dir.id;
+    };
+
+    const filterHistoryDir = (file) => {
+      return file.id === this.state.historyDirDialog.dir.id;
+    };
+
     return (
       <div>
         <div style={styles.row}>
@@ -219,19 +267,32 @@ class FileListContainer extends Component {
 
         <MoveDirDialog
           open={this.state.moveDirDialog.open}
-          handleClose={() => this.setState({ moveDirDialog: { open: false } })} />
+          handleClose={this.toggleMoveDirDialog} />
 
-          <CopyDirDialog
-            open={this.state.copyDirDialog.open}
-            handleClose={() => this.setState({ copyDirDialog: { open: false } })}
-            />            
+        <CopyDirDialog
+          open={this.state.copyDirDialog.open}
+          handleClose={this.toggleCopyDirDialog} />            
 
-            <DeleteDirDialog
-              dir={this.state.deleteDirDialog.dir}
-              open={this.state.deleteDirDialog.open}
-              deleteDir={this.deleteDir}
-              handleClose={() => this.setState({ deleteDirDialog: { open: false } })}
-              />
+        <DeleteDirDialog
+          dir={this.state.deleteDirDialog.dir}
+          open={this.state.deleteDirDialog.open}
+          deleteDir={this.deleteDir}
+          handleClose={this.toggleDeleteDirDialog} />
+
+        <AuthorityDirDialog
+          open={this.state.authorityDirDialog.open}
+          dir={this.props.files.filter(filterAuthorityDir)[0]}
+          users={this.props.users}
+          roles={this.props.roles}
+          addAuthority={this.props.addAuthority}
+          deleteAuthority={this.props.deleteAuthority}
+          triggerSnackbar={this.props.triggerSnackbar}
+          handleClose={this.toggleAuthorityDirDialog} />
+
+        <HistoryDirDialog
+          open={this.state.historyDirDialog.open}
+          dir={this.props.files.filter(filterHistoryDir)[0]}
+          handleClose={this.toggleHistoryDirDialog} />
 
       </div>
     );

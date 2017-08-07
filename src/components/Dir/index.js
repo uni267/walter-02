@@ -20,11 +20,6 @@ import Dialog from "material-ui/Dialog";
 import TextField from "material-ui/TextField";
 import FlatButton from "material-ui/FlatButton";
 
-// components
-import DirTreeContainer from "../../containers/DirTreeContainer";
-import Authority from "../Authority";
-import History from "../History";
-
 const style = {
   dir: {
     textDecoration: "none",
@@ -54,7 +49,6 @@ class Dir extends Component {
       checked: false,
       hover: false,
       editDir: { open: false },
-      editAuthority: { open: false },
       historiesDir: { open: false }
     };
 
@@ -97,65 +91,6 @@ class Dir extends Component {
 
   };
 
-  renderAuthorityDialog = () => {
-    const actions = (
-      <FlatButton
-        label="close"
-        onTouchTap={() => this.setState({ editAuthority: { open: false } })}
-        />
-    );
-    
-    return (
-      <Dialog
-        title="権限を変更"
-        modal={false}
-        actions={actions}
-        open={this.state.editAuthority.open}
-        onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
-
-        <Authority
-          file={this.props.dir}
-          users={this.props.users}
-          roles={this.props.roles}
-          addAuthority={this.props.addAuthority}
-          deleteAuthority={this.props.deleteAuthority}
-          triggerSnackbar={this.props.triggerSnackbar} />
-
-      </Dialog>
-    );
-  };
-
-  renderHistoryDialog = () => {
-    
-    const actions = (
-      <FlatButton
-        label="close"
-        primary={false}
-        onTouchTap={() => this.setState({ historiesDir: { open: false } })}
-        />
-    );
-
-    const renderHistory = (idx, history) => {
-      return (
-        <History key={idx} history={history} />        
-      );
-    };
-
-    return (
-      <Dialog
-        title="履歴"
-        open={this.state.historiesDir.open}
-        modal={false}
-        actions={actions} >
-
-        {this.props.dir.histories.map(
-        (history, idx) => renderHistory(idx, history))}
-
-      </Dialog>
-      
-    );
-  };
-
   renderDirName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
@@ -193,8 +128,6 @@ class Dir extends Component {
     const isActive = canDrop && isOver;
     const backgroundColor = isActive || this.state.checked 
         ? "rgb(232, 232, 232)" : "inherit";
-
-    const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const favorite_icon = (
       <ActionFavorite />
@@ -268,19 +201,17 @@ class Dir extends Component {
 
             <MenuItem
               primaryText="権限を変更"
-              onTouchTap={() => this.setState({ editAuthority: { open: true } })}
+              onTouchTap={() => this.props.handleAuthorityDir(dir)}
               />
 
             <MenuItem
               primaryText="履歴を閲覧"
-              onTouchTap={() => this.setState({ historiesDir: { open: true } })}
+              onTouchTap={() => this.props.handleHistoryDir(dir)}
               />
 
           </IconMenu>
         </div>
 
-        <this.renderAuthorityDialog />
-        <this.renderHistoryDialog />
       </div>
     );
   }
@@ -293,12 +224,6 @@ Dir.propTypes = {
   headers: PropTypes.array.isRequired,
   triggerSnackbar: PropTypes.func.isRequired,
   editDir: PropTypes.func.isRequired,
-  deleteDir: PropTypes.func.isRequired,
-  deleteDirTree: PropTypes.func.isRequired,
-  addAuthority: PropTypes.func.isRequired,
-  deleteAuthority: PropTypes.func.isRequired,
-  roles: PropTypes.array.isRequired,
-  users: PropTypes.array.isRequired,
   selectedDir: PropTypes.object.isRequired
 };
 
