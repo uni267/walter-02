@@ -1,40 +1,42 @@
 import React from "react";
+import PropTypes from "prop-types";
+
+// material ui
 import Drawer from 'material-ui/Drawer';
-import MenuItem from 'material-ui/MenuItem';
+import MenuItem from "material-ui/MenuItem";
 
 const AppMenu = ({
   open,
-  toggleDrawer
+  menus,
+  toggle
 }) => {
-  const menus = [
-    {name: "ファイル一覧"},
-    {name: "管理コンソール"},
-  ];
-
   const renderMenu = (menu, idx) => {
     return (
       <MenuItem
         key={idx}
-        onTouchTap={toggleDrawer}
-        primaryText={menu.name}
-        />
+        onTouchTap={toggle}
+        primaryText={menu.name} />
     );
   };
-    
+
   return (
-    <div className="menu">
-      <Drawer
-        docked={false}
-        open={open}
-        width={200}
-        onRequestChange={toggleDrawer}
-        >
+    <Drawer
+      docked={false}
+      open={open}
+      width={200}
+      onRequestChange={toggle}
+      >
 
-        {menus.map( (menu, idx) => renderMenu(menu, idx) )}
+      {menus.map( (menu, idx) => renderMenu(menu, idx) )}
 
-      </Drawer>
-    </div>
+    </Drawer>
   );
+};
+
+AppMenu.propTypes = {
+  open: PropTypes.bool.isRequired,
+  menus: PropTypes.array.isRequired,
+  toggle: PropTypes.func.isRequired
 };
 
 export default AppMenu;

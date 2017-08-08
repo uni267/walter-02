@@ -82,6 +82,9 @@ const FILES = [
           actions: ["read"]
         }
       }
+    ],
+    metaInfo: [
+      {id: 1, key: "契約書No", value: 201606010001}
     ]
   },
   {
@@ -125,6 +128,10 @@ const FILES = [
           actions: ["read", "write", "authority"]
         }
       }
+    ],
+    metaInfo: [
+      {id: 1, key: "領収書No", value: "201606010001"},
+      {id: 3, key: "金額", value: "10,000"}
     ]
   },
   {
@@ -183,6 +190,10 @@ const FILES = [
           actions: ["read"]
         }
       }
+    ],
+    metaInfo: [
+      {id: 1, key: "領収書No", value: "201606010001"},
+      {id: 2, key: "金額", value: "10,000"}
     ]
   },
   {

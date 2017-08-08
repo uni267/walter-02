@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 // DnD
 import { DragSource } from "react-dnd";
@@ -17,35 +17,11 @@ import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
 
 // components
-import Authority from "../FileDetail/Authority";
-import History from "../FileDetail/History";
+import Authority from "../Authority";
+import History from "../History";
 import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const style = {
-  row: {
-    display: "flex",
-    width: "95%",
-    marginLeft: 30,
-    borderBottom: "1px solid lightgray",
-    backgroundColor: "inherit"
-  },
-
-  cell: {
-    display: "flex",
-    alignItems: "center",
-    paddingLeft: 24,
-    paddingRight: 24,
-    height: 70,
-    textAlign: "left",
-    fontSize: 13,
-    fontFamily: "Roboto sans-serif",
-    color: "rgb(80, 80, 80)",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    backgroundColor: "inherit"
-  },
-
   checkbox: {
     display: "flex",
     margin: 0,
@@ -70,7 +46,7 @@ const fileSource = {
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      props.moveFile(item.name, dropResult.name);
+      props.moveFile(dropResult.name, item.name);
     }
   }
 };
@@ -83,30 +59,12 @@ class File extends Component {
       hover: false,
       editFile: {
         open: false
-      },
-      editAuthority: {
-        open: false
-      },
-      deleteFile: {
-        open: false
-      },
-      moveFile: {
-        open: false,
-        dirId: null
-      },
-      copyFile: {
-        open: false
-      },
-      historiesFile: {
-        open: false
       }
     };
 
-    this.onClickCheckBox = this.onClickCheckBox.bind(this);
-    this.toggleHover = this.toggleHover.bind(this);
   }
 
-  onClickStar(file) {
+  onClickStar = (file) => {
     this.props.toggleStar(file);
 
     const message = file.is_star
@@ -120,184 +78,15 @@ class File extends Component {
     this.setState({ checked: !this.state.checked });
   };
 
-  toggleHover() {
+  toggleHover = () => {
     this.setState({ hover: !this.state.hover });
-  };
-
-  renderAuthorityDialog = () => {
-    const editAuthorityActions = (
-      <FlatButton
-        label="閉じる"
-        primary={true}
-        onTouchTap={() => this.setState({ editAuthority: { open: false } })}
-        />
-    );
-    
-    return (
-      <Dialog
-        title="権限を変更"
-        modal={false}
-        actions={editAuthorityActions}
-        open={this.state.editAuthority.open}
-        onRequestClose={() => this.setState({ editAuthority: { open: false } })} >
-
-        <Authority
-          file={this.props.file}
-          users={this.props.users}
-          roles={this.props.roles}
-          addAuthority={this.props.addAuthority}
-          deleteAuthority={this.props.deleteAuthority}
-          triggerSnackbar={this.props.triggerSnackbar} />
-
-      </Dialog>
-    );
-  };
-
-  renderDeleteDialog = () => {
-    const deleteFileActions = [
-      (
-        <FlatButton
-          label="Delete"
-          primary={true}
-          onTouchTap={(e) => {
-            this.props.deleteFile(this.props.file);
-            this.setState({ deleteFile: { open: false } });
-            this.props.triggerSnackbar(`${this.props.file.name}を削除しました`);
-          }}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          primary={false}
-          onTouchTap={() => this.setState({ deleteFile: { open: false } })}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title={`${this.props.file.name}を削除しますか？`}
-        modal={false}
-        actions={deleteFileActions}
-        open={this.state.deleteFile.open}
-        onRequestClose={() => this.setState({ deleteFile: {open: false} })}
-        >
-      </Dialog>
-    );
-  };
-
-  renderMoveDialog = () => {
-    const handleMove = () => {
-      this.props.moveFile(
-        this.props.file.id, this.props.selectedDir.id
-      );
-
-      this.setState({ moveFile: { open: false } });
-      this.props.triggerSnackbar("ファイルを移動しました");
-    };
-
-    const moveFileActions = [
-      (
-        <FlatButton
-          label="移動"
-          onTouchTap={handleMove}
-          primary={true}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={() => this.setState({ moveFile: { open: false } })}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title="ファイルを移動"
-        open={this.state.moveFile.open}
-        modal={false}
-        actions={moveFileActions} >
-
-        <DirTreeContainer />
-
-      </Dialog>
-    );
-  };
-
-  renderCopyDialog = () => {
-    const handleCopy = () => {
-      this.props.copyFile(this.props.selectedDir.id, this.props.file);
-      this.setState({ copyFile: { open: false } });
-      this.props.triggerSnackbar("ファイルをコピーしました");
-    };
-
-    const copyFileActions = [
-      (
-        <FlatButton
-          label="コピー"
-          onTouchTap={handleCopy}
-          primary={true}
-          />
-      ),
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={() => this.setState({ copyFile: { open: false } })}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title="ファイルをコピー"
-        open={this.state.copyFile.open}
-        modal={false}
-        actions={copyFileActions} >
-
-        <DirTreeContainer />
-
-      </Dialog>
-    );
-  };
-
-  renderHistoryDialog = () => {
-    
-    const actions = (
-      <FlatButton
-        label="close"
-        primary={false}
-        onTouchTap={() => this.setState({ historiesFile: { open: false } })}
-        />
-    );
-
-    const renderHistory = (idx, history) => {
-      return (
-        <History key={idx} history={history} />        
-      );
-    };
-
-    return (
-      <Dialog
-        title="履歴"
-        open={this.state.historiesFile.open}
-        modal={false}
-        actions={actions} >
-
-        {this.props.file.histories.map(
-        (history, idx) => renderHistory(idx, history))}
-
-      </Dialog>
-      
-    );
   };
 
   renderFileName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const changeFileName = () => {
-      console.log(this.refs);
+
       const fileName = this.refs.fileName.getValue();
 
       if ( fileName === "" ) {
@@ -311,19 +100,28 @@ class File extends Component {
     };
 
     const fileInput = (
-      <TextField
-        ref="fileName"
-        defaultValue={this.props.file.name}
-        onKeyDown={e => e.key === "Enter" ? changeFileName() : null} />
+      <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}>
+        
+        <TextField
+          ref="fileName"
+          defaultValue={this.props.file.name}
+          onKeyDown={e => e.key === "Enter" ? changeFileName() : null} />
 
+      </div>
     );
 
+    const handleClick = () => {
+      this.props.history.push(`/file-detail/${this.props.file.id}`);
+    };
+
     const fileView = (
-      <Link
-        to={`/file-detail/${this.props.file.id}`}
-        style={{...style.fileDetail, color}} >
+      <div
+        onClick={handleClick}
+        style={{...this.props.cellStyle, width: this.props.headers[1].width, color}}>
+        
         {this.props.file.name}
-      </Link>
+
+      </div>
     );
 
     return this.state.editFile.open ? fileInput : fileView;
@@ -346,10 +144,13 @@ class File extends Component {
 
   render() {
     const { isDragging, connectDragSource, file } = this.props;
+    const { rowStyle, cellStyle, headers } = this.props;
 
     const opacity = isDragging ? 0.3 : 1;
 
     const backgroundColor = this.state.checked ? "rgb(232, 232, 232)" : "inherit";
+
+    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
 
     const action_menu_icon = () => {
       const opacity = this.state.hover ? 1 : 0.1;
@@ -368,15 +169,13 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
-    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
-
     return connectDragSource(
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        style={{...style.row, opacity, backgroundColor}}>
+        style={{...rowStyle, opacity, backgroundColor}}>
 
-        <div style={{...style.cell, width: "5%"}}>
+        <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
             style={{...style.checkbox, opacity: checkOpacity}}
             onCheck={this.onClickCheckBox} />
@@ -389,17 +188,17 @@ class File extends Component {
             onCheck={() => this.onClickStar(file)} />
         </div>
 
-        <div style={{...style.cell, width: "50%"}}>
-          {this.renderFileName()}
+        {this.renderFileName()}
+
+        <div style={{...cellStyle, width: headers[2].width}}>
+          {file.modified}
         </div>
 
-        <div style={{...style.cell, width: "20%"}}>{file.modified}</div>
-
-        <div style={{...style.cell, width: "15%"}}>
+        <div style={{...cellStyle, width: headers[3].width}}>
           {this.renderMember()}
         </div>
 
-        <div style={{...style.cell, width: "10%"}}>
+        <div style={{...cellStyle, width: headers[4].width}}>
           <IconMenu
             iconButtonElement={action_menu_icon()}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
@@ -410,39 +209,58 @@ class File extends Component {
 
             <MenuItem
               primaryText="移動"
-              onTouchTap={() => this.setState({ moveFile: { open: true } })} />
+              onTouchTap={() => this.props.handleMoveFile(file)} />
 
             <MenuItem
-              onTouchTap={() => this.setState({ copyFile: { open: true } })}
+              onTouchTap={() => this.props.handleCopyFile(file)}
               primaryText="コピー" />
 
             <MenuItem
               primaryText="削除"
-              onTouchTap={() => this.setState({ deleteFile: { open: true } })} />
+              onTouchTap={() => this.props.handleDeleteFile(file)} />
 
             <MenuItem
               primaryText="権限を変更"
-              onTouchTap={() => this.setState({ editAuthority: { open: true } })} />
+              onTouchTap={() => this.props.handleAuthorityFile(file)} />
+
+            <MenuItem
+              primaryText="タグを編集"
+              onTouchTap={() => this.props.handleTagFile(file)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
-              onTouchTap={() => this.setState({ historiesFile: { open: true } })} />
+              onTouchTap={() => this.props.handleHistoryFile(file)} />
 
             <MenuItem primaryText="タイムスタンプ発行" />
 
           </IconMenu>
         </div>
 
-        <this.renderAuthorityDialog />
-        <this.renderDeleteDialog />
-        <this.renderMoveDialog />
-        <this.renderCopyDialog />
-        <this.renderHistoryDialog />
-
       </div>
     );
   }
 }
+
+File.propTypes = {
+  history: PropTypes.object.isRequired,
+  dir_id: PropTypes.number.isRequired,
+  rowStyle: PropTypes.object.isRequired,
+  cellStyle: PropTypes.object.isRequired,
+  headers: PropTypes.array.isRequired,
+  file: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired
+  }).isRequired,
+  editFile: PropTypes.func.isRequired,
+  triggerSnackbar: PropTypes.func.isRequired,
+  toggleStar: PropTypes.func.isRequired,
+  handleAuthorityFile: PropTypes.func.isRequired,
+  handleDeleteFile: PropTypes.func.isRequired,
+  handleMoveFile: PropTypes.func.isRequired,
+  handleCopyFile: PropTypes.func.isRequired,
+  handleHistoryFile: PropTypes.func.isRequired,
+  handleTagFile: PropTypes.func.isRequired
+};
 
 export default DragSource("file", fileSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),

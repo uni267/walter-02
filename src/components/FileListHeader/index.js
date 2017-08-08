@@ -1,35 +1,5 @@
 import React, { Component } from "react";
-
-const style = {
-  row: {
-    display: "flex",
-    width: "95%",
-    marginLeft: 30,
-    borderBottom: "1px solid lightgray"
-  },
-  cell: {
-    display: "flex",
-    alignItems: "center",
-    paddingLeft: 24,
-    paddingRight: 24,
-    height: 48,
-    textAlign: "left",
-    fontSize: 12,
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    backgroundColor: "inherit",
-    color: "rgb(158, 158, 158)"
-  }
-};
-
-const headers = [
-  {key: "checkbox", width: "5%", label: ""},
-  {key: "name", width: "50%", label: "名前"},
-  {key: "modified", width: "20%", label: "最終更新"},
-  {key: "owner", width: "15%", label: "メンバー"},
-  {key: false, width: "10%", label: "Action"},
-];
+import PropTypes from "prop-types";
 
 class FileListHeader extends Component {
   onSortClick = (e) => {
@@ -48,24 +18,27 @@ class FileListHeader extends Component {
     );
   }
 
-  renderHeader(header, idx) {
+  render() {
+    const { idx, header, style } = this.props;
+
     return (
       <div key={idx}
            onClick={this.onSortClick}
            data-sort-key={header.key}
-           style={{...style.cell, width: header.width}}>
+           style={{...style, width: header.width}}>
         {header.label}
       </div>
     );
   }
-
-  render() {
-    return (
-      <div style={style.row}>
-        {headers.map( (header, idx) => this.renderHeader(header, idx) )}
-      </div>
-    );
-  }
 }
+
+FileListHeader.propTypes = {
+  header: PropTypes.object.isRequired,
+  style: PropTypes.object.isRequired,
+  setSortTarget: PropTypes.func.isRequired,
+  toggleSortTarget: PropTypes.func.isRequired,
+  fileSortTarget: PropTypes.object.isRequired,
+  sortFile: PropTypes.func.isRequired
+};
 
 export default FileListHeader;

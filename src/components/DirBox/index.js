@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 // router
 import { Link } from "react-router-dom";
@@ -23,7 +24,41 @@ const styles = {
 };
 
 class DirBox extends Component {
-  renderDir(dir, idx) {
+  dirRoute = (dir) => {
+    let result = [];
+
+    const walk = (dir) => {
+      if (Number(dir.id) === 0) {
+        result = [{ id: 0 }];
+        return;
+      }
+
+      const dirs = this.props.dirs.slice();
+      const target = dirs
+            .filter(d => d.descendant === Number(dir.id) && d.depth === 1)[0];
+
+      // top node
+      if (target.ancestor === 0) {
+        result = [{ id: target.descendant }, ...result];
+        result = [{ id: target.ancestor }, ...result];
+        return;
+      } else {
+        result = [{ id: target.descendant }, ...result];
+        walk({ id: target.ancestor });
+      }
+
+    };
+
+    walk(dir);
+    return result;
+    
+  };
+
+  addDirName = (dir) => {
+    return this.props.allFiles.filter(file => dir.id === file.id)[0];
+  };
+
+  renderDir = (dir, idx) => {
     if (dir === "sep") {
       return (
         <div key={idx} style={styles.dir_list}>&gt;</div>
@@ -40,7 +75,10 @@ class DirBox extends Component {
   }
 
   render() {
-    let dirs = [].concat.apply([], this.props.dirs.map( (dir, idx) => {
+    const _dirs = this.dirRoute({ id: this.props.dirId })
+          .map(this.addDirName);
+
+    const dirs = [].concat.apply([], _dirs.map( (dir, idx) => {
       return (idx === 0) ? dir : ["sep", dir];
     }));
 
@@ -51,6 +89,12 @@ class DirBox extends Component {
     );
   }
 }
+
+DirBox.propTypes = {
+  dirs: PropTypes.array.isRequired,
+  dirId: PropTypes.number.isRequired,
+  allFiles: PropTypes.array.isRequired
+};
 
 export default DirBox;
 

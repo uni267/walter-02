@@ -1,55 +1,26 @@
-import React, { Component } from "react";
+import React from "react";
 
-// material
-import Dialog from "material-ui/Dialog";
-import FlatButton from 'material-ui/FlatButton';
+// material ui
 import TextField from "material-ui/TextField";
 
-class Account extends Component {
-  render() {
-    const { account } = this.props;
+const Account = () => {
+  return (
+    <div>
+      <TextField
+        hintText=""
+        floatingLabelText="current password"
+        type="password"
+        />
 
-    const actions = [
-      (
-        <FlatButton
-          label="close"
-          onTouchTap={this.props.onAccountClick}
-          />
-      ),
-      (
-        <FlatButton
-          label="save"
-          primary={true}
-          onTouchTap={this.props.onAccountClick}
-          />
-      )
-    ];
-
-    return (
-      <Dialog
-        title="アカウント情報変更"
-        modal={true}
-        actions={actions} 
-        open={account.open}
-        onRequestClose={this.props.onAccountClick}
-        >
-        <TextField
-          hintText=""
-          floatingLabelText="current password"
-          type="password"
-          />
-
-        <br />
-        
-        <TextField
-          hintText=""
-          floatingLabelText="new password"
-          type="password"
-          />
-
-      </Dialog>
-    );
-  }
-}
+      <br />
+      
+      <TextField
+        hintText=""
+        floatingLabelText="new password"
+        type="password"
+        />
+    </div>
+  );
+};
 
 export default Account;

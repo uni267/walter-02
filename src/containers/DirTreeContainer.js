@@ -57,4 +57,5 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 DirTreeContainer = connect(mapStateToProps, mapDispatchToProps)(DirTreeContainer);
+
 export default DirTreeContainer;

@@ -1,17 +1,10 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
-// material ui
-import TextField from "material-ui/TextField";
-import DatePicker from 'material-ui/DatePicker';
-import SelectField from 'material-ui/SelectField';
-import RaisedButton from 'material-ui/RaisedButton';
-import Popover from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import IconButton from "material-ui/IconButton";
-
-// material icon
-import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
+// components
+import AddFilterBtn from "./AddFilterBtn";
+import SimpleSearch from "./SimpleSearch";
+import DetailSearch from "./DetailSearch";
 
 const styles = {
   buttonContainer: {
@@ -30,6 +23,7 @@ class FileSearch extends Component {
     super(props);
     this.state = {
       open: false,
+      anchorEl: {},
       searchItems: [
         {
           id: 1,
@@ -54,7 +48,7 @@ class FileSearch extends Component {
 
   }
 
-  handleTouchTap = (event) => {
+  handleOpen = (event) => {
     event.preventDefault();
 
     this.setState({
@@ -63,7 +57,7 @@ class FileSearch extends Component {
     });
   }
 
-  handleRequestClose = () => {
+  handleClose = () => {
     this.setState({
       open: false
     });
@@ -73,112 +67,25 @@ class FileSearch extends Component {
     this.props.searchFile(e.target.value);
   }
 
-  renderMenu(menu, idx) {
+  handleMenuTouchTap = (menu) => {
+    this.setState({
+      searchItems: this.state.searchItems.map(item => {
+        return item.id === menu.id ? {...item, picked: true} : item;
+      })
+    });
+  };
 
-    const onTouchTapMenu = (menu) => {
-      this.setState({
-        searchItems: this.state.searchItems.map(m => {
-          return m.id === menu.id ? {...m, picked: true} : m;
-        })
-      });
-    };
-
-    return (
-      <MenuItem
-        key={idx}
-        data-menu={menu}
-        primaryText={menu.label}
-        onTouchTap={() => onTouchTapMenu(menu)}
-        />
-    );
-  }
-
-  renderSearchSimple() {
-    return (
-      <div>
-        <TextField
-          style={{width: 270}}
-          value={this.props.searchWord.value}
-          onChange={this.handleChange}
-          hintText="簡易検索"
-          floatingLabelText="簡易検索"
-          />
-      </div>
-    );
-  }
-
-  renderSearchDetail(menu, idx) {
-    const onTouchTapDelete = (menu) => {
-      this.setState({
-        searchItems: this.state.searchItems.map(m => {
-          return m.id === menu.id ? {...m, picked: false} : m;
-        })
-      });
-    };
-
-    const textField = (menu) => {
-      return (
-        <TextField
-          onChange={() => console.log("change") }
-          floatingLabelText={menu.label}
-          hintText={menu.label}
-          />
-      );
-    };
-
-    const datePicker = (menu) => {
-      return (
-        <DatePicker
-          conChange={() => console.log("") }
-          floatingLabelText={menu.label}
-          hintText={menu.label}
-          />
-      );
-    };
-
-    const selectField = (menu) => {
-      return (
-        <SelectField
-          floatingLabelText={menu.label}
-          onChange={() => console.log("change") }
-          >
-
-          <MenuItem value={null} primaryText="" />
-          <MenuItem value={false} primaryText="No" />
-          <MenuItem value={true} primaryText="Yes" />
-        </SelectField>
-      );
-    };
-
-    let searchForm;
-    if (menu.type === "string") {
-      searchForm = textField;
-    }
-
-    if (menu.type === "date") {
-      searchForm = datePicker;
-    }
-
-    if (menu.type === "boolean") {
-      searchForm = selectField;
-    }
-
-    return (
-      <div style={{display: "flex"}}>
-
-        <IconButton
-          style={{marginTop: 23}}
-          onClick={() => onTouchTapDelete(menu) } >
-          <ContentRemoveCircleOutline />
-        </IconButton>
-
-        {searchForm(menu)}
-
-      </div>
-    );
-  }
+  handleDelete = (menu) => {
+    this.setState({
+      searchItems: this.state.searchItems.map(m => {
+        return m.id === menu.id ? {...m, picked: false} : m;
+      })
+    });
+  };
 
   render() {
+
+    const isSimple = this.state.searchItems.filter(item => item.picked).length === 0;
 
     return (
       <div style={{marginTop: 10, marginRight: 25, marginBottom: 15}}>
@@ -186,42 +93,42 @@ class FileSearch extends Component {
         {/* フィルタ追加ボタン */}
         <div style={styles.buttonContainer}>
           <div>
-            <RaisedButton style={styles.button} label="フィルタ追加"
-                          onTouchTap={this.handleTouchTap} />
-
-            <Popover 
+            <AddFilterBtn
+              searchItems={this.state.searchItems}
               open={this.state.open}
               anchorEl={this.state.anchorEl}
-              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-              targetOrigin={{horizontal: 'left', vertical: 'top'}}
-              onRequestClose={this.handleRequestClose}
-              >
-
-              <Menu>
-                {this.state.searchItems.map(
-                  (menu, idx) => !menu.picked ? this.renderMenu(menu, idx) : null
-                )}
-              </Menu>
-            </Popover>
+              handleOpen={this.handleOpen}
+              handleClose={this.handleClose}
+              handleMenuTouchTap={this.handleMenuTouchTap}
+              />
           </div>
         </div>
 
         <div style={styles.formContainer}>
           {/* 簡易検索 */}
-          {this.state.searchItems.filter(item => item.picked).length === 0
-          ? this.renderSearchSimple() : null }
-
+          { isSimple ?
+            <SimpleSearch
+                searchWord={this.props.searchWord}
+                handleChange={this.handleChange}
+                />
+            : null }
+            
           {/* 詳細検索 */}
           {this.state.searchItems.map(
-            (menu, idx) => menu.picked ? this.renderSearchDetail(menu, idx) : null
+              (menu, idx) => menu.picked ?
+              <DetailSearch menu={menu} key={idx} handleDelete={this.handleDelete} />
+                : null
           )}
 
-
         </div>
-
       </div>
     );
   }
+};
+
+FileSearch.propTypes = {
+  searchWord: PropTypes.object.isRequired,
+  searchFile: PropTypes.func.isRequired
 };
 
 export default FileSearch;

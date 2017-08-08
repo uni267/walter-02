@@ -4,28 +4,64 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // components
-import Logo from "../components/Logo/";
-import AppMenu from "../components/AppMenu/";
-import Account from "../components/Account/";
+import AccountDialog from "../components/Account/AccountDialog";
+import AppMenu from "../components/AppMenu";
+import AppNavBar from "../components/AppNavBar";
 
-// actions
-import { toggleAccount, toggleMenu } from "../actions";
+const menus = [
+  {name: "ファイル一覧"},
+  {name: "管理コンソール"},
+];
+
+const appTitle = "cloud storage";
 
 class NavigationContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      menu: {
+        open: false
+      },
+      account: {
+        open: false
+      }
+    };
+  }
+
+  toggleAppMenu = () => {
+    this.setState({
+      menu: {
+        open: !this.state.menu.open
+      }
+    });
+  };
+
+  toggleAccount = () => {
+    this.setState({
+      account: { open: !this.state.account.open }
+    });
+  };
+
   render() {
     return (
       <div>
-        <Logo
-          onAccountClick={this.props.onAccountClick}
-          onMenuIconClick={this.props.onMenuIconClick}
-          notifications={this.props.notifications} />
+        <AppNavBar
+          appTitle={appTitle}
+          notifications={this.props.notifications}
+          toggleAppMenu={this.props.toggleAppMenu}
+          handleAccountOpen={this.toggleAccount}
+          toggleMenu={this.toggleAppMenu} />
 
-        <AppMenu open={this.props.appMenu.open}
-                 toggleDrawer={this.props.onMenuIconClick} />
+        <AppMenu
+          open={this.state.menu.open}
+          menus={menus}
+          toggle={this.toggleAppMenu}
+          />
 
-        <Account 
-          account={this.props.account}
-          onAccountClick={this.props.onAccountClick} />
+        <AccountDialog
+          open={this.state.account.open}
+          handleClose={this.toggleAccount} />
+
       </div>
     );
   }
@@ -33,15 +69,11 @@ class NavigationContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    appMenu: state.appMenu,
-    account: state.account,
     notifications: state.notifications
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onAccountClick: () => { dispatch(toggleAccount()); },
-  onMenuIconClick: () => { dispatch(toggleMenu()); }
 });
 
 NavigationContainer = connect(

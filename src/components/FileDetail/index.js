@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// router
-import { Link } from "react-router-dom";
-
 // material-ui
 import { 
   Card, 
@@ -13,24 +10,20 @@ import {
   CardActions
 } from 'material-ui/Card';
 import IconButton from "material-ui/IconButton";
-import Chip from "material-ui/Chip";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
-import Avatar from "material-ui/Avatar";
-import SelectField from "material-ui/SelectField";
-import MenuItem from "material-ui/MenuItem";
 
 // material icon
 import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
 
 // components
-import Authority from "./Authority";
-import History from "./History";
-
-// mock
-import TAGS from "../../mock-tags";
+import Authority from "../Authority";
+import History from "../History";
+import Tag from "../Tag";
+import MetaInfo from "../MetaInfo";
+import FileBasic from "../FileBasic";
 
 const styles = {
   fileImageWrapper: {
@@ -64,51 +57,25 @@ class FileDetail extends Component {
       },
       editTag: {
         value: ""
+      },
+      editMetaInfo: {
+        open: false
       }
     };
   }
 
-  renderBasic = (file) => {
-    const changeFileName = () => {
-      const fileName = this.refs.fileName.getValue();
+  changeFileName = (ref) => {
+    const fileName = ref.getValue();
 
-      if ( fileName === "" ) {
-        this.setState({ editBasic: { open: false } });
-        return;
-      }
-
-      this.props.editFile({ ...this.props.file, name: fileName });
+    if ( fileName === "" ) {
       this.setState({ editBasic: { open: false } });
-      this.props.triggerSnackbar("ファイル名を変更しました");
-    };
+      return;
+    }
 
-    const fileName = this.state.editBasic.open
-          ? (
-            <TextField
-              ref="fileName"
-              defaultValue={file.name}
-              onKeyDown={ e => e.key === "Enter" ? changeFileName() : null }
-              />
-          )
-          : <div>{file.name}</div>;
-
-    return (
-      <div>
-        <div style={styles.metaRow}>
-          <div style={styles.metaCell}>ファイル名</div>
-          {fileName}
-        </div>
-        <div style={styles.metaRow}>
-          <div style={styles.metaCell}>サイズ</div>
-          <div>10.0KB</div>
-        </div>
-        <div style={styles.metaRow}>
-          <div style={styles.metaCell}>最終更新</div>
-          <div>{file.modified}</div>
-        </div>
-      </div>
-    );
-  };
+    this.props.editFile({ ...this.props.file, name: fileName });
+    this.setState({ editBasic: { open: false } });
+    this.props.triggerSnackbar("ファイル名を変更しました");
+  }
 
   renderAuthorities = (file) => {
     const renderAuthority = (auth, idx) => {
@@ -123,57 +90,6 @@ class FileDetail extends Component {
     };
 
     return file.authorities.map( (auth, idx) => renderAuthority(auth, idx));
-
-  };
-
-  renderTags = (file) => {
-    const handleDelete = (file_id, tag) => {
-      this.props.deleteTag(file_id, tag);
-      this.props.triggerSnackbar("タグを削除しました");
-    };
-
-    const renderTag = (tag, idx) => {
-      return (
-        <Chip
-          key={idx}
-          style={{marginLeft: 10}}
-          onRequestDelete={() => handleDelete(this.props.file.id, tag)}
-          >
-          {tag.label}
-        </Chip>
-      );
-    };
-
-    const handleChange = (event, index, value) => {
-      this.props.addTag(file.id, value);
-      this.props.triggerSnackbar("タグを追加しました");
-    };
-
-    const renderMenuItem = (tag, idx) => {
-      return (
-        <MenuItem key={idx} value={tag} primaryText={tag.label} />
-      );
-    };
-
-    const tags = TAGS.filter(
-      tag => !this.props.file.tags.map(t => t.id).includes(tag.id)
-    );
-
-    return (
-      <div>
-        <div style={{...styles.metaRow, display: "flex"}}>
-          {file.tags.map( (tag, idx) => renderTag(tag, idx) )}
-        </div>
-
-        <SelectField
-          floatingLabelText="タグを追加"
-          value={this.state.editTag.value}
-          onChange={handleChange} >
-          {tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
-        </SelectField>
-
-      </div>
-    );
 
   };
 
@@ -213,18 +129,60 @@ class FileDetail extends Component {
     
   };
 
+  renderMetaInfos = (file) => {
+    const render = (meta, idx) => {
+      return (
+        <div key={idx} style={styles.metaRow}>
+          <div style={styles.metaCell}>{meta.key}</div>
+          <div style={styles.metaCell}>{meta.value}</div>
+        </div>
+      );
+    };
+
+    return file.metaInfo.map( (meta, idx) => render(meta, idx) );
+  };
+
+  renderMetaInfoDialog = () => {
+    const actions = (
+      <FlatButton
+        label="閉じる"
+        primary={true}
+        onTouchTap={() => this.setState({ editMetaInfo: { open: false } })}
+        />
+    );
+
+    return (
+      <Dialog
+        title="メタ情報を編集"
+        actions={actions}
+        modal={false}
+        open={this.state.editMetaInfo.open}
+        onRequestClose={() => this.setState({ editMetaInfo: { open: false } })} >
+
+        <MetaInfo
+          file={this.props.file}
+          addMetaInfo={this.props.addMetaInfo}
+          deleteMetaInfo={this.props.deleteMetaInfo}
+          triggerSnackbar={this.props.triggerSnackbar} />
+
+      </Dialog>
+    );
+  };
+
   render() {
     const cardOverlay = (
       <CardTitle subtitle={this.props.file.name} />
     );
 
     const fileTitle = (
-      <div style={{display: "flex", alignItems: "center"}}>
-        <Link to={"/home"} style={{textDecoration: "none"}}>
-          <IconButton>
-            <HardwareKeyboardArrowLeft />
-          </IconButton>
-        </Link>
+      <div
+        style={{display: "flex", alignItems: "center"}}>
+        <IconButton
+          onTouchTap={() => {
+            this.props.history.goBack();
+          }}>
+          <HardwareKeyboardArrowLeft />
+        </IconButton>
         {this.props.file.name}
       </div>
     );
@@ -251,7 +209,13 @@ class FileDetail extends Component {
             <Card style={styles.innerCard}>
               <CardHeader title="基本情報" />
               <CardText>
-                {this.renderBasic(this.props.file)}
+
+                <FileBasic
+                  file={this.props.file}
+                  open={this.state.editBasic.open}
+                  changeFileName={this.changeFileName}
+                  />
+
               </CardText>
               <CardActions>
                 <RaisedButton
@@ -276,17 +240,25 @@ class FileDetail extends Component {
             <Card style={styles.innerCard}>
               <CardHeader title="タグ" />
               <CardText>
-                {this.renderTags(this.props.file)}
+
+                <Tag 
+                  file={this.props.file}
+                  addTag={this.props.addTag}
+                  deleteTag={this.props.deleteTag}
+                  triggerSnackbar={this.props.triggerSnackbar} />
+
               </CardText>
             </Card>
 
             <Card style={styles.innerCard}>
               <CardHeader title="メタ情報" />
               <CardText>
-                ...
+                {this.renderMetaInfos(this.props.file)}
               </CardText>
               <CardActions>
-                <RaisedButton label="編集" />
+                <RaisedButton
+                  label="編集"
+                  onTouchTap={() => this.setState({ editMetaInfo: { open: true } })} />
               </CardActions>
             </Card>
 
@@ -302,6 +274,7 @@ class FileDetail extends Component {
         </div>
 
         {this.renderAuthorityDialog()}
+        {this.renderMetaInfoDialog()}
 
       </Card>
     );

@@ -1,11 +1,3 @@
-export const toggleAccount = () => ({
-  type: "TOGGLE_ACCOUNT"
-});
-
-export const toggleMenu = () => ({
-  type: "TOGGLE_MENU"
-});
-
 export const toggleAddDir = () => ({
   type: "TOGGLE_ADD_DIR"
 });
@@ -139,4 +131,16 @@ export const copyFile = (dir_id, file) => ({
   type: "COPY_FILE",
   dir_id,
   file
+});
+
+export const addMetaInfo = (file, metaInfo) => ({
+  type: "ADD_META_INFO",
+  file,
+  metaInfo
+});
+
+export const deleteMetaInfo = (file, metaInfo) => ({
+  type: "DELETE_META_INFO",
+  file,
+  metaInfo
 });

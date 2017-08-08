@@ -1,6 +1,7 @@
 import filesReducer from "../filesReducer";
 import FILES from "../../mock-files";
 import TAGS from "../../mock-tags";
+import META_INFOS from "../../mock-metaInfos";
 
 describe("filesReducer", () => {
 
@@ -298,6 +299,48 @@ describe("filesReducer", () => {
 
       expect((new Set(result)).size).toEqual(expected);
 
+    });
+
+  });
+
+  describe("ADD_META_INFO", () => {
+
+    it("追加したメタ情報含めて返却される", () => {
+      const target = FILES.filter(file => !file.is_dir)[0];
+      const expected = target.metaInfo.length + 1;
+
+      const result = filesReducer(FILES, {
+        type: "ADD_META_INFO",
+        file: target,
+        metaInfo: {
+          id: 2,
+          text: "顧客名",
+          value: "foobar"
+        }
+      }).filter(file => file.id === target.id)[0];
+
+      expect(result.metaInfo.length).toEqual(expected);
+
+    });
+
+  });
+
+  describe("DELETE_META_INFO", () => {
+
+    it("削除したメタ情報含めて返却される", () => {
+      const target = FILES.filter(
+        file => !file.is_dir && file.metaInfo.length > 0
+      )[0];
+      const expected = target.metaInfo.length - 1;
+
+      const result = filesReducer(FILES, {
+        type: "DELETE_META_INFO",
+        file: target,
+        metaInfo: target.metaInfo[0]
+      }).filter(file => file.id === target.id)[0];
+
+      expect(result.metaInfo.length).toEqual(expected);
+      
     });
 
   });
