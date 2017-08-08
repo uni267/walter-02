@@ -2,23 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material ui
-import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
+import Dialog from "material-ui/Dialog";
 
-const DeleteDirDialog = ({
-  dir,
+const DeleteFileDialog = ({
   open,
-  deleteDir,
   handleClose,
-  triggerSnackbar
+  deleteFile,
+  file
 }) => {
   const actions = [
     (
       <FlatButton
         label="Delete"
         primary={true}
-        onTouchTap={() => deleteDir(dir)}
-        />
+        onTouchTap={(e) => deleteFile(file)} />
     ),
     (
       <FlatButton
@@ -31,7 +29,7 @@ const DeleteDirDialog = ({
 
   return (
     <Dialog
-      title={`${dir.name}を削除しますか？`}
+      title={`${file.name}を削除しますか？`}
       modal={false}
       actions={actions}
       open={open}
@@ -41,12 +39,11 @@ const DeleteDirDialog = ({
   );
 };
 
-DeleteDirDialog.propTypes = {
-  dir: PropTypes.object.isRequired,
+DeleteFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  deleteDir: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired
+  deleteFile: PropTypes.func.isRequired,
+  file: PropTypes.object
 };
 
-export default DeleteDirDialog;
+export default DeleteFileDialog;

@@ -219,7 +219,6 @@ Dir.propTypes = {
   headers: PropTypes.array.isRequired,
   triggerSnackbar: PropTypes.func.isRequired,
   editDir: PropTypes.func.isRequired,
-  selectedDir: PropTypes.object.isRequired,
   handleMoveDir: PropTypes.func.isRequired,
   handleCopyDir: PropTypes.func.isRequired,  
   handleDeleteDir: PropTypes.func.isRequired,

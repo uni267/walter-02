@@ -2,25 +2,26 @@ import React from "react";
 import PropTypes from "prop-types";
 
 // material ui
-import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
+import Dialog from "material-ui/Dialog";
 
 // components
 import Authority from "../Authority";
 
-const AuthorityDirDialog = ({
+const AuthorityFileDialog = ({
   open,
-  dir,
+  handleClose,
+  file,
   users,
   roles,
   addAuthority,
   deleteAuthority,
-  triggerSnackbar,
-  handleClose
+  triggerSnackbar
 }) => {
   const actions = (
     <FlatButton
-      label="close"
+      label="閉じる"
+      primary={true}
       onTouchTap={handleClose}
       />
   );
@@ -34,7 +35,7 @@ const AuthorityDirDialog = ({
       onRequestClose={handleClose} >
 
       <Authority
-        file={dir}
+        file={file}
         users={users}
         roles={roles}
         addAuthority={addAuthority}
@@ -45,15 +46,15 @@ const AuthorityDirDialog = ({
   );
 };
 
-AuthorityDirDialog.propTypes = {
+AuthorityFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  dir: PropTypes.object,
+  handleClose: PropTypes.func.isRequired,
+  file: PropTypes.object,
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
   addAuthority: PropTypes.func.isRequired,
   deleteAuthority: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired,
-  handleClose: PropTypes.func.isRequired
+  triggerSnackbar: PropTypes.func.isRequired
 };
 
-export default AuthorityDirDialog;
+export default AuthorityFileDialog;

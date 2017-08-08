@@ -1,17 +1,17 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 // material ui
-import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
+import Dialog from "material-ui/Dialog";
 
 // components
 import History from "../History";
 
-const HistoryDirDialog = ({
+const HistoryFileDialog = ({
   open,
   handleClose,
-  dir
+  file
 }) => {
   const actions = (
     <FlatButton
@@ -21,7 +21,7 @@ const HistoryDirDialog = ({
       />
   );
 
-  const renderHistory = (idx, history) => {
+  const render = (history, idx) => {
     return (
       <History key={idx} history={history} />        
     );
@@ -34,19 +34,21 @@ const HistoryDirDialog = ({
       modal={false}
       actions={actions} >
 
-      {dir !== undefined
-        ? dir.histories.map( (history, idx) => renderHistory(idx, history))
+      {file.histories !== undefined
+        ? file.histories.map( (history, idx) => render(history, idx))
         : null
       }
 
     </Dialog>
+    
   );
 };
 
-HistoryDirDialog.propTypes = {
+HistoryFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  dir: PropTypes.object
+  file: PropTypes.object
 };
 
-export default HistoryDirDialog;
+export default HistoryFileDialog;
+
