@@ -329,6 +329,7 @@ class FileListContainer extends Component {
         headers={headers}
         file={file}
         editFile={this.props.editFile}
+        moveFile={this.props.moveFile}
         triggerSnackbar={this.props.triggerSnackbar}
         toggleStar={this.props.toggleStar}
         handleAuthorityFile={this.toggleAuthorityFileDialog}

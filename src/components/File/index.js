@@ -46,7 +46,7 @@ const fileSource = {
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      props.moveFile(item.name, dropResult.name);
+      props.moveFile(dropResult.name, item.name);
     }
   }
 };
