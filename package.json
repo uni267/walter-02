@@ -19,6 +19,7 @@
     "react-test-renderer": "^15.6.1",
     "redux": "^3.7.1",
     "redux-logger": "^3.0.6",
+    "redux-saga": "^0.15.6",
     "sinon": "^2.3.7"
   },
   "devDependencies": {
