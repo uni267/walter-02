@@ -7,9 +7,13 @@ import { connect } from "react-redux";
 import { Card, CardTitle, CardText, CardActions } from "material-ui/Card";
 import TextField from "material-ui/TextField";
 import RaisedButton from 'material-ui/RaisedButton';
+import CircularProgress from 'material-ui/CircularProgress';
 
 // containers
 import NavigationContainer from "./NavigationContainer";
+
+// actions
+import { requestLogin } from "../actions";
 
 const styles = {
   wrapper: {
@@ -30,6 +34,17 @@ const styles = {
   action: {
     textAlign: "center",
     marginTop: 30
+  },
+
+  circular: {
+    position: "absolute",
+    paddingTop: "30%",
+    width: "100%",
+    height: "100%",
+    zIndex: 1000,
+    backgroundColor: "#ddd",
+    opacity: 0.5,
+    textAlign: "center"
   }
 };
 
@@ -37,7 +52,7 @@ class LoginContainer extends Component {
   login = () => {
     const name = this.refs.name.getValue();
     const password = this.refs.password.getValue();
-    console.log(name, password);
+    this.props.requestLogin(name, password);
   };
 
   handleKeyDown = (event) => {
@@ -48,13 +63,19 @@ class LoginContainer extends Component {
   };
 
   render() {
+    const circular = this.props.session.start
+          ? <CircularProgress size={90} thickness={6} style={styles.circular} />
+          : null;
+
     return (
       <div>
+        {circular}
+
         <NavigationContainer />
 
         <div style={styles.wrapper}>
           <Card style={styles.card}>
-            <CardTitle title={"login"} />
+            <CardTitle title={"Login"} />
 
             <CardText>
 
@@ -95,7 +116,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  
+  requestLogin: (name, password) => { dispatch(requestLogin(name, password)); }  
 });
 
 LoginContainer = connect(

@@ -12,11 +12,21 @@ import logger from "redux-logger";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
+// saga
+import createSagaMiddleware from "redux-saga";
+import Saga from "./sagas";
+
 // app components
 import App from './containers/App';
 
-const store = createStore(reducer, applyMiddleware(logger));
+const sagaMiddleware = createSagaMiddleware(Saga);
+const store = createStore(
+  reducer, 
+  applyMiddleware(sagaMiddleware),
+  applyMiddleware(logger)
+);
 
+sagaMiddleware.run(Saga);
 injectTapEventPlugin();
 
 ReactDOM.render(

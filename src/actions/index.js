@@ -144,3 +144,9 @@ export const deleteMetaInfo = (file, metaInfo) => ({
   file,
   metaInfo
 });
+
+export const requestLogin = (name, password) => ({
+  type: "REQUEST_LOGIN",
+  name: name,
+  password: password
+});
