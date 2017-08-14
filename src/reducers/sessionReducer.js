@@ -13,8 +13,7 @@ const sessionReducer = (state = initialState, action) => {
     return {
       ...state,
       start: false,
-      login: true,
-      user: action.user
+      login: true
     };
   case "REQUEST_LOGIN_FAILED":
     return {
