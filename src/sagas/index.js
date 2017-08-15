@@ -2,7 +2,7 @@ import { delay } from "redux-saga";
 import { call, put, fork, take, cancel, race, select } from "redux-saga/effects";
 
 // api
-import { login, getUsers } from "../apis";
+import { login } from "../apis";
 
 function* watchLogin() {
   while (true) {
@@ -17,18 +17,18 @@ function* watchLogin() {
       const { token } = result.data;
       localStorage.setItem("token", token);
 
-      yield put({ type: "REQUEST_LOGIN_SUCCESS" });
+      const message = result.data.status.message;
+      yield put({ type: "REQUEST_LOGIN_SUCCESS", message: message });
     }
     catch (e) {
-      yield put({ type: "REQUEST_LOGIN_FAILED", error: e });
-    }
+      const message = e.response.data.status.message;
+      const errors = e.response.data.status.errors;
 
-    try {
-      const users = yield call(getUsers);
-      console.log(users);
-    }
-    catch (e) {
-      console.log(e);
+      yield put({
+        type: "REQUEST_LOGIN_FAILED",
+        message: message,
+        errors: errors
+      });
     }
 
   }

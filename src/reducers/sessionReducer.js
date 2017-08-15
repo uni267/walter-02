@@ -1,26 +1,28 @@
 const initialState = {
   start: false,
   login: false,
-  error: null,
-  user: null
+  message: null,
+  errors: {}
 };
 
 const sessionReducer = (state = initialState, action) => {
   switch ( action.type ) {
   case "REQUEST_LOGIN_START":
-    return {...initialState, start: true};
+    return {...state, start: true};
   case "REQUEST_LOGIN_SUCCESS":
     return {
       ...state,
       start: false,
-      login: true
+      login: true,
+      message: action.message
     };
   case "REQUEST_LOGIN_FAILED":
     return {
       ...state,
       start: false,
       login: false,
-      error: action.error
+      message: action.message,
+      errors: action.errors
     };
   default:
     return state;

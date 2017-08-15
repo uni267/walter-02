@@ -86,10 +86,11 @@ class LoginContainer extends Component {
             <CardText>
 
               <TextField
-                ref="name" 
+                ref="name"
                 onKeyDown={this.handleKeyDown}
                 hintText="example@foobar.com"
                 floatingLabelText="ユーザID"
+                errorText={this.props.session.errors.name}
                 style={styles.text} />
 
               <br />
@@ -98,6 +99,7 @@ class LoginContainer extends Component {
                 ref="password"
                 onKeyDown={this.handleKeyDown}
                 floatingLabelText="パスワード"
+                errorText={this.props.session.errors.password}
                 style={styles.text}
                 type="password" />
 
