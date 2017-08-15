@@ -2,7 +2,8 @@ const initialState = {
   start: false,
   login: false,
   message: null,
-  errors: {}
+  errors: {},
+  user_id: null
 };
 
 const sessionReducer = (state = initialState, action) => {
@@ -14,7 +15,8 @@ const sessionReducer = (state = initialState, action) => {
       ...state,
       start: false,
       login: true,
-      message: action.message
+      message: action.message,
+      user_id: action.user_id
     };
   case "REQUEST_LOGIN_FAILED":
     return {

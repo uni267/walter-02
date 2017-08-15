@@ -18,7 +18,12 @@ function* watchLogin() {
       localStorage.setItem("token", token);
 
       const message = result.data.status.message;
-      yield put({ type: "REQUEST_LOGIN_SUCCESS", message: message });
+
+      yield put({
+        type: "REQUEST_LOGIN_SUCCESS",
+        message: message,
+        user_id: result.data.body.user_id
+      });
     }
     catch (e) {
       const message = e.response.data.status.message;
