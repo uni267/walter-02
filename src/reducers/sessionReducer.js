@@ -1,5 +1,4 @@
 const initialState = {
-  start: false,
   login: false,
   message: null,
   errors: {},
@@ -8,12 +7,9 @@ const initialState = {
 
 const sessionReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "REQUEST_LOGIN_START":
-    return {...state, start: true};
   case "REQUEST_LOGIN_SUCCESS":
     return {
       ...state,
-      start: false,
       login: true,
       message: action.message,
       user_id: action.user_id

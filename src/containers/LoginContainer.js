@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { Card, CardTitle, CardText, CardActions } from "material-ui/Card";
 import TextField from "material-ui/TextField";
 import RaisedButton from 'material-ui/RaisedButton';
-import CircularProgress from 'material-ui/CircularProgress';
 import AppBar from "material-ui/AppBar";
 
 // actions
@@ -32,21 +31,11 @@ const styles = {
   action: {
     textAlign: "center",
     marginTop: 30
-  },
-
-  circular: {
-    position: "absolute",
-    paddingTop: "30%",
-    width: "100%",
-    height: "100%",
-    zIndex: 1000,
-    backgroundColor: "#ddd",
-    opacity: 0.5,
-    textAlign: "center"
   }
 };
 
 class LoginContainer extends Component {
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.session.login) {
       this.props.history.push("/home");
@@ -67,14 +56,8 @@ class LoginContainer extends Component {
   };
 
   render() {
-    const circular = this.props.session.start
-          ? <CircularProgress size={90} thickness={6} style={styles.circular} />
-          : null;
-
     return (
       <div>
-        {circular}
-
         <AppBar title="cloud storage" />
 
         <div style={styles.wrapper}>
