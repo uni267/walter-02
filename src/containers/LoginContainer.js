@@ -49,6 +49,12 @@ const styles = {
 };
 
 class LoginContainer extends Component {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.session.login) {
+      this.props.history.push("/home");
+    }
+  }
+
   login = () => {
     const name = this.refs.name.getValue();
     const password = this.refs.password.getValue();
