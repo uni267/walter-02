@@ -8,9 +8,7 @@ import { Card, CardTitle, CardText, CardActions } from "material-ui/Card";
 import TextField from "material-ui/TextField";
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
-
-// containers
-import NavigationContainer from "./NavigationContainer";
+import AppBar from "material-ui/AppBar";
 
 // actions
 import { requestLogin } from "../actions";
@@ -77,7 +75,7 @@ class LoginContainer extends Component {
       <div>
         {circular}
 
-        <NavigationContainer />
+        <AppBar title="cloud storage" />
 
         <div style={styles.wrapper}>
           <Card style={styles.card}>
