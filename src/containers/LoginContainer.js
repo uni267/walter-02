@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 
 // store
 import { connect } from "react-redux";
@@ -35,10 +36,18 @@ const styles = {
 };
 
 class LoginContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isAuth: false,
+      dirId: null
+    };
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.session.login) {
-      this.props.history.push("/home");
+      const dirId = nextProps.tenant.dirId;
+      this.setState({ isAuth: true, dirId: dirId });
     }
   }
 
@@ -57,50 +66,55 @@ class LoginContainer extends Component {
 
   render() {
     return (
-      <div>
-        <AppBar title="cloud storage" />
+      this.state.isAuth ? (
+        <Redirect to={`/home/?dir_id=${this.state.dirId}`} />
+      ) : (
+        <div>
+          <AppBar title="cloud storage" />
 
-        <div style={styles.wrapper}>
-          <Card style={styles.card}>
-            <CardTitle title={"Login"} />
+          <div style={styles.wrapper}>
+            <Card style={styles.card}>
+              <CardTitle title={"Login"} />
 
-            <CardText>
+              <CardText>
 
-              <TextField
-                ref="name"
-                onKeyDown={this.handleKeyDown}
-                hintText="example@foobar.com"
-                floatingLabelText="ユーザID"
-                errorText={this.props.session.errors.name}
-                style={styles.text} />
+                <TextField
+                  ref="name"
+                  onKeyDown={this.handleKeyDown}
+                  hintText="example@foobar.com"
+                  floatingLabelText="ユーザID"
+                  errorText={this.props.session.errors.name}
+                  style={styles.text} />
 
-              <br />
+                <br />
 
-              <TextField
-                ref="password"
-                onKeyDown={this.handleKeyDown}
-                floatingLabelText="パスワード"
-                errorText={this.props.session.errors.password}
-                style={styles.text}
-                type="password" />
+                <TextField
+                  ref="password"
+                  onKeyDown={this.handleKeyDown}
+                  floatingLabelText="パスワード"
+                  errorText={this.props.session.errors.password}
+                  style={styles.text}
+                  type="password" />
 
-            </CardText>
+              </CardText>
 
-            <CardActions style={styles.action}>
-              <RaisedButton label="login" onTouchTap={this.login} />
-            </CardActions>
+              <CardActions style={styles.action}>
+                <RaisedButton label="login" onTouchTap={this.login} />
+              </CardActions>
 
-          </Card>
+            </Card>
+          </div>
+
         </div>
-
-      </div>
+      )
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    session: state.session
+    session: state.session,
+    tenant: state.tenant
   };
 };
 

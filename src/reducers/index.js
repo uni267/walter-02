@@ -2,7 +2,6 @@ import { combineReducers } from "redux";
 
 // reducers
 import files from "./filesReducer";
-import fetchFiles from "./fetchFilesReducer";
 import dirs from "./dirsReducer";
 import snackbar from "./snackbarReducer";
 import searchFile from "./searchFileReducer";
@@ -16,10 +15,10 @@ import roles from "./rolesReducer";
 import selectedDir from "./selectedDirReducer";
 import session from "./sessionReducer";
 import loading from "./loadingReducer";
+import tenant from "./tenantReducer";
 
 const fileApp = combineReducers({
   files,
-  fetchFiles,
   dirs,
   snackbar,
   searchFile,
@@ -32,7 +31,8 @@ const fileApp = combineReducers({
   roles,
   selectedDir,
   session,
-  loading
+  loading,
+  tenant
 });
 
 export default fileApp;

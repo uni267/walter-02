@@ -150,3 +150,13 @@ export const requestLogin = (name, password) => ({
   name: name,
   password: password
 });
+
+export const requestHomeDir = (user_id) => ({
+  type: "REQUEST_HOME_DIR",
+  user_id
+});
+
+export const requestFetchFiles = (user_id) => ({
+  type: "REQUEST_FETCH_FILES",
+  user_id
+});

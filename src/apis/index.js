@@ -19,4 +19,16 @@ const getUsers = () => {
     .then( res => res );
 };
 
-export { login, getUsers };
+const fetchUserById = (user_id) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    }
+  };
+
+  return axios.get(`/api/v1/users/${user_id}`, config)
+    .then(res => res);
+};
+
+export { login, getUsers, fetchUserById };

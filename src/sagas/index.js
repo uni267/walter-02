@@ -2,7 +2,7 @@ import { delay } from "redux-saga";
 import { call, put, fork, take, cancel, race, select } from "redux-saga/effects";
 
 // api
-import { login, fetchFiles } from "../apis";
+import { login, fetchUserById } from "../apis";
 
 function* watchLogin() {
   while (true) {
@@ -10,11 +10,23 @@ function* watchLogin() {
     yield put({ type: "LOADING_START" });
 
     try {
+      // @todo テスト完了後に削除する
+      yield call(delay, 1500);
+
       const result = yield call(login, task.name, task.password);
       const { token } = result.data;
       localStorage.setItem("token", token);
 
       const message = result.data.status.message;
+
+      const user = yield call(fetchUserById, result.data.body.user_id);
+      const { home_dir_id, name } = user.data.body.tenant;
+
+      yield put({
+        type: "PUT_TENANT",
+        name: name,
+        dirId: home_dir_id
+      });
 
       yield put({
         type: "REQUEST_LOGIN_SUCCESS",
@@ -25,6 +37,7 @@ function* watchLogin() {
       yield put({ type: "LOADING_END" });
     }
     catch (e) {
+      console.log(e.response.data);
       const message = e.response.data.status.message;
       const errors = e.response.data.status.errors;
 
@@ -40,40 +53,8 @@ function* watchLogin() {
   }
 }
 
-function* watchFileFetch() {
-  while (true) {
-    const task = yield take("REQUEST_FETCH_FILES");
-    yield put({ type: "REQUEST_FETCH_FILES_START" });
-
-    try {
-      
-      yield put({ type: "REQUEST_FETCH_FILES_FINISH" });
-    }
-    catch (e) {
-      
-    }
-
-  }
-}
-
-function* watchHomeDir() {
-  while (true) {
-    const task = yield take("REQUEST_HOME_DIR");
-    yield put({ type: "REQUEST_HOME_DIR_START" });
-
-    try {
-      yield call(delay, 3000);
-      yield put({ type: "REQUEST_HOME_DIR_FINISH" });
-    }
-    catch (e) {
-    }
-  }
-}
-
 function* Saga() {
   yield fork(watchLogin);
-  yield fork(watchHomeDir);
-  yield fork(watchFileFetch);
 }
 
 export default Saga;
