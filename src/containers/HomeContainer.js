@@ -7,9 +7,6 @@ import { connect } from "react-redux";
 import NavigationContainer from "./NavigationContainer";
 import FileBoxContainer from "./FileBoxContainer";
 
-// actions
-import { requestHomeDir } from "../actions";
-
 class HomeContainer extends Component {
   constructor(props) {
     super(props);

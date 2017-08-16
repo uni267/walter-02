@@ -16,9 +16,7 @@ import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import IconMenu from "material-ui/IconMenu";
-import Dialog from "material-ui/Dialog";
 import TextField from "material-ui/TextField";
-import FlatButton from "material-ui/FlatButton";
 
 const style = {
   dir: {

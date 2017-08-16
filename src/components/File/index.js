@@ -12,14 +12,7 @@ import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import MenuItem from "material-ui/MenuItem";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-
-// components
-import Authority from "../Authority";
-import History from "../History";
-import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const style = {
   checkbox: {

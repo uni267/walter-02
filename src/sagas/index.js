@@ -1,5 +1,5 @@
 import { delay } from "redux-saga";
-import { call, put, fork, take, cancel, race, select } from "redux-saga/effects";
+import { call, put, fork, take } from "redux-saga/effects";
 
 // api
 import { login, fetchUserById } from "../apis";

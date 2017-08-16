@@ -11,7 +11,6 @@ import {
 } from 'material-ui/Card';
 import IconButton from "material-ui/IconButton";
 import RaisedButton from "material-ui/RaisedButton";
-import TextField from "material-ui/TextField";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 
