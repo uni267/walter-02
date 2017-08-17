@@ -11,7 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from "material-ui/AppBar";
 
 // actions
-import { requestLogin } from "../actions";
+import { requestLogin, requestLoginSuccess, putTenant } from "../actions";
 
 const styles = {
   wrapper: {
@@ -35,32 +35,28 @@ const styles = {
   }
 };
 
+// JWTを保持していない場合のみログイン画面を表示する
+// 保持している場合はstoreに認証情報をdispachする
 class LoginContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isAuth: false,
-      dirId: null
-    };
-  }
-
   componentWillMount() {
-    this.checkAuthenticate();
+    if (!this.props.session.login) this.userWillTransfer();
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.checkAuthenticate();
+  componentWillUpdate(nextProps) {
+    if (!this.props.session.login) this.userWillTransfer();
   }
 
-  checkAuthenticate = () => {
+  userWillTransfer() {
     const token = localStorage.getItem("token");
-    const dirId = localStorage.getItem("dirId");
+    const user_id = localStorage.getItem("userId");
+    const dir_id = localStorage.getItem("dirId");
+    const tenant_name = localStorage.getItem("tenantName");
 
-    this.setState({
-      isAuth: token !== undefined || token !== null,
-      dirId: dirId
-    });
-  };
+    if (token && user_id && dir_id && tenant_name) {
+      this.props.putTenant(tenant_name, dir_id);
+      this.props.requestLoginSuccess("success", user_id);
+    }
+  }
 
   login = () => {
     const name = this.refs.name.getValue();
@@ -77,8 +73,8 @@ class LoginContainer extends Component {
 
   render() {
     return (
-      this.state.isAuth ? (
-        <Redirect to={`/home/?dir_id=${this.state.dirId}`} />
+      this.props.session.login ? (
+        <Redirect to={`/home/?dir_id=${this.props.tenant.dirId}`} />
       ) : (
         <div>
           <AppBar title="cloud storage" />
@@ -130,7 +126,13 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestLogin: (name, password) => { dispatch(requestLogin(name, password)); }  
+  requestLogin: (name, password) => { dispatch(requestLogin(name, password)); },
+  requestLoginSuccess: (message, user_id) => {
+    dispatch(requestLoginSuccess(message, user_id));
+  },
+  putTenant: (name, dirId) => {
+    dispatch(putTenant(name, dirId));
+  }
 });
 
 LoginContainer = connect(

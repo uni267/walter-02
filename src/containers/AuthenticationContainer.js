@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 
 import { requestLoginSuccess, putTenant } from "../actions";
 
+// JWTを保持していない && store.sessionに認証情報がセットされていない
+// 場合のみログイン画面にリダイレクトする
 class AuthenticationContainer extends Component {
   componentWillMount() {
     if (!this.props.session.login) this.userWillTransfer();
