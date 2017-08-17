@@ -14,18 +14,20 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <LoadingContainer>
-          <Switch>
-            <Route exact path="/login" component={LoginContainer} />
-            <AuthenticationContainer>
-              <Switch>
-                <Route exact path="/" component={HomeContainer} />
-                <Route exact path="/home" component={HomeContainer} />
-                <Route path="/file-detail/:id" component={FileDetailContainer} />
-              </Switch>
-            </AuthenticationContainer>
-          </Switch>
-        </LoadingContainer>
+        <Switch>
+          <LoadingContainer>
+            <Switch>
+              <Route exact path="/login" component={LoginContainer} />
+              <AuthenticationContainer>
+                <Switch>
+                  <Route exact path="/" component={HomeContainer} />
+                  <Route exact path="/home" component={HomeContainer} />
+                  <Route path="/file-detail/:id" component={FileDetailContainer} />
+                </Switch>
+              </AuthenticationContainer>
+            </Switch>
+          </LoadingContainer>
+        </Switch>
       </BrowserRouter>
     );
   }
