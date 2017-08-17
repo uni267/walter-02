@@ -151,6 +151,18 @@ export const requestLogin = (name, password) => ({
   password: password
 });
 
+export const requestLoginSuccess = (message, user_id) => ({
+  type: "REQUEST_LOGIN_SUCCESS",
+  message,
+  user_id
+});
+
+export const putTenant = (name, dirId) => ({
+  type: "PUT_TENANT",
+  name,
+  dirId
+});
+
 export const requestHomeDir = (user_id) => ({
   type: "REQUEST_HOME_DIR",
   user_id
