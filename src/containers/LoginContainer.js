@@ -44,12 +44,23 @@ class LoginContainer extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.session.login) {
-      const dirId = nextProps.tenant.dirId;
-      this.setState({ isAuth: true, dirId: dirId });
-    }
+  componentWillMount() {
+    this.checkAuthenticate();
   }
+
+  componentWillReceiveProps(nextProps) {
+    this.checkAuthenticate();
+  }
+
+  checkAuthenticate = () => {
+    const token = localStorage.getItem("token");
+    const dirId = localStorage.getItem("dirId");
+
+    this.setState({
+      isAuth: token !== undefined || token !== null,
+      dirId: dirId
+    });
+  };
 
   login = () => {
     const name = this.refs.name.getValue();
