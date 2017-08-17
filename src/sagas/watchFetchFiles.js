@@ -10,7 +10,8 @@ function* watchFetchFiles() {
     yield put({ type: "LOADING_START" });
 
     try {
-      const files = yield call(fetchFiles, 0);
+      const files = yield call(fetchFiles, task.dir_id);
+      console.log(files.data.body);
       yield put({ type: "INIT_FILE", files: files.data.body });
       yield put({ type: "LOADING_END" });
     }

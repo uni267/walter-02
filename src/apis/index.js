@@ -7,18 +7,6 @@ const login = (name, password) => {
 
 };
 
-const getUsers = () => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
-    }
-  };
-
-  return axios.get("/api/v1/users", config)
-    .then( res => res );
-};
-
 const fetchUserById = (user_id) => {
   const token = localStorage.getItem("token");
   const config = {
@@ -31,4 +19,18 @@ const fetchUserById = (user_id) => {
     .then(res => res);
 };
 
-export { login, getUsers, fetchUserById };
+const fetchFiles = (dir_id) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    },
+    params: {
+      dir_id: dir_id
+    }
+  };
+
+  return axios.get("/api/v1/files", config).then(res => res);
+};
+
+export { login, fetchUserById, fetchFiles };

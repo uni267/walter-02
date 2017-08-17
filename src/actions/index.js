@@ -168,7 +168,7 @@ export const requestHomeDir = (user_id) => ({
   user_id
 });
 
-export const requestFetchFiles = (user_id) => ({
+export const requestFetchFiles = (dir_id) => ({
   type: "REQUEST_FETCH_FILES",
-  user_id
+  dir_id
 });
