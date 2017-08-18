@@ -93,7 +93,7 @@ class Dir extends Component {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const handleClick = () => {
-      this.props.history.push(`/home/?dir_id=${this.props.dir.id}`);
+      this.props.history.push(`/home/?dir_id=${this.props.dir._id}`);
     };
 
     const editable = (
@@ -107,10 +107,10 @@ class Dir extends Component {
       <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}
            onClick={handleClick} >
         <FileFolderOpen style={style.dir_icon} />
+        {this.props.dir.name}
         <Link
-          to={`/home/?dir_id=${this.props.dir.id}`}
+          to={`/home/?dir_id=${this.props.dir._id}`}
           style={{...style.dir, color}} >
-          {this.props.dir.name}
         </Link>
       </div>
     );

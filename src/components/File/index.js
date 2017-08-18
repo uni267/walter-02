@@ -104,7 +104,7 @@ class File extends Component {
     );
 
     const handleClick = () => {
-      this.props.history.push(`/file-detail/${this.props.file.id}`);
+      this.props.history.push(`/file-detail/${this.props.file._id}`);
     };
 
     const fileView = (
@@ -236,12 +236,12 @@ class File extends Component {
 
 File.propTypes = {
   history: PropTypes.object.isRequired,
-  dir_id: PropTypes.number.isRequired,
+  dir_id: PropTypes.string.isRequired,
   rowStyle: PropTypes.object.isRequired,
   cellStyle: PropTypes.object.isRequired,
   headers: PropTypes.array.isRequired,
   file: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
   }).isRequired,
   editFile: PropTypes.func.isRequired,

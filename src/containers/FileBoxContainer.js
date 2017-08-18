@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 // store
 import { connect } from "react-redux";
 
-// material grid
+// material ui
 import { Card } from 'material-ui/Card';
 
 // components
@@ -18,29 +18,27 @@ import FileSnackbar from "../components/FileSnackbar";
 import {
   triggerSnackbar,
   closeSnackbar,
-  searchFile
+  searchFile,
+  requestFetchFiles
 } from "../actions";
 
 class FileBoxContainer extends Component {
+  componentWillMount() {
+    this.props.requestFetchFiles(this.props.dir_id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.dir_id !== nextProps.dir_id) {
+      this.props.requestFetchFiles(nextProps.dir_id);
+    }
+  }
 
   render() {
-    let _files = this.props.files.slice();
-
-    if (this.props.searchWord.value.trim() !== '') {
-      const re = new RegExp(this.props.searchWord.value);
-
-      _files = this.props.files.filter(file => {
-        return file.name.match(re) !== null ||
-          file.modified.match(re) !== null;
-      }).filter(file => file.is_display);
-    }
-
     return (
       <Card>
         <div style={{display: "flex"}}>
           <div style={{width: "40%"}}>
             <DirBox
-              allFiles={this.props.allFiles}
               dirId={this.props.dir_id}
               dirs={this.props.dirs} />
           </div>
@@ -58,7 +56,7 @@ class FileBoxContainer extends Component {
             <FileListContainer
               dir_id={this.props.dir_id}
               history={this.props.history}
-              files={_files} />
+              files={this.props.files} />
 
           </div>
 
@@ -81,23 +79,25 @@ const mapStateToProps = (state, ownProps) => {
     snackbar: state.snackbar,
     searchWord: state.searchFile,
     fileSortTarget: state.fileSortTarget,
-    files: state.files.filter(f => f.is_display)
-      .filter(f => Number(f.dir_id) === Number(ownProps.dir_id)),
+    files: state.files,
     allFiles: state.files,
-    dirs: state.dirs
+    dirs: state.dirs,
+    session: state.session,
+    loading: state.loading
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   closeSnackbar: () => { dispatch(closeSnackbar()); },
-  searchFile: (value) => { dispatch(searchFile(value)); }
+  searchFile: (value) => { dispatch(searchFile(value)); },
+  requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); }
 });
 
 FileBoxContainer = connect(mapStateToProps, mapDispatchToProps)(FileBoxContainer);
 
 FileBoxContainer.propTypes = {
-  dir_id: PropTypes.number
+  dir_id: PropTypes.string
 };
 
 export default FileBoxContainer;

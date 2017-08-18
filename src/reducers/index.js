@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 
 // reducers
 import files from "./filesReducer";
+import file from "./fileReducer";
 import dirs from "./dirsReducer";
 import snackbar from "./snackbarReducer";
 import searchFile from "./searchFileReducer";
@@ -19,6 +20,7 @@ import tenant from "./tenantReducer";
 
 const fileApp = combineReducers({
   files,
+  file,
   dirs,
   snackbar,
   searchFile,

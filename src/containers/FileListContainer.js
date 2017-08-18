@@ -348,16 +348,16 @@ class FileListContainer extends Component {
     const { FILE } = NativeTypes;
 
     const filterAuthorityDir = (file) => 
-          file.id === this.state.authorityDirDialog.dir.id;
+          file.id === this.state.authorityDirDialog.dir._id;
 
     const filterAuthorityFile = (file) => 
-          file.id === this.state.authorityFileDialog.file.id;
+          file.id === this.state.authorityFileDialog.file._id;
 
     const filterHistoryDir = (file) => 
-          file.id === this.state.historyDirDialog.dir.id;
+          file.id === this.state.historyDirDialog.dir._id;
 
     const filterTagFile = (file) =>
-          file.id === this.state.tagFileDialog.file.id;
+          file.id === this.state.tagFileDialog.file._id;
 
     return (
       <div>
@@ -488,7 +488,7 @@ FileListContainer = connect(
 )(FileListContainer);
 
 FileListContainer.propTypes = {
-  dir_id: PropTypes.number.isRequired,
+  dir_id: PropTypes.string.isRequired,
   files: PropTypes.array.isRequired
 };
 

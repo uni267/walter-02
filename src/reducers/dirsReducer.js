@@ -1,6 +1,6 @@
 import DIRS from "../mock-dirs";
 
-const dirsReducer = (state = DIRS, action) => {
+const dirsReducer = (state = [], action) => {
 
   const walk = (tree) => {
 
@@ -66,6 +66,8 @@ const dirsReducer = (state = DIRS, action) => {
   };
 
   switch (action.type) {
+  case "INIT_DIR":
+    return action.dirs;
   case "DIR_TREE":
     return walk({ id: 0, children: []});
   case "DIR_ROUTE":
