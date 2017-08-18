@@ -13,6 +13,7 @@ function* watchLogin() {
     yield put({ type: "LOADING_START" });
 
     try {
+      yield call(delay, 500);
       const resLogin = yield call(login, task.name, task.password);
       const resUser = yield call(fetchUserById, resLogin.data.body.user_id);
 
@@ -34,6 +35,8 @@ function* watchLogin() {
         errors: errors
       });
 
+    }
+    finally {
       yield put({ type: "LOADING_END" });
     }
   }
