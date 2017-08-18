@@ -1,13 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+// store
+import { connect } from "react-redux";
+
 // material-ui
 import SelectField from "material-ui/SelectField";
 import Chip from "material-ui/Chip";
 import MenuItem from "material-ui/MenuItem";
 
-// mock
-import TAGS from "../../mock-tags";
+// actions
+import { requestFetchTags, requestAddTag, requestDelTag } from "../../actions";
 
 const styles = {
   row: {
@@ -21,13 +24,17 @@ const styles = {
 };
 
 class Tag extends Component {
+  componentDidMount() {
+    this.props.requestFetchTags();
+  }
+
   handleDelete = (file_id, tag) => {
-    this.props.deleteTag(file_id, tag);
+    this.props.requestDelTag(this.props.file, tag);
     this.props.triggerSnackbar("タグを削除しました");
   };
 
   handleChange = (event, index, value) => {
-    this.props.addTag(this.props.file.id, value);
+    this.props.requestAddTag(this.props.file, value);
     this.props.triggerSnackbar("タグを追加しました");
   };
 
@@ -50,10 +57,6 @@ class Tag extends Component {
   };
 
   render() {
-    const tags = TAGS.filter(
-      tag => !this.props.file.tags.map(t => t.id).includes(tag.id)
-    );
-
     return (
       <div>
         <div style={{...styles.row, display: "flex"}}>
@@ -64,7 +67,7 @@ class Tag extends Component {
           floatingLabelText="タグを追加"
           value={""}
           onChange={this.handleChange} >
-          {tags.map( (tag, idx) => this.renderMenuItem(tag, idx) )}
+          {this.props.tags.map( (tag, idx) => this.renderMenuItem(tag, idx) )}
         </SelectField>
       </div>
     );
@@ -79,4 +82,20 @@ Tag.propTypes = {
   triggerSnackbar: PropTypes.func.isRequired
 };
 
+const mapStateToProps = (state, ownProps) => {
+  return {
+    tags: state.tags.filter(tag => {
+      return !ownProps.file.tags.map( t => t._id ).includes(tag._id);
+    })
+  };
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  requestFetchTags: () => { dispatch(requestFetchTags()); },
+  requestAddTag: (file, tag) => { dispatch(requestAddTag(file, tag)); },
+  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); }
+});
+
+Tag = connect(mapStateToProps, mapDispatchToProps)(Tag);
+  
 export default Tag;

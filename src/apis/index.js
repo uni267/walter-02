@@ -58,4 +58,52 @@ const fetchDirs = (dir_id) => {
   return axios.get("/api/v1/dirs", config).then(res => res);
 };
 
-export { login, fetchUserById, fetchFiles, fetchFile, fetchDirs };
+const fetchTags = () => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    }
+  };
+
+  return axios.get("/api/v1/tags", config).then(res => res);
+};
+
+const fetchAddTag = (file, tag) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    }
+  };
+
+  return axios.post(`/api/v1/files/${file._id}/tags`, tag, config)
+    .then( res => res );
+
+};
+
+const fetchDelTag = (file, tag) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    }
+  };
+
+  const url = `/api/v1/files/${file._id}/tags/${tag._id}`;
+  console.log(url);
+  return axios.delete(url, config)
+    .then( res => res );
+
+};
+
+export {
+  login,
+  fetchUserById,
+  fetchFiles,
+  fetchFile,
+  fetchDirs,
+  fetchTags,
+  fetchAddTag,
+  fetchDelTag
+};

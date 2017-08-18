@@ -17,6 +17,7 @@ import selectedDir from "./selectedDirReducer";
 import session from "./sessionReducer";
 import loading from "./loadingReducer";
 import tenant from "./tenantReducer";
+import tags from "./tagsReducer";
 
 const fileApp = combineReducers({
   files,
@@ -34,7 +35,8 @@ const fileApp = combineReducers({
   selectedDir,
   session,
   loading,
-  tenant
+  tenant,
+  tags
 });
 
 export default fileApp;

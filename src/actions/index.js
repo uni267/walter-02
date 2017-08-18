@@ -177,3 +177,17 @@ export const requestFetchFile = (file_id) => ({
   type: "REQUEST_FETCH_FILE",
   file_id
 });
+
+export const requestFetchTags = () => ({
+  type: "REQUEST_FETCH_TAGS"
+});
+
+export const requestAddTag = (file, tag) => ({
+  type: "REQUEST_ADD_TAG",
+  file, tag
+});
+
+export const requestDelTag = (file, tag) => ({
+  type: "REQUEST_DEL_TAG",
+  file, tag
+});
