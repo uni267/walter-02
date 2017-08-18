@@ -103,7 +103,7 @@ class AddFileDialog extends Component {
 }
 
 AddFileDialog.propTypes = {
-  dir_id: PropTypes.number.isRequired,
+  dir_id: PropTypes.string.isRequired,
   filesBuffer: PropTypes.array.isRequired,
   pushFileToBuffer: PropTypes.func.isRequired,
   addFile: PropTypes.func.isRequired,

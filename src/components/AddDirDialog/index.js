@@ -124,7 +124,7 @@ class AddDirDialog extends Component {
 }
 
 AddDirDialog.propTypes = {
-  dir_id: PropTypes.number.isRequired,
+  dir_id: PropTypes.string.isRequired,
   roles: PropTypes.array.isRequired,
   users: PropTypes.array.isRequired,
   addAuthority: PropTypes.func.isRequired,

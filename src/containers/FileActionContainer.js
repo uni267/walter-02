@@ -104,7 +104,7 @@ FileActionContainer = connect(
 )(FileActionContainer);
 
 FileActionContainer.propTypes = {
-  dir_id: PropTypes.number.isRequired
+  dir_id: PropTypes.string.isRequired
 };
 
 export default FileActionContainer;
