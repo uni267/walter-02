@@ -19,10 +19,21 @@ import {
   deleteTag,
   addTag,
   addMetaInfo,
-  deleteMetaInfo
+  deleteMetaInfo,
+  requestFetchFile
 } from "../actions";
 
 class FileDetailContainer extends Component {
+  componentDidMount() {
+    this.props.requestFetchFile(this.props.match.params.id);
+  }
+
+  componentWillReciveProps(nextProps) {
+    if (this.props.match.params.id !== nextProps.match.params.id) {
+      this.props.requestFetchFile(nextProps.match.params.id);
+    }
+  }
+
   render() {
     return (
       <div>
@@ -51,7 +62,7 @@ class FileDetailContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    file: state.files.filter(f => f.id === Number(ownProps.match.params.id))[0],
+    file: state.file,
     roles: state.roles,
     users: state.users,
     snackbar: state.snackbar
@@ -70,7 +81,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteTag: (file_id, tag) => { dispatch(deleteTag(file_id, tag)); },
   addTag: (file_id, tag) => { dispatch(addTag(file_id, tag)); },
   addMetaInfo: (file, metaInfo) => { dispatch(addMetaInfo(file, metaInfo)); },
-  deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); }
+  deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); },
+  requestFetchFile: (file_id) => { dispatch(requestFetchFile(file_id)); }
 });
 
 FileDetailContainer = connect(

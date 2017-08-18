@@ -172,3 +172,8 @@ export const requestFetchFiles = (dir_id) => ({
   type: "REQUEST_FETCH_FILES",
   dir_id
 });
+
+export const requestFetchFile = (file_id) => ({
+  type: "REQUEST_FETCH_FILE",
+  file_id
+});

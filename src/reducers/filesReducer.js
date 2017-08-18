@@ -1,8 +1,11 @@
 import FILES from "../mock-files";
 import moment from "moment";
 
-const filesReducer = (state = FILES, action) => {
+const filesReducer = (state = [], action) => {
   switch ( action.type ) {
+
+  case "INIT_FILES":
+    return action.files;
 
   case "ADD_FILE":
     let next_file_id = state.slice().sort((a,b) => b.id - a.id)[0].id + 1;

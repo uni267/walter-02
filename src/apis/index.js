@@ -33,4 +33,29 @@ const fetchFiles = (dir_id) => {
   return axios.get("/api/v1/files", config).then(res => res);
 };
 
-export { login, fetchUserById, fetchFiles };
+const fetchFile = (file_id) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    }
+  };
+
+  return axios.get(`/api/v1/files/${file_id}`, config).then(res => res);
+};
+
+const fetchDirs = (dir_id) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    },
+    params: {
+      dir_id: dir_id
+    }
+  };
+
+  return axios.get("/api/v1/dirs", config).then(res => res);
+};
+
+export { login, fetchUserById, fetchFiles, fetchFile, fetchDirs };

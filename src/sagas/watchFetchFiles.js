@@ -17,10 +17,8 @@ function* watchFetchFiles() {
         call(fetchDirs, dir_id)
       ]);
 
-      yield put({ type: "INIT_FILE", files: files.data.body });
+      yield put({ type: "INIT_FILES", files: files.data.body });
       yield put({ type: "INIT_DIR", dirs: dirs.data.body });
-      const _dirs = yield select(state => state.dirs);
-      console.log(_dirs);
     }
     catch (e) {
       console.log(e);
