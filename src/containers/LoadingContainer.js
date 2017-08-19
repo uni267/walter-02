@@ -12,7 +12,7 @@ const styles = {
     paddingTop: "30%",
     width: "100%",
     height: "100%",
-    zIndex: 1000,
+    zIndex: 2000,
     backgroundColor: "#ddd",
     opacity: 0.5,
     textAlign: "center"
