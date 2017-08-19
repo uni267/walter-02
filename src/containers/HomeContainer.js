@@ -17,11 +17,7 @@ class HomeContainer extends Component {
     return (
       <div>
         <NavigationContainer />
-
-        <FileBoxContainer
-          dir_id={dirId}
-          history={this.props.history} />
-
+        <FileBoxContainer dir_id={dirId} />
       </div>
     );
   }

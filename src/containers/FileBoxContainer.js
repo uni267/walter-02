@@ -55,7 +55,6 @@ class FileBoxContainer extends Component {
 
             <FileListContainer
               dir_id={this.props.dir_id}
-              history={this.props.history}
               files={this.props.files} />
 
           </div>

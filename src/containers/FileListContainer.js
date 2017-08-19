@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+// router
+import { withRouter } from "react-router-dom";
+
 // store
 import { connect } from "react-redux";
 
@@ -485,4 +488,4 @@ FileListContainer.propTypes = {
   files: PropTypes.array.isRequired
 };
 
-export default withDragDropContext(FileListContainer);
+export default withRouter(withDragDropContext(FileListContainer));
