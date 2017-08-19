@@ -28,7 +28,7 @@ class FileDetailContainer extends Component {
     this.props.requestFetchFile(this.props.match.params.id);
   }
 
-  componentWillReciveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
       this.props.requestFetchFile(nextProps.match.params.id);
     }

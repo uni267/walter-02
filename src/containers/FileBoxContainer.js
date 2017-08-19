@@ -80,7 +80,6 @@ const mapStateToProps = (state, ownProps) => {
     searchWord: state.searchFile,
     fileSortTarget: state.fileSortTarget,
     files: state.files,
-    allFiles: state.files,
     dirs: state.dirs,
     session: state.session,
     loading: state.loading

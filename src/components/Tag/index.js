@@ -77,8 +77,6 @@ class Tag extends Component {
 
 Tag.propTypes = {
   file: PropTypes.object.isRequired,
-  addTag: PropTypes.func.isRequired,
-  deleteTag: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired
 };
 

@@ -44,9 +44,7 @@ import {
   searchFile,
   setSortTarget,
   toggleSortTarget,
-  sortFile,
-  addTag,
-  deleteTag
+  sortFile
 } from "../actions";
 
 const styles = {
@@ -440,10 +438,7 @@ class FileListContainer extends Component {
         <TagFileDialog
           open={this.state.tagFileDialog.open}
           handleClose={this.toggleTagFileDialog}
-          file={this.props.files.filter(filterTagFile)[0]}
-          addTag={this.props.addTag}
-          deleteTag={this.props.deleteTag}
-          triggerSnackbar={this.props.triggerSnackbar} />
+          file={this.state.tagFileDialog.file} />
 
       </div>
     );
@@ -477,9 +472,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFile: (keyword) => { dispatch(searchFile(keyword)); },
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
-  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
-  addTag: (file_id, tag) => { dispatch(addTag(file_id, tag)); },
-  deleteTag: (file_id, tag) => { dispatch(deleteTag(file_id, tag)); }
+  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); }
 });
 
 FileListContainer = connect(
