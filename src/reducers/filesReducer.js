@@ -103,12 +103,6 @@ const filesReducer = (state = [], action) => {
       return file;
     });
 
-  case "EDIT_FILE":
-    return state.map(file => {
-      return file.id === action.file.id ?
-        {...file, name: action.file.name} : file;
-    });
-
   case "SORT_FILE":
     let _state = state.slice();
 
