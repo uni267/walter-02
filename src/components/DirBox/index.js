@@ -32,7 +32,7 @@ class DirBox extends Component {
     } else {
       return (
         <div key={idx} style={styles.dir_list}>
-          <Link to={`/home?dir_id=${dir._id}`} style={styles.dir}>
+          <Link to={`/home/${dir._id}`} style={styles.dir}>
             {dir.name}
           </Link>
         </div>

@@ -93,7 +93,7 @@ class Dir extends Component {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
     const handleClick = () => {
-      this.props.history.push(`/home/?dir_id=${this.props.dir._id}`);
+      this.props.history.push(`/home/${this.props.dir._id}`);
     };
 
     const editable = (

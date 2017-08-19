@@ -74,7 +74,7 @@ class LoginContainer extends Component {
   render() {
     return (
       this.props.session.login ? (
-        <Redirect to={`/home/?dir_id=${this.props.tenant.dirId}`} />
+        <Redirect to={`/home/${this.props.tenant.dirId}`} />
       ) : (
         <div>
           <AppBar title="cloud storage" />

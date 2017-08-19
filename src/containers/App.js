@@ -21,7 +21,7 @@ class App extends Component {
               <AuthenticationContainer>
                 <Switch>
                   <Route exact path="/" component={HomeContainer} />
-                  <Route exact path="/home" component={HomeContainer} />
+                  <Route exact path="/home/:id" component={HomeContainer} />
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
                 </Switch>
               </AuthenticationContainer>
