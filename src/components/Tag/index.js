@@ -1,16 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-// store
-import { connect } from "react-redux";
-
 // material-ui
 import SelectField from "material-ui/SelectField";
 import Chip from "material-ui/Chip";
 import MenuItem from "material-ui/MenuItem";
-
-// actions
-import { requestFetchTags, requestAddTag, requestDelTag } from "../../actions";
 
 const styles = {
   row: {
@@ -23,77 +17,61 @@ const styles = {
   }
 };
 
-class Tag extends Component {
-  componentDidMount() {
-    this.props.requestFetchTags();
-  }
+const Tag = ({
+  file,
+  tags,
+  requestDelTag,
+  requestAddTag,
+  triggerSnackbar
+}) => {
 
-  handleDelete = (file_id, tag) => {
-    this.props.requestDelTag(this.props.file, tag);
-    this.props.triggerSnackbar("タグを削除しました");
+  const handleDelete = (file_id, tag) => {
+    requestDelTag(file, tag);
+    triggerSnackbar("タグを削除しました");
   };
 
-  handleChange = (event, index, value) => {
-    this.props.requestAddTag(this.props.file, value);
-    this.props.triggerSnackbar("タグを追加しました");
+  const handleChange = (event, index, value) => {
+    requestAddTag(file, value);
+    triggerSnackbar("タグを追加しました");
   };
 
-  renderTag = (tag, idx) => {
+  const renderTag = (tag, idx) => {
     return (
       <Chip
         key={idx}
         style={{marginLeft: 10}}
-        onRequestDelete={() => this.handleDelete(this.props.file.id, tag)}
+        onRequestDelete={() => handleDelete(file.id, tag)}
         >
         {tag.label}
       </Chip>
     );
   };
 
-  renderMenuItem = (tag, idx) => {
+  const renderMenuItem = (tag, idx) => {
     return (
       <MenuItem key={idx} value={tag} primaryText={tag.label} />
     );
   };
 
-  render() {
-    return (
-      <div>
-        <div style={{...styles.row, display: "flex"}}>
-          {this.props.file.tags.map( (tag, idx) => this.renderTag(tag, idx) )}
-        </div>
-
-        <SelectField
-          floatingLabelText="タグを追加"
-          value={""}
-          onChange={this.handleChange} >
-          {this.props.tags.map( (tag, idx) => this.renderMenuItem(tag, idx) )}
-        </SelectField>
+  return (
+    <div>
+      <div style={{...styles.row, display: "flex"}}>
+        {file.tags.map( (tag, idx) => renderTag(tag, idx) )}
       </div>
-    );
-  }
 
-}
+      <SelectField
+        floatingLabelText="タグを追加"
+        value={""}
+        onChange={handleChange} >
+        {tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
+      </SelectField>
+    </div>
+  );
+};
 
 Tag.propTypes = {
   file: PropTypes.object.isRequired,
   triggerSnackbar: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    tags: state.tags.filter(tag => {
-      return !ownProps.file.tags.map( t => t._id ).includes(tag._id);
-    })
-  };
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchTags: () => { dispatch(requestFetchTags()); },
-  requestAddTag: (file, tag) => { dispatch(requestAddTag(file, tag)); },
-  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); }
-});
-
-Tag = connect(mapStateToProps, mapDispatchToProps)(Tag);
-  
 export default Tag;
