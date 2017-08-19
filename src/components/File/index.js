@@ -96,6 +96,7 @@ class File extends Component {
       <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}>
         
         <TextField
+          id={this.props.file._id}
           ref="fileName"
           defaultValue={this.props.file.name}
           onKeyDown={e => e.key === "Enter" ? changeFileName() : null} />
