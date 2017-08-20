@@ -38,7 +38,7 @@ import {
   moveFile,
   copyFile,
   deleteFile,
-  editFile,
+  editFileByIndex,
   triggerSnackbar,
   toggleStar,
   addAuthority,
@@ -312,7 +312,7 @@ class FileListContainer extends Component {
         cellStyle={cellStyle}
         headers={headers}
         triggerSnackbar={this.props.triggerSnackbar}
-        editDir={this.props.editFile}
+        editDir={this.props.editFileByIndex}
         handleMoveDir={this.toggleMoveDirDialog}
         handleCopyDir={this.toggleCopyDirDialog}
         handleDeleteDir={this.toggleDeleteDirDialog}
@@ -330,7 +330,7 @@ class FileListContainer extends Component {
         cellStyle={cellStyle}
         headers={headers}
         file={file}
-        editFile={this.props.editFile}
+        editFileByIndex={this.props.editFileByIndex}
         moveFile={this.props.moveFile}
         triggerSnackbar={this.props.triggerSnackbar}
         requestFetchFiles={this.props.requestFetchFiles}
@@ -465,7 +465,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   copyFile: (dir_id, file) => { dispatch(copyFile(dir_id, file)); },
   deleteFile: (file) => { dispatch(deleteFile(file)); },
   deleteDirTree: (dir) => { dispatch(deleteDirTree(dir)); },
-  editFile: (file) => { dispatch(editFile(file)); },
+  editFileByIndex: (file) => { dispatch(editFileByIndex(file)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   toggleStar: (file) => { dispatch(toggleStar(file)); },
   addAuthority: (file_id, user, role) => {

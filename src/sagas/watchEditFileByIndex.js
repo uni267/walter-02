@@ -6,7 +6,7 @@ import { editFile, fetchFiles } from "../apis";
 
 function* watchEditFileByIndex() {
   while (true) {
-    const { file, refresh } = yield take("EDIT_FILE");
+    const { file, refresh } = yield take("EDIT_FILE_BY_INDEX");
 
     try {
       yield put({ type: "LOADING_START" });

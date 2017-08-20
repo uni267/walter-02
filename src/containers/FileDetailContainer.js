@@ -34,7 +34,7 @@ import {
   addAuthority,
   deleteAuthority,
   triggerSnackbar,
-  editFile,
+  editFileByView,
   addMetaInfo,
   deleteMetaInfo,
   requestFetchFile,
@@ -102,7 +102,7 @@ class FileDetailContainer extends Component {
       return;
     }
 
-    this.props.editFile({ ...this.props.file, name: fileName });
+    this.props.editFileByView({ ...this.props.file, name: fileName });
     this.props.requestFetchFile(this.props.file._id);
     this.setState({ editBasic: { open: false } });
     this.props.triggerSnackbar("ファイル名を変更しました");
@@ -340,7 +340,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteAuthority: (file_id, authority_id) => {
     dispatch(deleteAuthority(file_id, authority_id));
   },
-  editFile: (file) => { dispatch(editFile(file)); },
+  editFileByView: (file) => { dispatch(editFileByView(file)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   addMetaInfo: (file, metaInfo) => { dispatch(addMetaInfo(file, metaInfo)); },
   deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); },

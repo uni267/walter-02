@@ -87,7 +87,7 @@ class File extends Component {
         return;
       }
 
-      this.props.editFile({ ...this.props.file, name: fileName });
+      this.props.editFileByIndex({ ...this.props.file, name: fileName });
       this.setState({ editFile: { open: false } });
       this.props.triggerSnackbar("ファイル名を変更しました");
     };
@@ -245,7 +245,7 @@ File.propTypes = {
     _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
   }).isRequired,
-  editFile: PropTypes.func.isRequired,
+  editFileByIndex: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired,
   toggleStar: PropTypes.func.isRequired,
   handleAuthorityFile: PropTypes.func.isRequired,

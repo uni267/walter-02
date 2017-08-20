@@ -68,8 +68,13 @@ export const deleteFile = (file) => ({
   file: file
 });
 
-export const editFile = (file) => ({
-  type: "EDIT_FILE",
+export const editFileByView = (file) => ({
+  type: "EDIT_FILE_BY_VIEW",
+  file
+});
+
+export const editFileByIndex = (file) => ({
+  type: "EDIT_FILE_BY_INDEX",
   file
 });
 
