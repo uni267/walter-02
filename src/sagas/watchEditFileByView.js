@@ -2,17 +2,17 @@ import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
 // api
-import { fetchFile } from "../apis";
+import { editFile, fetchFile } from "../apis";
 
-function* watchFetchFile() {
-
+function* watchEditFileByView() {
   while (true) {
-    const { file_id } = yield take("REQUEST_FETCH_FILE");
-    yield put({ type: "LOADING_START" });
+    const { file, refresh } = yield take("EDIT_FILE");
 
     try {
+      yield put({ type: "LOADING_START" });
       yield call(delay, 1000);
-      const payload = yield call(fetchFile, file_id);
+      yield call(editFile, file);
+      const payload = yield call(fetchFile, file._id);
       yield put({ type: "INIT_FILE", file: payload.data.body });
     }
     catch (e) {
@@ -22,7 +22,6 @@ function* watchFetchFile() {
       yield put({ type: "LOADING_END" });
     }
   }
-
 }
 
-export default watchFetchFile;
+export default watchEditFileByView;

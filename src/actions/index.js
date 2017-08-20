@@ -70,7 +70,7 @@ export const deleteFile = (file) => ({
 
 export const editFile = (file) => ({
   type: "EDIT_FILE",
-  file: file
+  file
 });
 
 export const toggleStar = (file) => ({

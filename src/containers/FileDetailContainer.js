@@ -103,6 +103,7 @@ class FileDetailContainer extends Component {
     }
 
     this.props.editFile({ ...this.props.file, name: fileName });
+    this.props.requestFetchFile(this.props.file._id);
     this.setState({ editBasic: { open: false } });
     this.props.triggerSnackbar("ファイル名を変更しました");
   }

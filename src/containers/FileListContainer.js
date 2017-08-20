@@ -47,7 +47,8 @@ import {
   searchFile,
   setSortTarget,
   toggleSortTarget,
-  sortFile
+  sortFile,
+  requestFetchFiles
 } from "../actions";
 
 const styles = {
@@ -332,6 +333,7 @@ class FileListContainer extends Component {
         editFile={this.props.editFile}
         moveFile={this.props.moveFile}
         triggerSnackbar={this.props.triggerSnackbar}
+        requestFetchFiles={this.props.requestFetchFiles}
         toggleStar={this.props.toggleStar}
         handleAuthorityFile={this.toggleAuthorityFileDialog}
         handleDeleteFile={this.toggleDeleteFileDialog}
@@ -475,7 +477,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFile: (keyword) => { dispatch(searchFile(keyword)); },
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
-  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); }
+  sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
+  requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); }
 });
 
 FileListContainer = connect(

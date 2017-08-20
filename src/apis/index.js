@@ -97,6 +97,18 @@ const fetchDelTag = (file, tag) => {
 
 };
 
+const editFile = (file) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": "Bearer " + token
+    }
+  };
+
+  return axios.put(`/api/v1/files/${file._id}`, file, config)
+    .then( res => res );
+};
+
 export {
   login,
   fetchUserById,
@@ -105,5 +117,6 @@ export {
   fetchDirs,
   fetchTags,
   fetchAddTag,
-  fetchDelTag
+  fetchDelTag,
+  editFile
 };
