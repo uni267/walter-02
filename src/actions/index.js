@@ -196,3 +196,16 @@ export const requestDelTag = (file, tag) => ({
   type: "REQUEST_DEL_TAG",
   file, tag
 });
+
+export const requestChangePassword = (current_password, new_password) => ({
+  type: "REQUEST_CHANGE_PASSWORD",
+  current_password, new_password
+});
+
+export const loadingEnd = () => ({
+  type: "LOADING_END"
+});
+
+export const toggleChangePasswordDialog = () => ({
+  type: "TOGGLE_CHANGE_PASSWORD_DIALOG"
+});

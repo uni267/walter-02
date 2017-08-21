@@ -105,7 +105,21 @@ const editFile = (file) => {
     }
   };
 
-  return axios.put(`/api/v1/files/${file._id}`, file, config)
+  return axios.patch(`/api/v1/files/${file._id}`, file, config)
+    .then( res => res );
+};
+
+const changePassword = (current_password, new_password) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  const user_id = localStorage.getItem("userId");
+  const body = { current_password, new_password };
+  return axios.patch(`/api/v1/users/${user_id}/password`, body, config)
     .then( res => res );
 };
 
@@ -118,5 +132,6 @@ export {
   fetchTags,
   fetchAddTag,
   fetchDelTag,
-  editFile
+  editFile,
+  changePassword
 };

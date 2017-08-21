@@ -3,6 +3,12 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
+// actions
+import { 
+  requestChangePassword,
+  toggleChangePasswordDialog
+} from "../actions";
+
 // components
 import AccountDialog from "../components/Account/AccountDialog";
 import AppMenu from "../components/AppMenu";
@@ -21,9 +27,6 @@ class NavigationContainer extends Component {
     this.state = {
       menu: {
         open: false
-      },
-      account: {
-        open: false
       }
     };
   }
@@ -36,19 +39,13 @@ class NavigationContainer extends Component {
     });
   };
 
-  toggleAccount = () => {
-    this.setState({
-      account: { open: !this.state.account.open }
-    });
-  };
-
   render() {
     return (
       <div>
         <AppNavBar
           appTitle={appTitle}
           notifications={this.props.notifications}
-          handleAccountOpen={this.toggleAccount}
+          handleAccountOpen={this.props.toggleChangePasswordDialog}
           toggleMenu={this.toggleAppMenu} />
 
         <AppMenu
@@ -58,8 +55,9 @@ class NavigationContainer extends Component {
           />
 
         <AccountDialog
-          open={this.state.account.open}
-          handleClose={this.toggleAccount} />
+          changePasswordStore={this.props.changePassword}
+          handleClose={this.props.toggleChangePasswordDialog}
+          requestChangePassword={this.props.requestChangePassword} />
 
       </div>
     );
@@ -69,11 +67,15 @@ class NavigationContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     notifications: state.notifications,
-    session: state.session
+    changePassword: state.changePassword
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+  requestChangePassword: (current_password, new_password) => {
+    dispatch(requestChangePassword(current_password, new_password));
+  },
+  toggleChangePasswordDialog: () => { dispatch(toggleChangePasswordDialog()); }
 });
 
 NavigationContainer = connect(

@@ -68,7 +68,7 @@ const AppNavBar = ({
           <MenuItem primaryText="user01" leftIcon={avatarIcon} disabled={true} />
           <Divider />
           <MenuItem
-            primaryText="アカウント情報変更"
+            primaryText="パスワード変更"
             onTouchTap={handleAccountOpen} />
           <Divider />
           <MenuItem primaryText="ログアウト" />

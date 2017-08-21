@@ -18,6 +18,7 @@ import session from "./sessionReducer";
 import loading from "./loadingReducer";
 import tenant from "./tenantReducer";
 import tags from "./tagsReducer";
+import changePassword from "./changePasswordReducer";
 
 const fileApp = combineReducers({
   files,
@@ -36,7 +37,8 @@ const fileApp = combineReducers({
   session,
   loading,
   tenant,
-  tags
+  tags,
+  changePassword
 });
 
 export default fileApp;
