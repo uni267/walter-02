@@ -11,7 +11,7 @@ const fetchUserById = (user_id) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     }
   };
 
@@ -23,7 +23,7 @@ const fetchFiles = (dir_id) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     },
     params: {
       dir_id: dir_id
@@ -37,7 +37,7 @@ const fetchFile = (file_id) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     }
   };
 
@@ -48,7 +48,7 @@ const fetchDirs = (dir_id) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     },
     params: {
       dir_id: dir_id
@@ -62,7 +62,7 @@ const fetchTags = () => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     }
   };
 
@@ -73,7 +73,7 @@ const fetchAddTag = (file, tag) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     }
   };
 
@@ -86,7 +86,7 @@ const fetchDelTag = (file, tag) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     }
   };
 
@@ -101,7 +101,7 @@ const editFile = (file) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
-      "X-Auth-Cloud-Storage": "Bearer " + token
+      "X-Auth-Cloud-Storage": token
     }
   };
 

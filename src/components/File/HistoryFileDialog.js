@@ -17,7 +17,7 @@ const HistoryFileDialog = ({
     <FlatButton
       label="close"
       primary={false}
-      onTouchTap={handleClose}
+      onTouchTap={() => handleClose()}
       />
   );
 
@@ -32,12 +32,10 @@ const HistoryFileDialog = ({
       title="履歴"
       open={open}
       modal={false}
+      autoScrollBodyContent={true}
       actions={actions} >
 
-      {file.histories !== undefined
-        ? file.histories.map( (history, idx) => render(history, idx))
-        : null
-      }
+      {file.histories.map( (history, idx) => render(history, idx))}
 
     </Dialog>
     

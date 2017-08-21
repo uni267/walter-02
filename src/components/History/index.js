@@ -13,9 +13,8 @@ class History extends Component {
         <CardTitle
           subtitle={history.modified} />
         <CardText>
-          {history.user.name}さんが、
-          {history.action}をしました。
-          {history.body}でした。
+          <p>{history.user.name}さんが、{history.action}をしました。</p>
+          <p>{history.body}です。</p>
         </CardText>
         <CardActions>
           <RaisedButton label="ダウンロード" onTouchTap={() => console.log("fire")} />

@@ -81,6 +81,10 @@ const headers = [
   {key: false, width: "10%", label: "Action"},
 ];
 
+const fileType = {
+  histories: []
+};
+
 class FileListContainer extends Component {
   constructor(props) {
     super(props);
@@ -121,7 +125,7 @@ class FileListContainer extends Component {
       },
       historyFileDialog: {
         open: false,
-        file: {}
+        file: fileType
       },
       tagFileDialog: {
         open: false,
@@ -247,7 +251,7 @@ class FileListContainer extends Component {
     });
   };
 
-  toggleHistoryFileDialog = (file = {}) => {
+  toggleHistoryFileDialog = (file = fileType) => {
     this.setState({
       historyFileDialog: {
         open: !this.state.historyFileDialog.open,
