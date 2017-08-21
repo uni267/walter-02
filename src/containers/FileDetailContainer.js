@@ -327,9 +327,7 @@ const mapStateToProps = (state, ownProps) => {
     roles: state.roles,
     users: state.users,
     snackbar: state.snackbar,
-    tags: state.tags.filter(tag => {
-      return !state.file.tags.map( t => t._id ).includes(tag._id);
-    })
+    tags: state.tags
   };
 };
 

@@ -9,12 +9,20 @@ import FlatButton from "material-ui/FlatButton";
 import Dialog from "material-ui/Dialog";
 import Tag from "../Tag";
 
-import { requestFetchFile, triggerSnackbar } from "../../actions";
+import {
+  requestFetchFile,
+  triggerSnackbar,
+  requestAddTag,
+  requestDelTag,
+  requestFetchTags
+} 
+from "../../actions";
 
 class TagFileDialog extends Component {
   componentWillReceiveProps(nextProps) {
-    if (nextProps.open) {
+    if (nextProps.open && !this.props.open) {
       this.props.requestFetchFile(nextProps.file._id);
+      this.props.requestFetchTags();
     }
   }
 
@@ -36,6 +44,9 @@ class TagFileDialog extends Component {
 
         <Tag 
           file={this.props.fetchedFile}
+          tags={this.props.tags}
+          requestDelTag={this.props.requestDelTag}
+          requestAddTag={this.props.requestAddTag}
           triggerSnackbar={this.props.triggerSnackbar} />
 
       </Dialog>
@@ -45,13 +56,17 @@ class TagFileDialog extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    fetchedFile: state.file
+    fetchedFile: state.file,
+    tags: state.tags
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchFile: (file_id) => { dispatch(requestFetchFile(file_id)); },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); }
+  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
+  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); },
+  requestAddTag: (file, value) => { dispatch(requestAddTag(file, value)); },
+  requestFetchTags: () => { dispatch(requestFetchTags()); }
 });
 
 TagFileDialog.propTypes = {

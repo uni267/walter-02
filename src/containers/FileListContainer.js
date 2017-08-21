@@ -82,7 +82,8 @@ const headers = [
 ];
 
 const fileType = {
-  histories: []
+  histories: [],
+  tags: []
 };
 
 class FileListContainer extends Component {
@@ -129,7 +130,7 @@ class FileListContainer extends Component {
       },
       tagFileDialog: {
         open: false,
-        file: {}
+        file: fileType
       }
     };
   }
@@ -260,7 +261,7 @@ class FileListContainer extends Component {
     });
   };
 
-  toggleTagFileDialog = (file = {}) => {
+  toggleTagFileDialog = (file = fileType) => {
     this.setState({
       tagFileDialog: {
         open: !this.state.tagFileDialog.open,

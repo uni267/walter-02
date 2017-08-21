@@ -53,6 +53,8 @@ const Tag = ({
     );
   };
 
+  const _tags = tags.filter(tag => !file.tags.map( t => t._id ).includes(tag._id));
+
   return (
     <div>
       <div style={{...styles.row, display: "flex"}}>
@@ -63,7 +65,7 @@ const Tag = ({
         floatingLabelText="タグを追加"
         value={""}
         onChange={handleChange} >
-        {tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
+        {_tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
       </SelectField>
     </div>
   );
@@ -71,6 +73,9 @@ const Tag = ({
 
 Tag.propTypes = {
   file: PropTypes.object.isRequired,
+  tags: PropTypes.array.isRequired,
+  requestDelTag: PropTypes.func.isRequired,
+  requestAddTag: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired
 };
 
