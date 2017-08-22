@@ -15,6 +15,7 @@ function* watchChangePassword() {
 
       yield call(changePassword, current_password, new_password);
       yield put({ type: "CHANGE_PASSWORD_SUCCESS" });
+      yield put({ type: "TRIGGER_SNACK", message: "パスワードを変更しました" });
     }
     catch (e) {
       const { errors } = e.response.data.status;
