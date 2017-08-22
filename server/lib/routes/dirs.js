@@ -1,6 +1,8 @@
 import { Router } from "express";
 import moment from "moment";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+
 import { SECURITY_CONF } from "../../configs/server";
 import Dir from "../models/Dir";
 import File from "../models/File";
@@ -60,6 +62,7 @@ router.post("/", (req, res, next) => {
       },
       body: {}
     });
+    return;
   }
 
   // フォルダ情報を構築
@@ -78,15 +81,27 @@ router.post("/", (req, res, next) => {
   const { token } = req.body;
   const { secretKey } = SECURITY_CONF.development;
 
-  new Promise( (resolve, reject) => {
-    jwt.verify(token, secretKey, (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded);
-      }
-    });
-  })
+  const validationConditions = {
+    name: dir_name,
+    is_dir: true,
+    dir_id: mongoose.Types.ObjectId(dir_id)
+  };
+
+  File.find(validationConditions)
+    .then( files => {
+      if (files.length > 0) throw "name is duplication";
+
+      return new Promise( (resolve, reject) => {
+        jwt.verify(token, secretKey, (err, decoded) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(decoded);
+          }
+        });
+      });
+
+    })
     .then( decoded => {
       const user = decoded._doc;
       delete user.password;
@@ -151,7 +166,27 @@ router.post("/", (req, res, next) => {
       });
     })
     .catch( err => {
-      res.status(500).json(err);
+      console.log(err);
+      if (err === "name is duplication") {
+        res.status(400).json({
+          status: {
+            success: false,
+            message: "既に同じ名前のフォルダが存在します",
+            errors: { dirName: "既に同じ名前のフォルダが存在します" }
+          },
+          body: {}
+        });
+      }
+      else {
+        res.status(500).json({
+          status: {
+            success: false,
+            message: "exception",
+            errors: err
+          },
+          body: {}
+        });
+      }
     });
 
 });
