@@ -30,7 +30,7 @@ router.post("/", (req, res, next) => {
 
       const { secretKey } = SECURITY_CONF.development;
       const token = jwt.sign(user, secretKey, { expiresIn: "24h" });
-                              
+
       res.json({
         status: { success: true, message: "ログインに成功しました" },
         token: token,

@@ -22,6 +22,8 @@ const sessionReducer = (state = initialState, action) => {
       message: action.message,
       errors: action.errors
     };
+  case "LOGOUT":
+    return initialState;
   default:
     return state;
   }

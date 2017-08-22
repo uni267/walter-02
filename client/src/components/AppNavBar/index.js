@@ -27,7 +27,8 @@ const AppNavBar = ({
   appTitle,
   toggleMenu,
   notifications,
-  handleAccountOpen
+  handleAccountOpen,
+  handleLogout
 }) => {
   const renderRightElements = () => {
     const notificationIcon = (
@@ -71,7 +72,9 @@ const AppNavBar = ({
             primaryText="パスワード変更"
             onTouchTap={handleAccountOpen} />
           <Divider />
-          <MenuItem primaryText="ログアウト" />
+          <MenuItem
+            onTouchTap={handleLogout}
+            primaryText="ログアウト" />
         </IconMenu>
       </div>
     );
