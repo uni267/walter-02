@@ -3,9 +3,8 @@ export const toggleAddDir = () => ({
 });
 
 export const createDir = (dir_id, dir_name) => ({
-  type: "ADD_DIR",
-  dir_id,
-  name: dir_name
+  type: "CREATE_DIR",
+  dir_id, dir_name
 });
 
 export const triggerSnackbar = (message) => ({
@@ -98,16 +97,6 @@ export const deleteAuthority = (file_id, authority_id) => ({
   type: "DELETE_AUTHORITY",
   file_id,
   authority_id
-});
-
-export const dirRoute = (dir) => ({
-  type: "DIR_TREE"
-});
-
-export const createDirTree = (parent, dir) => ({
-  type: "ADD_DIR_TREE",
-  parent,
-  dir
 });
 
 export const deleteDirTree = (dir) => ({
@@ -209,3 +198,12 @@ export const loadingEnd = () => ({
 export const toggleChangePasswordDialog = () => ({
   type: "TOGGLE_CHANGE_PASSWORD_DIALOG"
 });
+
+export const logout = () => ({
+  type: "LOGOUT"
+});
+
+export const toggleCreateDir = () => ({
+  type: "TOGGLE_CREATE_DIR"
+});
+

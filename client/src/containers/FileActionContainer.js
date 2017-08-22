@@ -21,7 +21,7 @@ import AddDirDialog from "../components/AddDirDialog";
 // actions
 import {
   createDir,
-  createDirTree,
+  toggleCreateDir,
   triggerSnackbar,
   pushFileToBuffer,
   clearFilesBuffer,
@@ -47,17 +47,19 @@ class FileActionContainer extends Component {
             triggerSnackbar={this.props.triggerSnackbar}
             clearFilesBuffer={this.props.clearFilesBuffer}
             />
+
           <AddDirDialog
             dir_id={this.props.dir_id}
             roles={this.props.roles}
             users={this.props.users}
             addAuthority={this.props.addAuthority}
             deleteAuthority={this.props.deleteAuthority}
-            allDirs={this.props.allDirs}
-            createDir={this.props.createDir}
-            createDirTree={this.props.createDirTree}
             triggerSnackbar={this.props.triggerSnackbar}
+            toggleCreateDir={this.props.toggleCreateDir}
+            createDir={this.props.createDir}
+            createDirState={this.props.createDirState}
             />
+
           <Link to={"/home/?dir_id=9999"} style={{textDecoration: "none"}}>
             <MenuItem
               primaryText="ごみ箱"
@@ -73,17 +75,14 @@ class FileActionContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     filesBuffer: state.filesBuffer,
-    allDirs: state.files.filter(file => file.is_dir),
     roles: state.roles,
-    users: state.users
+    users: state.users,
+    createDirState: state.createDir
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   createDir: (dir_name) => { dispatch(createDir(ownProps.dir_id, dir_name)); },
-  createDirTree: (dir) => {
-    dispatch(createDirTree({id: Number(ownProps.dir_id)}, dir));
-  },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   pushFileToBuffer: (dir_id, file_name) => { 
     dispatch(pushFileToBuffer(dir_id, file_name));
@@ -95,7 +94,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   deleteAuthority: (file_id, authority_id) => {
     dispatch(deleteAuthority(file_id, authority_id));
-  }
+  },
+  toggleCreateDir: () => { dispatch(toggleCreateDir()); }
 });
 
 FileActionContainer = connect(

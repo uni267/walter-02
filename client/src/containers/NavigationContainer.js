@@ -1,12 +1,17 @@
 import React, { Component } from "react";
 
+// router
+import { withRouter } from "react-router-dom";
+
 // store
 import { connect } from "react-redux";
 
 // actions
 import { 
   requestChangePassword,
-  toggleChangePasswordDialog
+  toggleChangePasswordDialog,
+  logout,
+  triggerSnackbar
 } from "../actions";
 
 // components
@@ -39,6 +44,16 @@ class NavigationContainer extends Component {
     });
   };
 
+  handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("tenantName");
+    localStorage.removeItem("dirId");
+    localStorage.removeItem("token");
+    this.props.logout();
+    this.props.triggerSnackbar("ログアウトしました");
+    this.props.history.push("/login");
+  };
+
   render() {
     return (
       <div>
@@ -46,6 +61,7 @@ class NavigationContainer extends Component {
           appTitle={appTitle}
           notifications={this.props.notifications}
           handleAccountOpen={this.props.toggleChangePasswordDialog}
+          handleLogout={this.handleLogout}
           toggleMenu={this.toggleAppMenu} />
 
         <AppMenu
@@ -75,7 +91,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestChangePassword: (current_password, new_password) => {
     dispatch(requestChangePassword(current_password, new_password));
   },
-  toggleChangePasswordDialog: () => { dispatch(toggleChangePasswordDialog()); }
+  toggleChangePasswordDialog: () => { dispatch(toggleChangePasswordDialog()); },
+  logout: () => { dispatch(logout()); },
+  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); }
 });
 
 NavigationContainer = connect(
@@ -83,4 +101,4 @@ NavigationContainer = connect(
   mapDispatchToProps
 )(NavigationContainer);
 
-export default NavigationContainer;
+export default withRouter(NavigationContainer);

@@ -19,6 +19,7 @@ import loading from "./loadingReducer";
 import tenant from "./tenantReducer";
 import tags from "./tagsReducer";
 import changePassword from "./changePasswordReducer";
+import createDir from "./createDirReducer";
 
 const fileApp = combineReducers({
   files,
@@ -38,7 +39,8 @@ const fileApp = combineReducers({
   loading,
   tenant,
   tags,
-  changePassword
+  changePassword,
+  createDir
 });
 
 export default fileApp;

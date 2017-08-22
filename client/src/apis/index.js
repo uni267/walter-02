@@ -123,6 +123,20 @@ const changePassword = (current_password, new_password) => {
     .then( res => res );
 };
 
+const createDir = (dir_id, dir_name) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  const body = { dir_id, dir_name, token };
+
+  return axios.post(`/api/v1/dirs`, body, config)
+    .then( res => res );
+};
+
 export {
   login,
   fetchUserById,
@@ -133,5 +147,6 @@ export {
   fetchAddTag,
   fetchDelTag,
   editFile,
-  changePassword
+  changePassword,
+  createDir
 };

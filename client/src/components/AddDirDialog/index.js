@@ -15,7 +15,6 @@ class AddDirDialog extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addDir: { open: false },
       addAuthority: { open: false }
     };
   }
@@ -23,20 +22,7 @@ class AddDirDialog extends Component {
   onCreateClick = (e) => {
     e.preventDefault();
     const dir_name = this.refs.dirName.getValue();
-
-    if (dir_name === "") {
-      this.setState({ addDir: { open: false } });
-      return;
-    }
-
     this.props.createDir(dir_name);
-    this.props.createDirTree({
-      id: this.props.allDirs.sort( (a, b) => a.id < b.id )[0].id + 1
-    });
-
-    this.setState({ addDir: { open: false } });
-    this.props.triggerSnackbar(`${dir_name}を作成しました`);
-    this.setState({ addAuthority: { open: true } });
   };
 
   renderCreateDirDialog = () => {
@@ -44,8 +30,7 @@ class AddDirDialog extends Component {
       (
         <FlatButton
           label="Cancel"
-          primary={true}
-          onTouchTap={() => this.setState({ addDir: { open: false } })}
+          onTouchTap={this.props.toggleCreateDir}
           />
       ),
       (
@@ -63,12 +48,13 @@ class AddDirDialog extends Component {
         title="フォルダを作成"
         actions={actions}
         modal={false}
-        open={this.state.addDir.open}
-        onRequestClose={() => this.setState({ addDir: { open: false } })} >
+        open={this.props.createDirState.open}
+        onRequestClose={this.props.toggleCreateDir} >
 
         <TextField
           ref="dirName"
           hintText=""
+          errorText={this.props.createDirState.errors.dirName}
           floatingLabelText="フォルダ名" />
 
       </Dialog>
@@ -84,7 +70,7 @@ class AddDirDialog extends Component {
         />
     );
 
-    const createdDir = this.props.allDirs.slice().sort((a, b) => a.id < b.id)[0];
+    // const createdDir = this.props.allDirs.slice().sort((a, b) => a.id < b.id)[0];
 
     return (
       <Dialog
@@ -95,7 +81,7 @@ class AddDirDialog extends Component {
         onRequestClose={() => this.setState({ addAuthority: { open: false } })} >
 
         <Authority
-          file={createdDir}
+          file={{}}
           users={this.props.users}
           roles={this.props.roles}
           addAuthority={this.props.addAuthority}
@@ -112,9 +98,7 @@ class AddDirDialog extends Component {
         <MenuItem
           primaryText="新しいフォルダ"
           leftIcon={<FileCreateNewFolder />}
-          onTouchTap={() => this.setState({
-            addDir: { open: true }
-          })} />
+          onTouchTap={this.props.toggleCreateDir} />
 
           {this.renderCreateDirDialog()}
           {this.renderAddAuthorityDialog()}
@@ -129,7 +113,6 @@ AddDirDialog.propTypes = {
   users: PropTypes.array.isRequired,
   addAuthority: PropTypes.func.isRequired,
   deleteAuthority: PropTypes.func.isRequired,
-  allDirs: PropTypes.array.isRequired,
   createDir: PropTypes.func.isRequired,
   createDirTree: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired
