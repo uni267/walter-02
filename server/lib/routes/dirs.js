@@ -51,6 +51,17 @@ router.get("/", (req, res, next) => {
 router.post("/", (req, res, next) => {
   const { dir_id, dir_name } = req.body;
 
+  if (!dir_name) {
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "フォルダ名が空のためエラー",
+        errors: { dirName: "フォルダ名が空のため作成に失敗しました"}
+      },
+      body: {}
+    });
+  }
+
   // フォルダ情報を構築
   const dir = new File();
   dir.name = dir_name;
