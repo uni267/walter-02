@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import morgan from "morgan";
 
 import { SERVER_CONF } from "../configs/server"; // mongoのipなど
 import router from "./routes";
@@ -19,6 +20,7 @@ app.use( (req, res, next) => {
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(morgan({ format: "dev", immediate: true }));
 
 const url = SERVER_CONF.development.url;
 const db_name = SERVER_CONF.development.db_name;

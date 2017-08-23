@@ -1,25 +1,15 @@
-import moment from "moment";
+const initialState = [];
 
-const filesBufferReducer = (state = [], action) => {
+const filesBufferReducer = (state = initialState, action) => {
   switch (action.type) {
   case "PUSH_FILE_TO_BUFFER":
-    return [
-      ...state,
-      {
-        name: action.name,
-        dir_id: action.dir_id,
-        modified: moment().format("YYYY-MM-DD HH:mm"),
-        owner: "user01",
-        is_dir: false,
-        is_display: true
-      }
-    ];
+    return [ ...state, action.file ];
   case "CLEAR_FILES_BUFFER":
-    return [];
-
+    return initialState;
   default:
     return state;
   }
 };
 
 export default filesBufferReducer;
+

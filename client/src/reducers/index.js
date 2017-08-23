@@ -20,6 +20,7 @@ import tenant from "./tenantReducer";
 import tags from "./tagsReducer";
 import changePassword from "./changePasswordReducer";
 import createDir from "./createDirReducer";
+import fileUpload from "./fileUploadReducer";
 
 const fileApp = combineReducers({
   files,
@@ -40,7 +41,8 @@ const fileApp = combineReducers({
   tenant,
   tags,
   changePassword,
-  createDir
+  createDir,
+  fileUpload
 });
 
 export default fileApp;

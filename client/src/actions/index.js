@@ -22,18 +22,11 @@ export const toggleAddFile = () => ({
 
 export const pushFileToBuffer = (dir_id, name) => ({
   type: "PUSH_FILE_TO_BUFFER",
-  dir_id: Number(dir_id),
-  name
+  dir_id, name
 });
 
 export const clearFilesBuffer = () => ({
   type: "CLEAR_FILES_BUFFER"
-});
-
-export const addFile = (dir_id, name) => ({
-  type: "ADD_FILE",
-  dir_id: Number(dir_id),
-  name
 });
 
 export const searchFile = (keyword) => ({
@@ -207,3 +200,7 @@ export const toggleCreateDir = () => ({
   type: "TOGGLE_CREATE_DIR"
 });
 
+export const fileUpload = (dir_id, file) => ({
+  type: "FILE_UPLOAD", dir_id, file
+});
+  

@@ -25,9 +25,9 @@ import {
   triggerSnackbar,
   pushFileToBuffer,
   clearFilesBuffer,
-  addFile,
   addAuthority,
-  deleteAuthority
+  deleteAuthority,
+  fileUpload
 } from "../actions";
 
 class FileActionContainer extends Component {
@@ -43,9 +43,9 @@ class FileActionContainer extends Component {
             dir_id={this.props.dir_id}
             filesBuffer={this.props.filesBuffer}
             pushFileToBuffer={this.props.pushFileToBuffer}
-            addFile={this.props.addFile}
             triggerSnackbar={this.props.triggerSnackbar}
             clearFilesBuffer={this.props.clearFilesBuffer}
+            fileUpload={this.props.fileUpload}
             />
 
           <AddDirDialog
@@ -87,7 +87,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   pushFileToBuffer: (dir_id, file_name) => { 
     dispatch(pushFileToBuffer(dir_id, file_name));
   },
-  addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
   clearFilesBuffer: () => { dispatch(clearFilesBuffer()); },
   addAuthority: (file_id, user, role) => {
     dispatch(addAuthority(file_id, user, role));
@@ -95,7 +94,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteAuthority: (file_id, authority_id) => {
     dispatch(deleteAuthority(file_id, authority_id));
   },
-  toggleCreateDir: () => { dispatch(toggleCreateDir()); }
+  toggleCreateDir: () => { dispatch(toggleCreateDir()); },
+  fileUpload: (dir_id, file) => { dispatch(fileUpload(dir_id, file)); }
 });
 
 FileActionContainer = connect(

@@ -137,6 +137,22 @@ const createDir = (dir_id, dir_name) => {
     .then( res => res );
 };
 
+const fileUpload = (dir_id, file) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  let form = new FormData();
+  form.append("myFile", file);
+  form.append("dir_id", dir_id);
+
+  return axios.post(`/api/v1/files`, form, config)
+    .then( res => res );
+};
+
 export {
   login,
   fetchUserById,
@@ -148,5 +164,6 @@ export {
   fetchDelTag,
   editFile,
   changePassword,
-  createDir
+  createDir,
+  fileUpload
 };

@@ -4,6 +4,9 @@ mongoose.Promise = global.Promise;
 
 const FileSchema = Schema({
   name: String,
+  blob_path: String,
+  mime_type: String,
+  size: Number,
   modified: { type: Date, default: Date.now },
   is_dir: Boolean,
   dir_id: Schema.Types.ObjectId,
