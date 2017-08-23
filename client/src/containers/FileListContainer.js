@@ -34,7 +34,6 @@ import TagFileDialog from "../components/File/TagFileDialog";
 
 // actions
 import {
-  addFile,
   moveFile,
   copyFile,
   deleteFile,
@@ -48,7 +47,8 @@ import {
   setSortTarget,
   toggleSortTarget,
   sortFile,
-  requestFetchFiles
+  requestFetchFiles,
+  fileUpload
 } from "../actions";
 
 const styles = {
@@ -137,11 +137,9 @@ class FileListContainer extends Component {
 
   handleFileDrop = (item, monitor) => {
     if (monitor) {
-      const droppedFiles = monitor.getItem().files;
-      droppedFiles.forEach(file => {
-        this.props.addFile(this.props.dir_id, file.name);
-        this.props.triggerSnackbar(`${file.name}をアップロードしました`);
-      });
+      monitor.getItem().files.forEach(
+        file => this.props.fileUpload(this.props.dir_id, file)
+      );
     }
   }
 
@@ -465,7 +463,6 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  addFile: (dir_id, file_name) => { dispatch(addFile(dir_id, file_name)); },
   moveFile: (dir_id, file_id) => { dispatch(moveFile(dir_id, file_id)); },
   copyFile: (dir_id, file) => { dispatch(copyFile(dir_id, file)); },
   deleteFile: (file) => { dispatch(deleteFile(file)); },
@@ -483,7 +480,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
-  requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); }
+  requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); },
+  fileUpload: (dir_id, file) => { dispatch(fileUpload(dir_id, file)); }
 });
 
 FileListContainer = connect(
