@@ -10,7 +10,7 @@ import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
 
 // actions
-import { searchFile } from "../actions";
+import { updateSearchWord } from "../actions";
 
 const styles = {
   buttonContainer: {
@@ -51,7 +51,6 @@ class FileSearchContainer extends Component {
   }
 
   handleChange = (e) => {
-    console.log(e.target.value);
     this.props.searchFile(e.target.value);
   }
 
@@ -121,7 +120,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFile: (keyword) => { dispatch(searchFile(keyword)); }
+  updateSearchWord: (keyword) => { dispatch(updateSearchWord(keyword)); }
 });
 
 FileSearchContainer = connect(

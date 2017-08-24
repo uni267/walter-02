@@ -43,7 +43,6 @@ import {
   addAuthority,
   deleteAuthority,
   deleteDirTree,
-  searchFile,
   setSortTarget,
   toggleSortTarget,
   sortFile,
@@ -440,7 +439,6 @@ const mapStateToProps = (state, ownProps) => {
     roles: state.roles,
     users: state.users,
     selectedDir: state.selectedDir,
-    searchWord: state.searchFile,
     fileSortTarget: state.fileSortTarget,
     deleteFileState: state.deleteFile
   };
@@ -460,7 +458,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteAuthority: (file_id, authority_id) => {
     dispatch(deleteAuthority(file_id, authority_id));
   },
-  searchFile: (keyword) => { dispatch(searchFile(keyword)); },
   setSortTarget: (target) => { dispatch(setSortTarget(target)); },
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },

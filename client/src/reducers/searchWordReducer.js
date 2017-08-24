@@ -1,10 +1,10 @@
 const initialState = {
-  value: null
+  value: ""
 };
 
 const searchWordReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "SEARCH_FILE":
+  case "UPDATE_SEARCH_WORD":
     return { value: action.value };
   default:
     return state;
