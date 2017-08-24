@@ -193,6 +193,18 @@ const searchFiles = (value) => {
     .then( res => res );
 };
 
+const fetchDirTree = () => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  return axios.get(`/api/v1/dirs/tree`, config)
+    .then( res => res );
+};
+
 export {
   login,
   fetchUserById,
@@ -208,5 +220,6 @@ export {
   fileUpload,
   deleteFile,
   moveFile,
-  searchFiles
+  searchFiles,
+  fetchDirTree
 };

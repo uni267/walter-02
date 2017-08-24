@@ -7,9 +7,13 @@ import { connect } from "react-redux";
 import DirTree from "../components/DirTree";
 
 // actions
-import { selectDirTree } from "../actions";
+import { requestFetchDirTree, selectDirTree } from "../actions";
 
 class DirTreeContainer extends Component {
+  componentWillMount() {
+    this.props.requestFetchDirTree();
+  }
+
   walk = (tree) => {
     
     let children = this.props.dirs.filter(
@@ -53,7 +57,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  selectDirTree: (dir) => { dispatch(selectDirTree(dir)); }
+  selectDirTree: (dir) => { dispatch(selectDirTree(dir)); },
+  requestFetchDirTree: () => { dispatch(requestFetchDirTree()); }
 });
 
 DirTreeContainer = connect(mapStateToProps, mapDispatchToProps)(DirTreeContainer);

@@ -1,15 +1,15 @@
-/* ===============================
-    all collection drop
-   =============================== */ 
+// ===============================
+//  all collection drop
+// ===============================
 db.files.drop();
 db.dirs.drop();
 db.tenants.drop();
 db.users.drop();
 db.tags.drop();
 
-/* ===============================
-    files collection
-   =============================== */ 
+// ===============================
+//  files collection
+// ===============================
 
 var files = [
   {
@@ -32,9 +32,9 @@ var files = [
 
 db.files.insert(files);
 
-/* ===============================
-    dirs collection
-   =============================== */ 
+// ===============================
+//  dirs collection
+// ===============================
 
 var top_id = db.files.findOne({ name: "Top" }, { _id: 1 })._id;
 var trash_id = db.files.findOne({ name: "Trash" }, { _id: 1 })._id;
@@ -47,17 +47,17 @@ var dirs = [
 
 db.dirs.insert(dirs);
 
-/* ===============================
-    tenants collection
-   =============================== */ 
+// ===============================
+//  tenants collection
+// ===============================
 
 // tenants
 var tenant = { name: "test", home_dir_id: top_id, trash_dir_id: trash_id };
 db.tenants.insert(tenant);
 
-/* ===============================
-    users collection
-   =============================== */ 
+// ===============================
+//  users collection
+// =============================== 
 
 var pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff";
 
@@ -71,9 +71,9 @@ var user = {
 
 db.users.insert(user);
 
-/* ===============================
-    tags collection
-   =============================== */ 
+// ===============================
+//  tags collection
+// ===============================
 
 var tags = [
   {
@@ -87,3 +87,4 @@ var tags = [
 ];
 
 db.tags.insert(tags);
+
