@@ -9,7 +9,8 @@ const createDirReducer = (state = initialState, action) => {
   case "TOGGLE_CREATE_DIR":
     return {
       ...state,
-      open: !state.open
+      open: !state.open,
+      errors: {}
     };
   case "CREATE_DIR_ERROR":
     return {

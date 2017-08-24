@@ -62,7 +62,8 @@ class NavigationContainer extends Component {
           notifications={this.props.notifications}
           handleAccountOpen={this.props.toggleChangePasswordDialog}
           handleLogout={this.handleLogout}
-          toggleMenu={this.toggleAppMenu} />
+          toggleMenu={this.toggleAppMenu}
+          tenant={this.props.tenant} />
 
         <AppMenu
           open={this.state.menu.open}
@@ -83,7 +84,8 @@ class NavigationContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     notifications: state.notifications,
-    changePassword: state.changePassword
+    changePassword: state.changePassword,
+    tenant: state.tenant
   };
 };
 

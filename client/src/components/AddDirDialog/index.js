@@ -100,8 +100,9 @@ class AddDirDialog extends Component {
           leftIcon={<FileCreateNewFolder />}
           onTouchTap={this.props.toggleCreateDir} />
 
-          {this.renderCreateDirDialog()}
-          {this.renderAddAuthorityDialog()}
+        {this.renderCreateDirDialog()}
+        {this.renderAddAuthorityDialog()}
+
       </div>
     );
   }
@@ -114,7 +115,6 @@ AddDirDialog.propTypes = {
   addAuthority: PropTypes.func.isRequired,
   deleteAuthority: PropTypes.func.isRequired,
   createDir: PropTypes.func.isRequired,
-  createDirTree: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired
 };
 

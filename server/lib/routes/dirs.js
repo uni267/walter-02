@@ -50,6 +50,7 @@ router.get("/", (req, res, next) => {
 
 });
 
+// フォルダ作成
 router.post("/", (req, res, next) => {
   const { dir_id, dir_name } = req.body;
 

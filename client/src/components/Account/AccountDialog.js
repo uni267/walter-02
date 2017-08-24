@@ -71,7 +71,6 @@ const AccountDialog = ({
 };
 
 AccountDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   requestChangePassword: PropTypes.func.isRequired
 };
