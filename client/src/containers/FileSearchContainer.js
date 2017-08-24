@@ -10,7 +10,7 @@ import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
 
 // actions
-import { updateSearchWord } from "../actions";
+import { searchFileSimple } from "../actions";
 
 const styles = {
   buttonContainer: {
@@ -48,10 +48,6 @@ class FileSearchContainer extends Component {
     this.setState({
       open: false
     });
-  }
-
-  handleChange = (e) => {
-    this.props.searchFile(e.target.value);
   }
 
   handleMenuTouchTap = (menu) => {
@@ -93,11 +89,8 @@ class FileSearchContainer extends Component {
 
         <div style={styles.formContainer}>
           {/* 簡易検索 */}
-          { isSimple ?
-            <SimpleSearch
-                searchWord={this.props.searchWord}
-                handleChange={this.handleChange}
-                />
+          { isSimple
+            ? <SimpleSearch searchFileSimple={this.props.searchFileSimple} />
             : null }
             
           {/* 詳細検索 */}
@@ -114,18 +107,13 @@ class FileSearchContainer extends Component {
 };
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-    searchWord: state.searchWord
-  };
+  return {};
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  updateSearchWord: (keyword) => { dispatch(updateSearchWord(keyword)); }
+  searchFileSimple: (value) => { dispatch(searchFileSimple(value)); }
 });
 
-FileSearchContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FileSearchContainer);
+FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);
 
 export default FileSearchContainer;

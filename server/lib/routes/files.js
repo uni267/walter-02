@@ -35,6 +35,33 @@ router.get("/", (req, res, next) => {
 
 });
 
+// ファイル検索
+router.get("/search", (req, res, next) => {
+  const { q } = req.query;
+  const conditions = {
+    name: { $regex: q },
+    is_display: true
+  };
+
+  File.aggregate([
+    { $match: conditions },
+    { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
+  ])
+    .then( files => {
+      res.json({
+        status: { success: true },
+        body: files
+      });
+    })
+    .catch( err => {
+      res.json({
+        status: { success: false, message: "ファイルの取得に失敗", errors: err },
+        body: []
+      });
+    });
+
+});
+
 // ファイル詳細
 router.get("/:id", (req, res, next) => {
   const file_id = mongoose.Types.ObjectId(req.params.id);

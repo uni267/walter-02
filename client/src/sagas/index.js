@@ -13,6 +13,7 @@ import watchCreateDir from "./watchCreateDir";
 import watchDeleteFile from "./watchDeleteFile";
 import watchUploadFiles from "./watchUploadFiles";
 import watchMoveFile from "./watchMoveFile";
+import watchSearchFileSimple from "./watchSearchFileSimple";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -28,6 +29,7 @@ function* Saga() {
   yield fork(watchDeleteFile);
   yield fork(watchUploadFiles);
   yield fork(watchMoveFile);
+  yield fork(watchSearchFileSimple);
 }
 
 export default Saga;

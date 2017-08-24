@@ -1,22 +1,17 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { moveFile, fetchFiles } from "../apis";
+import { searchFiles } from "../apis";
 
-function* watchMoveFile() {
+function* watchSearchFileSimple() {
   while (true) {
-    const { dir, file } = yield take("MOVE_FILE");
+    const { value } = yield take("SEARCH_FILE_SIMPLE");
     yield put({ type: "LOADING_START" });
     yield call(delay, 1000);
 
     try {
-      yield call(moveFile, dir, file);
-      const payload = yield call(fetchFiles, file.dir_id);
+      const payload = yield call(searchFiles, value);
       yield put({ type: "INIT_FILES", files: payload.data.body });
-      yield put({
-        type: "TRIGGER_SNACK",
-        message: `${file.name}を${dir.name}に移動しました`
-      });
     }
     catch (e) {
       console.log(e);
@@ -27,4 +22,4 @@ function* watchMoveFile() {
   }
 }
 
-export default watchMoveFile;
+export default watchSearchFileSimple;

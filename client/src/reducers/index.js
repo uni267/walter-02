@@ -21,7 +21,6 @@ import changePassword from "./changePasswordReducer";
 import createDir from "./createDirReducer";
 import fileUpload from "./fileUploadReducer";
 import deleteFile from "./deleteFileReducer";
-import searchWord from "./searchWordReducer";
 
 const fileApp = combineReducers({
   files,
@@ -43,8 +42,7 @@ const fileApp = combineReducers({
   changePassword,
   createDir,
   fileUpload,
-  deleteFile,
-  searchWord
+  deleteFile
 });
 
 export default fileApp;
