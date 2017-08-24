@@ -5,7 +5,6 @@ import files from "./filesReducer";
 import file from "./fileReducer";
 import dirs from "./dirsReducer";
 import snackbar from "./snackbarReducer";
-import searchFile from "./searchFileReducer";
 import addDir from "./addDirReducer";
 import addFile from "./addFileReducer";
 import notifications from "./notificationsReducer";
@@ -22,13 +21,13 @@ import changePassword from "./changePasswordReducer";
 import createDir from "./createDirReducer";
 import fileUpload from "./fileUploadReducer";
 import deleteFile from "./deleteFileReducer";
+import searchWord from "./searchWordReducer";
 
 const fileApp = combineReducers({
   files,
   file,
   dirs,
   snackbar,
-  searchFile,
   addDir,
   addFile,
   filesBuffer,
@@ -44,7 +43,8 @@ const fileApp = combineReducers({
   changePassword,
   createDir,
   fileUpload,
-  deleteFile
+  deleteFile,
+  searchWord
 });
 
 export default fileApp;

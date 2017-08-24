@@ -29,9 +29,8 @@ export const clearFilesBuffer = () => ({
   type: "CLEAR_FILES_BUFFER"
 });
 
-export const searchFile = (keyword) => ({
-  type: "SEARCH_FILE",
-  value: keyword
+export const searchFile = (value) => ({
+  type: "SEARCH_FILE", value
 });
 
 export const setSortTarget = (target) => ({

@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+// store
+import { connect } from "react-redux";
+
 // components
 import AddFilterBtn from "../components/FileSearch/AddFilterBtn";
 import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
+
+// actions
+import { searchFile } from "../actions";
 
 const styles = {
   buttonContainer: {
@@ -108,9 +114,19 @@ class FileSearchContainer extends Component {
   }
 };
 
-FileSearchContainer.propTypes = {
-  searchWord: PropTypes.object.isRequired,
-  searchFile: PropTypes.func.isRequired
+const mapStateToProps = (state, ownProps) => {
+  return {
+    searchWord: state.searchWord
+  };
 };
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  searchFile: (keyword) => { dispatch(searchFile(keyword)); }
+});
+
+FileSearchContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FileSearchContainer);
 
 export default FileSearchContainer;

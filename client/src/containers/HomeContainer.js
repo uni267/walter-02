@@ -18,7 +18,6 @@ import FileSnackbar from "../components/FileSnackbar";
 import {
   triggerSnackbar,
   closeSnackbar,
-  searchFile,
   requestFetchFiles
 }
 from "../actions";
@@ -50,9 +49,7 @@ class HomeContainer extends Component {
             </div>
 
             <div style={{width: "60%"}}>
-              <FileSearchContainer
-                searchWord={this.props.searchWord}
-                searchFile={this.props.searchFile} />
+              <FileSearchContainer />
             </div>
           </div>
 
@@ -97,7 +94,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   closeSnackbar: () => { dispatch(closeSnackbar()); },
-  searchFile: (value) => { dispatch(searchFile(value)); },
   requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); }
 });
 
