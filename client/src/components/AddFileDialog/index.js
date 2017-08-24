@@ -154,7 +154,6 @@ AddFileDialog.propTypes = {
   dir_id: PropTypes.string.isRequired,
   filesBuffer: PropTypes.array.isRequired,
   pushFileToBuffer: PropTypes.func.isRequired,
-  addFile: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired,
   clearFilesBuffer: PropTypes.func.isRequired
 };

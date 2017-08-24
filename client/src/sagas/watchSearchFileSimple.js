@@ -12,6 +12,15 @@ function* watchSearchFileSimple() {
     try {
       const payload = yield call(searchFiles, value);
       yield put({ type: "INIT_FILES", files: payload.data.body });
+      const { dirId } = yield select(state => state.tenant);
+
+      const dirs = [
+        { _id: dirId, name: "Top" },
+        "sep",
+        { _id: dirId, name: "検索結果" }
+      ];
+
+      yield put({ type: "INIT_DIR", dirs });
     }
     catch (e) {
       console.log(e);
