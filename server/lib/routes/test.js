@@ -1,5 +1,8 @@
 import { Router } from "express";
 import mongoose, { Schema } from "mongoose";
+import multer from "multer";
+import morgan from "morgan";
+
 import Test from "../models/Test";
 const router = Router();
 
@@ -15,6 +18,15 @@ router.get("/", (req, res, next) => {
   //     res.json(file_tags);
   //   })
   //   .catch( err => res.status(500).json(err));
+});
+
+const upload = multer({ dest: "uploads/" });
+
+router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
+  const myFile = req.files.myFile[0];
+  const dir_id = req.body.dir_id;
+  console.log(myFile, dir_id);
+  res.json(myFile);
 });
 
 export default router;
