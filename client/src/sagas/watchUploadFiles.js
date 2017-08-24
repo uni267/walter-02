@@ -10,7 +10,14 @@ function* watchUploadFiles() {
     yield call(delay, files.length * 1000);
 
     try {
-      yield all(files.map( file => call(fileUpload, dir_id, file) ));
+      const tasks = files.map( file => call(fileUpload, dir_id, file) );
+      const uploadPayloads = yield all(tasks);
+
+      const buffers = uploadPayloads.map( pay => pay.data.body )
+            .map( body => put({ type: "PUSH_FILE_TO_BUFFER", file: body }) );
+
+      yield all(buffers);
+
       const filesPayload = yield call(fetchFiles, dir_id);
       yield put({ type: "INIT_FILES", files: filesPayload.data.body });
       yield put({ type: "TRIGGER_SNACK", message: "ファイルをアップロードしました" });

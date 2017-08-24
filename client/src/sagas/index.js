@@ -10,7 +10,6 @@ import watchEditFileByView from "./watchEditFileByView";
 import watchEditFileByIndex from "./watchEditFileByIndex";
 import watchChangePassword from "./watchChangePassword";
 import watchCreateDir from "./watchCreateDir";
-import watchFileUpload from "./watchFileUpload";
 import watchDeleteFile from "./watchDeleteFile";
 import watchUploadFiles from "./watchUploadFiles";
 
@@ -25,7 +24,6 @@ function* Saga() {
   yield fork(watchEditFileByIndex);
   yield fork(watchChangePassword);
   yield fork(watchCreateDir);
-  yield fork(watchFileUpload);
   yield fork(watchDeleteFile);
   yield fork(watchUploadFiles);
 }

@@ -73,7 +73,7 @@ class AddFileDialog extends Component {
   }
 
   onDrop = (files) => {
-    files.forEach( file => this.props.fileUpload(this.props.dir_id, file) );
+    this.props.uploadFiles(this.props.dir_id, files);
   };
 
   renderFilesBuffer = (file, idx) => {
