@@ -7,102 +7,6 @@ const filesReducer = (state = [], action) => {
   case "INIT_FILES":
     return action.files;
 
-  case "ADD_FILE":
-    let next_file_id = state.slice().sort((a,b) => b.id - a.id)[0].id + 1;
-
-    return [
-      ...state,
-      {
-        id: next_file_id,
-        name: action.name,
-        modified: moment().format("YYYY-MM-DD HH:mm"),
-        is_dir: false,
-        dir_id: action.dir_id,
-        is_display: true,
-        is_star: false,
-        tags: [],
-        histories: [
-          {
-            id: 1,
-            user: { name: "user01" },
-            action: "新規作成",
-            modified: moment().format("YYYY-MM-DD HH:mm"),
-            body: `新ファイル名は${action.name}`
-          }
-        ],
-        authorities: [
-          {
-            id: 1,
-            user: {
-              id: 1,
-              type: "user",
-              name: "user01",
-              name_jp: "ユーザ太郎",
-              is_owner: true
-            },
-            role: {
-              id: 3,
-              name: "フルコントロール",
-              actions: ["read", "write", "authority"]
-            }
-          }
-        ],
-        metaInfo: []
-      }
-    ];
-
-  case "ADD_DIR":
-    const next_dir_id = state.slice().sort((a, b) => b.id - a.id)[0].id + 1;
-
-    return [
-      ...state,
-      {
-        id: next_dir_id,
-        name: action.name,
-        dir_id: Number(action.dir_id),
-        modified: moment().format("YYYY-MM-DD HH:mm"),
-        is_dir: true,
-        is_display: true,
-        is_star: false,
-        histories: [
-          {
-            id: 1,
-            user: { name: "user01" },
-            action: "新規作成",
-            modified: moment().format("YYYY-MM-DD HH:mm"),
-            body: `新ファイル名は${action.name}`
-          }
-        ],
-        authorities: [
-          {
-            id: 1,
-            user: {
-              id: 1,
-              type: "user",
-              name: "user01",
-              name_jp: "ユーザ太郎",
-              is_owner: true
-            },
-            role: {
-              id: 3,
-              name: "フルコントロール",
-              actions: ["read", "write", "authority"]
-            }
-          }
-        ]
-
-      }
-    ];
-
-  case "DELETE_FILE":
-    return state.map(file => {
-      if (file.id === action.file.id) {
-        file.dir_id = 9999;
-        return file;
-      }
-      return file;
-    });
-
   case "SORT_FILE":
     let _state = state.slice();
 
@@ -164,26 +68,6 @@ const filesReducer = (state = [], action) => {
 
         return {...file, authorities};
       }
-      return file;
-    });
-
-  case "DELETE_TAG":
-    return state.map(file => {
-      if (file.id === action.file_id) {
-        const tags = file.tags.slice().filter( tag => tag.id !== action.tag.id );
-        return {...file, tags};
-      }
-
-      return file;
-    });
-
-  case "ADD_TAG":
-    return state.map(file => {
-      if (file.id === action.file_id) {
-        const tags = [...file.tags.slice(), action.tag];
-        return {...file, tags};
-      }
-
       return file;
     });
 
