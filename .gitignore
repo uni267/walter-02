@@ -5,6 +5,7 @@
 /server/node_modules
 /server/dist
 /server/dump
+/server/uploads
 
 # testing
 /client/coverage
