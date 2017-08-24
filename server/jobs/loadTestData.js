@@ -1,4 +1,13 @@
 /* ===============================
+    all collection drop
+   =============================== */ 
+db.files.drop();
+db.dirs.drop();
+db.tenants.drop();
+db.users.drop();
+db.tags.drop();
+
+/* ===============================
     files collection
    =============================== */ 
 
@@ -18,7 +27,7 @@ var files = [
     dir_id: 0,
     is_display: false,
     authorities: []
-  }  
+  }
 ];
 
 db.files.insert(files);
