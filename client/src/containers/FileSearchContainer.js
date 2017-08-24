@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 // components
-import AddFilterBtn from "./AddFilterBtn";
-import SimpleSearch from "./SimpleSearch";
-import DetailSearch from "./DetailSearch";
+import AddFilterBtn from "../components/FileSearch/AddFilterBtn";
+import SimpleSearch from "../components/FileSearch/SimpleSearch";
+import DetailSearch from "../components/FileSearch/DetailSearch";
 
 const styles = {
   buttonContainer: {
@@ -18,32 +18,13 @@ const styles = {
   }
 };
 
-class FileSearch extends Component {
+class FileSearchContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       open: false,
       anchorEl: {},
-      searchItems: [
-        {
-          id: 1,
-          label: "ファイル名",
-          type: "string",
-          picked: false
-        },
-        {
-          id: 2,
-          label: "お気に入り",
-          type: "boolean",
-          picked: false
-        },
-        {
-          id: 3,
-          label: "最終更新日",
-          type: "date",
-          picked: false
-        }
-      ]
+      searchItems: []
     };
 
   }
@@ -64,6 +45,7 @@ class FileSearch extends Component {
   }
 
   handleChange = (e) => {
+    console.log(e.target.value);
     this.props.searchFile(e.target.value);
   }
 
@@ -126,9 +108,9 @@ class FileSearch extends Component {
   }
 };
 
-FileSearch.propTypes = {
+FileSearchContainer.propTypes = {
   searchWord: PropTypes.object.isRequired,
   searchFile: PropTypes.func.isRequired
 };
 
-export default FileSearch;
+export default FileSearchContainer;

@@ -9,7 +9,7 @@ import { Card } from 'material-ui/Card';
 // containers
 import NavigationContainer from "./NavigationContainer";
 import FileActionContainer from "./FileActionContainer";
-import FileSearch from "../components/FileSearch";
+import FileSearchContainer from "./FileSearchContainer";
 import DirBox from "../components/DirBox";
 import FileListContainer from "./FileListContainer";
 import FileSnackbar from "../components/FileSnackbar";
@@ -50,7 +50,7 @@ class HomeContainer extends Component {
             </div>
 
             <div style={{width: "60%"}}>
-              <FileSearch
+              <FileSearchContainer
                 searchWord={this.props.searchWord}
                 searchFile={this.props.searchFile} />
             </div>

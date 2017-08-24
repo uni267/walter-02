@@ -13,7 +13,7 @@ const SimpleSearch = ({
         style={{width: 270}}
         value={searchWord.value}
         onChange={handleChange}
-        hintText="簡易検索"
+        hintText="ファイル名、メタ情報"
         floatingLabelText="簡易検索"
         />
     </div>
