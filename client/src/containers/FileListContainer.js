@@ -48,7 +48,8 @@ import {
   toggleSortTarget,
   sortFile,
   requestFetchFiles,
-  uploadFiles
+  uploadFiles,
+  toggleDeleteFileDialog
 } from "../actions";
 
 const styles = {
@@ -221,15 +222,6 @@ class FileListContainer extends Component {
     });
   };
 
-  toggleDeleteFileDialog = (file = {}) => {
-    this.setState({
-      deleteFileDialog: {
-        open: !this.state.deleteFileDialog.open,
-        file: file
-      }
-    });
-  };
-
   toggleMoveFileDialog = (file = {}) => {
     this.setState({
       moveFileDialog: {
@@ -271,10 +263,6 @@ class FileListContainer extends Component {
     this.props.deleteFile(dir);
     this.setState({ deleteDirDialog: { dir: {} } });
     this.props.triggerSnackbar(`${dir.name}を削除しました`);
-  };
-
-  deleteFile = (file) => {
-    this.props.deleteFile(file);
   };
 
   moveFile = (file) => {
@@ -334,7 +322,7 @@ class FileListContainer extends Component {
         requestFetchFiles={this.props.requestFetchFiles}
         toggleStar={this.props.toggleStar}
         handleAuthorityFile={this.toggleAuthorityFileDialog}
-        handleDeleteFile={this.toggleDeleteFileDialog}
+        handleDeleteFile={this.props.toggleDeleteFileDialog}
         handleMoveFile={this.toggleMoveFileDialog}
         handleCopyFile={this.toggleCopyFileDialog}
         handleHistoryFile={this.toggleHistoryFileDialog}
@@ -416,10 +404,10 @@ class FileListContainer extends Component {
           triggerSnackbar={this.props.triggerSnackbar} />
 
         <DeleteFileDialog
-          open={this.state.deleteFileDialog.open}
-          handleClose={this.toggleDeleteFileDialog}
+          open={this.props.deleteFileState.open}
+          handleClose={this.props.toggleDeleteFileDialog}
           deleteFile={this.props.deleteFile}
-          file={this.state.deleteFileDialog.file} />
+          file={this.props.deleteFileState.file} />
 
         <MoveFileDialog
           open={this.state.moveFileDialog.open}
@@ -453,7 +441,8 @@ const mapStateToProps = (state, ownProps) => {
     users: state.users,
     selectedDir: state.selectedDir,
     searchWord: state.searchFile,
-    fileSortTarget: state.fileSortTarget
+    fileSortTarget: state.fileSortTarget,
+    deleteFileState: state.deleteFile
   };
 };
 
@@ -476,7 +465,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
   requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); },
-  uploadFiles: (dir_id, files) => { dispatch(uploadFiles(dir_id, files)); }
+  uploadFiles: (dir_id, files) => { dispatch(uploadFiles(dir_id, files)); },
+  toggleDeleteFileDialog: (file) => { dispatch(toggleDeleteFileDialog(file)); }
 });
 
 FileListContainer = connect(

@@ -105,7 +105,7 @@ const editFile = (file) => {
     }
   };
 
-  return axios.patch(`/api/v1/files/${file._id}`, file, config)
+  return axios.patch(`/api/v1/files/${file._id}/rename`, file, config)
     .then( res => res );
 };
 
@@ -153,6 +153,21 @@ const fileUpload = (dir_id, file) => {
     .then( res => res );
 };
 
+const deleteFile = (file) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  const body = { dir_id: localStorage.getItem("trashDirId") };
+
+  // ファイル削除はごみ箱への移動なのでapi的にはmoveとする
+  return axios.patch(`/api/v1/files/${file._id}/move`, body, config)
+    .then( res => res );
+};
+
 export {
   login,
   fetchUserById,
@@ -165,5 +180,6 @@ export {
   editFile,
   changePassword,
   createDir,
-  fileUpload
+  fileUpload,
+  deleteFile
 };

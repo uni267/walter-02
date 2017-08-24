@@ -205,3 +205,6 @@ export const uploadFiles = (dir_id, files) => ({
   type: "UPLOAD_FILES", dir_id, files
 });
   
+export const toggleDeleteFileDialog = (file) => ({
+  type: "TOGGLE_DELETE_FILE_DIALOG", file
+});

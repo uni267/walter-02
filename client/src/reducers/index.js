@@ -21,6 +21,7 @@ import tags from "./tagsReducer";
 import changePassword from "./changePasswordReducer";
 import createDir from "./createDirReducer";
 import fileUpload from "./fileUploadReducer";
+import deleteFile from "./deleteFileReducer";
 
 const fileApp = combineReducers({
   files,
@@ -42,7 +43,8 @@ const fileApp = combineReducers({
   tags,
   changePassword,
   createDir,
-  fileUpload
+  fileUpload,
+  deleteFile
 });
 
 export default fileApp;
