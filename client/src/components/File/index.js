@@ -30,7 +30,7 @@ const style = {
 const fileSource = {
   beginDrag(props) {
     return {
-      name: props.file.id
+      file: props.file
     };
   },
 
@@ -39,7 +39,7 @@ const fileSource = {
     const dropResult = monitor.getDropResult();
 
     if (dropResult) {
-      props.moveFile(dropResult.name, item.name);
+      props.moveFile(dropResult.dir, item.file);
     }
   }
 };

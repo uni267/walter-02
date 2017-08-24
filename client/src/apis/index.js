@@ -168,6 +168,19 @@ const deleteFile = (file) => {
     .then( res => res );
 };
 
+const moveFile = (dir, file) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  const body = { dir_id: dir._id };
+  return axios.patch(`/api/v1/files/${file._id}/move`, body, config)
+    .then( res => res );
+};
+
 export {
   login,
   fetchUserById,
@@ -181,5 +194,6 @@ export {
   changePassword,
   createDir,
   fileUpload,
-  deleteFile
+  deleteFile,
+  moveFile
 };

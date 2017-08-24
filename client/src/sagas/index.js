@@ -12,6 +12,7 @@ import watchChangePassword from "./watchChangePassword";
 import watchCreateDir from "./watchCreateDir";
 import watchDeleteFile from "./watchDeleteFile";
 import watchUploadFiles from "./watchUploadFiles";
+import watchMoveFile from "./watchMoveFile";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -26,6 +27,7 @@ function* Saga() {
   yield fork(watchCreateDir);
   yield fork(watchDeleteFile);
   yield fork(watchUploadFiles);
+  yield fork(watchMoveFile);
 }
 
 export default Saga;

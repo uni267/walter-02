@@ -49,10 +49,8 @@ export const sortFile = (sorted, desc) => ({
   desc
 });
 
-export const moveFile = (dir_id, file_id) => ({
-  type: "MOVE_FILE",
-  dir_id,
-  file_id
+export const moveFile = (dir, file) => ({
+  type: "MOVE_FILE", dir, file
 });
 
 export const deleteFile = (file) => ({

@@ -59,7 +59,7 @@ router.get("/:id", (req, res, next) => {
 });
 
 // ファイル名変更
-router.patch("/:file_id", (req, res, next) => {
+router.patch("/:file_id/rename", (req, res, next) => {
   const file_id = req.params.file_id;
   const changedFname = req.body.name;
 
@@ -82,6 +82,32 @@ router.patch("/:file_id", (req, res, next) => {
       });
     });
   
+});
+
+// ファイル移動
+router.patch("/:file_id/move", (req, res, next) => {
+  const file_id = req.params.file_id;
+  const dir_id = req.body.dir_id;
+
+  File.findById(file_id)
+    .then( file => {
+      file.dir_id = dir_id;
+      return file.save();
+    })
+    .then( file => {
+      res.json({
+        status: { success: true },
+        body: file
+      });
+    })
+    .catch( err => {
+      console.log(err);
+      res.status(500).json({
+        status: { success: false, message: "ファイルの移動に失敗", errors: err },
+        body: {}
+      });
+    });
+
 });
 
 // ファイルアップロード

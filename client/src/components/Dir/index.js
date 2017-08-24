@@ -36,7 +36,9 @@ const style = {
 
 const fileTarget = {
   drop(props) {
-    return { name: props.dir.id };
+    return {
+      dir: props.dir
+    };
   }
 };
 

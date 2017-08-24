@@ -20,14 +20,6 @@ const filesReducer = (state = [], action) => {
 
     return _state;
     
-  case "MOVE_FILE":
-    return state.map(file => {
-      if (file.id === action.file_id) {
-        file.dir_id = action.dir_id;
-      }
-      return file;
-    });
-
   case "TOGGLE_STAR":
     return state.map(file => {
       if (file.id === action.file_id) {
