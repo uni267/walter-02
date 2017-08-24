@@ -18,6 +18,7 @@ function* watchLogin() {
       const resUser = yield call(fetchUserById, resLogin.data.body.user_id);
 
       localStorage.setItem("dirId", resUser.data.body.tenant.home_dir_id);
+      localStorage.setItem("trashDirId", resUser.data.body.tenant.trash_dir_id);
       localStorage.setItem("tenantName", resUser.data.body.tenant.name);
 
       localStorage.setItem("token", resLogin.data.token);

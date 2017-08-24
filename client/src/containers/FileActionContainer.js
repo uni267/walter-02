@@ -60,7 +60,8 @@ class FileActionContainer extends Component {
             createDirState={this.props.createDirState}
             />
 
-          <Link to={"/home/?dir_id=9999"} style={{textDecoration: "none"}}>
+          <Link to={`/home/${this.props.tenant.trashDirId}`}
+                style={{textDecoration: "none"}}>
             <MenuItem
               primaryText="ごみ箱"
               leftIcon={deleteIcon}
@@ -77,7 +78,8 @@ const mapStateToProps = (state) => {
     filesBuffer: state.filesBuffer,
     roles: state.roles,
     users: state.users,
-    createDirState: state.createDir
+    createDirState: state.createDir,
+    tenant: state.tenant
   };
 };
 

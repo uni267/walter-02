@@ -56,8 +56,7 @@ export const moveFile = (dir_id, file_id) => ({
 });
 
 export const deleteFile = (file) => ({
-  type: "DELETE_FILE",
-  file: file
+  type: "DELETE_FILE", file
 });
 
 export const editFileByView = (file) => ({
@@ -144,10 +143,8 @@ export const requestLoginSuccess = (message, user_id) => ({
   user_id
 });
 
-export const putTenant = (name, dirId) => ({
-  type: "PUT_TENANT",
-  name,
-  dirId
+export const putTenant = (name, dirId, trashDirId) => ({
+  type: "PUT_TENANT", name, dirId, trashDirId
 });
 
 export const requestHomeDir = (user_id) => ({
@@ -203,4 +200,6 @@ export const toggleCreateDir = () => ({
 export const fileUpload = (dir_id, file) => ({
   type: "FILE_UPLOAD", dir_id, file
 });
+
+
   

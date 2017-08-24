@@ -50,10 +50,11 @@ class LoginContainer extends Component {
     const token = localStorage.getItem("token");
     const user_id = localStorage.getItem("userId");
     const dir_id = localStorage.getItem("dirId");
+    const trash_dir_id = localStorage.getItem("trashDirId");
     const tenant_name = localStorage.getItem("tenantName");
 
-    if (token && user_id && dir_id && tenant_name) {
-      this.props.putTenant(tenant_name, dir_id);
+    if (token && user_id && dir_id && trash_dir_id && tenant_name) {
+      this.props.putTenant(tenant_name, dir_id, trash_dir_id);
       this.props.requestLoginSuccess("success", user_id);
     }
   }
@@ -130,8 +131,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestLoginSuccess: (message, user_id) => {
     dispatch(requestLoginSuccess(message, user_id));
   },
-  putTenant: (name, dirId) => {
-    dispatch(putTenant(name, dirId));
+  putTenant: (name, dirId, trashDirId) => {
+    dispatch(putTenant(name, dirId, trashDirId));
   }
 });
 

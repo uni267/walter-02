@@ -6,7 +6,12 @@ const initialState = {
 const tenantReducer = (state = initialState, action) => {
   switch ( action.type ) {
   case "PUT_TENANT":
-    return {...state, name: action.name, dirId: action.dirId};
+    return {
+      ...state,
+      name: action.name,
+      dirId: action.dirId, 
+      trashDirId: action.trashDirId
+    };
   default:
     return state;
   }

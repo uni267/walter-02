@@ -28,7 +28,8 @@ const AppNavBar = ({
   toggleMenu,
   notifications,
   handleAccountOpen,
-  handleLogout
+  handleLogout,
+  tenant
 }) => {
   const renderRightElements = () => {
     const notificationIcon = (
@@ -82,7 +83,7 @@ const AppNavBar = ({
   };
 
   const title = (
-    <Link to={`/home/`} style={style}>{appTitle}</Link>
+    <Link to={`/home/${tenant.dirId}`} style={style}>{appTitle}</Link>
   );
 
   return (
