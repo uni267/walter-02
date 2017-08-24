@@ -126,7 +126,7 @@ class File extends Component {
 
     const member = authorities.length > 1
           ? `${authorities.length} 人のメンバー`
-          : `${authorities[0].user.name_jp} のみ`;
+          : `${authorities[0].user.name} のみ`;
 
     return (
       <span
