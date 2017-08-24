@@ -19,8 +19,7 @@ class AddDirDialog extends Component {
     };
   }
 
-  onCreateClick = (e) => {
-    e.preventDefault();
+  handleCreate = (e) => {
     const dir_name = this.refs.dirName.getValue();
     this.props.createDir(dir_name);
   };
@@ -38,7 +37,7 @@ class AddDirDialog extends Component {
           label="Create"
           primary={true}
           keyboardFocused={true}
-          onTouchTap={this.onCreateClick}
+          onTouchTap={this.handleCreate}
           />
       )
     ];
@@ -55,6 +54,7 @@ class AddDirDialog extends Component {
           ref="dirName"
           hintText=""
           errorText={this.props.createDirState.errors.dirName}
+          onKeyDown={e => e.key === "Enter" ? this.handleCreate() : null }
           floatingLabelText="フォルダ名" />
 
       </Dialog>
@@ -69,8 +69,6 @@ class AddDirDialog extends Component {
         onTouchTap={() => this.setState({ addAuthority: { open: false } })}
         />
     );
-
-    // const createdDir = this.props.allDirs.slice().sort((a, b) => a.id < b.id)[0];
 
     return (
       <Dialog
