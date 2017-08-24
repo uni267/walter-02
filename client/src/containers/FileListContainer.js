@@ -48,7 +48,7 @@ import {
   toggleSortTarget,
   sortFile,
   requestFetchFiles,
-  fileUpload
+  uploadFiles
 } from "../actions";
 
 const styles = {
@@ -137,9 +137,7 @@ class FileListContainer extends Component {
 
   handleFileDrop = (item, monitor) => {
     if (monitor) {
-      monitor.getItem().files.forEach(
-        file => this.props.fileUpload(this.props.dir_id, file)
-      );
+      this.props.uploadFiles(this.props.dir_id, monitor.getItem().files);
     }
   }
 
@@ -276,10 +274,7 @@ class FileListContainer extends Component {
   };
 
   deleteFile = (file) => {
-    this.setState({ deleteFileDialog: { open: false } });
     this.props.deleteFile(file);
-    this.setState({ deleteFileDialog: { file: {} } });
-    this.props.triggerSnackbar(`${file.name}を削除しました`);
   };
 
   moveFile = (file) => {
@@ -423,7 +418,7 @@ class FileListContainer extends Component {
         <DeleteFileDialog
           open={this.state.deleteFileDialog.open}
           handleClose={this.toggleDeleteFileDialog}
-          deleteFile={this.deleteFile}
+          deleteFile={this.props.deleteFile}
           file={this.state.deleteFileDialog.file} />
 
         <MoveFileDialog
@@ -481,7 +476,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleSortTarget: () => { dispatch(toggleSortTarget()); },
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
   requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); },
-  fileUpload: (dir_id, file) => { dispatch(fileUpload(dir_id, file)); }
+  uploadFiles: (dir_id, files) => { dispatch(uploadFiles(dir_id, files)); }
 });
 
 FileListContainer = connect(

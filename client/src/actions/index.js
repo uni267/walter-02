@@ -201,5 +201,7 @@ export const fileUpload = (dir_id, file) => ({
   type: "FILE_UPLOAD", dir_id, file
 });
 
-
+export const uploadFiles = (dir_id, files) => ({
+  type: "UPLOAD_FILES", dir_id, files
+});
   
