@@ -11,54 +11,43 @@ import { requestFetchDirTree, selectDirTree } from "../actions";
 
 class DirTreeContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchDirTree();
+    this.props.requestFetchDirTree(this.props.tenant.dirId);    
   }
 
-  walk = (tree) => {
-    
-    let children = this.props.dirs.filter(
-      dir => dir.ancestor === tree.id && dir.depth === 1);
-
-    if (children.length === 0) return tree;
-
-    children = children.map(child => {
-      const name = this.props.allFiles.filter(
-        file => child.descendant === file.id)[0].name;
-
-      return {
-        id: child.descendant,
-        name: name,
-        children: []
-      };
-    });
-
-    tree.children = children.map(child => this.walk(child));
-    return tree;
+  renderDirTree = (node, idx) => {
+    return (
+      <DirTree key={idx} node={node} />
+    );
   };
 
   render() {
-    const nodes = this.walk({id: 0, name: "Top", children: []});
+   
+    if (this.props.dirTree.loading) {
+      return <div></div>;
+    } else {
+      const node = this.props.dirTree.node;
 
-    return (
-      <DirTree
-        selectedDir={this.props.selectedDir}
-        selectDirTree={this.props.selectDirTree}
-        nodes={nodes} />
-    );
+      return (
+        <div>
+          {node.name}
+          {node.children.map( (node, idx) => this.renderDirTree(node, idx) )}
+        </div>
+      );
+    }
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    dirs: state.dirs,
-    allFiles: state.files,
+    tenant: state.tenant,
+    dirTree: state.dirTree,
     selectedDir: state.selectedDir
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   selectDirTree: (dir) => { dispatch(selectDirTree(dir)); },
-  requestFetchDirTree: () => { dispatch(requestFetchDirTree()); }
+  requestFetchDirTree: (root_id) => { dispatch(requestFetchDirTree(root_id)); }
 });
 
 DirTreeContainer = connect(mapStateToProps, mapDispatchToProps)(DirTreeContainer);

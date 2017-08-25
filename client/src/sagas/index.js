@@ -14,6 +14,7 @@ import watchDeleteFile from "./watchDeleteFile";
 import watchUploadFiles from "./watchUploadFiles";
 import watchMoveFile from "./watchMoveFile";
 import watchSearchFileSimple from "./watchSearchFileSimple";
+import watchFetchDirTree from "./watchFetchDirTree";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -30,6 +31,7 @@ function* Saga() {
   yield fork(watchUploadFiles);
   yield fork(watchMoveFile);
   yield fork(watchSearchFileSimple);
+  yield fork(watchFetchDirTree);
 }
 
 export default Saga;

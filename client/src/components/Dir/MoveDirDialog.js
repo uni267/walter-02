@@ -32,6 +32,8 @@ const MoveDirDialog = ({
       title="フォルダを移動"
       open={open}
       modal={false}
+      autoScrollBodyContent={true}
+      onRequestClose={handleClose}
       actions={actions} >
 
       <DirTreeContainer />

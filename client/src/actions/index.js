@@ -206,6 +206,6 @@ export const toggleDeleteFileDialog = (file) => ({
   type: "TOGGLE_DELETE_FILE_DIALOG", file
 });
 
-export const requestFetchDirTree = () => ({
-  type: "REQUEST_FETCH_DIR_TREE"
+export const requestFetchDirTree = (root_id) => ({
+  type: "REQUEST_FETCH_DIR_TREE", root_id
 });

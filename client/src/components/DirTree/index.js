@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { fetchDirTree } from "../../apis";
 
 // material icons
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
@@ -6,94 +7,65 @@ import HardwareKeyboardArrowRight from "material-ui/svg-icons/hardware/keyboard-
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
 
 const styles = {
-  childList: {
-    margin: 0,
-    paddingTop: 10,
-    paddingLeft: 15
-  },
-  noToggleIcon: {
-    paddingLeft: 24
-  },
-  folderIcon: {
-    paddingRight: 5
+  child: {
+    marginLeft: 20
   }
 };
 
-class TreeNode extends Component {
+class DirTree extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      viewChild: false,
+      children: null
     };
   }
 
-  // ディレクトリ ツリーを展開する
-  toggleOpen = () => {
-    this.setState({ open: !this.state.open });
+  componentWillMount() {
+    if (this.state.children === null) {
+      this.getChild();
+    }
+  }
+
+  getChild = () => {
+    fetchDirTree(this.props.node._id)
+      .then( payload => {
+        this.setState({
+          children: payload.data.children
+        });
+      })
+      .catch( err => {
+        console.log(err);
+      });
   };
 
-  // ディレクトリ ツリー展開用の部品
-  toggleIcon = () => {
-    if (this.props.nodes.children.length === 0) {
-      return <span style={styles.noToggleIcon}></span>;
-    }
+  renderChildren = () => {
+    return this.state.children.map( (child, idx) => {
+      return <DirTree key={idx} node={child} />;
+    });
+  };
 
-    return this.state.open
-      ? <HardwareKeyboardArrowDown onClick={this.toggleOpen} />
-      : <HardwareKeyboardArrowRight onClick={this.toggleOpen} />;
+  handleClick = () => {
+    this.setState({ viewChild: !this.state.viewChild });
   };
 
   render() {
-    const { nodes, onClickSelect, selectedDir } = this.props;
-    const textColor = selectedDir.id === nodes.id ? "rgb(0, 188, 212)" : "inherit";
-    const folderColor = selectedDir.id === nodes.id ? "rgb(0, 188, 212)" : "inherit";
-
-    let childNodes;
-
-    if (nodes.children === undefined || !this.state.open) {
-      childNodes = null;
-    } else {
-      childNodes = nodes.children.map( (child, idx) => {
-        return (
-          <TreeNode
-            key={idx}
-            nodes={child}
-            onClickSelect={onClickSelect}
-            selectedDir={selectedDir}
-            />
-        );
-      });
-    }
 
     return (
       <div>
-        {this.toggleIcon()}
-        <span
-          style={{color: textColor, verticalAlign: "top"}}
-          onClick={() => onClickSelect(nodes)}>
+        <div
+          style={styles.child}
+          onClick={this.handleClick} >
 
-          <FileFolderOpen
-            style={{...styles.folderIcon, color: folderColor}}
-            onClick={this.toggleSelect} />
+          {this.props.node.name}
+        </div>
 
-          {nodes.name}
-
-        </span>
-        <ul style={styles.childList}>{childNodes}</ul>
+        <div style={styles.child}>
+          { this.state.viewChild ? this.renderChildren() : null }
+        </div>
       </div>
     );
   }
-}
-
-class DirTree extends Component {
-  render() {
-    return (
-      <TreeNode
-        nodes={this.props.nodes}
-        onClickSelect={this.props.selectDirTree}
-        selectedDir={this.props.selectedDir} />
-    );
-  }
-}
+};
 
 export default DirTree;

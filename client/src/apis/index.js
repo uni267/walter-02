@@ -193,7 +193,7 @@ const searchFiles = (value) => {
     .then( res => res );
 };
 
-const fetchDirTree = () => {
+const fetchDirTree = (root_id) => {
   const token = localStorage.getItem("token");
   const config = {
     headers: {
@@ -201,7 +201,7 @@ const fetchDirTree = () => {
     }
   };
 
-  return axios.get(`/api/v1/dirs/tree`, config)
+  return axios.get(`/api/v1/dirs/tree/?root_id=${root_id}`, config)
     .then( res => res );
 };
 

@@ -9,7 +9,7 @@ import File from "../models/File";
 
 const router = Router();
 
-// ディレクトリの階層
+// ディレクトリの階層(top -> folder1 -> folder2みたいなやつ)
 router.get("/", (req, res, next) => {
   const conditions = {
     descendant: req.query.dir_id
@@ -47,6 +47,62 @@ router.get("/", (req, res, next) => {
     });
 
   });
+
+});
+
+// ディレクトリのツリー(以下みたいなやつ)
+//   root --- folder1 -- folder1-1
+//         |- folder2
+//         |- folder3 -- folder3-1 
+router.get("/tree", (req, res, next) => {
+
+  const root_id = mongoose.Types.ObjectId(req.query.root_id);
+
+  File.findById(root_id)
+    .then( root => {
+      res.root = root;
+
+      return Dir.aggregate([
+        { $match: { ancestor: root_id, depth: 1 } },
+        { $lookup:
+          {
+            from: "files",
+            localField: "descendant",
+            foreignField: "_id",
+            as: "descendant"
+          }
+        }
+      ]);
+
+    })
+    .then( dirs => {
+      if (dirs.length === 0) {
+        return {
+          _id: res.root._id,
+          name: res.root.name,
+          children: []
+        };
+      }
+
+      const children = dirs.map(dir => {
+        if (dir.descendant[0].is_display) {
+          return {
+            _id: dir.descendant[0]._id,
+            name: dir.descendant[0].name
+          };
+        } else {
+          return null;
+        }
+      }).filter( child => child !== null);
+
+      return {
+        _id: res.root._id,
+        name: res.root.name,
+        children: children
+      };
+    })
+    .then( dirs => res.json(dirs) )
+    .catch( err => console.log(err) );
 
 });
 

@@ -1,5 +1,3 @@
-import DIRS from "../mock-dirs";
-
 const dirsReducer = (state = [], action) => {
 
   switch (action.type) {

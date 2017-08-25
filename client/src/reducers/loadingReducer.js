@@ -5,9 +5,9 @@ const initialState = {
 const loadingReducer = (state = initialState, action) => {
   switch ( action.type ) {
   case "LOADING_START":
-    return {...state, start: true};
+    return {start: true};
   case "LOADING_END":
-    return {...state, start: false};
+    return {start: false};
   default:
     return state;
   }
