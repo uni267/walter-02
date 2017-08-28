@@ -1,5 +1,8 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
+
+// store
+import { connect } from "react-redux";
 
 // material ui
 import Dialog from "material-ui/Dialog";
@@ -8,44 +11,61 @@ import FlatButton from "material-ui/FlatButton";
 // components
 import DirTreeContainer from "../../containers/DirTreeContainer";
 
-const MoveDirDialog = ({
-  open,
-  handleClose
-}) => {
-  const actions = [
-    (
-      <FlatButton
-        label="移動"
-        primary={true}
-        />
-    ),
-    (
-      <FlatButton
-        label="close"
-        onTouchTap={handleClose}
-        />
-    )
-  ];
+// actions
+import { moveDir, toggleMoveDirDialog } from "../../actions";
 
-  return (
-    <Dialog
-      title="フォルダを移動"
-      open={open}
-      modal={false}
-      autoScrollBodyContent={true}
-      onRequestClose={handleClose}
-      bodyStyle={{ backgroundColor: "rgb(240,240,240)" }}
-      actions={actions} >
+class MoveDirDialog extends Component {
+  render() {
+    const actions = [
+      (
+        <FlatButton
+          label="移動"
+          onTouchTap={() => {
+            const destinationDir = this.props.dirTree.selected;
+            const movingDir = this.props.dirTree.move_dir;
+            this.props.moveDir(destinationDir, movingDir);
+          }}
+          primary={true}
+          />
+      ),
+      (
+        <FlatButton
+          label="close"
+          onTouchTap={this.props.toggleMoveDirDialog}
+          />
+      )
+    ];
 
-      <DirTreeContainer />
+    return (
+      <Dialog
+        title="フォルダを移動"
+        open={this.props.dirTree.moveDirDialogOpen}
+        modal={false}
+        autoScrollBodyContent={true}
+        onRequestClose={this.props.toggleMoveDirDialog}
+        bodyStyle={{ backgroundColor: "rgb(240, 240, 240)" }}
+        actions={actions} >
 
-    </Dialog>
-  );
+        <DirTreeContainer />
+
+      </Dialog>
+    );
+  }
+}
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    dirTree: state.dirTree
+  };
 };
 
-MoveDirDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired
-};
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  moveDir: (destinationDir, movingDir) => {
+    dispatch(moveDir(destinationDir, movingDir));
+  },
+  toggleMoveDirDialog: (dir) => { dispatch(toggleMoveDirDialog(dir)); }
+});
+
+MoveDirDialog = connect(mapStateToProps, mapDispatchToProps)(MoveDirDialog);
 
 export default MoveDirDialog;

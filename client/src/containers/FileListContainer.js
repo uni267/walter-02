@@ -48,7 +48,8 @@ import {
   sortFile,
   requestFetchFiles,
   uploadFiles,
-  toggleDeleteFileDialog
+  toggleDeleteFileDialog,
+  toggleMoveDirDialog
 } from "../actions";
 
 const styles = {
@@ -90,9 +91,6 @@ class FileListContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      moveDirDialog: {
-        open: false
-      },
       copyDirDialog: {
         open: false
       },
@@ -183,14 +181,6 @@ class FileListContainer extends Component {
       authorityDirDialog: {
         open: !this.state.authorityDirDialog.open,
         dir: dir
-      }
-    });
-  };
-
-  toggleMoveDirDialog = () => {
-    this.setState({
-      moveDirDialog: {
-        open: !this.state.moveDirDialog.open
       }
     });
   };
@@ -298,7 +288,7 @@ class FileListContainer extends Component {
         headers={headers}
         triggerSnackbar={this.props.triggerSnackbar}
         editDir={this.props.editFileByIndex}
-        handleMoveDir={this.toggleMoveDirDialog}
+        handleMoveDir={this.props.toggleMoveDirDialog}
         handleCopyDir={this.toggleCopyDirDialog}
         handleDeleteDir={this.toggleDeleteDirDialog}
         handleAuthorityDir={this.toggleAuthorityDirDialog}
@@ -362,9 +352,7 @@ class FileListContainer extends Component {
 
         </TableBodyWrapper>
 
-        <MoveDirDialog
-          open={this.state.moveDirDialog.open}
-          handleClose={this.toggleMoveDirDialog} />
+        <MoveDirDialog />
 
         <CopyDirDialog
           open={this.state.copyDirDialog.open}
@@ -440,7 +428,8 @@ const mapStateToProps = (state, ownProps) => {
     users: state.users,
     selectedDir: state.selectedDir,
     fileSortTarget: state.fileSortTarget,
-    deleteFileState: state.deleteFile
+    deleteFileState: state.deleteFile,
+    dirTree: state.dirTree
   };
 };
 
@@ -463,7 +452,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   sortFile: (sorted, desc) => { dispatch(sortFile(sorted, desc)); },
   requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); },
   uploadFiles: (dir_id, files) => { dispatch(uploadFiles(dir_id, files)); },
-  toggleDeleteFileDialog: (file) => { dispatch(toggleDeleteFileDialog(file)); }
+  toggleDeleteFileDialog: (file) => { dispatch(toggleDeleteFileDialog(file)); },
+  toggleMoveDirDialog: (dir) => { dispatch(toggleMoveDirDialog(dir)); }
 });
 
 FileListContainer = connect(

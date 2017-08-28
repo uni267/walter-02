@@ -181,6 +181,20 @@ const moveFile = (dir, file) => {
     .then( res => res );
 };
 
+const moveDir = (destinationDir, movingDir) => {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      "X-Auth-Cloud-Storage": token
+    }
+  };
+
+  const body = { destinationDir };
+  return axios.patch(`/api/v1/dirs/${movingDir._id}/move`, body, config)
+    .then( res => res );
+
+};
+
 const searchFiles = (value) => {
   const token = localStorage.getItem("token");
   const config = {
@@ -220,6 +234,7 @@ export {
   fileUpload,
   deleteFile,
   moveFile,
+  moveDir,
   searchFiles,
   fetchDirTree
 };

@@ -245,6 +245,61 @@ router.post("/", (req, res, next) => {
         });
       }
     });
+});
+
+// フォルダ移動
+router.patch("/:moving_id/move", (req, res, next) => {
+  const moving_id = mongoose.Types.ObjectId(req.params.moving_id);
+  const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);
+
+  Dir.find({
+    depth: { $gt: 0 },
+    $or: [
+      { ancestor: moving_id },
+      { descendant: moving_id }
+    ]
+  })
+    .then( routes => {
+      routes.forEach( route => route.remove() );
+    })
+    .then( () => {
+      return Dir.find({ descendant: destination_id, depth: { $gt: 0 } });
+    })
+    .then( dirs => {
+      return dirs.map( dir => {
+        return {
+          ancestor: dir.ancestor,
+          descendant: moving_id,
+          depth: dir.depth + 1
+        };
+      });
+    })
+    .then( dirs => {
+      return dirs.concat({
+        ancestor: destination_id,
+        descendant: moving_id,
+        depth: 1
+      });
+    })
+    .then( dirs => {
+      return Dir.collection.insert(dirs);
+    })
+    .then( () => {
+      return File.findById(moving_id);
+    })
+    .then( _moving => {
+      _moving.dir_id = destination_id;
+      return _moving.save();
+    })
+    .then( _moving => {
+      res.json({
+        status: { success: true },
+        body: _moving
+      });
+    })
+    .catch( err => {
+      console.log(err);
+    });
 
 });
 

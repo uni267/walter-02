@@ -185,7 +185,7 @@ class Dir extends Component {
 
             <MenuItem
               primaryText="移動"
-              onTouchTap={this.props.handleMoveDir} />
+              onTouchTap={() => this.props.handleMoveDir(this.props.dir)} />
 
             <MenuItem
               primaryText="コピー"

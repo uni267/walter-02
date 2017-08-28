@@ -61,7 +61,8 @@ class DirTree extends Component {
   };
 
   render() {
-    const childWrapper = this.props.dirTree.selected === this.props.node._id
+    const childWrapper = this.props.dirTree.selected &&
+          this.props.dirTree.selected._id === this.props.node._id
           ? { ...styles.childWrapper, backgroundColor: "rgb(240, 240, 240)" }
           : styles.childWrapper;
 
@@ -79,6 +80,7 @@ class DirTree extends Component {
 
           <div style={{ display: "flex", marginLeft: 7 }} 
                onClick={() => this.props.selectDirTree(this.props.node)}>
+
             <div>
               {this.state.viewChild
                 ? <FileFolderOpen />

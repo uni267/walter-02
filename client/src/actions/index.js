@@ -209,3 +209,11 @@ export const toggleDeleteFileDialog = (file) => ({
 export const requestFetchDirTree = (root_id) => ({
   type: "REQUEST_FETCH_DIR_TREE", root_id
 });
+
+export const moveDir = (destinationDir, movingDir) => ({
+  type: "MOVE_DIR", destinationDir, movingDir
+});
+
+export const toggleMoveDirDialog = (dir) => ({
+  type: "TOGGLE_MOVE_DIR_DIALOG", dir
+});
