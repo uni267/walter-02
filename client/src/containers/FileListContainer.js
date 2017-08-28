@@ -348,7 +348,10 @@ class FileListContainer extends Component {
           onDrop={this.handleFileDrop}
           >
 
-          {this.props.files.map( (file, idx) => this.renderRow(file, idx) )}
+          {this.props.files.length === 0
+            ? "フォルダが空です(デザインはこれから)"
+            : this.props.files.map( (file, idx) => this.renderRow(file, idx) )
+          }
 
         </TableBodyWrapper>
 
