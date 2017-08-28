@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 // DnD
 import { DragSource } from "react-dnd";
@@ -185,7 +186,7 @@ class File extends Component {
         {this.renderFileName()}
 
         <div style={{...cellStyle, width: headers[2].width}}>
-          {file.modified}
+          {moment(file.modified).format("YYYY-MM-DD hh:mm:ss")}
         </div>
 
         <div style={{...cellStyle, width: headers[3].width}}>

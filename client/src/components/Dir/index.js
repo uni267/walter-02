@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 // DnD
 import { DropTarget } from 'react-dnd';
@@ -168,7 +169,9 @@ class Dir extends Component {
 
         {this.renderDirName()}
 
-        <div style={{...cellStyle, width: headers[2].width}}>{dir.modified}</div>
+        <div style={{...cellStyle, width: headers[2].width}}>
+          {moment(dir.modified).format("YYYY-MM-DD hh:mm:ss")}
+        </div>
 
         <div style={{...cellStyle, width: headers[3].width}}>
           {this.renderMember()}
