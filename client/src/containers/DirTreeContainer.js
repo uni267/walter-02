@@ -31,7 +31,9 @@ class DirTreeContainer extends Component {
 
   renderDirTree = (node, idx) => {
     return (
-      <DirTree key={idx} node={node} />
+      <DirTree key={idx} node={node}
+               selectDirTree={this.props.selectDirTree}
+               dirTree={this.props.dirTree} />
     );
   };
 
@@ -46,14 +48,22 @@ class DirTreeContainer extends Component {
         <div style={styles.dirWrapper}>
 
           <div style={{ display: "flex" }}>
+
             <div>
               <HardwareKeyboardArrowDown />
             </div>
-            <div style={{ marginLeft: 7 }}>
-              <FileFolderOpen />
-            </div>
-            <div style={{ marginLeft: 7 }}>
-              {node.name}
+
+            <div style={{ display: "flex", marginLeft: 7 }}
+                 onClick={() => this.props.selectDirTree(this.props.dirTree.node)}>
+              <div>
+                <FileFolderOpen />
+              </div>
+
+              <div style={{ marginLeft: 10 }}>
+                <p style={{ margin: 0, padding: 0 }}>
+                  {node.name}
+                </p>
+              </div>
             </div>
           </div>
 

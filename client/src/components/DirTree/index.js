@@ -44,7 +44,11 @@ class DirTree extends Component {
 
   renderChildren = () => {
     return this.state.children.map( (child, idx) => {
-      return <DirTree key={idx} node={child} />;
+      return (
+        <DirTree key={idx} node={child}
+                 selectDirTree={this.props.selectDirTree}
+                 dirTree={this.props.dirTree} />
+      );
     });
   };
 
@@ -57,9 +61,12 @@ class DirTree extends Component {
   };
 
   render() {
+    const childWrapper = this.props.dirTree.selected === this.props.node._id
+          ? { ...styles.childWrapper, backgroundColor: "rgb(240, 240, 240)" }
+          : styles.childWrapper;
 
     return (
-      <div style={styles.childWrapper}>
+      <div style={childWrapper}>
 
         <div style={{ display: "flex" }}>
 
@@ -70,15 +77,18 @@ class DirTree extends Component {
             }
           </div>
 
-          <div style={{ marginLeft: 7 }}>
-            {this.state.viewChild
-              ? <FileFolderOpen />
-              : <FileFolder />
-            }
-          </div>
+          <div style={{ display: "flex", marginLeft: 7 }} 
+               onClick={() => this.props.selectDirTree(this.props.node)}>
+            <div>
+              {this.state.viewChild
+                ? <FileFolderOpen />
+                : <FileFolder />
+              }
+            </div>
 
-          <div style={{ marginLeft: 7 }}>
-            {this.props.node.name}
+            <div style={{ marginLeft: 10 }}>
+              {this.props.node.name}
+            </div>
           </div>
 
         </div>

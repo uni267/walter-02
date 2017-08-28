@@ -1,5 +1,6 @@
 const initialState = {
-  loading: true
+  loading: true,
+  selected: null
 };
 
 const dirTreeReducer = (state = initialState, action) => {
@@ -11,6 +12,12 @@ const dirTreeReducer = (state = initialState, action) => {
       loading: false,
       node: action.node
     };
+  case "SELECT_DIR_TREE":
+    return {
+      ...state,
+      selected: action.dir._id
+    };
+
   default:
     return state;
   }
