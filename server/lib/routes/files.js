@@ -183,6 +183,15 @@ router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
       };
 
       file.authorities = file.authorities.concat(authority);
+
+      const history = {
+        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+        user: user,
+        action: "新規作成",
+        body: ""
+      };
+
+      file.histories = file.histories.concat(history);
       return file.save();
     })
     .then( file => {

@@ -169,7 +169,15 @@ router.post("/", (req, res, next) => {
       };
 
       dir.authorities = dir.authorities.concat(authority);
-      // dirはここで完成
+
+      const history = {
+        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+        user: user,
+        action: "新規作成",
+        body: ""
+      };
+
+      dir.histories = dir.histories.concat(history);
       return dir.save();
     })
     .then( dir => {
