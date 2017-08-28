@@ -34,6 +34,7 @@ const MoveDirDialog = ({
       modal={false}
       autoScrollBodyContent={true}
       onRequestClose={handleClose}
+      bodyStyle={{ backgroundColor: "rgb(240,240,240)" }}
       actions={actions} >
 
       <DirTreeContainer />

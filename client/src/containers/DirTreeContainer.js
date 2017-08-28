@@ -6,8 +6,23 @@ import { connect } from "react-redux";
 // components
 import DirTree from "../components/DirTree";
 
+// material
+import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
+import FileFolder from "material-ui/svg-icons/file/folder";
+import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
 // actions
 import { requestFetchDirTree, selectDirTree } from "../actions";
+
+const styles = {
+  dirWrapper: {
+    padding: 15,
+    marginTop: 30,
+    marginBottom: 30,
+    backgroundColor: "rgb(255, 255, 255)",
+    border: "solid 1px",
+    borderColor: "rgb(200, 200, 200)"
+  }
+};
 
 class DirTreeContainer extends Component {
   componentWillMount() {
@@ -28,9 +43,22 @@ class DirTreeContainer extends Component {
       const node = this.props.dirTree.node;
 
       return (
-        <div>
-          {node.name}
+        <div style={styles.dirWrapper}>
+
+          <div style={{ display: "flex" }}>
+            <div>
+              <HardwareKeyboardArrowDown />
+            </div>
+            <div style={{ marginLeft: 7 }}>
+              <FileFolderOpen />
+            </div>
+            <div style={{ marginLeft: 7 }}>
+              {node.name}
+            </div>
+          </div>
+
           {node.children.map( (node, idx) => this.renderDirTree(node, idx) )}
+
         </div>
       );
     }

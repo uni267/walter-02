@@ -2,13 +2,16 @@ import React, { Component } from "react";
 import { fetchDirTree } from "../../apis";
 
 // material icons
+import FileFolder from "material-ui/svg-icons/file/folder";
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import HardwareKeyboardArrowRight from "material-ui/svg-icons/hardware/keyboard-arrow-right";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
 
 const styles = {
-  child: {
-    marginLeft: 20
+  childWrapper: {
+    marginLeft: 33,
+    marginTop: 10,
+    marginBottom: 10
   }
 };
 
@@ -49,20 +52,38 @@ class DirTree extends Component {
     this.setState({ viewChild: !this.state.viewChild });
   };
 
+  hasChildren = () => {
+    return this.state.children.length === 0;
+  };
+
   render() {
 
     return (
-      <div>
-        <div
-          style={styles.child}
-          onClick={this.handleClick} >
+      <div style={styles.childWrapper}>
 
-          {this.props.node.name}
+        <div style={{ display: "flex" }}>
+
+          <div onClick={this.handleClick}>
+            {this.state.viewChild
+              ? <HardwareKeyboardArrowDown />
+              : <HardwareKeyboardArrowRight />
+            }
+          </div>
+
+          <div style={{ marginLeft: 7 }}>
+            {this.state.viewChild
+              ? <FileFolderOpen />
+              : <FileFolder />
+            }
+          </div>
+
+          <div style={{ marginLeft: 7 }}>
+            {this.props.node.name}
+          </div>
+
         </div>
 
-        <div style={styles.child}>
-          { this.state.viewChild ? this.renderChildren() : null }
-        </div>
+        { this.state.viewChild ? this.renderChildren() : null }
       </div>
     );
   }
