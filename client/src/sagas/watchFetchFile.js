@@ -2,7 +2,7 @@ import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
 // api
-import { fetchFile } from "../apis";
+import { API } from "../apis";
 
 function* watchFetchFile() {
 
@@ -12,7 +12,7 @@ function* watchFetchFile() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(fetchFile, file_id);
+      const payload = yield call(API.fetchFile, file_id);
       yield put({ type: "INIT_FILE", file: payload.data.body });
     }
     catch (e) {

@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { fetchDelTag } from "../apis";
+import { API } from "../apis";
 
 function* watchDelTag() {
   while (true) {
@@ -10,7 +10,7 @@ function* watchDelTag() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(fetchDelTag, file, tag);
+      const payload = yield call(API.fetchDelTag, file, tag);
       yield put({ type: "INIT_FILE", file: payload.data.body });
     }
     catch (e) {

@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { moveDir, fetchFiles } from "../apis";
+import { API } from "../apis";
 
 function* watchMoveDir() {
   while (true) {
@@ -11,8 +11,8 @@ function* watchMoveDir() {
     yield call(delay, 1000);
 
     try {
-      yield call(moveDir, destinationDir, movingDir);
-      const payload = yield call(fetchFiles, movingDir.dir_id);
+      yield call(API.moveDir, destinationDir, movingDir);
+      const payload = yield call(API.fetchFiles, movingDir.dir_id);
       yield put({ type: "INIT_FILES", files: payload.data.body });
       yield put({ type: "TRIGGER_SNACK", message: "フォルダを移動しました" });
       yield put({ type: "TOGGLE_MOVE_DIR_DIALOG" });

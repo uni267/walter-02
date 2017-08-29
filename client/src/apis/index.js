@@ -1,240 +1,134 @@
 import axios from "axios";
 
-// @todo urlはconstants or configs などに保存する
-const login = (name, password) => {
-  const data = { email: name, password: password };
-  return axios.post("/api/login", data).then( res => res );
+const client = axios.create({
+  headers: {
+    "X-Auth-Cloud-Storage": localStorage.getItem("token")
+  }
+});
 
-};
+class API {
 
-const fetchUserById = (user_id) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
+  static login(name, password) {
+    const data = { email: name, password: password };
+
+    return axios.post("/api/login", data).then( res => res );
   };
 
-  return axios.get(`/api/v1/users/${user_id}`, config)
-    .then(res => res);
-};
+  static fetchUserById(user_id) {
+    return client.get(`/api/v1/users/${user_id}`).then( res => res );
+  }
 
-const fetchFiles = (dir_id) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    },
-    params: {
-      dir_id: dir_id
-    }
-  };
+  static fetchFiles(dir_id) {
+    const config = {
+      params: {
+        dir_id: dir_id
+      }
+    };
 
-  return axios.get("/api/v1/files", config).then(res => res);
-};
+    return client.get("/api/v1/files", config).then(res => res);
+  }
 
-const fetchFile = (file_id) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static fetchFile(file_id) {
+    return client.get(`/api/v1/files/${file_id}`).then(res => res);
+  }
 
-  return axios.get(`/api/v1/files/${file_id}`, config).then(res => res);
-};
+  static fetchDirs(dir_id) {
+    const config = {
+      params: {
+        dir_id: dir_id
+      }
+    };
 
-const fetchDirs = (dir_id) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    },
-    params: {
-      dir_id: dir_id
-    }
-  };
+    return client.get("/api/v1/dirs", config).then(res => res);
+  }
 
-  return axios.get("/api/v1/dirs", config).then(res => res);
-};
+  static fetchTags() {
+    return client.get("/api/v1/tags").then(res => res);
+  }
 
-const fetchTags = () => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static fetchAddTag(file, tag) {
+    return client.post(`/api/v1/files/${file._id}/tags`, tag)
+      .then( res => res );
+  }
 
-  return axios.get("/api/v1/tags", config).then(res => res);
-};
+  static fetchDelTag(file, tag) {
+    return client.delete(`/api/v1/files/${file._id}/tags/${tag._id}`)
+      .then( res => res );
+  }
 
-const fetchAddTag = (file, tag) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static editFile(file) {
+    return client.patch(`/api/v1/files/${file._id}/rename`, file)
+      .then( res => res );
+  }
 
-  return axios.post(`/api/v1/files/${file._id}/tags`, tag, config)
-    .then( res => res );
+  static changePassword(current_password, new_password) {
+    const user_id = localStorage.getItem("userId");
+    const body = { current_password, new_password };
 
-};
+    return client.patch(`/api/v1/users/${user_id}/password`, body)
+      .then( res => res );
+  }
 
-const fetchDelTag = (file, tag) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static createDir(dir_id, dir_name) {
+    const token = localStorage.getItem("token");
+    const body = { dir_id, dir_name, token };
 
-  const url = `/api/v1/files/${file._id}/tags/${tag._id}`;
-  console.log(url);
-  return axios.delete(url, config)
-    .then( res => res );
+    return client.post(`/api/v1/dirs`, body).then( res => res );
+  }
 
-};
+  static fileUpload(dir_id, file) {
 
-const editFile = (file) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+    let form = new FormData();
+    form.append("myFile", file);
+    form.append("dir_id", dir_id);
 
-  return axios.patch(`/api/v1/files/${file._id}/rename`, file, config)
-    .then( res => res );
-};
+    return client.post(`/api/v1/files`, form).then( res => res );
+  }
 
-const changePassword = (current_password, new_password) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static deleteFile(file) {
+    const body = { dir_id: localStorage.getItem("trashDirId") };
 
-  const user_id = localStorage.getItem("userId");
-  const body = { current_password, new_password };
-  return axios.patch(`/api/v1/users/${user_id}/password`, body, config)
-    .then( res => res );
-};
+    // ファイル削除はごみ箱への移動なのでapi的にはmoveとする
+    return client.patch(`/api/v1/files/${file._id}/move`, body)
+      .then( res => res );
+  }
 
-const createDir = (dir_id, dir_name) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static moveFile(dir, file) {
+    const body = { dir_id: dir._id };
+    return client.patch(`/api/v1/files/${file._id}/move`, body)
+      .then( res => res );
+  }
 
-  const body = { dir_id, dir_name, token };
+  static moveDir(destinationDir, movingDir) {
+    const body = { destinationDir };
+    return client.patch(`/api/v1/dirs/${movingDir._id}/move`, body)
+      .then( res => res );
+  }
 
-  return axios.post(`/api/v1/dirs`, body, config)
-    .then( res => res );
-};
+  static searchFiles(value) {
+    return client.get(`/api/v1/files/search?q=${value}`)
+      .then( res => res );
+  }
 
-const fileUpload = (dir_id, file) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static fetchDirTree(root_id) {
+    return client.get(`/api/v1/dirs/tree/?root_id=${root_id}`)
+      .then( res => res );
+  }
 
-  let form = new FormData();
-  form.append("myFile", file);
-  form.append("dir_id", dir_id);
+  static fetchMetaInfos = (tenant_id) => {
+    return client.get(`/api/v1/meta_infos/?tenant_id=${tenant_id}`)
+      .then( res => res );
+  }
 
-  return axios.post(`/api/v1/files`, form, config)
-    .then( res => res );
-};
+  static addMetaInfo(file, meta) {
+    return client.post(`/api/v1/files/${file._id}/meta`, meta)
+      .then( res => res );
+  }
 
-const deleteFile = (file) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
+  static deleteMetaInfo(file, meta) {
+    return client.delete(`/api/v1/files/${file._id}/meta/${meta._id}`)
+      .then( res => res );
+  }
+}
 
-  const body = { dir_id: localStorage.getItem("trashDirId") };
-
-  // ファイル削除はごみ箱への移動なのでapi的にはmoveとする
-  return axios.patch(`/api/v1/files/${file._id}/move`, body, config)
-    .then( res => res );
-};
-
-const moveFile = (dir, file) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
-
-  const body = { dir_id: dir._id };
-  return axios.patch(`/api/v1/files/${file._id}/move`, body, config)
-    .then( res => res );
-};
-
-const moveDir = (destinationDir, movingDir) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
-
-  const body = { destinationDir };
-  return axios.patch(`/api/v1/dirs/${movingDir._id}/move`, body, config)
-    .then( res => res );
-
-};
-
-const searchFiles = (value) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
-
-  return axios.get(`/api/v1/files/search?q=${value}`, config)
-    .then( res => res );
-};
-
-const fetchDirTree = (root_id) => {
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      "X-Auth-Cloud-Storage": token
-    }
-  };
-
-  return axios.get(`/api/v1/dirs/tree/?root_id=${root_id}`, config)
-    .then( res => res );
-};
-
-export {
-  login,
-  fetchUserById,
-  fetchFiles,
-  fetchFile,
-  fetchDirs,
-  fetchTags,
-  fetchAddTag,
-  fetchDelTag,
-  editFile,
-  changePassword,
-  createDir,
-  fileUpload,
-  deleteFile,
-  moveFile,
-  moveDir,
-  searchFiles,
-  fetchDirTree
-};
+export { API };

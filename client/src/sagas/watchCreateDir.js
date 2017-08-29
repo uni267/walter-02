@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { createDir, fetchFiles } from "../apis";
+import { API } from "../apis";
 
 function* watchCreateDir() {
   while (true) {
@@ -10,8 +10,8 @@ function* watchCreateDir() {
 
     try {
       yield call(delay, 1000);
-      yield call(createDir, dir_id, dir_name);
-      const payload = yield call(fetchFiles, dir_id);
+      yield call(API.createDir, dir_id, dir_name);
+      const payload = yield call(API.fetchFiles, dir_id);
       yield put({ type: "INIT_FILES", files: payload.data.body });
       yield put({ type: "TOGGLE_CREATE_DIR" });
       yield put({ type: "TRIGGER_SNACK", message: "フォルダを作成しました" });

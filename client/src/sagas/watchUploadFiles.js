@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { fetchFiles, fileUpload } from "../apis";
+import { API } from "../apis";
 
 function* watchUploadFiles() {
   while (true) {
@@ -10,7 +10,7 @@ function* watchUploadFiles() {
     yield call(delay, files.length * 1000);
 
     try {
-      const tasks = files.map( file => call(fileUpload, dir_id, file) );
+      const tasks = files.map( file => call(API.fileUpload, dir_id, file) );
       const uploadPayloads = yield all(tasks);
 
       const buffers = uploadPayloads.map( pay => pay.data.body )
@@ -18,7 +18,7 @@ function* watchUploadFiles() {
 
       yield all(buffers);
 
-      const filesPayload = yield call(fetchFiles, dir_id);
+      const filesPayload = yield call(API.fetchFiles, dir_id);
       yield put({ type: "INIT_FILES", files: filesPayload.data.body });
       yield put({ type: "TRIGGER_SNACK", message: "ファイルをアップロードしました" });
     }

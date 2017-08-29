@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { fetchTags } from "../apis";
+import { API } from "../apis";
 
 function* watchFetchTags() {
   while (true) {
@@ -10,7 +10,7 @@ function* watchFetchTags() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(fetchTags);
+      const payload = yield call(API.fetchTags);
       yield put({ type: "INIT_TAGS", tags: payload.data.body });
     }
     catch (e) {

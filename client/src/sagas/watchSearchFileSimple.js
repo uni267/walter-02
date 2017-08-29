@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { searchFiles } from "../apis";
+import { API } from "../apis";
 
 function* watchSearchFileSimple() {
   while (true) {
@@ -10,7 +10,7 @@ function* watchSearchFileSimple() {
     yield call(delay, 1000);
 
     try {
-      const payload = yield call(searchFiles, value);
+      const payload = yield call(API.searchFiles, value);
       yield put({ type: "INIT_FILES", files: payload.data.body });
       const { dirId } = yield select(state => state.tenant);
 

@@ -1,7 +1,7 @@
 import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
-import { deleteFile, fetchFiles } from "../apis";
+import { API } from "../apis";
 
 function* watchDeleteFile() {
   while (true) {
@@ -10,8 +10,8 @@ function* watchDeleteFile() {
     yield call(delay, 1000);
 
     try {
-      yield call(deleteFile, file);
-      const payload = yield call(fetchFiles, file.dir_id);
+      yield call(API.deleteFile, file);
+      const payload = yield call(API.fetchFiles, file.dir_id);
       yield put({ type: "INIT_FILES", files: payload.data.body });
       yield put({ type: "TOGGLE_DELETE_FILE_DIALOG", file: file });
       yield put({

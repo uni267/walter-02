@@ -2,7 +2,7 @@ import { delay } from "redux-saga";
 import { call, put, fork, take, all, select } from "redux-saga/effects";
 
 // api
-import { fetchFiles, fetchDirs } from "../apis";
+import { API } from "../apis";
 
 function* watchFetchFiles() {
   while (true) {
@@ -13,8 +13,8 @@ function* watchFetchFiles() {
       yield call(delay, 500);
 
       const [ files, dirs ] = yield all([
-        call(fetchFiles, dir_id),
-        call(fetchDirs, dir_id)
+        call(API.fetchFiles, dir_id),
+        call(API.fetchDirs, dir_id)
       ]);
 
       yield put({ type: "INIT_FILES", files: files.data.body });
