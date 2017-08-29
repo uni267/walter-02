@@ -51,10 +51,11 @@ class LoginContainer extends Component {
     const user_id = localStorage.getItem("userId");
     const dir_id = localStorage.getItem("dirId");
     const trash_dir_id = localStorage.getItem("trashDirId");
+    const tenant_id = localStorage.getItem("tenantId");
     const tenant_name = localStorage.getItem("tenantName");
 
-    if (token && user_id && dir_id && trash_dir_id && tenant_name) {
-      this.props.putTenant(tenant_name, dir_id, trash_dir_id);
+    if (token && user_id && dir_id && trash_dir_id && tenant_id && tenant_name) {
+      this.props.putTenant(tenant_id, tenant_name, dir_id, trash_dir_id);
       this.props.requestLoginSuccess("success", user_id);
     }
   }
