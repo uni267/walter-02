@@ -6,6 +6,8 @@ import moment from "moment";
 import { Router } from "express";
 import File from "../models/File";
 import Tag from "../models/Tag";
+import MetaInfo from "../models/MetaInfo";
+
 import { SECURITY_CONF } from "../../configs/server";
 
 const router = Router();
@@ -157,7 +159,7 @@ router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
   file.tags = [];
   file.histories = [];
   file.authorities = [];
-  file.metaInfo = [];
+  file.meta_infos = [];
 
   new Promise( (resolve, reject) => {
     const token = req.headers["x-auth-cloud-storage"];
@@ -224,8 +226,7 @@ router.post("/:file_id/tags", (req, res, next) => {
   // 念のため渡されたタグIDのレコードが存在するかをチェックする
   Promise.all(tasks)
     .then( result => {
-      const file = result[0];
-      const tag = result[1];
+      const [ file, tag ] = result;
 
       file.tags = file.tags.concat(tag._id);
       return file.save();
@@ -304,6 +305,79 @@ router.delete("/:file_id/tags/:tag_id", (req, res, next) => {
       res.status(500).json({
         status: { success: false, message: "タグの削除に失敗", errors: err },
         body: {}
+      });
+    });
+
+});
+
+// メタ情報の追加
+router.post("/:file_id/meta", (req, res, next) => {
+  const file_id = mongoose.Types.ObjectId(req.params.file_id);
+  const { meta, value } = req.body;
+
+  const tasks = [
+    File.findById(file_id).then( file => file ),
+    MetaInfo.findById(mongoose.Types.ObjectId(meta._id)).then( meta => meta)
+  ];
+
+  Promise.all(tasks)
+    .then( result => {
+      const [ _file, _meta ] = result;
+
+      const pushMeta = {
+        meta_info_id: _meta._id,
+        key: _meta.key,
+        value: value,
+        value_type: _meta.value_type
+      };
+
+      _file.meta_infos = [..._file.meta_infos, pushMeta];
+      return _file.save();
+    })
+    .then( _file => {
+      res.json({
+        status: { success: true },
+        body: _file
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, errors: err }
+      });
+    });
+});
+
+router.delete("/:file_id/meta/:meta_id", (req, res, next) => {
+  const file_id = mongoose.Types.ObjectId(req.params.file_id);
+  const meta_id = mongoose.Types.ObjectId(req.params.meta_id);
+
+  const tasks = [
+    File.findById(file_id).then( file => file ),
+    MetaInfo.findById(meta_id).then( meta => meta )
+  ];
+
+  Promise.all(tasks)
+    .then( result => {
+      const [ file, meta ] = result;
+
+      if (file === null) throw "指定されたファイルがみつかりません";
+      if (meta === null) throw "指定されたメタ情報がみつかりません";
+
+      file.meta_infos = file.meta_infos.filter( _meta => {
+        return _meta.meta_info_id.toString() !== meta._id.toString();
+      });
+
+      return file.save();
+    })
+    .then( file => {
+      res.json({
+        status: { success: true },
+        body: file
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, errors: err }
       });
     });
 

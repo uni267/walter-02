@@ -40,7 +40,8 @@ import {
   requestFetchFile,
   requestFetchTags,
   requestAddTag,
-  requestDelTag
+  requestDelTag,
+  requestFetchMetaInfo
 } from "../actions";
 
 const styles = {
@@ -85,12 +86,14 @@ class FileDetailContainer extends Component {
   componentDidMount() {
     this.props.requestFetchFile(this.props.match.params.id);
     this.props.requestFetchTags();
+    this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
       this.props.requestFetchFile(nextProps.match.params.id);
       this.props.requestFetchTags();
+      this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
     }
   }
 
@@ -170,7 +173,7 @@ class FileDetailContainer extends Component {
       );
     };
 
-    return file.metaInfo.map( (meta, idx) => render(meta, idx) );
+    return file.meta_infos.map( (meta, idx) => render(meta, idx) );
   };
 
   renderMetaInfoDialog = () => {
@@ -188,10 +191,12 @@ class FileDetailContainer extends Component {
         actions={actions}
         modal={false}
         open={this.state.editMetaInfo.open}
+        autoScrollBodyContent={true}
         onRequestClose={() => this.setState({ editMetaInfo: { open: false } })} >
 
         <MetaInfo
           file={this.props.file}
+          metaInfo={this.props.metaInfo}
           addMetaInfo={this.props.addMetaInfo}
           deleteMetaInfo={this.props.deleteMetaInfo}
           triggerSnackbar={this.props.triggerSnackbar} />
@@ -217,6 +222,9 @@ class FileDetailContainer extends Component {
         {this.props.file.name}
       </div>
     );
+
+    
+    if (! this.props.file._id) return null;
 
     return (
       <div>
@@ -293,7 +301,10 @@ class FileDetailContainer extends Component {
                 <CardActions>
                   <RaisedButton
                     label="編集"
-                    onTouchTap={() => this.setState({ editMetaInfo: { open: true } })} />
+                    onTouchTap={() => {
+                      this.setState({ editMetaInfo: { open: true } });
+                    }}
+                    />
                 </CardActions>
               </Card>
 
@@ -327,7 +338,10 @@ const mapStateToProps = (state, ownProps) => {
     roles: state.roles,
     users: state.users,
     snackbar: state.snackbar,
-    tags: state.tags
+    tags: state.tags,
+    loading: state.loading,
+    metaInfo: state.metaInfo,
+    tenant: state.tenant
   };
 };
 
@@ -340,12 +354,13 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   editFileByView: (file) => { dispatch(editFileByView(file)); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  addMetaInfo: (file, metaInfo) => { dispatch(addMetaInfo(file, metaInfo)); },
+  addMetaInfo: (file, metaInfo, value) => { dispatch(addMetaInfo(file, metaInfo, value)); },
   deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); },
   requestFetchFile: (file_id) => { dispatch(requestFetchFile(file_id)); },
   requestFetchTags: () => { dispatch(requestFetchTags()); },
   requestAddTag: (file, tag) => { dispatch(requestAddTag(file, tag)); },
-  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); }
+  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); },
+  requestFetchMetaInfo: (tenant_id) => { dispatch(requestFetchMetaInfo(tenant_id)); }
 });
 
 FileDetailContainer = connect(

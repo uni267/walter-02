@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { fetchDirTree } from "../../apis";
+import { API } from "../../apis";
 
 // material icons
 import FileFolder from "material-ui/svg-icons/file/folder";
@@ -31,7 +31,7 @@ class DirTree extends Component {
   }
 
   getChild = () => {
-    fetchDirTree(this.props.node._id)
+    API.fetchDirTree(this.props.node._id)
       .then( payload => {
         this.setState({
           children: payload.data.children

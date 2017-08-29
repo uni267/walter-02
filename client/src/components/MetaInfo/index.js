@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 // mock
-import META_INFOS from "../../mock-metaInfos";
+// import META_INFOS from "../../mock-metaInfos";
 
 // material ui
 import RaisedButton from "material-ui/RaisedButton";
@@ -23,8 +23,8 @@ const styles = {
     height: 45,
     paddingLeft: 24,
     paddingRight: 24,
-    paddingBottom: 10,
-    paddingTop: 10
+    paddingBottom: 5,
+    paddingTop: 15
   }
 };
 
@@ -59,26 +59,29 @@ class MetaInfo extends Component {
 
   newMetaTable = () => {
     const addMetaInfo = (file) => {
-      const metaInfo = {
-        id: this.state.metaInfo.id,
-        key: this.state.metaInfo.value,
-        value: this.refs.metaValue.getValue()
-      };
+      this.props.addMetaInfo(
+        file,
+        this.state.metaInfo,
+        this.refs.metaValue.getValue()
+      );
 
-      this.props.addMetaInfo(file, metaInfo);
-      this.props.triggerSnackbar("メタ情報を追加しました");
       this.setState({ addable: false });
       this.setState({ text: "" });
     };
 
     const onNewRequest = (searchText) => {
-      this.setState({ text: searchText.value });
+      this.setState({ text: searchText.key });
       this.setState({ metaInfo: searchText });
     };
 
-    const metaInfos = META_INFOS.filter(
-      meta => !this.props.file.metaInfo.map(m => m.id).includes(meta.id)
+    const metaInfos = this.props.metaInfo.filter(
+      meta => !this.props.file.meta_infos.map(m => m._id).includes(meta._id)
     );
+
+    const dataSourceConfig = {
+      text: "key",
+      value: "_id"
+    };
 
     return (
       <div style={styles.row}>
@@ -91,9 +94,11 @@ class MetaInfo extends Component {
             floatingLabelText="キーを選択"
             onTouchTap={() => this.setState({text: ""})}
             onNewRequest={onNewRequest}
-            filter={(searchText, key) => key.indexOf(searchText) !== -1}
+            filter={AutoComplete.noFilter}
             openOnFocus={true}
-            dataSource={metaInfos} />
+            dataSource={this.props.metaInfo}
+            dataSourceConfig={dataSourceConfig}
+            />
             
         </div>
         <div style={{...styles.cell, width: "25%"}}>
@@ -116,16 +121,18 @@ class MetaInfo extends Component {
   render() {
     return (
       <div>
-        {this.props.file.metaInfo.map(
+        {this.props.file.meta_infos.map(
           (meta, idx) => this.renderMetaInfo(meta, idx)
         )}
 
         {this.state.addable ? this.newMetaTable() : null}
 
         <div style={{ marginTop: 20 }}>
+
           <RaisedButton
             label="追加"
             onTouchTap={() => this.setState({ addable: true })} />
+
         </div>
       </div>
     );

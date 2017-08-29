@@ -115,18 +115,20 @@ class API {
       .then( res => res );
   }
 
-  static fetchMetaInfos = (tenant_id) => {
+  static fetchMetaInfos(tenant_id) {
     return client.get(`/api/v1/meta_infos/?tenant_id=${tenant_id}`)
       .then( res => res );
   }
 
-  static addMetaInfo(file, meta) {
-    return client.post(`/api/v1/files/${file._id}/meta`, meta)
+  static addMetaInfo(file, meta, value) {
+    const body = { meta, value };
+
+    return client.post(`/api/v1/files/${file._id}/meta`, body)
       .then( res => res );
   }
 
   static deleteMetaInfo(file, meta) {
-    return client.delete(`/api/v1/files/${file._id}/meta/${meta._id}`)
+    return client.delete(`/api/v1/files/${file._id}/meta/${meta.meta_info_id}`)
       .then( res => res );
   }
 }

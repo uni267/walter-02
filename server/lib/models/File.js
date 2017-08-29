@@ -15,7 +15,7 @@ const FileSchema = Schema({
   tags: Array,
   histories: Array,
   authorities: Array,
-  metaInfo: Array
+  meta_infos: Array
 });
 
 const File = mongoose.model("files", FileSchema, "files");

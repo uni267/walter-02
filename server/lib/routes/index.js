@@ -5,6 +5,9 @@ import UserRouter from "./users";
 import FileRouter from "./files";
 import DirRouter from "./dirs";
 import TagRouter from "./tags";
+import MetaInfoRouter from "./metaInfos";
+
+// debug
 import TestRouter from "./test";
 
 const router = Router();
@@ -15,6 +18,9 @@ router.use("/api/v1/users", UserRouter);
 router.use("/api/v1/files", FileRouter);
 router.use("/api/v1/dirs", DirRouter);
 router.use("/api/v1/tags", TagRouter);
+router.use("/api/v1/meta_infos", MetaInfoRouter);
+
+// debug
 router.use("/test", TestRouter);
 
 export default router;

@@ -1,14 +1,8 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 
-import { TenantSchema } from "../models";
-import { SERVER_CONF } from "../../configs/server";
-
+import Tenant from "../models/Tenant";
 const router = Router();
-
-mongoose.models = {};
-mongoose.modelSchemas = {};
-const Tenant = mongoose.model("tenants", TenantSchema);
 
 // view
 router.get("/:id", (req, res, next) => {

@@ -22,6 +22,7 @@ import createDir from "./createDirReducer";
 import fileUpload from "./fileUploadReducer";
 import deleteFile from "./deleteFileReducer";
 import dirTree from "./dirTreeReducer";
+import metaInfo from "./metaInfoReducer";
 
 const fileApp = combineReducers({
   files,
@@ -44,7 +45,8 @@ const fileApp = combineReducers({
   createDir,
   fileUpload,
   deleteFile,
-  dirTree
+  dirTree,
+  metaInfo
 });
 
 export default fileApp;

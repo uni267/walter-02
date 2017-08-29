@@ -7,7 +7,8 @@ import Test from "../models/Test";
 const router = Router();
 
 router.get("/", (req, res, next) => {
-  res.json(Test.test_method());
+  const ary = [1,2,3];
+  res.json([...ary, 4, 5, 6]);
 
   // mongoose join exmaple
   // File.aggregate([

@@ -116,16 +116,12 @@ export const copyFile = (dir_id, file) => ({
   file
 });
 
-export const addMetaInfo = (file, metaInfo) => ({
-  type: "ADD_META_INFO",
-  file,
-  metaInfo
+export const addMetaInfo = (file, metaInfo, value) => ({
+  type: "ADD_META_INFO", file, metaInfo, value
 });
 
 export const deleteMetaInfo = (file, metaInfo) => ({
-  type: "DELETE_META_INFO",
-  file,
-  metaInfo
+  type: "DELETE_META_INFO", file, metaInfo
 });
 
 export const requestLogin = (name, password) => ({
@@ -140,8 +136,12 @@ export const requestLoginSuccess = (message, user_id) => ({
   user_id
 });
 
-export const putTenant = (name, dirId, trashDirId) => ({
-  type: "PUT_TENANT", name, dirId, trashDirId
+export const requestLoginFailed = (message, errors) => ({
+  type: "REQUEST_LOGIN_FAILED", message, errors
+});
+
+export const putTenant = (tenant_id, name, dirId, trashDirId) => ({
+  type: "PUT_TENANT", tenant_id, name, dirId, trashDirId
 });
 
 export const requestHomeDir = (user_id) => ({
@@ -176,6 +176,10 @@ export const requestDelTag = (file, tag) => ({
 export const requestChangePassword = (current_password, new_password) => ({
   type: "REQUEST_CHANGE_PASSWORD",
   current_password, new_password
+});
+
+export const loadingStart = () => ({
+  type: "LOADING_START"
 });
 
 export const loadingEnd = () => ({
@@ -216,4 +220,16 @@ export const moveDir = (destinationDir, movingDir) => ({
 
 export const toggleMoveDirDialog = (dir) => ({
   type: "TOGGLE_MOVE_DIR_DIALOG", dir
+});
+
+export const requestFetchMetaInfo = (tenant_id) => ({
+  type: "REQUEST_FETCH_META_INFO", tenant_id
+});
+
+export const initMetaInfo = (meta_infos) => ({
+  type: "INIT_META_INFO", meta_infos
+});
+
+export const initFile = (file) => ({
+  type: "INIT_FILE", file
 });
