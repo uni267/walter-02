@@ -1,4 +1,3 @@
-import FILES from "../mock-files";
 import moment from "moment";
 
 const filesReducer = (state = [], action) => {

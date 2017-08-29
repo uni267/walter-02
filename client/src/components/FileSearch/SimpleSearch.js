@@ -9,7 +9,6 @@ const SimpleSearch = ({
   let searchValue = "";
 
   const handleKeyDown = (event) => {
-    console.log(searchValue.getValue());
     return event.key === "Enter"
       ? searchFileSimple(searchValue.getValue())
       : null;

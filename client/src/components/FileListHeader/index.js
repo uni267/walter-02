@@ -1,36 +1,40 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-class FileListHeader extends Component {
-  onSortClick = (e) => {
+const FileListHeader = ({
+  idx,
+  header,
+  style,
+  setSortTarget,
+  toggleSortTarget,
+  fileSortTarget,
+  sortFile
+}) => {
+  const onSortClick = (e) => {
     const target = e.target.dataset.sortKey;
     if (target === undefined) return;
 
-    if (this.props.fileSortTarget.sorted !== target) {
-      this.props.setSortTarget(target);
+    if (fileSortTarget.sorted !== target) {
+      setSortTarget(target);
     } else {
-      this.props.toggleSortTarget();
+      toggleSortTarget();
     }
 
-    this.props.sortFile(
-      this.props.fileSortTarget.sorted, 
-      this.props.fileSortTarget.desc
+    sortFile(
+      fileSortTarget.sorted, 
+      fileSortTarget.desc
     );
-  }
+  };
 
-  render() {
-    const { idx, header, style } = this.props;
-
-    return (
-      <div key={idx}
-           onClick={this.onSortClick}
-           data-sort-key={header.key}
-           style={{...style, width: header.width}}>
-        {header.label}
-      </div>
-    );
-  }
-}
+  return (
+    <div key={idx}
+         onClick={onSortClick}
+         data-sort-key={header.key}
+         style={{...style, width: header.width}}>
+      {header.label}
+    </div>
+  );
+};
 
 FileListHeader.propTypes = {
   header: PropTypes.object.isRequired,

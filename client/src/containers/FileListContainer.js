@@ -71,6 +71,36 @@ const styles = {
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
     backgroundColor: "inherit"
+  },
+  tableHeader: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: 24,
+    paddingRight: 24,
+    textAlign: "left",
+    fontFamily: "Roboto sans-serif",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    backgroundColor: "inherit",
+    color: "rgb(158, 158, 158)",
+    fontSize: 12,
+    height: 48
+  },
+  tableRow: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: 24,
+    paddingRight: 24,
+    textAlign: "left",
+    fontFamily: "Roboto sans-serif",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    backgroundColor: "inherit",
+    height: 70,
+    color: "rgb(80, 80, 80)",
+    fontSize: 13
   }
 };
 
@@ -142,29 +172,6 @@ class FileListContainer extends Component {
   moveFile = (dir_id, file_id) => {
     this.props.moveFile(file_id, dir_id);
     this.props.triggerSnackbar("ファイルを移動しました");
-  };
-
-  renderHeader = (header, idx) => {
-    
-    const headerStyle = {
-      ...styles.cell,
-      color: "rgb(158, 158, 158)",
-      fontSize: 12,
-      height: 48
-    };
-
-    return (
-      <FileListHeader
-        key={idx} 
-        header={header}
-        style={headerStyle}
-        setSortTarget={this.props.setSortTarget}
-        toggleSortTarget={this.props.toggleSortTarget}
-        fileSortTarget={this.props.fileSortTarget}
-        sortFile={this.props.sortFile}
-        />
-    );
-
   };
 
   toggleDeleteDirDialog = (dir = {}) => {
@@ -271,20 +278,13 @@ class FileListContainer extends Component {
   };
 
   renderRow = (file, idx) => {
-    const cellStyle = {
-      ...styles.cell,
-      height: 70,
-      color: "rgb(80, 80, 80)",
-      fontSize: 13
-    };
-
     const dirComponent = (
       <Dir 
         key={idx} 
         history={this.props.history}
         dir={file}
         rowStyle={styles.row}
-        cellStyle={cellStyle}
+        cellStyle={styles.tableRow}
         headers={headers}
         triggerSnackbar={this.props.triggerSnackbar}
         editDir={this.props.editFileByIndex}
@@ -302,7 +302,7 @@ class FileListContainer extends Component {
         history={this.props.history}
         dir_id={this.props.dir_id}
         rowStyle={styles.row}
-        cellStyle={cellStyle}
+        cellStyle={styles.tableRow}
         headers={headers}
         file={file}
         editFileByIndex={this.props.editFileByIndex}
@@ -340,7 +340,19 @@ class FileListContainer extends Component {
     return (
       <div>
         <div style={styles.row}>
-          {headers.map( (header, idx) => this.renderHeader(header, idx) )}
+          {headers.map( (header, idx) => {
+            return (
+              <FileListHeader
+                key={idx} 
+                header={header}
+                style={styles.tableHeader}
+                setSortTarget={this.props.setSortTarget}
+                toggleSortTarget={this.props.toggleSortTarget}
+                fileSortTarget={this.props.fileSortTarget}
+                sortFile={this.props.sortFile}
+                />
+            );
+          })}
         </div>
 
         <TableBodyWrapper

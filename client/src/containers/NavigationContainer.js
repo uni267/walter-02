@@ -19,13 +19,6 @@ import AccountDialog from "../components/Account/AccountDialog";
 import AppMenu from "../components/AppMenu";
 import AppNavBar from "../components/AppNavBar";
 
-const menus = [
-  {name: "ファイル一覧"},
-  {name: "管理コンソール"},
-];
-
-const appTitle = "cloud storage";
-
 class NavigationContainer extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +43,13 @@ class NavigationContainer extends Component {
   };
 
   render() {
+    const menus = [
+      {name: "ファイル一覧"},
+      {name: "管理コンソール"},
+    ];
+
+    const appTitle = "cloud storage";
+
     return (
       <div>
         <AppNavBar
