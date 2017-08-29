@@ -88,3 +88,26 @@ var tags = [
 
 db.tags.insert(tags);
 
+// ===============================
+//  meta_infos collection
+// ===============================
+
+var tenant = db.tenants.findOne({ name: "test" });
+
+var meta_infos = [
+  {
+    tenant_id: tenant._id,
+    key: "取引先コード",
+    value_type: "String"
+  },
+  {
+    tenant_id: tenant._id,
+    key: "取引先名",
+    value_type: "String"
+  },
+  {
+    tenant_id: tenant._id,
+    key: "明細番号",
+    value_type: "Number"
+  }
+];
