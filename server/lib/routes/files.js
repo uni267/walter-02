@@ -347,6 +347,7 @@ router.post("/:file_id/meta", (req, res, next) => {
     });
 });
 
+// メタ情報の削除
 router.delete("/:file_id/meta/:meta_id", (req, res, next) => {
   const file_id = mongoose.Types.ObjectId(req.params.file_id);
   const meta_id = mongoose.Types.ObjectId(req.params.meta_id);
