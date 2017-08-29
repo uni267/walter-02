@@ -10,7 +10,7 @@ import { Card } from 'material-ui/Card';
 import NavigationContainer from "./NavigationContainer";
 import FileActionContainer from "./FileActionContainer";
 import FileSearchContainer from "./FileSearchContainer";
-import DirBox from "../components/DirBox";
+import DirBoxContainer from "./DirBoxContainer";
 import FileListContainer from "./FileListContainer";
 import FileSnackbar from "../components/FileSnackbar";
 
@@ -43,9 +43,7 @@ class HomeContainer extends Component {
         <Card>
           <div style={{display: "flex"}}>
             <div style={{width: "40%"}}>
-              <DirBox
-                dirId={dirId}
-                dirs={this.props.dirs} />
+              <DirBoxContainer />
             </div>
 
             <div style={{width: "60%"}}>
@@ -56,9 +54,7 @@ class HomeContainer extends Component {
           <div style={{display: "flex"}}>
             <div style={{width: "78%"}}>
 
-              <FileListContainer
-                dir_id={dirId}
-                files={this.props.files} />
+              <FileListContainer dir_id={dirId} />
 
             </div>
 
@@ -83,8 +79,6 @@ const mapStateToProps = (state, ownProps) => {
     snackbar: state.snackbar,
     searchWord: state.searchFile,
     fileSortTarget: state.fileSortTarget,
-    files: state.files,
-    dirs: state.dirs,
     session: state.session,
     loading: state.loading,
     tenant: state.tenant
