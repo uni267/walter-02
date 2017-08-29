@@ -427,6 +427,7 @@ class FileListContainer extends Component {
 }
 const mapStateToProps = (state, ownProps) => {
   return {
+    files: state.files,
     roles: state.roles,
     users: state.users,
     selectedDir: state.selectedDir,

@@ -27,9 +27,8 @@ const DirBox = ({
 };
 
 DirBox.propTypes = {
-  dirs: PropTypes.array.isRequired,
-  dirId: PropTypes.string.isRequired
+  dir: PropTypes.object.isRequired,
+  styles: PropTypes.object.isRequired
 };
 
 export default DirBox;
-

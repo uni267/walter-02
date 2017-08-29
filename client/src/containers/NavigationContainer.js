@@ -45,12 +45,7 @@ class NavigationContainer extends Component {
   };
 
   handleLogout = () => {
-    localStorage.removeItem("userId");
-    localStorage.removeItem("tenantName");
-    localStorage.removeItem("dirId");
-    localStorage.removeItem("token");
     this.props.logout();
-    this.props.triggerSnackbar("ログアウトしました");
     this.props.history.push("/login");
   };
 
