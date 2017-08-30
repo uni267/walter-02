@@ -233,3 +233,11 @@ export const initMetaInfo = (meta_infos) => ({
 export const initFile = (file) => ({
   type: "INIT_FILE", file
 });
+
+export const initFiles = (files) => ({
+  type: "INIT_FILES", files
+});
+
+export const toggleMetaInfoDialog = () => ({
+  type: "TOGGLE_META_INFO_DIALOG"
+});

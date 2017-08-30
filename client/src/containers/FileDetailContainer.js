@@ -41,7 +41,8 @@ import {
   requestFetchTags,
   requestAddTag,
   requestDelTag,
-  requestFetchMetaInfo
+  requestFetchMetaInfo,
+  toggleMetaInfoDialog
 } from "../actions";
 
 const styles = {
@@ -76,9 +77,6 @@ class FileDetailContainer extends Component {
       },
       editTag: {
         value: ""
-      },
-      editMetaInfo: {
-        open: false
       }
     };
   }
@@ -181,7 +179,7 @@ class FileDetailContainer extends Component {
       <FlatButton
         label="閉じる"
         primary={true}
-        onTouchTap={() => this.setState({ editMetaInfo: { open: false } })}
+        onTouchTap={this.props.toggleMetaInfoDialog}
         />
     );
 
@@ -190,13 +188,13 @@ class FileDetailContainer extends Component {
         title="メタ情報を編集"
         actions={actions}
         modal={false}
-        open={this.state.editMetaInfo.open}
+        open={this.props.metaInfo.dialog_open}
         autoScrollBodyContent={true}
-        onRequestClose={() => this.setState({ editMetaInfo: { open: false } })} >
+        onRequestClose={this.props.toggleMetaInfoDialog} >
 
         <MetaInfo
           file={this.props.file}
-          metaInfo={this.props.metaInfo}
+          metaInfo={this.props.metaInfo.meta_infos}
           addMetaInfo={this.props.addMetaInfo}
           deleteMetaInfo={this.props.deleteMetaInfo}
           triggerSnackbar={this.props.triggerSnackbar} />
@@ -301,9 +299,7 @@ class FileDetailContainer extends Component {
                 <CardActions>
                   <RaisedButton
                     label="編集"
-                    onTouchTap={() => {
-                      this.setState({ editMetaInfo: { open: true } });
-                    }}
+                    onTouchTap={this.props.toggleMetaInfoDialog}
                     />
                 </CardActions>
               </Card>
@@ -360,7 +356,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchTags: () => { dispatch(requestFetchTags()); },
   requestAddTag: (file, tag) => { dispatch(requestAddTag(file, tag)); },
   requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); },
-  requestFetchMetaInfo: (tenant_id) => { dispatch(requestFetchMetaInfo(tenant_id)); }
+  requestFetchMetaInfo: (tenant_id) => { dispatch(requestFetchMetaInfo(tenant_id)); },
+  toggleMetaInfoDialog: () => { dispatch(toggleMetaInfoDialog()); }
 });
 
 FileDetailContainer = connect(
