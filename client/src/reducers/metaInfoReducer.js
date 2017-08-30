@@ -1,6 +1,6 @@
 const initialState = {
   meta_infos: [],
-  target_file_id: null,
+  target_file: null,
   dialog_open: false
 };
 
@@ -12,10 +12,15 @@ const metaInfoReducer = (state = initialState, action) => {
       meta_infos: action.meta_infos
     };
   case "TOGGLE_META_INFO_DIALOG":
-    console.log("fire");
     return {
       ...state,
+      target_file: action.target_file,
       dialog_open: !state.dialog_open
+    };
+  case "UPDATE_META_INFO_TARGET":
+    return {
+      ...state,
+      target_file: action.target_file
     };
   default:
     return state;

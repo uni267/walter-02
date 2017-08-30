@@ -238,6 +238,10 @@ export const initFiles = (files) => ({
   type: "INIT_FILES", files
 });
 
-export const toggleMetaInfoDialog = () => ({
-  type: "TOGGLE_META_INFO_DIALOG"
+export const toggleMetaInfoDialog = (target_file) => ({
+  type: "TOGGLE_META_INFO_DIALOG", target_file
+});
+
+export const updateMetaInfoTarget = (target_file) => ({
+  type: "UPDATE_META_INFO_TARGET", target_file
 });

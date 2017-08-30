@@ -31,6 +31,7 @@ import MoveFileDialog from "../components/File/MoveFileDialog";
 import CopyFileDialog from "../components/File/CopyFileDialog";
 import HistoryFileDialog from "../components/File/HistoryFileDialog";
 import TagFileDialog from "../components/File/TagFileDialog";
+import MetaInfoDialog from "../components/File/MetaInfoDialog";
 
 // actions
 import {
@@ -49,7 +50,11 @@ import {
   requestFetchFiles,
   uploadFiles,
   toggleDeleteFileDialog,
-  toggleMoveDirDialog
+  toggleMoveDirDialog,
+  requestFetchMetaInfo,
+  addMetaInfo,
+  deleteMetaInfo,
+  toggleMetaInfoDialog
 } from "../actions";
 
 const styles = {
@@ -163,6 +168,10 @@ class FileListContainer extends Component {
     };
   }
 
+  componentDidMount() {
+    this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+  }
+
   handleFileDrop = (item, monitor) => {
     if (monitor) {
       this.props.uploadFiles(this.props.dir_id, monitor.getItem().files);
@@ -254,6 +263,15 @@ class FileListContainer extends Component {
     });
   };
 
+  toggleMetaInfoDialog = (file = {}) => {
+    this.setState({
+      metaInfoDialog: {
+        open: !this.state.metaInfoDialog.open,
+        file: file
+      }
+    });
+  };
+
   deleteDir = (dir) => {
     this.setState({ deleteDirDialog: { open: false } });
     this.props.deleteFile(dir);
@@ -316,6 +334,7 @@ class FileListContainer extends Component {
         handleCopyFile={this.toggleCopyFileDialog}
         handleHistoryFile={this.toggleHistoryFileDialog}
         handleTagFile={this.toggleTagFileDialog}
+        handleMetaInfo={this.props.toggleMetaInfoDialog}
         />
     );
 
@@ -433,6 +452,14 @@ class FileListContainer extends Component {
           handleClose={this.toggleTagFileDialog}
           file={this.state.tagFileDialog.file} />
 
+        <MetaInfoDialog
+          open={this.props.metaInfo.dialog_open}
+          handleClose={this.props.toggleMetaInfoDialog}
+          file={this.props.metaInfo.target_file}
+          metaInfo={this.props.metaInfo.meta_infos}
+          addMetaInfo={this.props.addMetaInfo}
+          deleteMetaInfo={this.props.deleteMetaInfo} />
+
       </div>
     );
   }
@@ -445,7 +472,9 @@ const mapStateToProps = (state, ownProps) => {
     selectedDir: state.selectedDir,
     fileSortTarget: state.fileSortTarget,
     deleteFileState: state.deleteFile,
-    dirTree: state.dirTree
+    dirTree: state.dirTree,
+    tenant: state.tenant,
+    metaInfo: state.metaInfo
   };
 };
 
@@ -469,7 +498,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); },
   uploadFiles: (dir_id, files) => { dispatch(uploadFiles(dir_id, files)); },
   toggleDeleteFileDialog: (file) => { dispatch(toggleDeleteFileDialog(file)); },
-  toggleMoveDirDialog: (dir) => { dispatch(toggleMoveDirDialog(dir)); }
+  toggleMoveDirDialog: (dir) => { dispatch(toggleMoveDirDialog(dir)); },
+  requestFetchMetaInfo: (tenant_id) => { dispatch(requestFetchMetaInfo(tenant_id)); },
+  addMetaInfo: (file, metaInfo, value) => { dispatch(addMetaInfo(file, metaInfo, value)); },
+  deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); },
+  toggleMetaInfoDialog: (file) => { dispatch(toggleMetaInfoDialog(file)); }
 });
 
 FileListContainer = connect(

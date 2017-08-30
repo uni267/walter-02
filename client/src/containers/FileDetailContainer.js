@@ -299,7 +299,7 @@ class FileDetailContainer extends Component {
                 <CardActions>
                   <RaisedButton
                     label="編集"
-                    onTouchTap={this.props.toggleMetaInfoDialog}
+                    onTouchTap={() => this.props.toggleMetaInfoDialog(this.props.file)}
                     />
                 </CardActions>
               </Card>
@@ -357,7 +357,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestAddTag: (file, tag) => { dispatch(requestAddTag(file, tag)); },
   requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); },
   requestFetchMetaInfo: (tenant_id) => { dispatch(requestFetchMetaInfo(tenant_id)); },
-  toggleMetaInfoDialog: () => { dispatch(toggleMetaInfoDialog()); }
+  toggleMetaInfoDialog: (file) => { dispatch(toggleMetaInfoDialog(file)); }
 });
 
 FileDetailContainer = connect(

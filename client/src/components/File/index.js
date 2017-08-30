@@ -200,6 +200,7 @@ class File extends Component {
 
             <MenuItem
               primaryText="ファイル名変更"
+              onClick={this.props.foo}
               onTouchTap={() => this.setState({ editFile: { open: true } })} />
 
             <MenuItem
@@ -221,6 +222,10 @@ class File extends Component {
             <MenuItem
               primaryText="タグを編集"
               onTouchTap={() => this.props.handleTagFile(file)} />
+
+            <MenuItem
+              primaryText="メタ情報を編集"
+              onTouchTap={() => this.props.handleMetaInfo(file)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
