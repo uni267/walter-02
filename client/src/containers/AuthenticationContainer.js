@@ -50,8 +50,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestLoginSuccess: (message, user_id) => {
     dispatch(requestLoginSuccess(message, user_id));
   },
-  putTenant: (name, dirId, trashDirId) => {
-    dispatch(putTenant(name, dirId, trashDirId));
+  putTenant: (tenant_id, name, dirId, trashDirId) => {
+    dispatch(putTenant(tenant_id, name, dirId, trashDirId));
   }
 });
 

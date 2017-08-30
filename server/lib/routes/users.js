@@ -1,4 +1,5 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 import crypto from "crypto";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
@@ -7,10 +8,17 @@ const router = Router();
 
 // all
 router.get("/", (req, res, next) => {
-  const conditions = {};  
+  const conditions = {
+    tenant_id: mongoose.Types.ObjectId(req.query.tenant_id)
+  };
 
-  User.find(conditions)
-    .then( users => {
+  User.aggregate([
+    { $match: conditions },
+    { $lookup:
+      { from: "groups", localField: "groups", foreignField: "_id", as: "groups" }
+    }
+  ])
+    .then (users => {
       res.json({
         status: { success: true },
         body: users

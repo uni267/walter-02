@@ -1,7 +1,7 @@
-import USERS from "../mock-users";
-
-const usersReducer = (state = USERS, action) => {
-  switch (action.type) {
+const usersReducer = (state = [], action) => {
+  switch ( action.type ) {
+  case "INIT_USERS":
+    return action.users;
   default:
     return state;
   }

@@ -1,6 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// router
+import { Link } from "react-router-dom";
+
 // material ui
 import Drawer from 'material-ui/Drawer';
 import MenuItem from "material-ui/MenuItem";
@@ -11,10 +14,14 @@ const AppMenu = ({
   toggle
 }) => {
   const renderMenu = (menu, idx) => {
+
+    const link = <Link to={menu.link} />;
+
     return (
       <MenuItem
         key={idx}
         onTouchTap={toggle}
+        containerElement={link}
         primaryText={menu.name} />
     );
   };

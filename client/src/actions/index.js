@@ -245,3 +245,11 @@ export const toggleMetaInfoDialog = (target_file) => ({
 export const updateMetaInfoTarget = (target_file) => ({
   type: "UPDATE_META_INFO_TARGET", target_file
 });
+
+export const requestFetchUsers = (tenant_id) => ({
+  type: "REQUEST_FETCH_USERS", tenant_id
+});
+
+export const initUsers = (users) => ({
+  type: "INIT_USERS", users
+});

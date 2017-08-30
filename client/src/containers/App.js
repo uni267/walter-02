@@ -9,6 +9,7 @@ import HomeContainer from "./HomeContainer";
 import FileDetailContainer from "./FileDetailContainer";
 import LoginContainer from "./LoginContainer";
 import LoadingContainer from "./LoadingContainer";
+import UserContainer from "./UserContainer";
 
 class App extends Component {
   render() {
@@ -20,9 +21,10 @@ class App extends Component {
               <Route exact path="/login" component={LoginContainer} />
               <AuthenticationContainer>
                 <Switch>
-                  <Route exact path="/" component={HomeContainer} />
-                  <Route exact path="/home/:id" component={HomeContainer} />
+                  <Route path="/users" component={UserContainer} />
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
+                  <Route exact path="/home/:id" component={HomeContainer} />
+                  <Route path="/" component={HomeContainer} />
                 </Switch>
               </AuthenticationContainer>
             </Switch>

@@ -131,6 +131,12 @@ class API {
     return client.delete(`/api/v1/files/${file._id}/meta/${meta.meta_info_id}`)
       .then( res => res );
   }
+
+  static fetchUsers(tenant_id) {
+    return client.get(`/api/v1/users/?tenant_id=${tenant_id}`)
+      .then( res => res );
+  }
+  
 }
 
 export { API };

@@ -56,6 +56,16 @@ var tenant = { name: "test", home_dir_id: top_id, trash_dir_id: trash_id };
 db.tenants.insert(tenant);
 
 // ===============================
+// groups collection
+// ===============================
+var group = {
+  name: "全社",
+  roles: []
+};
+
+db.groups.insert(group);
+
+// ===============================
 //  users collection
 // =============================== 
 
@@ -66,6 +76,8 @@ var user = {
   name: "hanako",
   email: "test",
   password: pass,
+  enabled: true,
+  groups: [ db.groups.findOne({ name: "全社" }, {_id: 1})._id ],
   tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
 };
 

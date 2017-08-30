@@ -44,8 +44,18 @@ class NavigationContainer extends Component {
 
   render() {
     const menus = [
-      {name: "ファイル一覧"},
-      {name: "管理コンソール"},
+      {
+        name: "ファイル一覧",
+        link: "/home"
+      },
+      {
+        name: "容量管理",
+        link: "/home"
+      },
+      {
+        name: "ユーザ管理",
+        link: "/users"
+      }
     ];
 
     const appTitle = "cloud storage";

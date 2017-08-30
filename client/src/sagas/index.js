@@ -20,6 +20,7 @@ import watchMoveDir from "./watchMoveDir";
 import watchFetchMetaInfo from "./watchFetchMetaInfo";
 import watchAddMetaInfo from "./watchAddMetaInfo";
 import watchDeleteMetaInfo from "./watchDeleteMetaInfo";
+import watchFetchUsers from "./watchFetchUsers";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -42,6 +43,7 @@ function* Saga() {
   yield fork(watchFetchMetaInfo);
   yield fork(watchAddMetaInfo);
   yield fork(watchDeleteMetaInfo);
+  yield fork(watchFetchUsers);
 }
 
 export default Saga;
