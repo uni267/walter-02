@@ -7,7 +7,7 @@ import Group from "../models/Group";
 
 const router = Router();
 
-// all
+// ユーザ一覧
 router.get("/", (req, res, next) => {
   const conditions = {
     tenant_id: mongoose.Types.ObjectId(req.query.tenant_id)
@@ -34,7 +34,7 @@ router.get("/", (req, res, next) => {
 
 });
 
-// view
+// ユーザ詳細
 router.get("/:id", (req, res, next) => {
 
   User.findById(req.params.id)
@@ -73,7 +73,7 @@ router.get("/:id", (req, res, next) => {
 
 });
 
-// add
+// ユーザ追加
 router.post("/", (req, res, next) => {
   const user = new User(req.body);
   const sha = crypto.createHash("sha512");
@@ -94,22 +94,6 @@ router.post("/", (req, res, next) => {
     res.json({
       result: { status: "ok" },
       data: user
-    });
-  });
-
-});
-
-// delete
-router.delete("/:id", (req, res, next) => {
-  const conditions = {
-    _id: req.params.id
-  };
-
-  // idが存在しない場合(0件の削除)でも正常終了を返却？
-  User.remove(conditions).then( msg => {
-    res.json({
-      result: { status: "ok" },
-      data: msg.result
     });
   });
 
@@ -183,7 +167,7 @@ router.patch("/:user_id/password", (req, res, next) => {
 
 });
 
-// グループ削除
+// 所属グループの削除
 router.delete("/:user_id/groups/:group_id", (req, res, next) => {
   const { user_id, group_id } = req.params;
 
@@ -211,7 +195,5 @@ router.delete("/:user_id/groups/:group_id", (req, res, next) => {
       });
     });
 });
-
-
 
 export default router;
