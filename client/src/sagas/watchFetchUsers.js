@@ -21,7 +21,7 @@ function* watchFetchUsers() {
       yield put(initUsers(payload.data.body));
     }
     catch (e) {
-
+      console.log(e);
     }
     finally {
       yield put(loadingEnd());

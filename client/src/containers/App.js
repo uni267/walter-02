@@ -10,6 +10,7 @@ import FileDetailContainer from "./FileDetailContainer";
 import LoginContainer from "./LoginContainer";
 import LoadingContainer from "./LoadingContainer";
 import UserContainer from "./UserContainer";
+import UserDetailContainer from "./UserDetailContainer";
 
 class App extends Component {
   render() {
@@ -21,10 +22,12 @@ class App extends Component {
               <Route exact path="/login" component={LoginContainer} />
               <AuthenticationContainer>
                 <Switch>
-                  <Route path="/users" component={UserContainer} />
+                  <Route exact path="/users" component={UserContainer} />
+                  <Route path="/users/:id" component={UserDetailContainer} />
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
-                  <Route exact path="/home/:id" component={HomeContainer} />
-                  <Route path="/" component={HomeContainer} />
+                  <Route exact path="/home" component={HomeContainer} />
+                  <Route path="/home/:id" component={HomeContainer} />
+                  <Route component={HomeContainer} />
                 </Switch>
               </AuthenticationContainer>
             </Switch>

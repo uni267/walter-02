@@ -4,6 +4,8 @@ mongoose.Promise = global.Promise;
 
 const GroupSchema = Schema({
   name: String,
+  description: String,
+  tenant_id: Schema.Types.ObjectId,
   roles: Array
 });
 

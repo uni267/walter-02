@@ -250,6 +250,18 @@ export const requestFetchUsers = (tenant_id) => ({
   type: "REQUEST_FETCH_USERS", tenant_id
 });
 
+export const requestFetchUser = (user_id, tenant_id) => ({
+  type: "REQUEST_FETCH_USER", user_id, tenant_id
+});
+
 export const initUsers = (users) => ({
   type: "INIT_USERS", users
+});
+
+export const initUser = (user) => ({
+  type: "INIT_USER", user
+});
+
+export const initGroups = (groups) => ({
+  type: "INIT_GROUPS", groups
 });

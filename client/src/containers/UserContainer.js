@@ -3,6 +3,9 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
+// route
+import { Link } from "react-router-dom";
+
 // material
 import { 
   Card, 
@@ -25,11 +28,59 @@ import {
 
 import Chip from 'material-ui/Chip';
 
+import IconButton from 'material-ui/IconButton';
+import ActionHome from 'material-ui/svg-icons/action/home';
+import ImageEdit from "material-ui/svg-icons/image/edit";
+
 // components
 import NavigationContainer from "./NavigationContainer";
 
 // actions
 import { requestFetchUsers } from "../actions";
+
+const UserTableHeader = ({
+  headers
+}) => {
+  return (
+    <TableRow>
+      {headers.map( (header, idx) => {
+        return <TableHeaderColumn key={idx}>{header.name}</TableHeaderColumn>;
+      })}
+    </TableRow>
+  );
+};
+
+const UserTableBody = ({
+  user, idx
+}) => {
+  const renderGroups = (groups) => {
+    return groups.map( (group, idx)  => (
+      <Chip key={idx}>{group.name}</Chip>
+    ));
+  };
+
+  return (
+    <TableRow key={idx}>
+      <TableRowColumn>
+        {user.enabled ? "有効" : "無効"}
+      </TableRowColumn>
+      <TableRowColumn>
+        {user.name}
+      </TableRowColumn>
+      <TableRowColumn>
+        {user.email}
+      </TableRowColumn>
+      <TableRowColumn>
+        {renderGroups(user.groups)}
+      </TableRowColumn>
+      <TableRowColumn>
+        <IconButton containerElement={<Link to={`/users/${user._id}`} />}>
+          <ImageEdit />
+        </IconButton>
+      </TableRowColumn>
+    </TableRow>
+  );
+};
 
 
 class UserContainer extends Component {
@@ -37,61 +88,33 @@ class UserContainer extends Component {
     this.props.requestFetchUsers(this.props.tenant.tenant_id);
   }
 
-  renderGroups = (groups) => {
-    return groups.map( (group, idx)  => (
-      <Chip key={idx}>{group.name}</Chip>
-    ));
-  };
-
-  renderTableBody = (user, idx) => {
-    return (
-      <TableRow key={idx}>
-        <TableRowColumn>
-          {user.enabled ? "e" : "d"}
-        </TableRowColumn>
-        <TableRowColumn>
-          {user.name}
-        </TableRowColumn>
-        <TableRowColumn>
-          {user.email}
-        </TableRowColumn>
-        <TableRowColumn>
-          {this.renderGroups(user.groups)}
-        </TableRowColumn>
-        <TableRowColumn>
-          edit_button
-        </TableRowColumn>
-      </TableRow>
-    );
-  };
-
   render() {
+    const headers = [
+      { name: "有効/無効" },
+      { name: "表示名" },
+      { name: "メールアドレス" },
+      { name: "所属グループ" },
+      { name: "" }
+    ];
+
     return (
       <div>
         <NavigationContainer />
         <Card>
           <CardTitle title="ユーザ管理" />
           <CardText>
-
             <div>
               <Table>
                 <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                  <TableRow>
-                    <TableHeaderColumn>enable/disable</TableHeaderColumn>
-                    <TableHeaderColumn>name</TableHeaderColumn>
-                    <TableHeaderColumn>e-mail</TableHeaderColumn>
-                    <TableHeaderColumn>groups</TableHeaderColumn>
-                    <TableHeaderColumn>action</TableHeaderColumn>
-                  </TableRow>
+                  <UserTableHeader headers={headers} />
                 </TableHeader>
-
                 <TableBody displayRowCheckbox={false}>
-                  {this.props.users.map(this.renderTableBody)}
+                  {this.props.users.map( (user, idx) => {
+                    return <UserTableBody user={user} key={idx} />;
+                  })}
                 </TableBody>
-
               </Table>
             </div>
-
           </CardText>
         </Card>
       </div>

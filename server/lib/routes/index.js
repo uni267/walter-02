@@ -6,6 +6,7 @@ import FileRouter from "./files";
 import DirRouter from "./dirs";
 import TagRouter from "./tags";
 import MetaInfoRouter from "./metaInfos";
+import GroupRouter from "./groups";
 
 // debug
 import TestRouter from "./test";
@@ -19,6 +20,7 @@ router.use("/api/v1/files", FileRouter);
 router.use("/api/v1/dirs", DirRouter);
 router.use("/api/v1/tags", TagRouter);
 router.use("/api/v1/meta_infos", MetaInfoRouter);
+router.use("/api/v1/groups", GroupRouter);
 
 // debug
 router.use("/test", TestRouter);

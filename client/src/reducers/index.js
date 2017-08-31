@@ -23,6 +23,8 @@ import fileUpload from "./fileUploadReducer";
 import deleteFile from "./deleteFileReducer";
 import dirTree from "./dirTreeReducer";
 import metaInfo from "./metaInfoReducer";
+import user from "./userReducer";
+import group from "./groupReducer";
 
 const fileApp = combineReducers({
   files,
@@ -46,7 +48,9 @@ const fileApp = combineReducers({
   fileUpload,
   deleteFile,
   dirTree,
-  metaInfo
+  metaInfo,
+  user,
+  group
 });
 
 export default fileApp;

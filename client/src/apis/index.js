@@ -136,7 +136,16 @@ class API {
     return client.get(`/api/v1/users/?tenant_id=${tenant_id}`)
       .then( res => res );
   }
-  
+
+  static fetchUser(user_id) {
+    return client.get(`/api/v1/users/${user_id}`)
+      .then( res => res );
+  }
+
+  static fetchGroup(tenant_id) {
+    return client.get(`/api/v1/groups/?tenant_id=${tenant_id}`)
+      .then( res => res );
+  }
 }
 
 export { API };
