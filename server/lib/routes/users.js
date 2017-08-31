@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import crypto from "crypto";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
+import Group from "../models/Group";
 
 const router = Router();
 
@@ -38,27 +39,34 @@ router.get("/:id", (req, res, next) => {
 
   User.findById(req.params.id)
     .then( user => {
-      
-      Tenant.findById(user.tenant_id)
-        .then( tenant => {
+      res.user = user;
+      return Tenant.findById(user.tenant_id);
+    })
+    .then( tenant => {
+      res.tenant = tenant;
+      const group_ids = res.user.groups.map( group => mongoose.Types.ObjectId(group));
+      return Group.find({ _id: group_ids });
+    })
+    .then( groups => {
+      res.groups = groups;
+      return;
+    })
+    .then( () => {
+      const user = {
+        ...res.user.toObject(),
+        tenant: res.tenant.toObject(),
+        groups: res.groups
+      };
 
-          res.json({
-            status: { success: true },
-            body: Object.assign(user.toObject(), { tenant: tenant.toObject() })
-          });
-
-        })
-        .catch( err => {
-          res.status(500).json({
-            status: { success: false, message: "テナントが存在しません" },
-            body: {}
-          });
-        });
-
+      res.json({
+        status: { success: true },
+        body: user
+      });
     })
     .catch( err => {
+      console.log(err);
       res.status(500).json({
-        status: { success: false, message: "ユーザが存在しません" },
+        status: { success: false, message: "ユーザ取得時にエラー" },
         body: {}
       });
     });
@@ -174,5 +182,36 @@ router.patch("/:user_id/password", (req, res, next) => {
     });
 
 });
+
+// グループ削除
+router.delete("/:user_id/groups/:group_id", (req, res, next) => {
+  const { user_id, group_id } = req.params;
+
+  const tasks = [
+    User.findById(user_id).then( user => user ),
+    Group.findById(group_id).then( group => group )
+  ];
+
+  Promise.all(tasks)
+    .then( result => {
+      const [ user, group ] = result;
+      user.groups = user.groups.filter(
+        _group => _group.toString() !== group._id.toString() );
+      return user.save();
+    })
+    .then( user => {
+      res.json({
+        status: { success: true },
+        body: user
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, errors: err }
+      });
+    });
+});
+
+
 
 export default router;

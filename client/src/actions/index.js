@@ -265,3 +265,7 @@ export const initUser = (user) => ({
 export const initGroups = (groups) => ({
   type: "INIT_GROUPS", groups
 });
+
+export const deleteGroupOfUser = (user_id, group_id) => ({
+  type: "DELETE_GROUP_OF_USER", user_id, group_id
+});

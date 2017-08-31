@@ -1,5 +1,7 @@
 const initialState = {
-  data: {}
+  data: {
+    groups: []
+  }
 };
 
 const userReducer = (state = initialState, action) => {

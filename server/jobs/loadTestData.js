@@ -58,12 +58,20 @@ db.tenants.insert(tenant);
 // ===============================
 // groups collection
 // ===============================
-var group = {
-  name: "全社",
-  roles: []
-};
+var groups = [
+  {
+    name: "全社",
+    description: "全社員が所属するグループ",
+    roles: []
+  },
+  {
+    name: "管理者",
+    description: "システム管理者",
+    roles: []
+  }
+];
 
-db.groups.insert(group);
+db.groups.insert(groups);
 
 // ===============================
 //  users collection

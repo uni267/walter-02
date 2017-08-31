@@ -146,6 +146,12 @@ class API {
     return client.get(`/api/v1/groups/?tenant_id=${tenant_id}`)
       .then( res => res );
   }
+
+  static deleteGroupOfUser(user_id, group_id) {
+    return client.delete(`/api/v1/users/${user_id}/groups/${group_id}`)
+      .then( res => res );
+  }
+
 }
 
 export { API };

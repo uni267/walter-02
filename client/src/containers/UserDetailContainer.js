@@ -11,6 +11,8 @@ import AutoComplete from "material-ui/AutoComplete";
 import RaisedButton from 'material-ui/RaisedButton';
 import MenuItem from "material-ui/MenuItem";
 import SocialGroup from "material-ui/svg-icons/social/group";
+import Chip from 'material-ui/Chip';
+import Divider from "material-ui/Divider";
 
 import { 
   Card, 
@@ -22,15 +24,21 @@ import {
 } from 'material-ui/Card';
 
 // actions
-import { requestFetchUser } from "../actions";
+import {
+  requestFetchUser,
+  deleteGroupOfUser
+} from "../actions";
 
 // components
 import NavigationContainer from "./NavigationContainer";
 
-
 const styles = {
-  formWrapper: {
-    width: "30%"
+  wrapper: {
+    display: "flex"
+  },
+  cell: {
+    width: "30%",
+    marginRight: 20
   },
   toggle: {
     maxWidth: 200
@@ -43,6 +51,11 @@ class UserDetailContainer extends Component {
     this.state = {
       group: {
         text: ""
+      },
+      user: {
+        name: "",
+        email: "",
+        password: ""
       }
     };
   }
@@ -50,10 +63,69 @@ class UserDetailContainer extends Component {
   componentWillMount() {
     this.props.requestFetchUser(
       this.props.match.params.id, this.props.tenant.tenant_id);
+
+    this.setState({
+      user: {...this.props.user.data, password: ""}
+    });
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.match.params.id !== nextProps.match.params.id
+        || this.props.user.data !== nextProps.user.data
+        || this.props.group.data !== nextProps.group.data)
+    {
+
+      this.props.requestFetchUser(
+        this.props.match.params.id, this.props.tenant.tenant_id);
+
+      this.setState({
+        user: {...this.props.user.data, password: ""}
+      });
+    }
+  }
+
+  handleNameChange = (e, value) => {
+    const user = Object.assign({}, this.state.user);
+    user.name = value;
+    this.setState({ user: user });
+    console.log(this.state.user);
+  };
+
+  handleEmailChange = (e, value) => {
+    const user = Object.assign({}, this.state.user);
+    user.email = value;
+    this.setState({ user: user });
+  };
+
+  handlePasswordChange = (e, value) => {
+    const user = Object.assign({}, this.state.user);
+    user.password = value;
+    this.setState({ user: user });
+  };
+
+  renderGroup = (group, idx) => {
+    const user_id = this.props.user.data._id;
+    const group_id = group._id;
+
+    return (
+      <Chip
+        key={idx}
+        onRequestDelete={() => this.props.deleteGroupOfUser(user_id, group_id)}
+        >
+
+        {group.name}
+      </Chip>
+    );
+  };
+
   render() {
-    const groups = this.props.group.data.map(group => {
+    const _groups = this.props.group.data.filter( group => {
+      return !this.props.user.data.groups
+        .map( g => g._id )
+        .includes(group._id);
+    });
+
+    const groups = _groups.map( group => {
       const text = group.name;
       const icon = <SocialGroup />;
       const value = (
@@ -66,56 +138,75 @@ class UserDetailContainer extends Component {
 
     });
 
-    if (!this.props.user.data._id) return <div><NavigationContainer /></div>;
+    const user = this.props.user.data;
+
     return (
       <div>
         <NavigationContainer />
         <Card>
-          <CardTitle title="ユーザ詳細" subtitle={this.props.user.data.name} />
+          <CardTitle title={`${user.name}の詳細`} />
           <CardText>
 
-            <div style={styles.formWrapper}>
+            <div style={styles.wrapper}>
+              <div style={styles.cell}>
+                <Card>
+                  <CardTitle subtitle="基本情報" />
+                  <CardText>
+                    <Toggle
+                      style={styles.toggle}
+                      label="有効/無効"
+                      defaultToggled={user.enabled} />
 
-              <Toggle
-                style={styles.toggle}
-                label="有効/無効"
-                defaultToggled={this.props.user.data.enabled} />
+                    <br />
 
-              <br />
+                    <TextField
+                      value={this.state.user.name}
+                      onChange={this.handleNameChange}
+                      floatingLabelText="表示名" />
+                    <br />
 
-              <TextField
-                defaultValue={this.props.user.data.name}
-                hintText="クラウド 太郎"
-                floatingLabelText="表示名" />
-              <br />
+                    <TextField 
+                      value={this.state.user.email}
+                      onChange={this.handleEmailChange}
+                      floatingLabelText="メールアドレス" />
+                    <br />
 
-              <TextField 
-                defaultValue={this.props.user.data.email}
-                hintText="cloud@example.jp"
-                floatingLabelText="メールアドレス" />
-              <br />
+                    <TextField
+                      value={this.state.user.password}
+                      onChange={this.handlePasswordChange}
+                      type="password"
+                      floatingLabelText="パスワード" />
+                    <br />
+                  </CardText>
+                </Card>
+              </div>
 
-              <TextField
-                type="password"
-                floatingLabelText="パスワード" />
-              <br />
+              <div style={styles.cell}>
+                <Card>
+                  <CardTitle subtitle="所属グループ" />
+                  <CardText>
+                    <div>
+                      {user.groups.map(group => this.renderGroup(group))}
+                    </div>
 
-              <AutoComplete
-                hintText="所属グループを追加"
-                floatingLabelText="グループ名を入力"
-                searchText={this.state.group.text}
-                onTouchTap={() => this.setState({ group: { text: "" } })}
-                onNewRequest={(text) => this.setState({ group: { text: text } })}
-                openOnFocus={true}
-                filter={(text, key) => key.indexOf(text) !== -1}
-                dataSource={groups}
-                />
+                    <AutoComplete
+                      hintText="所属グループを追加"
+                      floatingLabelText="グループ名を入力"
+                      searchText={this.state.group.text}
+                      onTouchTap={() => this.setState({ group: { text: "" } })}
+                      onNewRequest={(text) => this.setState({ group: { text: text } })}
+                      openOnFocus={true}
+                      filter={(text, key) => key.indexOf(text) !== -1}
+                      dataSource={groups}
+                      />
+                  </CardText>
+                </Card>
+              </div>
 
             </div>
-
           </CardText>
           <CardActions>
-            <FlatButton label="保存" primary={true} />
+            <FlatButton label="閉じる" primary={true} />
           </CardActions>
         </Card>
       </div>
@@ -134,6 +225,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchUser: (user_id, tenant_id) => { 
     dispatch(requestFetchUser(user_id, tenant_id));
+  },
+  deleteGroupOfUser: (user_id, group_id) => {
+    dispatch(deleteGroupOfUser(user_id, group_id));
   }
 });
 
