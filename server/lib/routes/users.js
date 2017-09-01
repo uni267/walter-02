@@ -167,6 +167,31 @@ router.patch("/:user_id/password", (req, res, next) => {
 
 });
 
+// 有効/無効のトグル
+router.patch("/:user_id/enabled", (req, res, next) => {
+  const user_id = req.params.user_id;
+
+  User.findById(user_id)
+    .then( user => {
+      if (!user) throw "指定されたユーザは存在しません";
+
+      user.enabled = !user.enabled;
+      user.save();
+    })
+    .then( user => {
+      res.json({
+        status: { success: true },
+        body: user
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, message: err }
+      });
+    });
+
+});
+
 // 所属グループの追加
 router.post("/:user_id/groups", (req, res, next) => {
 

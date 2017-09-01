@@ -273,3 +273,7 @@ export const deleteGroupOfUser = (user_id, group_id) => ({
 export const addGroupOfUser = (user_id, group_id) => ({
   type: "ADD_GROUP_OF_USER", user_id, group_id
 });
+
+export const toggleUser = (user_id) => ({
+  type: "TOGGLE_USER", user_id
+});

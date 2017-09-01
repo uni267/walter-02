@@ -27,7 +27,8 @@ import {
 import {
   requestFetchUser,
   deleteGroupOfUser,
-  addGroupOfUser
+  addGroupOfUser,
+  toggleUser
 } from "../actions";
 
 // components
@@ -57,46 +58,19 @@ class UserDetailContainer extends Component {
     super(props);
     this.state = {
       group: {
-        text: "",
-        value: {}
-      },
-      user: {
-        name: "",
-        email: "",
-        password: ""
+        text: ""
       }
     };
   }
 
   componentWillMount() {
+    console.log("willmount");
     this.props.requestFetchUser(
       this.props.match.params.id, this.props.tenant.tenant_id);
-
-    this.setState({
-      user: {...this.props.user.data, password: ""}
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.match.params.id !== nextProps.match.params.id
-        || this.props.user.data !== nextProps.user.data
-        || this.props.group.data !== nextProps.group.data)
-    {
-
-      this.props.requestFetchUser(
-        this.props.match.params.id, this.props.tenant.tenant_id);
-
-      this.setState({
-        user: {...this.props.user.data, password: ""}
-      });
-    }
   }
 
   handleNameChange = (e, value) => {
-    const user = Object.assign({}, this.state.user);
-    user.name = value;
-    this.setState({ user: user });
-    console.log(this.state.user);
+    this.props.changeUserName(value);
   };
 
   handleEmailChange = (e, value) => {
@@ -128,6 +102,7 @@ class UserDetailContainer extends Component {
   };
 
   render() {
+    console.log("render");
     const _groups = this.props.group.data.filter( group => {
       return !this.props.user.data.groups
         .map( g => g._id )
@@ -144,16 +119,14 @@ class UserDetailContainer extends Component {
       );
 
       return { _id, text, value };
-
     });
 
-    const user = this.props.user.data;
-
+    
     return (
       <div>
         <NavigationContainer />
         <Card>
-          <CardTitle title={`${user.name}の詳細`} />
+          <CardTitle title={`${this.props.user.data.name}の詳細`} />
           <CardText>
 
             <div style={styles.wrapper}>
@@ -162,26 +135,27 @@ class UserDetailContainer extends Component {
                   <CardTitle subtitle="基本情報" />
                   <CardText>
                     <Toggle
+                      onToggle={() => this.props.toggleUser(this.props.user.data._id)}
                       style={styles.toggle}
                       label="有効/無効"
-                      defaultToggled={user.enabled} />
+                      defaultToggled={this.props.user.data.enabled} />
 
                     <br />
 
                     <TextField
-                      value={this.state.user.name}
+                      value={this.props.user.data.name}
                       onChange={this.handleNameChange}
                       floatingLabelText="表示名" />
                     <br />
 
                     <TextField 
-                      value={this.state.user.email}
+                      value={this.props.user.data.email}
                       onChange={this.handleEmailChange}
                       floatingLabelText="メールアドレス" />
                     <br />
 
                     <TextField
-                      value={this.state.user.password}
+                      value={this.props.user.data.password}
                       onChange={this.handlePasswordChange}
                       type="password"
                       floatingLabelText="パスワード" />
@@ -195,7 +169,7 @@ class UserDetailContainer extends Component {
                   <CardTitle subtitle="所属グループ" />
                   <CardText>
                     <div style={styles.groups}>
-                      {user.groups.map(group => this.renderGroup(group))}
+                      {this.props.user.data.groups.map(group => this.renderGroup(group))}
                     </div>
 
                     <AutoComplete
@@ -204,17 +178,7 @@ class UserDetailContainer extends Component {
                       searchText={this.state.group.text}
                       onTouchTap={() => this.setState({ group: { text: "" } })}
                       onNewRequest={(group) => {
-                        this.setState({ 
-                          group: {
-                            _id: group._id,
-                            text: group.text,
-                            value: group.value
-                          }
-                        });
-
-                        console.log(group);
                         this.props.addGroupOfUser(this.props.user.data._id, group._id);
-
                       }}
                       openOnFocus={true}
                       filter={(text, key) => key.indexOf(text) !== -1}
@@ -252,6 +216,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   addGroupOfUser: (user_id, group_id) => {
     dispatch(addGroupOfUser(user_id, group_id));
+  },
+  toggleUser: (user_id) => {
+    dispatch(toggleUser(user_id));
+  },
+  changeUserName: (name) => {
+    dispatch({ type: "CHANGE_USER_NAME", name });
   }
 });
 

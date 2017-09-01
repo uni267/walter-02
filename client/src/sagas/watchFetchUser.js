@@ -14,6 +14,7 @@ import {
 function* watchFetchUser() {
   while (true) {
     const task = yield take(requestFetchUser().type);
+    console.log("fetch user start");
     yield put(loadingStart());
 
     try {
@@ -24,12 +25,15 @@ function* watchFetchUser() {
       ]);
 
       yield put(initUser(user.data.body));
+      console.log("init user done");
       yield put(initGroups(group.data.body));
+      console.log("init group done");
     }
     catch (e) {
       console.log(e);
     }
     finally {
+      console.log("watch user end");
       yield put(loadingEnd());
     }
 

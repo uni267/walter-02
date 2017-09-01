@@ -158,6 +158,12 @@ class API {
     return client.post(`/api/v1/users/${user_id}/groups`, body)
       .then( res => res );
   }
+
+  static toggleUser(user_id) {
+    return client.patch(`/api/v1/users/${user_id}/enabled`)
+      .then( res => res );
+  }
+
 }
 
 export { API };

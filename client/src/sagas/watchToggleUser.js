@@ -6,24 +6,26 @@ import { API } from "../apis";
 
 // actions
 import {
-  addGroupOfUser,
+  toggleUser,
   initUser,
   loadingStart,
   loadingEnd
 } from "../actions";
 
-function* watchAddGroupOfUser() {
+function* watchToggleUser() {
   while (true) {
-    const task = yield take(addGroupOfUser().type);
+    const task = yield take(toggleUser().type);
+    console.log("watch toggle user");
 
     try {
       yield put(loadingStart());
       yield call(delay, 1000);
-      yield call(API.addGroupOfUser, task.user_id, task.group_id);
+      yield call(API.toggleUser, task.user_id);
       const payload = yield call(API.fetchUser, task.user_id);
       yield put(initUser(payload.data.body));
     }
     catch (e) {
+
     }
     finally {
       yield put(loadingEnd());
@@ -31,4 +33,4 @@ function* watchAddGroupOfUser() {
   }
 }
 
-export default watchAddGroupOfUser;
+export default watchToggleUser;
