@@ -104,44 +104,23 @@ router.patch("/:user_id/password", (req, res, next) => {
   const { user_id } = req.params;
   const { current_password, new_password } = req.body;
 
-  if (!current_password) {
-    res.status(400).json({
-      status: {
-        success: false,
-        message: "現在のパスワードが空のためエラー",
-        errors: { current_password: "パスワードが空のためエラー" }
-      },
-      body: {}
-    });
-  }
-
-  if (!new_password) {
-    res.status(400).json({
-      status: {
-        success: false,
-        message: "変更後のパスワードが空のためエラー",
-        errors: { new_password: "パスワードが空のためエラー" }
-      },
-      body: {}
-    });
-  }
-
   User.findById(user_id)
     .then( user => {
+      if (current_password === null || 
+          current_password === ""   ||
+          current_password === undefined) throw "current password is empty";
+
+      if (new_password === null ||
+          new_password === ""   ||
+          new_password === undefined) throw "new password is empty";
+
+      if (user === null || user === undefined) throw "user not found";
+
       const sha = crypto.createHash("sha512");
       sha.update(current_password);
       const hash = sha.digest("hex");
       
-      if (hash !== user.password) {
-        res.status(400).json({
-          status: {
-            success: false,
-            message: "変更前のパスワードが一致しません",
-            errors: { current_password: "変更前のパスワードが一致しません" }
-          },
-          body: {}
-        });
-      }
+      if (hash !== user.password) throw "password is not match";
 
       return user;
     })
@@ -159,12 +138,40 @@ router.patch("/:user_id/password", (req, res, next) => {
       });
     })
     .catch( err => {
-      res.status(500).json({
-        status: { success: false, message: "パスワードの変更に失敗", errors: err },
-        body: {}
-      });
-    });
+      switch (err) {
+      case "current password is empty":
+        res.status(400).json({
+          status: {
+            success: false,
+            errors: { current_password: "パスワードが空のためエラー" }
+          }
+        });
+      case "new password is empty":
+        res.status(400).json({
+          status: {
+            success: false,
+            errors: { new_password: "パスワードが空のためエラー" }
+          }
+        });
+      case "password is not match":
+        res.status(400).json({
+          status: {
+            success: false,
+            errors: { current_password: "変更前のパスワードが一致しません" }
+          }
+        });
+      case "user not found":
+        res.status(400).json({
+          status: { success: false, errors: { err } }
+        });
 
+      default:
+        res.status(500).json({
+          status: { success: false, message: "パスワードの変更に失敗", errors: err },
+          body: {}
+        });
+      }
+    });
 });
 
 // 有効/無効のトグル
