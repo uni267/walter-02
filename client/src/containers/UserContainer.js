@@ -55,7 +55,9 @@ const UserTableBody = ({
 }) => {
   const renderGroups = (groups) => {
     return groups.map( (group, idx)  => (
-      <Chip key={idx}>{group.name}</Chip>
+      <Chip key={idx} style={{ marginRight: 10 }}>
+        {group.name}
+      </Chip>
     ));
   };
 
@@ -71,7 +73,9 @@ const UserTableBody = ({
         {user.email}
       </TableRowColumn>
       <TableRowColumn>
-        {renderGroups(user.groups)}
+        <div style={{ display: "flex" }}>
+          {renderGroups(user.groups)}
+        </div>
       </TableRowColumn>
       <TableRowColumn>
         <IconButton containerElement={<Link to={`/users/${user._id}`} />}>
