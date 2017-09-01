@@ -26,7 +26,8 @@ import {
 // actions
 import {
   requestFetchUser,
-  deleteGroupOfUser
+  deleteGroupOfUser,
+  addGroupOfUser
 } from "../actions";
 
 // components
@@ -42,6 +43,12 @@ const styles = {
   },
   toggle: {
     maxWidth: 200
+  },
+  groups: {
+    display: "flex"
+  },
+  groupChip: {
+    marginRight: 10
   }
 };
 
@@ -50,7 +57,8 @@ class UserDetailContainer extends Component {
     super(props);
     this.state = {
       group: {
-        text: ""
+        text: "",
+        value: {}
       },
       user: {
         name: "",
@@ -110,6 +118,7 @@ class UserDetailContainer extends Component {
     return (
       <Chip
         key={idx}
+        style={styles.groupChip}
         onRequestDelete={() => this.props.deleteGroupOfUser(user_id, group_id)}
         >
 
@@ -126,15 +135,15 @@ class UserDetailContainer extends Component {
     });
 
     const groups = _groups.map( group => {
+      const _id = group._id;
       const text = group.name;
-      const icon = <SocialGroup />;
       const value = (
         <MenuItem
           primaryText={group.name}
           leftIcon={<SocialGroup />} />
       );
 
-      return { text, value };
+      return { _id, text, value };
 
     });
 
@@ -185,7 +194,7 @@ class UserDetailContainer extends Component {
                 <Card>
                   <CardTitle subtitle="所属グループ" />
                   <CardText>
-                    <div>
+                    <div style={styles.groups}>
                       {user.groups.map(group => this.renderGroup(group))}
                     </div>
 
@@ -194,7 +203,19 @@ class UserDetailContainer extends Component {
                       floatingLabelText="グループ名を入力"
                       searchText={this.state.group.text}
                       onTouchTap={() => this.setState({ group: { text: "" } })}
-                      onNewRequest={(text) => this.setState({ group: { text: text } })}
+                      onNewRequest={(group) => {
+                        this.setState({ 
+                          group: {
+                            _id: group._id,
+                            text: group.text,
+                            value: group.value
+                          }
+                        });
+
+                        console.log(group);
+                        this.props.addGroupOfUser(this.props.user.data._id, group._id);
+
+                      }}
                       openOnFocus={true}
                       filter={(text, key) => key.indexOf(text) !== -1}
                       dataSource={groups}
@@ -228,6 +249,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   deleteGroupOfUser: (user_id, group_id) => {
     dispatch(deleteGroupOfUser(user_id, group_id));
+  },
+  addGroupOfUser: (user_id, group_id) => {
+    dispatch(addGroupOfUser(user_id, group_id));
   }
 });
 

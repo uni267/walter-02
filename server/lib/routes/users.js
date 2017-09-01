@@ -167,6 +167,40 @@ router.patch("/:user_id/password", (req, res, next) => {
 
 });
 
+// 所属グループの追加
+router.post("/:user_id/groups", (req, res, next) => {
+
+  const user_id = req.params.user_id;
+  const group_id = req.body.group_id;
+
+  const tasks = [
+    User.findById(user_id).then( user => user ),
+    Group.findById(group_id).then( group => group )
+  ];
+
+  Promise.all(tasks)
+    .then( result => {
+      const [ user, group ] = result;
+      if (!user) throw `存在しないユーザです user_id: ${user_id}`;
+      if (!group) throw `存在しないグループです group_id: ${group_id}`;
+
+      user.groups = [...user.groups, group._id];
+      return user.save();
+    })
+    .then( user => {
+      res.json({
+        status: { success: true },
+        body: user
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, errors: err }
+      });
+    });
+  
+});
+
 // 所属グループの削除
 router.delete("/:user_id/groups/:group_id", (req, res, next) => {
   const { user_id, group_id } = req.params;

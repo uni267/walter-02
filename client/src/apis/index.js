@@ -152,6 +152,12 @@ class API {
       .then( res => res );
   }
 
+  static addGroupOfUser(user_id, group_id) {
+    const body = { group_id };
+
+    return client.post(`/api/v1/users/${user_id}/groups`, body)
+      .then( res => res );
+  }
 }
 
 export { API };
