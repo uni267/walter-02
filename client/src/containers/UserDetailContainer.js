@@ -28,7 +28,10 @@ import {
   requestFetchUser,
   deleteGroupOfUser,
   addGroupOfUser,
-  toggleUser
+  toggleUser,
+  changeUserName,
+  changeUserEmail,
+  changeUserPassword
 } from "../actions";
 
 // components
@@ -64,26 +67,9 @@ class UserDetailContainer extends Component {
   }
 
   componentWillMount() {
-    console.log("willmount");
     this.props.requestFetchUser(
       this.props.match.params.id, this.props.tenant.tenant_id);
   }
-
-  handleNameChange = (e, value) => {
-    this.props.changeUserName(value);
-  };
-
-  handleEmailChange = (e, value) => {
-    const user = Object.assign({}, this.state.user);
-    user.email = value;
-    this.setState({ user: user });
-  };
-
-  handlePasswordChange = (e, value) => {
-    const user = Object.assign({}, this.state.user);
-    user.password = value;
-    this.setState({ user: user });
-  };
 
   renderGroup = (group, idx) => {
     const user_id = this.props.user.data._id;
@@ -102,7 +88,6 @@ class UserDetailContainer extends Component {
   };
 
   render() {
-    console.log("render");
     const _groups = this.props.group.data.filter( group => {
       return !this.props.user.data.groups
         .map( g => g._id )
@@ -138,28 +123,47 @@ class UserDetailContainer extends Component {
                       onToggle={() => this.props.toggleUser(this.props.user.data._id)}
                       style={styles.toggle}
                       label="有効/無効"
-                      defaultToggled={this.props.user.data.enabled} />
-
+                      defaultToggled={this.props.user.data.enabled}
+                      />
                     <br />
 
                     <TextField
-                      value={this.props.user.data.name}
-                      onChange={this.handleNameChange}
+                      value={this.props.user.changed.name}
+                      onChange={(e, value) => this.props.changeUserName(value)}
                       floatingLabelText="表示名" />
+
+                    <FlatButton
+                      label="保存"
+                      primary={true}
+                      style={{ marginLeft: 10 }} />
+
                     <br />
 
                     <TextField 
-                      value={this.props.user.data.email}
-                      onChange={this.handleEmailChange}
+                      value={this.props.user.changed.email}
+                      onChange={(e, value) => this.props.changeUserEmail(value)}
                       floatingLabelText="メールアドレス" />
+
+                    <FlatButton
+                      label="保存"
+                      primary={true}
+                      style={{ marginLeft: 10 }} />
+
                     <br />
 
                     <TextField
-                      value={this.props.user.data.password}
-                      onChange={this.handlePasswordChange}
+                      value={this.props.user.changed.password}
+                      onChange={(e, value) => this.props.changeUserPassword(value)}
                       type="password"
                       floatingLabelText="パスワード" />
-                    <br />
+
+                    <FlatButton
+                      label="保存"
+                      primary={true}
+                      style={{ marginLeft: 10 }} />
+
+                   <br />
+
                   </CardText>
                 </Card>
               </div>
@@ -220,9 +224,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleUser: (user_id) => {
     dispatch(toggleUser(user_id));
   },
-  changeUserName: (name) => {
-    dispatch({ type: "CHANGE_USER_NAME", name });
-  }
+  changeUserName: (name) => dispatch(changeUserName(name)),
+  changeUserEmail: (email) => dispatch(changeUserEmail(email)),
+  changeUserPassword: (password) => dispatch(changeUserPassword(password))
 });
 
 UserDetailContainer = connect(mapStateToProps, mapDispatchToProps)(UserDetailContainer);

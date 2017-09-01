@@ -277,3 +277,15 @@ export const addGroupOfUser = (user_id, group_id) => ({
 export const toggleUser = (user_id) => ({
   type: "TOGGLE_USER", user_id
 });
+
+export const changeUserName = (name) => ({
+  type: "CHANGE_USER_NAME", name
+});
+
+export const changeUserEmail = (email) => ({
+  type: "CHANGE_USER_EMAIL", email
+});
+
+export const changeUserPassword = (password) => ({
+  type: "CHANGE_USER_PASSWORD", password
+});
