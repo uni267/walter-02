@@ -289,3 +289,15 @@ export const changeUserEmail = (email) => ({
 export const changeUserPassword = (password) => ({
   type: "CHANGE_USER_PASSWORD", password
 });
+
+export const saveUserName = (user) => ({
+  type: "SAVE_USER_NAME", user
+});
+
+export const saveUserEmail = (user) => ({
+  type: "SAVE_USER_EMAIL", user
+});
+
+export const saveUserPassword = (user) => ({
+  type: "SAVE_USER_PASSWORD", user
+});

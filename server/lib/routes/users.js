@@ -192,6 +192,60 @@ router.patch("/:user_id/enabled", (req, res, next) => {
 
 });
 
+// 表示名変更
+router.patch("/:user_id/name", (req, res, next) => {
+  const user_id = req.params.user_id;
+  const name = req.body.name;
+
+  User.findById(user_id)
+    .then( user => {
+      if (!user) throw "指定されたユーザが見つかりません";
+
+      user.name = name;
+      return user.save();
+    })
+    .then( user => {
+      res.json({
+        status: { success: true },
+        body: user
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, message: err }
+      });
+    });
+});
+
+// メールアドレス変更
+router.patch("/:user_id/email", (req, res, next) => {
+  const user_id = req.params.user_id;
+  const email = req.body.email;
+
+  User.findById(user_id)
+    .then( user => {
+      if (!user) throw "指定されたユーザが見つかりません";
+      if (email === ""   || 
+          email === null ||
+          email === undefined) throw "メールアドレスが空です";
+
+      user.email = email;
+      return user.save();
+    })
+    .then( user => {
+      res.json({
+        status: { success: true },
+        body: user
+      });
+    })
+    .catch( err => {
+      res.status(500).json({
+        status: { success: false, message: err }
+      });
+    });
+});
+
+
 // 所属グループの追加
 router.post("/:user_id/groups", (req, res, next) => {
 

@@ -164,6 +164,26 @@ class API {
       .then( res => res );
   }
 
+  static saveUserName(user) {
+    const body = { name: user.name };
+
+    return client.patch(`/api/v1/users/${user._id}/name`, body)
+      .then( res => res );
+  }
+
+  static saveUserEmail(user) {
+    const body = { email: user.email };
+
+    return client.patch(`/api/v1/users/${user._id}/email`, body)
+      .then( res => res );
+  }
+
+  static saveUserPassword(user) {
+    const body = { new_password: user.password };
+
+    return client.patch(`/api/v1/users/${user._id}/password`, body)
+      .then( res => res );
+  }
 }
 
 export { API };

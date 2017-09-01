@@ -31,7 +31,10 @@ import {
   toggleUser,
   changeUserName,
   changeUserEmail,
-  changeUserPassword
+  changeUserPassword,
+  saveUserName,
+  saveUserEmail,
+  saveUserPassword
 } from "../actions";
 
 // components
@@ -135,6 +138,7 @@ class UserDetailContainer extends Component {
                     <FlatButton
                       label="保存"
                       primary={true}
+                      onClick={() => this.props.saveUserName(this.props.user.changed)}
                       style={{ marginLeft: 10 }} />
 
                     <br />
@@ -147,6 +151,7 @@ class UserDetailContainer extends Component {
                     <FlatButton
                       label="保存"
                       primary={true}
+                      onClick={() => this.props.saveUserEmail(this.props.user.changed)}
                       style={{ marginLeft: 10 }} />
 
                     <br />
@@ -160,6 +165,7 @@ class UserDetailContainer extends Component {
                     <FlatButton
                       label="保存"
                       primary={true}
+                      onClick={() => this.props.saveUserPassword(this.props.user.changed)}
                       style={{ marginLeft: 10 }} />
 
                    <br />
@@ -226,7 +232,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   changeUserName: (name) => dispatch(changeUserName(name)),
   changeUserEmail: (email) => dispatch(changeUserEmail(email)),
-  changeUserPassword: (password) => dispatch(changeUserPassword(password))
+  changeUserPassword: (password) => dispatch(changeUserPassword(password)),
+  saveUserName: (user) => dispatch(saveUserName(user)),
+  saveUserEmail: (user) => dispatch(saveUserEmail(user)),
+  saveUserPassword: (user) => dispatch(saveUserPassword(user))
 });
 
 UserDetailContainer = connect(mapStateToProps, mapDispatchToProps)(UserDetailContainer);
