@@ -15,6 +15,13 @@ class AuthenticationContainer extends Component {
     if (!this.props.session.login) this.userWillTransfer();
   }
 
+  haveToken = () => {
+    const token = localStorage.getItem("token");
+    console.log(!(token === null || token === undefined));
+
+    return !(token === null || token === undefined);
+  }
+
   userWillTransfer() {
     const token = localStorage.getItem("token");
     const user_id = localStorage.getItem("userId");
@@ -31,7 +38,7 @@ class AuthenticationContainer extends Component {
 
   render() {
     return (
-      this.props.session.login ? (
+      this.haveToken() ? (
         <Route children={this.props.children} />
       ) : (
         <Redirect to={'/login'} />
