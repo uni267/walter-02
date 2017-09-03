@@ -46,11 +46,11 @@ class NavigationContainer extends Component {
     const menus = [
       {
         name: "ファイル一覧",
-        link: "/home"
+        link: `/home/${this.props.tenant.dirId}`
       },
       {
         name: "容量管理",
-        link: "/home"
+        link: `/home/${this.props.tenant.dirId}`
       },
       {
         name: "ユーザ管理",
