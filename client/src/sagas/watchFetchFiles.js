@@ -4,10 +4,19 @@ import { call, put, fork, take, all, select } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
+// actions
+import {
+  requestFetchFiles,
+  loadingStart,
+  loadingEnd,
+  initFiles,
+  initDir
+} from "../actions";
+
 function* watchFetchFiles() {
   while (true) {
-    const { dir_id } = yield take("REQUEST_FETCH_FILES");
-    yield put({ type: "LOADING_START" });
+    const { dir_id } = yield take(requestFetchFiles().type);
+    yield put(loadingStart());
 
     try {
       yield call(delay, 500);
@@ -17,14 +26,14 @@ function* watchFetchFiles() {
         call(API.fetchDirs, dir_id)
       ]);
 
-      yield put({ type: "INIT_FILES", files: files.data.body });
-      yield put({ type: "INIT_DIR", dirs: dirs.data.body });
+      yield put(initFiles(files.data.body));
+      yield put(initDir(dirs.data.body));
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put({ type: "LOADING_END" });
+      yield put(loadingEnd());
     }
 
   }
