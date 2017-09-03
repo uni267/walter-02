@@ -238,6 +238,10 @@ export const initFiles = (files) => ({
   type: "INIT_FILES", files
 });
 
+export const initDir = (dirs) => ({
+  type: "INIT_DIR", dirs
+});
+
 export const toggleMetaInfoDialog = (target_file) => ({
   type: "TOGGLE_META_INFO_DIALOG", target_file
 });

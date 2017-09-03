@@ -71,7 +71,8 @@ class UserDetailContainer extends Component {
 
   componentWillMount() {
     this.props.requestFetchUser(
-      this.props.match.params.id, this.props.tenant.tenant_id);
+      this.props.match.params.id, this.props.tenant.tenant_id
+    );
   }
 
   renderGroup = (group, idx) => {
