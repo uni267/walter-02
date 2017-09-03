@@ -17,8 +17,6 @@ class AuthenticationContainer extends Component {
 
   haveToken = () => {
     const token = localStorage.getItem("token");
-    console.log(!(token === null || token === undefined));
-
     return !(token === null || token === undefined);
   }
 
