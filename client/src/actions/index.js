@@ -309,3 +309,7 @@ export const saveUserPassword = (user) => ({
 export const searchUsersSimple = (tenant_id, keyword) => ({
   type: "SEARCH_USERS", tenant_id, keyword
 });
+
+export const requestFetchGroups = (tenant_id) => ({
+  type: "REQUEST_FETCH_GROUPS", tenant_id
+});

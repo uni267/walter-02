@@ -28,6 +28,7 @@ import watchToggleUser from "./watchToggleUser";
 import watchSaveUserName from "./watchSaveUserName";
 import watchSaveUserEmail from "./watchSaveUserEmail";
 import watchSearchUsersSimple from "./watchSearchUsersSimple";
+import watchFetchGroups from "./watchFetchGroups";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -58,6 +59,7 @@ function* Saga() {
   yield fork(watchSaveUserName);
   yield fork(watchSaveUserEmail);
   yield fork(watchSearchUsersSimple);
+  yield fork(watchFetchGroups);
 }
 
 export default Saga;

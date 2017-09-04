@@ -204,7 +204,10 @@ router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
     })
     .catch( err => {
       res.status(500).json({
-        status: { success: false, errors: err },
+        status: {
+          success: false,
+          message: "ファイルのアップロードに失敗しました",
+          errors: err },
         body: {}
       });
     });
