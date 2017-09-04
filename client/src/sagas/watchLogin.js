@@ -21,15 +21,15 @@ function* watchLogin() {
 
     try {
       yield call(delay, 500);
-      const resLogin = yield call(API.login, task.name, task.password);
-      const resUser = yield call(API.fetchUserById, resLogin.data.body.user_id);
+      const payload = yield call(API.login, task.name, task.password);
+      const { user, token } = payload.data.body;
 
-      localStorage.setItem("dirId", resUser.data.body.tenant.home_dir_id);
-      localStorage.setItem("trashDirId", resUser.data.body.tenant.trash_dir_id);
-      localStorage.setItem("tenantName", resUser.data.body.tenant.name);
-      localStorage.setItem("tenantId", resUser.data.body.tenant._id);
-      localStorage.setItem("token", resLogin.data.token);
-      localStorage.setItem("userId", resLogin.data.body.user_id);
+      localStorage.setItem("dirId", user.tenant.home_dir_id);
+      localStorage.setItem("trashDirId", user.tenant.trash_dir_id);
+      localStorage.setItem("tenantName", user.tenant.name);
+      localStorage.setItem("tenantId", user.tenant._id);
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", user._id);
 
     }
     catch (e) {
