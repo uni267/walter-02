@@ -20,7 +20,7 @@ const SimpleSearch = ({
         ref={(input) => searchValue = input}
         style={{width: 270}}
         onKeyDown={handleKeyDown}
-        hintText="ファイル名、メタ情報"
+        hintText=""
         floatingLabelText="簡易検索"
         />
     </div>

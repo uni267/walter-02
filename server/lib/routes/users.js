@@ -9,9 +9,19 @@ const router = Router();
 
 // ユーザ一覧
 router.get("/", (req, res, next) => {
-  const conditions = {
+
+  let conditions = {
     tenant_id: mongoose.Types.ObjectId(req.query.tenant_id)
   };
+
+  if (req.query.q) {
+    conditions = {
+      $and: [
+        { tenant_id: mongoose.Types.ObjectId(req.query.tenant_id) },
+        { name: new RegExp(req.query.q, "i") }
+      ]
+    };
+  }
 
   User.aggregate([
     { $match: conditions },

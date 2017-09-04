@@ -305,3 +305,7 @@ export const saveUserEmail = (user) => ({
 export const saveUserPassword = (user) => ({
   type: "SAVE_USER_PASSWORD", user
 });
+
+export const searchUsersSimple = (tenant_id, keyword) => ({
+  type: "SEARCH_USERS", tenant_id, keyword
+});

@@ -184,6 +184,11 @@ class API {
     return client.patch(`/api/v1/users/${user._id}/password`, body)
       .then( res => res );
   }
+
+  static searchUsersSimple(tenant_id, keyword) {
+    return client.get(`/api/v1/users/?tenant_id=${tenant_id}&q=${keyword}`)
+      .then( res => res );
+  }
 }
 
 export { API };

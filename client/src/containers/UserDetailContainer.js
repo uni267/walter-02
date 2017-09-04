@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+// route
+import { Link } from "react-router-dom";
+
 // store
 import { connect } from "react-redux";
 
@@ -202,7 +205,7 @@ class UserDetailContainer extends Component {
             </div>
           </CardText>
           <CardActions>
-            <FlatButton label="閉じる" primary={true} />
+            <FlatButton label="閉じる" primary={true} href="/users" />
           </CardActions>
         </Card>
       </div>
