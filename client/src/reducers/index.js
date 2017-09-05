@@ -24,6 +24,7 @@ import deleteFile from "./deleteFileReducer";
 import dirTree from "./dirTreeReducer";
 import metaInfo from "./metaInfoReducer";
 import user from "./userReducer";
+import groups from "./groupsReducer";
 import group from "./groupReducer";
 
 const fileApp = combineReducers({
@@ -50,6 +51,7 @@ const fileApp = combineReducers({
   dirTree,
   metaInfo,
   user,
+  groups,
   group
 });
 

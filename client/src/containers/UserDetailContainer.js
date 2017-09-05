@@ -48,7 +48,7 @@ const styles = {
     display: "flex"
   },
   cell: {
-    width: "30%",
+    width: "35%",
     marginRight: 20
   },
   toggle: {
@@ -95,7 +95,7 @@ class UserDetailContainer extends Component {
   };
 
   render() {
-    const _groups = this.props.group.data.filter( group => {
+    const _groups = this.props.groups.filter( group => {
       return !this.props.user.data.groups
         .map( g => g._id )
         .includes(group._id);
@@ -217,7 +217,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
     tenant: state.tenant,
-    group: state.group
+    groups: state.groups.data
   };
 };
 

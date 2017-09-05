@@ -3,6 +3,9 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
+// router
+import { Link } from "react-router-dom";
+
 // material
 import { 
   Card, 
@@ -23,6 +26,10 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
+import Chip from 'material-ui/Chip';
+import IconButton from 'material-ui/IconButton';
+import ImageEdit from "material-ui/svg-icons/image/edit";
+
 // components
 import NavigationContainer from "./NavigationContainer";
 
@@ -42,13 +49,29 @@ const GroupTableHeader = ({ headers }) => {
 };
 
 const GroupTableBody = ({ group, key }) => {
+
+  const renderUser = (user, key) => {
+    return (
+      <Chip key={key} style={{ marginRight: 10 }}>
+        {user.name}
+      </Chip>
+    );
+  };
+
   return (
     <TableRow>
       <TableRowColumn>{group.name}</TableRowColumn>
       <TableRowColumn>{group.description}</TableRowColumn>
-      <TableRowColumn>{group.belongs_to_count}人</TableRowColumn>
-      <TableRowColumn></TableRowColumn>
-      <TableRowColumn></TableRowColumn>
+      <TableRowColumn>
+        <div style={{ display: "flex" }}>
+          {group.belongs_to.map( (user, idx) => renderUser(user, idx) )}
+        </div>
+      </TableRowColumn>
+      <TableRowColumn>
+        <IconButton containerElement={<Link to={`/groups/${group._id}`} />}>
+          <ImageEdit />
+        </IconButton>
+      </TableRowColumn>
     </TableRow>
   );
 };
@@ -62,9 +85,8 @@ class GroupContainer extends Component {
     const headers = [
       { name: "表示名" },
       { name: "備考" },
-      { name: "所属人数" },
+      { name: "ユーザ" },
       { name: "編集" },
-      { name: "削除" }
     ];
 
     return (
@@ -80,7 +102,7 @@ class GroupContainer extends Component {
                   <GroupTableHeader headers={headers} />
                 </TableHeader>
                 <TableBody displayRowCheckbox={false}>
-                  {this.props.group.map( (group, idx) => {
+                  {this.props.groups.map( (group, idx) => {
                     return <GroupTableBody group={group} key={idx} />;
                   })}
                 </TableBody>
@@ -96,7 +118,7 @@ class GroupContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    group: state.group.data,
+    groups: state.groups.data,
     tenant: state.tenant
   };
 };

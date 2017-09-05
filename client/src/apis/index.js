@@ -189,6 +189,11 @@ class API {
     return client.get(`/api/v1/users/?tenant_id=${tenant_id}&q=${keyword}`)
       .then( res => res );
   }
+
+  static fetchGroupById(group_id) {
+    return client.get(`/api/v1/groups/${group_id}`)
+      .then( res => res );
+  }
 }
 
 export { API };

@@ -27,7 +27,6 @@ import {
 } from 'material-ui/Table';
 
 import Chip from 'material-ui/Chip';
-
 import IconButton from 'material-ui/IconButton';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ImageEdit from "material-ui/svg-icons/image/edit";
@@ -145,7 +144,7 @@ class UserContainer extends Component {
       { name: "表示名" },
       { name: "メールアドレス" },
       { name: "所属グループ" },
-      { name: "" }
+      { name: "編集" }
     ];
 
     const isSimple = this.state.searchItems.filter( item => item.picked ).length === 0;

@@ -270,6 +270,10 @@ export const initGroups = (groups) => ({
   type: "INIT_GROUPS", groups
 });
 
+export const initGroup = (group) => ({
+  type: "INIT_GROUP", group
+});
+
 export const deleteGroupOfUser = (user_id, group_id) => ({
   type: "DELETE_GROUP_OF_USER", user_id, group_id
 });
@@ -312,4 +316,8 @@ export const searchUsersSimple = (tenant_id, keyword) => ({
 
 export const requestFetchGroups = (tenant_id) => ({
   type: "REQUEST_FETCH_GROUPS", tenant_id
+});
+
+export const requestFetchGroup = (group_id) => ({
+  type: "REQUEST_FETCH_GROUP", group_id
 });

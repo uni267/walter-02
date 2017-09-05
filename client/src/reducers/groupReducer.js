@@ -1,14 +1,11 @@
 const initialState = {
-  data: []
+  belongs_to: []
 };
 
 const groupReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "INIT_GROUPS":
-    return {
-      ...state,
-      data: action.groups
-    };
+  case "INIT_GROUP":
+    return action.group;
   default:
     return state;
   }
