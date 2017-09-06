@@ -2,32 +2,79 @@ import { Router } from "express";
 import mongoose, { Schema } from "mongoose";
 import multer from "multer";
 import morgan from "morgan";
+import co from "co";
+import User from "../models/User";
+import Group from "../models/Group";
 
 import Test from "../models/Test";
 const router = Router();
 
 router.get("/", (req, res, next) => {
-  const ary = [1,2,3];
-  res.json([...ary, 4, 5, 6]);
+  function* main() {
+    try {
+      yield new Promise( (resolve, reject) => {
+        setTimeout( () => resolve(), 1000);
+      });
+      const users = yield User.find();
+      const groups = yield Group.find();
+      res.json({users, groups});
+    }
+    catch (err) {
+      res.json(err);
+    }
+  }
 
-  // mongoose join exmaple
-  // File.aggregate([
-  //   { $match: { _id: mongoose.Types.ObjectId("59952d5d9970861eee9c743c") } },
-  //   { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
-  // ])
-  //   .then( file_tags => {
-  //     res.json(file_tags);
-  //   })
-  //   .catch( err => res.status(500).json(err));
+  co(main);
 });
 
-const upload = multer({ dest: "uploads/" });
+router.get("/1", (req, res, next) => {
+  function* main() {
+    const payloads = yield [
+      User.find(),
+      Group.find()
+    ];
 
-router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
-  const myFile = req.files.myFile[0];
-  const dir_id = req.body.dir_id;
-  console.log(myFile, dir_id);
-  res.json(myFile);
+    res.json({
+      users: payloads[0],
+      groups: payloads[1]
+    });
+  }
+
+  co(main);
 });
+
+router.get("/2", (req, res, next) => {
+  function* main() {
+    throw "runtime error";
+    res.json("success");
+  }
+
+  co(main).catch( err => res.json(err));
+
+});
+
+router.get("/3", (req, res, next) => {
+  const main = function*() {
+    try {
+      yield new Promise( r => setTimeout( () => r(), 1000) );
+      res.json("success");
+    }
+    catch (err) {
+      res.json(err);
+    }
+  };
+
+  co(main);
+
+});
+
+// const upload = multer({ dest: "uploads/" });
+
+// router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
+//   const myFile = req.files.myFile[0];
+//   const dir_id = req.body.dir_id;
+//   console.log(myFile, dir_id);
+//   res.json(myFile);
+// });
 
 export default router;
