@@ -1,5 +1,6 @@
 import { Router } from "express";
 import mongoose from "mongoose";
+import co from "co";
 import Group from "../models/Group";
 import User from "../models/User";
 
@@ -138,5 +139,47 @@ router.patch("/:group_id/name", (req, res, next) => {
 router.patch("/:group_id/description", (req, res, next) => {
   res.json();
 });
+
+// 新規作成
+router.post("/", (req, res, next) => {
+  const main = function*() {
+
+    try {
+      const group = new Group(req.body.group);
+
+      if (group.name === undefined
+          || group.name === null
+          || group.name === "") throw "name is empty";
+
+      const createdGroup = yield group.save();
+
+      res.json({
+        status: { success: true },
+        body: createdGroup
+      });
+
+    }
+    catch (err) {
+      let errors = {};
+
+      switch (err) {
+      case "name is empty":
+        errors.name = "名称が空です";
+        break;
+      default:
+        errors = err;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+
+  };
+
+  co(main);
+  
+});
+
 
 export default router;
