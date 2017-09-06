@@ -25,6 +25,8 @@ import {
   CardMedia, 
   CardActions
 } from 'material-ui/Card';
+import IconButton from "material-ui/IconButton";
+import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
 
 // actions
 import {
@@ -44,6 +46,7 @@ import {
 import NavigationContainer from "./NavigationContainer";
 import UserDetailBasic from "../components/User/UserDetailBasic";
 import UserBelongsToGroup from "../components/User/UserBelongsToGroup";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 class UserDetailContainer extends Component {
   constructor(props) {
@@ -62,11 +65,12 @@ class UserDetailContainer extends Component {
   }
 
   render() {
+    const title = `${this.props.user.data.name}の詳細`;
     return (
       <div>
         <NavigationContainer />
         <Card>
-          <CardTitle title={`${this.props.user.data.name}の詳細`} />
+          <CardTitle title={<TitleWithGoBack title={title} />} />
           <CardText>
 
             <div style={{ display: "flex" }}>

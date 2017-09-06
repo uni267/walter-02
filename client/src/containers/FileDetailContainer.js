@@ -28,6 +28,7 @@ import History from "../components/History";
 import Tag from "../components/Tag";
 import MetaInfo from "../components/MetaInfo";
 import FileBasic from "../components/FileBasic";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import {
@@ -208,20 +209,6 @@ class FileDetailContainer extends Component {
       <CardTitle subtitle={this.props.file.name} />
     );
 
-    const fileTitle = (
-      <div
-        style={{display: "flex", alignItems: "center"}}>
-        <IconButton
-          onTouchTap={() => {
-            this.props.history.goBack();
-          }}>
-          <HardwareKeyboardArrowLeft />
-        </IconButton>
-        {this.props.file.name}
-      </div>
-    );
-
-    
     if (! this.props.file._id) return null;
 
     return (
@@ -229,8 +216,7 @@ class FileDetailContainer extends Component {
         <NavigationContainer />
 
         <Card style={{paddingBottom: 10}}>
-          <CardHeader
-            title={fileTitle} />
+          <CardHeader title={<TitleWithGoBack title={this.props.file.name} />} />
 
           <div style={styles.fileImageWrapper}>
 

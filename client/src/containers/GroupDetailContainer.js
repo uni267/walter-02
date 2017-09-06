@@ -25,6 +25,7 @@ import {
 // components
 import NavigationContainer from "./NavigationContainer";
 import GroupDetailBasic from "../components/Group/GroupDetailBasic";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import {
@@ -85,12 +86,14 @@ class GroupDetailContainer extends Component {
       return { _id, text, value };
     });
 
+    const title = `${this.props.group.name}グループの詳細`;
+
     return (
       <div>
         <NavigationContainer />
 
         <Card>
-          <CardTitle title={`${this.props.group.name}グループの詳細`} />
+          <CardTitle title={<TitleWithGoBack title={title} />} />
           <CardText>
 
             <div style={{ display: "flex" }}>

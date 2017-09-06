@@ -32,6 +32,7 @@ import IconButton from 'material-ui/IconButton';
 import ImageEdit from "material-ui/svg-icons/image/edit";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
+import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -115,6 +116,7 @@ class GroupContainer extends Component {
               </div>
 
               <div style={{ width: "20%", paddingLeft: 15 }}>
+                <Divider />
                 <Menu>
                   <MenuItem 
                     primaryText="グループ作成"
