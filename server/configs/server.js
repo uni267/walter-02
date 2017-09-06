@@ -1,7 +1,7 @@
 // mongoの接続先情報
 export const SERVER_CONF = {
   development: {
-    url: "mongodb://192.168.56.10",  // virtualbox
+    url: "mongodb://172.16.55.74",  // virtualbox
     db_name: "walter",
     port: 3333
   },
