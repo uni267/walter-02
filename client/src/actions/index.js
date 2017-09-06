@@ -349,3 +349,7 @@ export const initNewUserTemplate = () => ({
 export const createUser = (user, history) => ({
   type: "CREATE_USER", user, history
 });
+
+export const createGroup = (group, history) => ({
+  type: "CREATE_GROUP", group, history
+});

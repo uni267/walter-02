@@ -214,6 +214,12 @@ class API {
     body.user.tenant_id = localStorage.getItem("tenantId");
     return client.post(`/api/v1/users`, body).then( res => res );
   }
+
+  static createGroup(group) {
+    const body = { group };
+    body.group.tenant_id = localStorage.getItem("tenantId");
+    return client.post(`/api/v1/groups`, body).then( res => res );
+  }
 }
 
 export { API };
