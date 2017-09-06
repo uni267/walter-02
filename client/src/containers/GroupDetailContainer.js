@@ -24,6 +24,7 @@ import {
 
 // components
 import NavigationContainer from "./NavigationContainer";
+import GroupDetailBasic from "../components/Group/GroupDetailBasic";
 
 // actions
 import {
@@ -96,32 +97,7 @@ class GroupDetailContainer extends Component {
               <Card style={{ width: "35%", marginRight: 20 }}>
                 <CardTitle subtitle="基本情報" />
                 <CardText>
-
-                  <TextField
-                    value={this.props.changedGroup.name}
-                    onChange={(e, value) => this.props.changeGroupName(value)}
-                    floatingLabelText="グループ名"
-                  />
-                  <FlatButton 
-                    label="保存"
-                    onClick={() => {
-                      this.props.saveGroupName(this.props.changedGroup);
-                    }}
-                    primary={true} />
-                  <br />
-
-                  <TextField
-                    value={this.props.changedGroup.description}
-                    onChange={(e, value) => this.props.changeGroupDescription(value)}
-                    floatingLabelText="備考"
-                  />
-                  <FlatButton
-                    label="保存"
-                    onClick={() => {
-                      this.props.saveGroupDescription(this.props.changedGroup);
-                    }}
-                    primary={true} />
-
+                  <GroupDetailBasic {...this.props} />
                 </CardText>
               </Card>
 
