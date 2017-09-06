@@ -30,6 +30,8 @@ import watchSaveUserEmail from "./watchSaveUserEmail";
 import watchSearchUsersSimple from "./watchSearchUsersSimple";
 import watchFetchGroups from "./watchFetchGroups";
 import watchFetchGroup from "./watchFetchGroup";
+import watchSaveGroupName from "./watchSaveGroupName";
+import watchSaveGroupDescription from "./watchSaveGroupDescription";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -62,6 +64,8 @@ function* Saga() {
   yield fork(watchSearchUsersSimple);
   yield fork(watchFetchGroups);
   yield fork(watchFetchGroup);
+  yield fork(watchSaveGroupName);
+  yield fork(watchSaveGroupDescription);
 }
 
 export default Saga;

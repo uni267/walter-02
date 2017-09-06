@@ -321,3 +321,23 @@ export const requestFetchGroups = (tenant_id) => ({
 export const requestFetchGroup = (group_id) => ({
   type: "REQUEST_FETCH_GROUP", group_id
 });
+
+export const changeGroupName = (name) => ({
+  type: "CHANGE_GROUP_NAME", name
+});
+
+export const changeGroupDescription = (description) => ({
+  type: "CHANGE_GROUP_DESCRIPTION", description
+});
+
+export const saveGroupName = (group) => ({
+  type: "SAVE_GROUP_NAME", group
+});
+
+export const saveGroupDescription = (group) => ({
+  type: "SAVE_GROUP_DESCRIPTION", group
+});
+
+export const saveGroupNameValidationError = (errors) => ({
+  type: "SAVE_GROUP_NAME_VALIDATION_ERROR", errors
+});

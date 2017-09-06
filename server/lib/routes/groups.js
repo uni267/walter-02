@@ -84,4 +84,59 @@ router.get("/:group_id", (req, res, next) => {
     });
 });
 
+// 名称変更
+router.patch("/:group_id/name", (req, res, next) => {
+  const changedName = req.body.name;
+
+  Group.findById(req.params.group_id)
+    .then( group => {
+      if (group === null) throw "group is not found";
+
+      if (changedName === null
+          || changedName === undefined
+          || changedName === "") throw "name is empty";
+
+      return group;
+    })
+    .then( group => {
+      group.name = changedName;
+      return group.save();
+    })
+    .then( group => {
+      res.group = group;
+      return User.find({ groups: group._id });
+    })
+    .then( users => {
+      const group = res.group.toObject();
+      group.belongs_to = users;
+
+      res.json({
+        status: { success: true },
+        body: group
+      });
+    })
+    .catch ( err => {
+      let errors;
+
+      switch (err) {
+      case "name is empty":
+        errors = { name: "グループ名が空です" };
+        break;
+      default:
+        errors = err;
+        break;
+      }
+
+      res.status(500).json({
+        status: { success: false, errors }
+      });
+
+    });
+});
+
+// 備考変更
+router.patch("/:group_id/description", (req, res, next) => {
+  res.json();
+});
+
 export default router;

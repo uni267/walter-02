@@ -194,6 +194,20 @@ class API {
     return client.get(`/api/v1/groups/${group_id}`)
       .then( res => res );
   }
+
+  static saveGroupName(group) {
+    const body = { name: group.name };
+
+    return client.patch(`/api/v1/groups/${group._id}/name`, body)
+      .then( res => res );
+  }
+
+  static saveGroupDescription(group) {
+    const body = { description: group.description };
+
+    return client.patch(`/api/v1/groups/${group._id}/description`, body)
+      .then( res => res );
+  }
 }
 
 export { API };

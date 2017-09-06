@@ -30,7 +30,11 @@ import {
   requestFetchGroup,
   requestFetchUsers,
   addGroupOfUser,
-  deleteGroupOfUser
+  deleteGroupOfUser,
+  changeGroupName,
+  changeGroupDescription,
+  saveGroupName,
+  saveGroupDescription
 } from "../actions";
 
 class GroupDetailContainer extends Component {
@@ -92,20 +96,32 @@ class GroupDetailContainer extends Component {
               <Card style={{ width: "35%", marginRight: 20 }}>
                 <CardTitle subtitle="基本情報" />
                 <CardText>
+
                   <TextField
-                    value={this.props.group.name}
-                    onChange={(e, value) => console.log(value)}
+                    value={this.props.changedGroup.name}
+                    onChange={(e, value) => this.props.changeGroupName(value)}
                     floatingLabelText="グループ名"
                   />
-                  <FlatButton label="保存" primary={true} />
+                  <FlatButton 
+                    label="保存"
+                    onClick={() => {
+                      this.props.saveGroupName(this.props.changedGroup);
+                    }}
+                    primary={true} />
                   <br />
 
                   <TextField
-                    value={this.props.group.description}
-                    onChange={(e, value) => console.log(value)}
+                    value={this.props.changedGroup.description}
+                    onChange={(e, value) => this.props.changeGroupDescription(value)}
                     floatingLabelText="備考"
                   />
-                  <FlatButton label="保存" primary={true} />
+                  <FlatButton
+                    label="保存"
+                    onClick={() => {
+                      this.props.saveGroupDescription(this.props.changedGroup);
+                    }}
+                    primary={true} />
+
                 </CardText>
               </Card>
 
@@ -145,7 +161,8 @@ class GroupDetailContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    group: state.group,
+    group: state.group.data,
+    changedGroup: state.group.changed,
     tenant: state.tenant,
     users: state.users
   };
@@ -155,7 +172,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchGroup: (group_id) => dispatch(requestFetchGroup(group_id)),
   requestFetchUsers: (tenant_id) => dispatch(requestFetchUsers(tenant_id)),
   addGroupOfUser: (user_id, group_id) => dispatch(addGroupOfUser(user_id, group_id)),
-  deleteGroupOfUser: (user_id, group_id) => dispatch(deleteGroupOfUser(user_id, group_id))
+  deleteGroupOfUser: (user_id, group_id) => dispatch(deleteGroupOfUser(user_id, group_id)),
+  changeGroupName: (name) => dispatch(changeGroupName(name)),
+  changeGroupDescription: (description) => dispatch(changeGroupDescription(description)),
+  saveGroupName: (group) => dispatch(saveGroupName(group)),
+  saveGroupDescription: (group) => dispatch(saveGroupDescription(group))
 });
 
 GroupDetailContainer = connect(
