@@ -62,12 +62,14 @@ var groups = [
   {
     name: "全社",
     description: "全社員が所属するグループ",
-    roles: []
+    roles: [],
+    tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
   },
   {
     name: "管理者",
     description: "システム管理者",
-    roles: []
+    roles: [],
+    tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
   }
 ];
 
@@ -79,7 +81,7 @@ db.groups.insert(groups);
 
 var pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff";
 
-var user = {
+var user1 = {
   type: "user",
   name: "hanako",
   email: "test",
@@ -89,7 +91,18 @@ var user = {
   tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
 };
 
-db.users.insert(user);
+var user2 = {
+  type: "user",
+  name: "taro",
+  email: "taro",
+  password: pass,
+  enabled: true,
+  groups: [ db.groups.findOne({ name: "全社" }, {_id: 1})._id ],
+  tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
+};
+
+db.users.insert(user1);
+db.users.insert(user2);
 
 // ===============================
 //  tags collection
