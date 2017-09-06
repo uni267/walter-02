@@ -112,7 +112,7 @@ router.post("/", (req, res, next) => {
       const createdUser = yield user.save();
 
       res.json({
-        statsus: { success: true },
+        status: { success: true },
         body: createdUser
       });
     }
