@@ -11,6 +11,7 @@ import LoginContainer from "./LoginContainer";
 import LoadingContainer from "./LoadingContainer";
 import UserContainer from "./UserContainer";
 import UserDetailContainer from "./UserDetailContainer";
+import UserCreateContainer from "./UserCreateContainer";
 import GroupContainer from "./GroupContainer";
 import GroupDetailContainer from "./GroupDetailContainer";
 
@@ -25,6 +26,7 @@ class App extends Component {
               <AuthenticationContainer>
                 <Switch>
                   <Route exact path="/users" component={UserContainer} />
+                  <Route exact path="/users/create" component={UserCreateContainer} />
                   <Route path="/users/:id" component={UserDetailContainer} />
                   <Route exact path="/groups" component={GroupContainer} />
                   <Route path="/groups/:id" component={GroupDetailContainer} />

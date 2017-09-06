@@ -1,5 +1,6 @@
 import { Router } from "express";
 import mongoose from "mongoose";
+import co from "co";
 import crypto from "crypto";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
@@ -85,27 +86,63 @@ router.get("/:id", (req, res, next) => {
 
 // ユーザ追加
 router.post("/", (req, res, next) => {
-  const user = new User(req.body);
-  const sha = crypto.createHash("sha512");
-  sha.update(req.body.password);
-  const hash = sha.digest("hex");
-  user.password = hash;
 
-  user.save( err => {
-    // 何らかの原因で保存に失敗した場合は
-    // Internal Server Error(500)を返却する
-    if (err) {
-      res.status(500).json({
-        result: { status: "ng", message: "ユーザの作成に失敗" },
-        data: {}
+  const main = function*() {
+
+    try {
+      const user = new User(req.body.user);
+
+      if (user.name === undefined
+          || user.name === null
+          || user.name === "") throw "name is empty";
+
+      if (user.email === undefined
+          || user.email === null
+          || user.email === "") throw "email is empty";
+
+      if (user.password === undefined
+          || user.password === null
+          || user.password === "") throw "password is empty";
+
+      const sha = crypto.createHash("sha512");
+      sha.update(user.password);
+      const hash = sha.digest("hex");
+      user.password = hash;
+
+      
+      
+      const createdUser = yield user.save();
+
+      res.json({
+        statsus: { success: true },
+        body: createdUser
       });
     }
-  }).then( user => {
-    res.json({
-      result: { status: "ok" },
-      data: user
-    });
-  });
+    catch (err) {
+      let errors = {};
+
+      switch (err) {
+      case "name is empty":
+        errors.name = "表示名が空です";
+        break;
+      case "email is empty":
+        errors = { email: "メールアドレスが空です" };
+        break;
+      case "password is emtpy":
+        errors = { password: "パスワードが空です" };
+        break;
+      default:
+        errors = err;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  };
+
+  co(main);
 
 });
 

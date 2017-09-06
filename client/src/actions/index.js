@@ -341,3 +341,11 @@ export const saveGroupDescription = (group) => ({
 export const saveGroupNameValidationError = (errors) => ({
   type: "SAVE_GROUP_NAME_VALIDATION_ERROR", errors
 });
+
+export const initNewUserTemplate = () => ({
+  type: "INIT_NEW_USER_TEMPLATE"
+});
+
+export const createUser = (user, history) => ({
+  type: "CREATE_USER", user, history
+});

@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // route
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 
 // material
 import { 
@@ -104,7 +104,8 @@ class UserContainer extends Component {
       { name: "編集" }
     ];
 
-    const isSimple = this.state.searchItems.filter( item => item.picked ).length === 0;
+    const isSimple = this.state.searchItems
+          .filter( item => item.picked ).length === 0;
 
     return (
       <div>
@@ -166,8 +167,8 @@ class UserContainer extends Component {
                   <MenuItem
                     primaryText="ユーザ作成"
                     leftIcon={<SocialPersonAdd />}
+                    onTouchTap={() => this.props.history.push("/users/create")}
                     />
-
                 </Menu>
               </div>
             </div>
@@ -194,4 +195,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
 UserContainer = connect(mapStateToProps, mapDispatchToProps)(UserContainer);
 
-export default UserContainer;
+export default withRouter(UserContainer);

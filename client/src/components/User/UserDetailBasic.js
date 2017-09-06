@@ -14,17 +14,20 @@ const UserDetailBasic = ({
   changeUserPassword,
   saveUserName,
   saveUserEmail,
-  saveUserPassword
+  saveUserPassword,
+  displaySaveButton = true
 }) => {
   return (
     <div>
-      <Toggle
-        onToggle={() => toggleUser(user.data._id)}
-        style={{ maxWidth: 200 }}
-        label="有効/無効"
-        defaultToggled={user.data.enabled}
-      />
-      <br />
+      {displaySaveButton ?
+        (
+          <Toggle
+            onToggle={() => toggleUser(user.data._id)}
+            style={{ maxWidth: 200 }}
+            label="有効/無効"
+            defaultToggled={user.data.enabled}
+            />
+        ) : null}
 
       <TextField
         value={user.changed.name}
@@ -32,14 +35,14 @@ const UserDetailBasic = ({
         floatingLabelText="表示名"
       />
 
-      <FlatButton
-        label="保存"
-        primary={true}
-        onClick={() => saveUserName(user.changed)}
-        style={{ marginLeft: 10 }}
-      />
-
-      <br />
+      {displaySaveButton ? 
+       (
+         <FlatButton 
+           label="保存" 
+           primary={true} 
+           onClick={() => saveUserName(user.changed)} style={{ marginLeft: 10 }}
+           />
+       ) : null}
 
       <TextField 
         value={user.changed.email}
@@ -47,14 +50,15 @@ const UserDetailBasic = ({
         floatingLabelText="メールアドレス"
       />
 
-      <FlatButton
-        label="保存"
-        primary={true}
-        onClick={() => saveUserEmail(user.changed)}
-        style={{ marginLeft: 10 }}
-      />
-
-      <br />
+      {displaySaveButton ?
+       (
+         <FlatButton
+           label="保存"
+           primary={true}
+           onClick={() => saveUserEmail(user.changed)}
+           style={{ marginLeft: 10 }}
+           />
+       ) : null}
 
       <TextField
         value={user.changed.password}
@@ -63,12 +67,14 @@ const UserDetailBasic = ({
         floatingLabelText="パスワード"
       />
 
-      <FlatButton
-        label="保存"
-        primary={true}
-        onClick={() => saveUserPassword(user.changed)}
-        style={{ marginLeft: 10 }} />
-      <br />
+      {displaySaveButton ?
+       (
+         <FlatButton
+           label="保存"
+           primary={true}
+           onClick={() => saveUserPassword(user.changed)}
+           style={{ marginLeft: 10 }} />
+       ) : null}
 
     </div>
   );

@@ -208,6 +208,12 @@ class API {
     return client.patch(`/api/v1/groups/${group._id}/description`, body)
       .then( res => res );
   }
+
+  static createUser(user) {
+    const body = { user };
+    body.user.tenant_id = localStorage.getItem("tenantId");
+    return client.post(`/api/v1/users`, body).then( res => res );
+  }
 }
 
 export { API };

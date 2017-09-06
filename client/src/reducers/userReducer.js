@@ -1,9 +1,9 @@
 const initialState = {
   data: {
+    enabled: true,
     name: "",
     email: "",
     password: "",
-    enabled: false,
     groups: []
   },
   changed: {
@@ -35,6 +35,17 @@ const userReducer = (state = initialState, action) => {
     return {
       ...state,
       changed: { ...state.changed, email: action.email }
+    };
+  case "INIT_NEW_USER_TEMPLATE":
+    return {
+      data: state.data,
+      changed: {
+        enabled: true,
+        name: "",
+        email: "",
+        password: "",
+        groups: []
+      }
     };
   default:
     return state;
