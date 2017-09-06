@@ -30,66 +30,23 @@ import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ImageEdit from "material-ui/svg-icons/image/edit";
+import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
+import SocialPersonAdd from "material-ui/svg-icons/social/person-add";
 
 // components
 import NavigationContainer from "./NavigationContainer";
 import AddFilterBtn from "../components/FileSearch/AddFilterBtn";
 import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
+import UserTableHeader from "../components/User/UserTableHeader";
+import UserTableBody from "../components/User/UserTableBody";
 
 // actions
 import {
   requestFetchUsers,
   searchUsersSimple
 } from "../actions";
-
-const UserTableHeader = ({
-  headers
-}) => {
-  return (
-    <TableRow>
-      {headers.map( (header, idx) => {
-        return <TableHeaderColumn key={idx}>{header.name}</TableHeaderColumn>;
-      })}
-    </TableRow>
-  );
-};
-
-const UserTableBody = ({
-  user, idx
-}) => {
-  const renderGroups = (groups) => {
-    return groups.map( (group, idx)  => (
-      <Chip key={idx} style={{ marginRight: 10 }}>
-        {group.name}
-      </Chip>
-    ));
-  };
-
-  return (
-    <TableRow key={idx}>
-      <TableRowColumn>
-        {user.enabled ? "有効" : "無効"}
-      </TableRowColumn>
-      <TableRowColumn>
-        {user.name}
-      </TableRowColumn>
-      <TableRowColumn>
-        {user.email}
-      </TableRowColumn>
-      <TableRowColumn>
-        <div style={{ display: "flex" }}>
-          {renderGroups(user.groups)}
-        </div>
-      </TableRowColumn>
-      <TableRowColumn>
-        <IconButton containerElement={<Link to={`/users/${user._id}`} />}>
-          <ImageEdit />
-        </IconButton>
-      </TableRowColumn>
-    </TableRow>
-  );
-};
 
 class UserContainer extends Component {
   constructor(props) {
@@ -190,17 +147,29 @@ class UserContainer extends Component {
                 </div>
               </div>
             </div>
-            <div>
-              <Table>
-                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                  <UserTableHeader headers={headers} />
-                </TableHeader>
-                <TableBody displayRowCheckbox={false}>
-                  {this.props.users.map( (user, idx) => {
-                    return <UserTableBody user={user} key={idx} />;
-                  })}
-                </TableBody>
-              </Table>
+            <div style={{ display: "flex" }}>
+              <div style={{ width: "80%" }}>
+                <Table>
+                  <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                    <UserTableHeader headers={headers} />
+                  </TableHeader>
+                  <TableBody displayRowCheckbox={false}>
+                    {this.props.users.map( (user, idx) => {
+                      return <UserTableBody user={user} key={idx} />;
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div style={{ width: "20%", paddingLeft: 15 }}>
+                <Menu>
+                  <MenuItem
+                    primaryText="ユーザ作成"
+                    leftIcon={<SocialPersonAdd />}
+                    />
+
+                </Menu>
+              </div>
             </div>
           </CardText>
         </Card>
