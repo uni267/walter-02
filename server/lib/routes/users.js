@@ -108,8 +108,6 @@ router.post("/", (req, res, next) => {
       sha.update(user.password);
       const hash = sha.digest("hex");
       user.password = hash;
-
-      
       
       const createdUser = yield user.save();
 

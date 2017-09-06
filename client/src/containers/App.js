@@ -14,6 +14,7 @@ import UserDetailContainer from "./UserDetailContainer";
 import UserCreateContainer from "./UserCreateContainer";
 import GroupContainer from "./GroupContainer";
 import GroupDetailContainer from "./GroupDetailContainer";
+import GroupCreateContainer from "./GroupCreateContainer";
 
 class App extends Component {
   render() {
@@ -29,6 +30,7 @@ class App extends Component {
                   <Route exact path="/users/create" component={UserCreateContainer} />
                   <Route path="/users/:id" component={UserDetailContainer} />
                   <Route exact path="/groups" component={GroupContainer} />
+                  <Route exact path="/groups/create" component={GroupCreateContainer} />
                   <Route path="/groups/:id" component={GroupDetailContainer} />
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
                   <Route exact path="/home" component={HomeContainer} />

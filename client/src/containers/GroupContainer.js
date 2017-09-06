@@ -26,9 +26,12 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
+import SocialGroupAdd from "material-ui/svg-icons/social/group-add";
 import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
 import ImageEdit from "material-ui/svg-icons/image/edit";
+import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -96,17 +99,29 @@ class GroupContainer extends Component {
           <CardTitle title="グループ管理" />
           <CardText>
 
-            <div>
-              <Table>
-                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                  <GroupTableHeader headers={headers} />
-                </TableHeader>
-                <TableBody displayRowCheckbox={false}>
-                  {this.props.groups.map( (group, idx) => {
-                    return <GroupTableBody group={group} key={idx} />;
-                  })}
-                </TableBody>
-              </Table>
+            <div style={{ display: "flex" }}>
+
+              <div style={{ width: "80%" }}>
+                <Table>
+                  <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                    <GroupTableHeader headers={headers} />
+                  </TableHeader>
+                  <TableBody displayRowCheckbox={false}>
+                    {this.props.groups.map( (group, idx) => {
+                      return <GroupTableBody group={group} key={idx} />;
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div style={{ width: "20%", paddingLeft: 15 }}>
+                <Menu>
+                  <MenuItem 
+                    primaryText="グループ作成"
+                    leftIcon={<SocialGroupAdd />}
+                    onTouchTap={() => this.props.history.push("/groups/create")} />
+                </Menu>                  
+              </div>
             </div>
 
           </CardText>
