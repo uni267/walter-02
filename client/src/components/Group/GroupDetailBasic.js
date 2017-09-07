@@ -11,6 +11,7 @@ const GroupDetailBasic = ({
   changeGroupDescription,
   saveGroupName,  
   saveGroupDescription,
+  validationErrors,
   displaySaveButton = true
 }) => {
   return (
@@ -18,6 +19,7 @@ const GroupDetailBasic = ({
       <TextField
         value={changedGroup.name}
         onChange={(e, value) => changeGroupName(value)}
+        errorText={validationErrors.name}
         floatingLabelText="グループ名"
         />
 

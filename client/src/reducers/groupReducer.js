@@ -13,13 +13,14 @@ const groupReducer = (state = initialState, action) => {
 
   case "INIT_GROUP":
     return {
+      ...state,
       data: action.group,
       changed: action.group
     };
 
   case "CHANGE_GROUP_NAME":
     return {
-      data: state.data,
+      ...state,
       changed: {
         ...state.changed,
         name: action.name
@@ -28,18 +29,22 @@ const groupReducer = (state = initialState, action) => {
 
   case "CHANGE_GROUP_DESCRIPTION":
     return {
-      data: state.data,
+      ...state,
       changed: {
         ...state.changed,
         description: action.description
       }
     };
 
-  case "CHANGE_GROUP_NAME_VALIDATION_ERROR":
+  case "SAVE_GROUP_VALIDATION_ERROR":
     return {
-      data: state.data,
-      changed: state.changed,
+      ...state,
       errors: action.errors
+    };
+  case "CLEAR_GROUP_VALIDATION_ERROR":
+    return {
+      ...state,
+      errors: {}
     };
   default:
     return state;

@@ -350,8 +350,12 @@ export const saveGroupDescription = (group) => ({
   type: "SAVE_GROUP_DESCRIPTION", group
 });
 
-export const saveGroupNameValidationError = (errors) => ({
-  type: "SAVE_GROUP_NAME_VALIDATION_ERROR", errors
+export const saveGroupValidationError = (errors) => ({
+  type: "SAVE_GROUP_VALIDATION_ERROR", errors
+});
+
+export const clearGroupValidationError = () => ({
+  type: "CLEAR_GROUP_VALIDATION_ERROR"
 });
 
 export const initNewUserTemplate = () => ({
