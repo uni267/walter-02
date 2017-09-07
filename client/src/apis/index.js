@@ -220,6 +220,10 @@ class API {
     body.group.tenant_id = localStorage.getItem("tenantId");
     return client.post(`/api/v1/groups`, body).then( res => res );
   }
+
+  static deleteGroup(group_id) {
+    return client.delete(`/api/v1/groups/${group_id}`).then( res => res );
+  }
 }
 
 export { API };

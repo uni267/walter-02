@@ -12,7 +12,6 @@ const TitleWithGoBack = ({
   title,
   history
 }) => {
-  console.log(history);
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       <IconButton onTouchTap={() => history.goBack()}>

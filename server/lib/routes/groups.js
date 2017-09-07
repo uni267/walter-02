@@ -217,5 +217,45 @@ router.post("/", (req, res, next) => {
   
 });
 
+// 削除
+router.delete("/:group_id", (req, res, next) => {
+  const main = function* () {
+    const { group_id } = req.params;
+
+    try {
+      const group = yield Group.findById(group_id);
+
+      if (group === undefined ||
+          group === null) throw "group not found";
+
+      const removedGroup = yield group.remove();
+
+      res.json({
+        status: { success: true },
+        body: removedGroup
+      });
+    }
+    catch (e) {
+      console.log(e);
+      let errors = {};
+
+      switch (e) {
+      case "group not found":
+        errors.group = "指定されたグループが見つかりません";
+        break;
+      default:
+        errors = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+
+  };
+
+  co(main);
+});
 
 export default router;

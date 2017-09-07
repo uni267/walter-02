@@ -36,7 +36,8 @@ import {
   changeGroupName,
   changeGroupDescription,
   saveGroupName,
-  saveGroupDescription
+  saveGroupDescription,
+  deleteGroup
 } from "../actions";
 
 class GroupDetailContainer extends Component {
@@ -130,7 +131,10 @@ class GroupDetailContainer extends Component {
           </CardText>
           <CardActions>
             <FlatButton label="閉じる" primary={true} href="/groups" />
-            <FlatButton label="削除" secondary={true} />
+            <FlatButton
+              label="削除"
+              secondary={true}
+              onTouchTap={() => this.props.deleteGroup(this.props.group._id)} />
           </CardActions>
         </Card>
       </div>
@@ -156,7 +160,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeGroupName: (name) => dispatch(changeGroupName(name)),
   changeGroupDescription: (description) => dispatch(changeGroupDescription(description)),
   saveGroupName: (group) => dispatch(saveGroupName(group)),
-  saveGroupDescription: (group) => dispatch(saveGroupDescription(group))
+  saveGroupDescription: (group) => dispatch(saveGroupDescription(group)),
+  deleteGroup: (group_id) => dispatch(deleteGroup(group_id, ownProps.history))
 });
 
 GroupDetailContainer = connect(

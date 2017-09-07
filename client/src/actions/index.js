@@ -369,3 +369,7 @@ export const createUser = (user, history) => ({
 export const createGroup = (group, history) => ({
   type: "CREATE_GROUP", group, history
 });
+
+export const deleteGroup = (group_id, history) => ({
+  type: "DELETE_GROUP", group_id, history
+});
