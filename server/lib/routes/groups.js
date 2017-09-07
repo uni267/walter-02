@@ -236,7 +236,6 @@ router.delete("/:group_id", (req, res, next) => {
       });
     }
     catch (e) {
-      console.log(e);
       let errors = {};
 
       switch (e) {
