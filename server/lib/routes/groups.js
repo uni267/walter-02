@@ -87,57 +87,93 @@ router.get("/:group_id", (req, res, next) => {
 
 // 名称変更
 router.patch("/:group_id/name", (req, res, next) => {
-  const changedName = req.body.name;
 
-  Group.findById(req.params.group_id)
-    .then( group => {
-      if (group === null) throw "group is not found";
+  const main = function* () {
 
-      if (changedName === null
-          || changedName === undefined
-          || changedName === "") throw "name is empty";
+    try {
+      const { name } = req.body;
 
-      return group;
-    })
-    .then( group => {
-      group.name = changedName;
-      return group.save();
-    })
-    .then( group => {
-      res.group = group;
-      return User.find({ groups: group._id });
-    })
-    .then( users => {
-      const group = res.group.toObject();
-      group.belongs_to = users;
+      if (name === null || name === undefined || name === "") throw "name is empty";
+
+      const { group_id } = req.params;
+
+      const group = yield Group.findById(group_id);
+
+      if (group === null) throw "group is not found";    
+
+      group.name = name;
+
+      const changedGroup = yield group.save();
 
       res.json({
         status: { success: true },
-        body: group
+        body: changedGroup
       });
-    })
-    .catch ( err => {
-      let errors;
+    }
+    catch (e) {
+      let errors = {};
 
-      switch (err) {
+      switch (e) {
       case "name is empty":
-        errors = { name: "グループ名が空です" };
+        errors.name = "グループ名が空のため変更に失敗しました";
+        break;
+      case "group is not found":
+        errors.group = "指定されたグループが見つからないため変更に失敗しました";
         break;
       default:
-        errors = err;
+        errors.unknown = e;
         break;
       }
 
-      res.status(500).json({
+      res.status(400).json({
         status: { success: false, errors }
       });
+    }
 
-    });
+  };
+
+  co(main);
+
 });
 
 // 備考変更
 router.patch("/:group_id/description", (req, res, next) => {
-  res.json();
+
+  const main = function* () {
+    const { description } = req.body;
+    const { group_id } = req.params;
+    
+    try {
+      const group = yield Group.findById(group_id);
+      if (group === null || group === undefined) throw "group is not found";
+
+      group.description = description;
+      const changedGroup = yield group.save();
+
+      res.json({
+        status: { success: true },
+        body: changedGroup
+      });
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "group is not found":
+        errors.group = "指定されたグループが見つかりませんでした";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  };
+
+  co(main);
 });
 
 // 新規作成
