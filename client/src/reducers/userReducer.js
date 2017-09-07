@@ -39,7 +39,7 @@ const userReducer = (state = initialState, action) => {
     };
   case "INIT_NEW_USER_TEMPLATE":
     return {
-      data: state.data,
+      ...state,
       changed: {
         enabled: true,
         name: "",
@@ -50,14 +50,12 @@ const userReducer = (state = initialState, action) => {
     };
   case "CHANGE_USER_VALIDATION_ERROR":
     return {
-      data: state.data,
-      changed: state.changed,
+      ...state,
       errors: action.errors
     };
   case "CLEAR_USER_VALIDATION_ERROR":
     return {
-      data: state.data,
-      changed: state.changed,
+      ...state,
       errors: {}
     };
   default:

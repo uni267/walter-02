@@ -124,10 +124,10 @@ router.post("/", (req, res, next) => {
         errors.name = "表示名が空です";
         break;
       case "email is empty":
-        errors = { email: "メールアドレスが空です" };
+        errors.email = "メールアドレスが空です";
         break;
-      case "password is emtpy":
-        errors = { password: "パスワードが空です" };
+      case "password is empty":
+        errors.password = "パスワードが空です";
         break;
       default:
         errors = err;

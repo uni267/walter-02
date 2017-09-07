@@ -9,7 +9,8 @@ import {
   createUser,
   initUsers,
   loadingStart,
-  loadingEnd
+  loadingEnd,
+  changeUserValidationError
 } from "../actions";
 
 function* watchCreateUser() {
@@ -22,17 +23,15 @@ function* watchCreateUser() {
       yield call(API.createUser, task.user);
       const payload = yield call(API.fetchUsers, localStorage.getItem("tenantId"));
       yield put(initUsers(payload.data.body));
+      yield put(loadingEnd());
+      yield call(task.history.push("/users"));
     }
     catch (e) {
-
-    }
-    finally {
+      const { errors } = e.response.data.status;
+      yield put(changeUserValidationError(errors));
       yield put(loadingEnd());
     }
-
-    yield call(task.history.push("/users"));
   }
-
 }
 
 export default watchCreateUser;
