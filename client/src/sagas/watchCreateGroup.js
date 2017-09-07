@@ -10,12 +10,15 @@ import {
   loadingStart,
   loadingEnd,
   initGroups,
-  requestFetchGroups
+  requestFetchGroups,
+  saveGroupValidationError,
+  clearGroupValidationError
 } from "../actions";
 
 function* watchCreateGroup() {
   while (true) {
     const task = yield take(createGroup().type);
+    yield put(clearGroupValidationError());
 
     try {
       yield put(loadingStart());
@@ -27,6 +30,8 @@ function* watchCreateGroup() {
       yield call(task.history.push("/groups"));
     }
     catch (e) {
+      const { errors } = e.response.data.status;
+      yield put(saveGroupValidationError(errors));
       yield put(loadingEnd());
     }
   }

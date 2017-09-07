@@ -200,7 +200,7 @@ router.post("/", (req, res, next) => {
 
       switch (err) {
       case "name is empty":
-        errors.name = "名称が空です";
+        errors.name = "名称が空のため作成に失敗しました";
         break;
       default:
         errors = err;

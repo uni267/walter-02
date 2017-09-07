@@ -69,6 +69,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     group: state.group.data,
     changedGroup: state.group.changed,
+    validationErrors: state.group.errors,
     tenant: state.tenant
   };
 };
