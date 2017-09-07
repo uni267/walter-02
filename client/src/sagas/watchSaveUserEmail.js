@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import {
   saveUserEmail,
+  changeUserValidationError,
+  clearUserValidationError,
   initUser,
   loadingStart,
   loadingEnd
@@ -13,7 +15,7 @@ import {
 function* watchSaveUserEmail() {
   while (true) {
     const task = yield take(saveUserEmail().type);
-    console.log(task);
+    yield put(clearUserValidationError());
 
     try {
       yield put(loadingStart());
@@ -23,7 +25,8 @@ function* watchSaveUserEmail() {
       yield put(initUser(payload.data.body));
     }
     catch (e) {
-
+      const { errors } = e.response.data.status;
+      yield put(changeUserValidationError(errors));
     }
     finally {
       yield put(loadingEnd());

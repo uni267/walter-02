@@ -178,10 +178,10 @@ class API {
       .then( res => res );
   }
 
-  static saveUserPassword(user) {
-    const body = { new_password: user.password };
+  static saveUserPasswordForce(user) {
+    const body = { password: user.password };
 
-    return client.patch(`/api/v1/users/${user._id}/password`, body)
+    return client.patch(`/api/v1/users/${user._id}/password_force`, body)
       .then( res => res );
   }
 

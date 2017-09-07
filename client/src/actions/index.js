@@ -290,6 +290,14 @@ export const changeUserName = (name) => ({
   type: "CHANGE_USER_NAME", name
 });
 
+export const changeUserValidationError = (errors) => ({
+  type: "CHANGE_USER_VALIDATION_ERROR", errors
+});
+
+export const clearUserValidationError = () => ({
+  type: "CLEAR_USER_VALIDATION_ERROR" 
+});
+
 export const changeUserEmail = (email) => ({
   type: "CHANGE_USER_EMAIL", email
 });
@@ -308,6 +316,10 @@ export const saveUserEmail = (user) => ({
 
 export const saveUserPassword = (user) => ({
   type: "SAVE_USER_PASSWORD", user
+});
+
+export const saveUserPasswordForce = (user) => ({
+  type: "SAVE_USER_PASSWORD_FORCE", user
 });
 
 export const searchUsersSimple = (tenant_id, keyword) => ({

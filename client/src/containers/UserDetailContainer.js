@@ -39,7 +39,7 @@ import {
   changeUserPassword,
   saveUserName,
   saveUserEmail,
-  saveUserPassword
+  saveUserPasswordForce
 } from "../actions";
 
 // components
@@ -134,7 +134,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeUserPassword: (password) => dispatch(changeUserPassword(password)),
   saveUserName: (user) => dispatch(saveUserName(user)),
   saveUserEmail: (user) => dispatch(saveUserEmail(user)),
-  saveUserPassword: (user) => dispatch(saveUserPassword(user))
+  saveUserPasswordForce: (user) => dispatch(saveUserPasswordForce(user))
 });
 
 UserDetailContainer = connect(mapStateToProps, mapDispatchToProps)(UserDetailContainer);

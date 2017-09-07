@@ -10,7 +10,8 @@ const initialState = {
     name: "",
     email: "",
     password: ""
-  }
+  },
+  errors: {}
 };
 
 const userReducer = (state = initialState, action) => {
@@ -46,6 +47,18 @@ const userReducer = (state = initialState, action) => {
         password: "",
         groups: []
       }
+    };
+  case "CHANGE_USER_VALIDATION_ERROR":
+    return {
+      data: state.data,
+      changed: state.changed,
+      errors: action.errors
+    };
+  case "CLEAR_USER_VALIDATION_ERROR":
+    return {
+      data: state.data,
+      changed: state.changed,
+      errors: {}
     };
   default:
     return state;

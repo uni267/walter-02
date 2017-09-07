@@ -14,7 +14,7 @@ const UserDetailBasic = ({
   changeUserPassword,
   saveUserName,
   saveUserEmail,
-  saveUserPassword,
+  saveUserPasswordForce,
   displaySaveButton = true
 }) => {
   return (
@@ -32,6 +32,7 @@ const UserDetailBasic = ({
       <TextField
         value={user.changed.name}
         onChange={(e, value) => changeUserName(value)}
+        errorText={user.errors.name}
         floatingLabelText="表示名"
       />
 
@@ -47,6 +48,7 @@ const UserDetailBasic = ({
       <TextField 
         value={user.changed.email}
         onChange={(e, value) => changeUserEmail(value)}
+        errorText={user.errors.email}
         floatingLabelText="メールアドレス"
       />
 
@@ -63,6 +65,7 @@ const UserDetailBasic = ({
       <TextField
         value={user.changed.password}
         onChange={(e, value) => changeUserPassword(value)}
+        errorText={user.errors.password}
         type="password"
         floatingLabelText="パスワード"
       />
@@ -72,7 +75,7 @@ const UserDetailBasic = ({
          <FlatButton
            label="保存"
            primary={true}
-           onClick={() => saveUserPassword(user.changed)}
+           onClick={() => saveUserPasswordForce(user.changed)}
            style={{ marginLeft: 10 }} />
        ) : null}
 

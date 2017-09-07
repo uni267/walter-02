@@ -183,39 +183,73 @@ router.patch("/:user_id/password", (req, res, next) => {
       });
     })
     .catch( err => {
+      let errors = {};
+
       switch (err) {
       case "current password is empty":
-        res.status(400).json({
-          status: {
-            success: false,
-            errors: { current_password: "パスワードが空のためエラー" }
-          }
-        });
+        errors.current_password = "パスワードが空のため変更に失敗しました";
+        break;
       case "new password is empty":
-        res.status(400).json({
-          status: {
-            success: false,
-            errors: { new_password: "パスワードが空のためエラー" }
-          }
-        });
+        errors.new_password = "パスワードが空のため変更に失敗しました";
+        break;
       case "password is not match":
-        res.status(400).json({
-          status: {
-            success: false,
-            errors: { current_password: "変更前のパスワードが一致しません" }
-          }
-        });
+        errors.current_password = "変更前のパスワードが一致しないため変更に失敗しました";
+        break;
       case "user not found":
-        res.status(400).json({
-          status: { success: false, errors: { err } }
-        });
-
+        errors.user = "指定されたユーザが存在しないため変更に失敗しました";
+        break;
       default:
-        res.status(500).json({
-          status: { success: false, message: "パスワードの変更に失敗", errors: err },
-          body: {}
-        });
+        errors.unknown = "変更に失敗しました";
+        break;
       }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    });
+});
+
+// パスワード変更(管理者)
+router.patch("/:user_id/password_force", (req, res, next) => {
+  const { user_id } = req.params;
+  const { password } = req.body;
+
+  User.findById(user_id)
+    .then( user => {
+      if (password === null ||
+          password === "" ||
+          password === undefined) throw "password is empty";
+
+      const sha = crypto.createHash("sha512");
+      sha.update(password);
+      const hash = sha.digest("hex");
+
+      user.password = hash;
+      return user.save();
+    })
+    .then( user => {
+      res.json({
+        status: { success: true },
+        body: user
+      });
+    })
+    .catch( err => {
+      let errors = {};
+      
+      switch (err) {
+      case "password is empty":
+        errors.password = "パスワードが空のため変更に失敗しました";
+        break;
+      default:
+        errors.unknown = err;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
     });
 });
 
@@ -251,7 +285,13 @@ router.patch("/:user_id/name", (req, res, next) => {
 
   User.findById(user_id)
     .then( user => {
-      if (!user) throw "指定されたユーザが見つかりません";
+      if (user === null
+          || user === undefined
+          || user === "") throw "user not found";
+
+      if (name === null
+          || name === undefined
+          || name === "") throw "name is empty";
 
       user.name = name;
       return user.save();
@@ -263,8 +303,22 @@ router.patch("/:user_id/name", (req, res, next) => {
       });
     })
     .catch( err => {
-      res.status(500).json({
-        status: { success: false, message: err }
+      let errors = {};
+
+      switch (err) {
+      case "name is empty":
+        errors.name = "表示名が空のため変更に失敗しました。";
+        break;
+      case "user not found":
+        errors.user = "指定されたユーザが見つからないため変更に失敗しました";
+        break;
+      default:
+        errors = err;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
       });
     });
 });
@@ -276,10 +330,13 @@ router.patch("/:user_id/email", (req, res, next) => {
 
   User.findById(user_id)
     .then( user => {
-      if (!user) throw "指定されたユーザが見つかりません";
-      if (email === ""   || 
-          email === null ||
-          email === undefined) throw "メールアドレスが空です";
+      if (user === ""
+          || user === null
+          || user === undefined) throw "user not found";
+
+      if (email === ""
+          || email === null
+          || email === undefined) throw "email is empty";
 
       user.email = email;
       return user.save();
@@ -291,8 +348,22 @@ router.patch("/:user_id/email", (req, res, next) => {
       });
     })
     .catch( err => {
-      res.status(500).json({
-        status: { success: false, message: err }
+      let errors = {};
+
+      switch (err) {
+      case "user not found":
+        errors.user = "指定されたユーザが見つからないため変更に失敗しました";
+        break;
+      case "email is empty":
+        errors.email = "メールアドレスが空のため変更に失敗しました";
+        break;
+      default:
+        errors = err;
+        break;
+      }
+      
+      res.status(400).json({
+        status: { success: false, errors }
       });
     });
 });
