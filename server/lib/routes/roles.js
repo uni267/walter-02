@@ -2,6 +2,8 @@ import { Router } from "express";
 import mongoose from "mongoose";
 import co from "co";
 import Role from "../models/Role";
+import Action from "../models/Action";
+
 const router = Router();
 
 // 一覧
@@ -10,7 +12,21 @@ router.get("/", (req, res, next) => {
     try {
       
       const tenant_id = mongoose.Types.ObjectId(req.query.tenant_id);
-      const roles = yield Role.find({ tenant_id: tenant_id });
+      const roles = yield Role.aggregate([
+        {
+          $match: {
+            tenant_id: tenant_id
+          }
+        },
+        {
+          $lookup: {
+            from: "actions",
+            localField: "actions",
+            foreignField: "_id",
+            as: "actions"
+          }
+        }
+      ]);
 
       res.json({
         status: { success: true },

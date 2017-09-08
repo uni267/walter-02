@@ -28,6 +28,7 @@ import {
 
 import IconButton from 'material-ui/IconButton';
 import ImageEdit from "material-ui/svg-icons/image/edit";
+import Chip from "material-ui/Chip";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -53,9 +54,11 @@ const RoleTableBody = ({role, key}) => {
       <TableRowColumn>{role.name}</TableRowColumn>
       <TableRowColumn>{role.description}</TableRowColumn>
       <TableRowColumn>
-        {role.actions.map( (action, idx) => {
-          return action;
-        })}
+        <div style={{ display: "flex" }}>
+          {role.actions.map( (action, idx) => {
+            return <Chip key={idx} style={{ marginRight: 10 }}>{action.label}</Chip>;
+          })}
+        </div>
       </TableRowColumn>
       <TableRowColumn>
         <IconButton containerElement={<Link to={`/roles/${role._id}`} />}>
