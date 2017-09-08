@@ -1,3 +1,5 @@
+/* @flow */
+
 import { Router } from "express";
 import mongoose, { Schema } from "mongoose";
 import multer from "multer";
@@ -68,6 +70,20 @@ router.get("/3", (req, res, next) => {
 
 });
 
+router.get("/flow", (req, res, next) => {
+  const add = (a: number, b: number): number => a + b;
+
+  const result = add(1, 2);
+
+  res.json(result);
+});
+
+router.get("/flow1", (req, res, next) => {
+  const foo = (a: string): string => a + "!";
+
+  const result = foo(1);
+  res.json(result);
+});
 // const upload = multer({ dest: "uploads/" });
 
 // router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
