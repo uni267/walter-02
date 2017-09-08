@@ -14,7 +14,7 @@ import {
 import NavigationContainer from "./NavigationContainer";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 import RoleDetailBasic from "../components/Role/RoleDetailBasic";
-import RoleAction from "../components/Role/RoleAction";
+import RoleOfAction from "../components/Role/RoleOfAction";
 
 // actions
 import {
@@ -67,7 +67,7 @@ class RoleDetailContainer extends Component {
                 <Card>
                   <CardTitle subtitle="アクション" />
                   <CardText>
-                    <RoleAction {...this.props} />
+                    <RoleOfAction {...this.props} />
                   </CardText>
                 </Card>
               </div>
