@@ -144,3 +144,43 @@ var meta_infos = [
     value_type: "Number"
   }
 ];
+
+// ===============================
+//  actions collection
+// ===============================
+var actions = [
+  {
+    name: "read",
+    label: "読み取り"
+  },
+  {
+    name: "write",
+    label: "書き込み"
+  }
+];
+
+db.actions.insert(actions);
+
+// ===============================
+//  roles collection
+// ===============================
+
+var roles = [
+  {
+    name: "読み取りのみ",
+    description: "",
+    actions: [
+      db.actions.findOne({ name: "read" })._id
+    ],
+    tenant_id: db.tenants.findOne({ name: "test" })._id
+  },
+  {
+    name: "編集可能",
+    description: "読み取り + 書き込み",
+    actions: [
+      db.actions.findOne({ name: "read" })._id,
+      db.actions.findOne({ name: "write" })._id
+    ],
+    tenant_id: db.tenants.findOne({ name: "test" })._id
+  },
+];
