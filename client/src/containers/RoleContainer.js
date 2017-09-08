@@ -9,17 +9,13 @@ import { connect } from "react-redux";
 // material ui
 import { 
   Card, 
-  CardHeader, 
   CardTitle, 
   CardText, 
-  CardMedia, 
-  CardActions
 } from 'material-ui/Card';
 
 import {
   Table,
   TableBody,
-  TableFooter,
   TableHeader,
   TableHeaderColumn,
   TableRow,

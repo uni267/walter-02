@@ -353,9 +353,6 @@ class FileListContainer extends Component {
     const filterHistoryDir = (file) => 
           file.id === this.state.historyDirDialog.dir._id;
 
-    const filterTagFile = (file) =>
-          file.id === this.state.tagFileDialog.file._id;
-
     return (
       <div>
         <div style={styles.row}>

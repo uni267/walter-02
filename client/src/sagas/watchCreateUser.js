@@ -1,5 +1,5 @@
 import { delay } from "redux-saga";
-import { call, put, take, all } from "redux-saga/effects";
+import { call, put, take } from "redux-saga/effects";
 
 // api
 import { API } from "../apis";

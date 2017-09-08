@@ -1,12 +1,12 @@
 import { delay } from "redux-saga";
-import { call, put, fork, take, all, select } from "redux-saga/effects";
+import { call, put, take } from "redux-saga/effects";
 
 // api
 import { API } from "../apis";
 
 function* watchEditFileByIndex() {
   while (true) {
-    const { file, refresh } = yield take("EDIT_FILE_BY_INDEX");
+    const { file } = yield take("EDIT_FILE_BY_INDEX");
 
     try {
       yield put({ type: "LOADING_START" });

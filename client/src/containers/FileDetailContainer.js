@@ -15,11 +15,9 @@ import {
   CardMedia, 
   CardActions
 } from 'material-ui/Card';
-import IconButton from "material-ui/IconButton";
 import RaisedButton from "material-ui/RaisedButton";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
-import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
 
 // components
 import FileSnackbar from "../components/FileSnackbar";
@@ -224,7 +222,7 @@ class FileDetailContainer extends Component {
 
               <Card style={styles.innerCard}>
                 <CardMedia overlay={cardOverlay}>
-                  <img src="/images/baibaikihon.png" />
+                  <img src="/images/baibaikihon.png" alt="" />
                 </CardMedia>
               </Card>
 

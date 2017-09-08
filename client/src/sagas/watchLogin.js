@@ -9,9 +9,7 @@ import {
   loadingEnd,
   loadingStart,
   requestLogin,
-  requestLoginSuccess,
-  requestLoginFailed,
-  putTenant
+  requestLoginFailed
 } from "../actions";
 
 function* watchLogin() {

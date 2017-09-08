@@ -1,5 +1,5 @@
 import { delay } from "redux-saga";
-import { call, put, fork, take, all, select } from "redux-saga/effects";
+import { call, put, take } from "redux-saga/effects";
 
 import {
   requestFetchMetaInfo,

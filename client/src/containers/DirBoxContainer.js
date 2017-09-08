@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// router
-import { Link } from "react-router-dom";
-
 // store
 import { connect } from "react-redux";
 

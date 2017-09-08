@@ -1,18 +1,13 @@
 import React, { Component } from "react";
 
-// route
-import { Link, withRouter } from "react-router-dom";
-
 // store
 import { connect } from "react-redux";
 
 // material
 import { 
   Card, 
-  CardHeader, 
   CardTitle, 
   CardText, 
-  CardMedia, 
   CardActions
 } from 'material-ui/Card';
 import FlatButton from "material-ui/FlatButton";

@@ -9,17 +9,13 @@ import { Link } from "react-router-dom";
 // material
 import { 
   Card, 
-  CardHeader, 
   CardTitle, 
-  CardText, 
-  CardMedia, 
-  CardActions
+  CardText
 } from 'material-ui/Card';
 
 import {
   Table,
   TableBody,
-  TableFooter,
   TableHeader,
   TableHeaderColumn,
   TableRow,

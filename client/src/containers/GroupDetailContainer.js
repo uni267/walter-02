@@ -4,21 +4,16 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // material
-import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import AutoComplete from "material-ui/AutoComplete";
-import RaisedButton from 'material-ui/RaisedButton';
 import MenuItem from "material-ui/MenuItem";
 import SocialPerson from "material-ui/svg-icons/social/person";
 import Chip from 'material-ui/Chip';
-import Divider from "material-ui/Divider";
 
 import { 
   Card, 
-  CardHeader, 
   CardTitle, 
   CardText, 
-  CardMedia, 
   CardActions
 } from 'material-ui/Card';
 

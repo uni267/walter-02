@@ -8,7 +8,6 @@ import DirTree from "../components/DirTree";
 
 // material
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
-import FileFolder from "material-ui/svg-icons/file/folder";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
 // actions
 import { requestFetchDirTree, selectDirTree } from "../actions";

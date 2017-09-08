@@ -1,5 +1,3 @@
-import moment from "moment";
-
 const filesReducer = (state = [], action) => {
   switch ( action.type ) {
 

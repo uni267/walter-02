@@ -6,17 +6,15 @@ import { connect } from "react-redux";
 // material
 import { 
   Card, 
-  CardHeader, 
   CardTitle, 
   CardText, 
-  CardMedia, 
-  CardActions
 } from 'material-ui/Card';
 
 // components
 import NavigationContainer from "./NavigationContainer";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 import RoleDetailBasic from "../components/Role/RoleDetailBasic";
+import RoleAction from "../components/Role/RoleAction";
 
 // actions
 import {
@@ -67,7 +65,7 @@ class RoleDetailContainer extends Component {
                 <Card>
                   <CardTitle subtitle="アクション" />
                   <CardText>
-                    
+                    <RoleAction {...this.props} actions={this.props.role.actions} />
                   </CardText>
                 </Card>
               </div>

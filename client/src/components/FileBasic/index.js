@@ -55,7 +55,9 @@ const FileBasic = ({
 };
 
 FileBasic.propTypes = {
-  
+  file: PropTypes.object.isRequired,
+  open: PropTypes.bool.isRequired,
+  changeFileName: PropTypes.func.isRequired
 };
 
 export default FileBasic;

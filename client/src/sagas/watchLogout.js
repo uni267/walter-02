@@ -1,9 +1,8 @@
-import { delay } from "redux-saga";
-import { call, put, take } from "redux-saga/effects";
+import { put, take } from "redux-saga/effects";
 
 function* watchLogout() {
   while (true) {
-    const task = yield take("LOGOUT");
+    yield take("LOGOUT");
     localStorage.removeItem("userId");
     localStorage.removeItem("tenantName");
     localStorage.removeItem("dirId");

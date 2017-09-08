@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// mock
-// import META_INFOS from "../../mock-metaInfos";
-
 // material ui
 import RaisedButton from "material-ui/RaisedButton";
 import AutoComplete from "material-ui/AutoComplete";
@@ -73,10 +70,6 @@ class MetaInfo extends Component {
       this.setState({ text: searchText.key });
       this.setState({ metaInfo: searchText });
     };
-
-    const metaInfos = this.props.metaInfo.filter(
-      meta => !this.props.file.meta_infos.map(m => m._id).includes(meta._id)
-    );
 
     const dataSourceConfig = {
       text: "key",

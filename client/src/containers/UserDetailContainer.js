@@ -1,32 +1,17 @@
 import React, { Component } from "react";
 
-// route
-import { Link } from "react-router-dom";
-
 // store
 import { connect } from "react-redux";
 
 // material
-import Toggle from 'material-ui/Toggle';
-import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
-import AutoComplete from "material-ui/AutoComplete";
-import RaisedButton from 'material-ui/RaisedButton';
-import MenuItem from "material-ui/MenuItem";
-import SocialGroup from "material-ui/svg-icons/social/group";
-import Chip from 'material-ui/Chip';
-import Divider from "material-ui/Divider";
 
 import { 
   Card, 
-  CardHeader, 
   CardTitle, 
   CardText, 
-  CardMedia, 
   CardActions
 } from 'material-ui/Card';
-import IconButton from "material-ui/IconButton";
-import HardwareKeyboardArrowLeft from "material-ui/svg-icons/hardware/keyboard-arrow-left";
 
 // actions
 import {
