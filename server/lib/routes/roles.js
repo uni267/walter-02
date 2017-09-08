@@ -153,4 +153,50 @@ router.patch("/:role_id/description", (req, res, next) => {
   });
 });
 
+// action削除
+router.delete("/:role_id/actions/:action_id", (req, res, next) => {
+  co(function* () {
+    try {
+      const { role_id, action_id } = req.params;
+      const [ role, action ] = yield [
+        Role.findById(role_id),
+        Action.findById(action_id)
+      ];
+
+      if (role === null) throw "role is empty";
+      if (action === null) throw "action is empty";
+
+      role.actions = role.actions.filter( _action => {
+        return _action.toString() !== action._id.toString();
+      });
+
+      const changedRole = yield role.save();
+
+      res.json({
+        status: { success: true },
+        body: changedRole
+      });
+
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "role is empty":
+        errors.role = "指定されたロールが存在しないため削除に失敗しました";
+        break;
+      case "action is empty":
+        errors.action = "指定されたアクションが存在しないため削除に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+});
+
 export default router;

@@ -413,3 +413,7 @@ export const saveRoleValidationError = (errors) => ({
 export const clearRoleValidationError = () => ({
   type: "CLEAR_ROLE_VALIDATION_ERROR"
 });
+
+export const deleteRoleOfAction = (role_id, action_id) => ({
+  type: "DELETE_ROLE_OF_ACTION", role_id, action_id
+});

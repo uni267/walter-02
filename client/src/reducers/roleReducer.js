@@ -1,6 +1,10 @@
 const initialState = {
-  data: {},
-  changed: {},
+  data: {
+    actions: []
+  },
+  changed: {
+    actions: []
+  },
   errors: {}
 };
 

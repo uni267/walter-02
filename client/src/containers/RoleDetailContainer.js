@@ -23,7 +23,8 @@ import {
   changeRoleDescription,
   saveRoleName,
   saveRoleDescription,
-  clearRoleValidationError
+  clearRoleValidationError,
+  deleteRoleOfAction
 } from "../actions";
 
 class RoleDetailContainer extends Component {
@@ -44,6 +45,7 @@ class RoleDetailContainer extends Component {
   render() {
     const title = `${this.props.role.name}の詳細`;
 
+    console.log(this.props.role.actions);
     return (
       <div>
         <NavigationContainer />
@@ -65,7 +67,7 @@ class RoleDetailContainer extends Component {
                 <Card>
                   <CardTitle subtitle="アクション" />
                   <CardText>
-                    <RoleAction {...this.props} actions={this.props.role.actions} />
+                    <RoleAction {...this.props} />
                   </CardText>
                 </Card>
               </div>
@@ -93,7 +95,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeRoleDescription: (description) => dispatch(changeRoleDescription(description)),
   saveRoleName: (role) => dispatch(saveRoleName(role)),
   saveRoleDescription: (role) => dispatch(saveRoleDescription(role)),
-  clearRoleValidationError: () => dispatch(clearRoleValidationError())
+  clearRoleValidationError: () => dispatch(clearRoleValidationError()),
+  deleteRoleOfAction: (role_id, action_id) => {
+    dispatch(deleteRoleOfAction(role_id, action_id));
+  }
 });
 
 RoleDetailContainer = connect(mapStateToProps, mapDispatchToProps)(RoleDetailContainer);

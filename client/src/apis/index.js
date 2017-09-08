@@ -242,6 +242,10 @@ class API {
     const body = { description: role.description };
     return client.patch(`/api/v1/roles/${role._id}/description`, body);
   }
+
+  static deleteRoleOfAction(role_id, action_id) {
+    return client.delete(`/api/v1/roles/${role_id}/actions/${action_id}`);
+  }
 }
 
 export { API };
