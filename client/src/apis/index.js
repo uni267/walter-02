@@ -224,6 +224,10 @@ class API {
   static deleteGroup(group_id) {
     return client.delete(`/api/v1/groups/${group_id}`).then( res => res );
   }
+
+  static fetchRoles(tenant_id) {
+    return client.get(`/api/v1/roles/?tenant_id=${tenant_id}`).then( res => res );
+  }
 }
 
 export { API };

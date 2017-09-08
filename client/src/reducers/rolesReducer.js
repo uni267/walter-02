@@ -1,7 +1,14 @@
-import ROLES from "../mock-roles";
+const initialState = {
+  data: []
+};
 
-const rolesReducer = (state = ROLES, action) => {
+const rolesReducer = (state = initialState, action) => {
   switch (action.type) {
+  case "INIT_ROLES":
+    return {
+      ...state,
+      data: action.roles
+    };
   default:
     return state;
   }

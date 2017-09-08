@@ -59,6 +59,10 @@ class NavigationContainer extends Component {
       {
         name: "グループ管理",
         link: "/groups"
+      },
+      {
+        name: "ロール管理",
+        link: "/roles"
       }
     ];
 

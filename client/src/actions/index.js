@@ -373,3 +373,11 @@ export const createGroup = (group, history) => ({
 export const deleteGroup = (group_id, history) => ({
   type: "DELETE_GROUP", group_id, history
 });
+
+export const requestFetchRoles = (tenant_id) => ({
+  type: "REQUEST_FETCH_ROLES", tenant_id
+});
+
+export const initRoles = (roles) => ({
+  type: "INIT_ROLES", roles
+});

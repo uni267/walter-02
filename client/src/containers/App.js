@@ -15,6 +15,9 @@ import UserCreateContainer from "./UserCreateContainer";
 import GroupContainer from "./GroupContainer";
 import GroupDetailContainer from "./GroupDetailContainer";
 import GroupCreateContainer from "./GroupCreateContainer";
+import RoleContainer from "./RoleContainer";
+import RoleDetailContainer from "./RoleDetailContainer";
+import RoleCreateContainer from "./RoleCreateContainer";
 
 class App extends Component {
   render() {
@@ -35,6 +38,9 @@ class App extends Component {
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
                   <Route exact path="/home" component={HomeContainer} />
                   <Route path="/home/:id" component={HomeContainer} />
+                  <Route exact path="/roles" component={RoleContainer} />
+                  <Route exact path="/roles/create" component={RoleCreateContainer} />
+                  <Route path="/roles/:id" component={RoleDetailContainer} />
                   <Route component={HomeContainer} />
                 </Switch>
               </AuthenticationContainer>
