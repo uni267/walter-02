@@ -26,6 +26,7 @@ import metaInfo from "./metaInfoReducer";
 import user from "./userReducer";
 import groups from "./groupsReducer";
 import group from "./groupReducer";
+import role from "./roleReducer";
 
 const fileApp = combineReducers({
   files,
@@ -52,7 +53,8 @@ const fileApp = combineReducers({
   metaInfo,
   user,
   groups,
-  group
+  group,
+  role
 });
 
 export default fileApp;

@@ -381,3 +381,35 @@ export const requestFetchRoles = (tenant_id) => ({
 export const initRoles = (roles) => ({
   type: "INIT_ROLES", roles
 });
+
+export const initRole = (role) => ({
+  type: "INIT_ROLE", role
+});
+
+export const requestFetchRole = (role_id) => ({
+  type: "REQUEST_FETCH_ROLE", role_id
+});
+
+export const changeRoleName = (name) => ({
+  type: "CHANGE_ROLE_NAME", name
+});
+
+export const changeRoleDescription = (description) => ({
+  type: "CHANGE_ROLE_DESCRIPTION", description
+});
+
+export const saveRoleName = (role) => ({
+  type: "SAVE_ROLE_NAME", role
+});
+
+export const saveRoleDescription = (role) => ({
+  type: "SAVE_ROLE_DESCRIPTION", role
+});
+
+export const saveRoleValidationError = (errors) => ({
+  type: "SAVE_ROLE_VALIDATION_ERROR", errors
+});
+
+export const clearRoleValidationError = () => ({
+  type: "CLEAR_ROLE_VALIDATION_ERROR"
+});

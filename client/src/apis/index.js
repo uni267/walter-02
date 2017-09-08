@@ -228,6 +228,20 @@ class API {
   static fetchRoles(tenant_id) {
     return client.get(`/api/v1/roles/?tenant_id=${tenant_id}`).then( res => res );
   }
+
+  static fetchRole(role_id) {
+    return client.get(`/api/v1/roles/${role_id}`).then( res => res );
+  }
+
+  static saveRoleName(role) {
+    const body = { name: role.name };
+    return client.patch(`/api/v1/roles/${role._id}/name`, body).then( res => res );
+  }
+
+  static saveRoleDescription(role) {
+    const body = { description: role.description };
+    return client.patch(`/api/v1/roles/${role._id}/description`, body);
+  }
 }
 
 export { API };
