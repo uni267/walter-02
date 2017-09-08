@@ -184,3 +184,5 @@ var roles = [
     tenant_id: db.tenants.findOne({ name: "test" })._id
   },
 ];
+
+db.roles.insert(roles);
