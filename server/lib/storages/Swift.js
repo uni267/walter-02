@@ -21,6 +21,10 @@ class Swift {
       break;
     }
     
+    if (config === undefined || config === null) {
+      throw "NODE_ENV in 'development' or 'integration' or 'production'??";
+    }
+
     this.client = pkgcloud.storage.createClient(config);
   }
 
