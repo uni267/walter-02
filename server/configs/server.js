@@ -19,11 +19,21 @@ export const SERVER_CONF = {
 };
 
 export const STORAGE_CONF = {
+  // virtualbox
   development: {
     provider: "openstack",
     username: "test:tester",
     password: "testing",
     authUrl: "http://192.168.56.10:8080/auth/v1.0",
+    version: 1
+  },
+
+  // 社内docker
+  integration: {
+    provider: "openstack",
+    username: "test:tester",
+    password: "testing",
+    authUrl: "http://172.16.55.75:8080/auth/v1.0",
     version: 1
   }
 };

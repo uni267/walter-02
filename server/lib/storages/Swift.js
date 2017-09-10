@@ -3,7 +3,6 @@ import { STORAGE_CONF } from "../../configs/server";
 
 class Swift {
   constructor(params) {
-
     const { tenant_name } = params;
 
     if (tenant_name === undefined || 
