@@ -22,10 +22,7 @@ router.get("/", (req, res, next) => {
       let { dir_id } = req.query;
 
       // デフォルトはテナントのホーム
-      if (dir_id === null ||
-          dir_id === undefined ||
-          dir_id === "") {
-
+      if (dir_id === null || dir_id === undefined || dir_id === "") {
         const tenant = yield Tenant.findById(res.user.tenant_id);
         dir_id = tenant.home_dir_id;
       }
