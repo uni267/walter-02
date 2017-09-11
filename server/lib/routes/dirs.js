@@ -1,4 +1,5 @@
 import { Router } from "express";
+import co from "co";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -6,48 +7,53 @@ import mongoose from "mongoose";
 import { SECURITY_CONF } from "../../configs/server";
 import Dir from "../models/Dir";
 import File from "../models/File";
+import Tenant from "../models/Tenant";
 
 const router = Router();
 
 // ディレクトリの階層(top -> folder1 -> folder2みたいなやつ)
 router.get("/", (req, res, next) => {
-  const conditions = {
-    descendant: req.query.dir_id
-  };
+  co(function* () {
+    try {
+      let { dir_id } = req.query;
 
-  Dir.find(conditions).sort({depth: -1}).then( dirs => {
-    const conditions = { _id: dirs.map( dir => dir.ancestor ) };
-    const fields = { name: 1 };
+      // デフォルトはテナントのホーム
+      if (dir_id === undefined ||
+          dir_id === null ||
+          dir_id === "") {
 
-    return File.find(conditions).select(fields).then( files => {
+        const tenant = yield Tenant.findById(res.user.tenant_id);
+        dir_id = tenant.home_dir_id;
+      }
+
+      const dirs = yield Dir.find({ descendant: dir_id })
+            .sort({ depth: -1 });
+
+      const files = yield File.find({ _id: dirs.map( dir => dir.ancestor ) })
+            .select({ name: 1 });
 
       const sorted = dirs.map( dir => {
-        return files.filter( file => file.id == dir.ancestor );
+        return files.filter( file => file._id.toString() === dir.ancestor.toString() );
       }).reduce( (a, b) => a.concat(b));
 
       const withSep = [].concat.apply([], sorted.map( (dir, idx) => {
-        return (idx === 0) ? dir : ["sep", dir];
+        return ( idx === 0 ) ? dir : [ "sep", dir ];
       }));
 
-      return withSep;
-
-    });
-  })
-    .then( withSep => {
       res.json({
         status: { success: true },
         body: withSep
       });
-    })
-    .catch( err => {
+    }
+    catch (e) {
+      let errors = {};
+      errors.unknown = e;
 
-    res.json({
-      status: { success: false, errors: err },
-      body: []
-    });
-
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
   });
-
 });
 
 // ディレクトリのツリー(以下みたいなやつ)
