@@ -171,27 +171,58 @@ router.patch("/:file_id/rename", (req, res, next) => {
 
 // ファイル移動
 router.patch("/:file_id/move", (req, res, next) => {
-  const file_id = req.params.file_id;
-  const dir_id = req.body.dir_id;
+  co(function* () {
+    try {
+      const file_id = req.params.file_id;
+      const dir_id = req.body.dir_id;
 
-  File.findById(file_id)
-    .then( file => {
-      file.dir_id = dir_id;
-      return file.save();
-    })
-    .then( file => {
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
+
+      if (dir_id === undefined ||
+          dir_id === null ||
+          file_id === "") throw "dir_id is empty";
+
+      const [ file, dir ] = yield [ File.findById(file_id), File.findById(dir_id) ];
+
+      if (file === null) throw "file is empty";
+      if (dir === null) throw "dir is empty";
+
+      file.dir_id = dir._id;
+      const changedFile = yield file.save();
+
       res.json({
         status: { success: true },
-        body: file
+        body: changedFile
       });
-    })
-    .catch( err => {
-      console.log(err);
-      res.status(500).json({
-        status: { success: false, message: "ファイルの移動に失敗", errors: err },
-        body: {}
+    }
+    catch (e) {
+      let errors = {};
+      // @todo ちゃんとメッセージを実装する
+      switch (e) {
+      case "file_id is empty":
+        errors.unknown = e;
+        break;
+      case "dir_id is empty":
+        errors.unknown = e;
+        break;
+      case "file is empty":
+        errors.unknown = e;
+        break;
+      case "dir is empty":
+        errors.unknown = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
       });
-    });
+    }
+  });
 
 });
 
