@@ -305,7 +305,24 @@ router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-      errors.unknown = e;
+
+      switch (e) {
+      case "myFile is empty":
+        errors.myFile = e;
+        break;
+      case "dir_id is empty":
+        errors.dir_id = e;
+        break;
+      case "dir is empty":
+        errors.dir = e;
+        break;
+      case "user is empty":
+        errors.user = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
 
       res.status(400).json({
         status: { success: false, errors }
