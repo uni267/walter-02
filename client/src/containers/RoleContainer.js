@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 
-// router
-import { Link } from "react-router-dom";
-
 // store
 import { connect } from "react-redux";
 
@@ -12,58 +9,23 @@ import {
   CardTitle, 
   CardText, 
 } from 'material-ui/Card';
+import { Table, TableBody, TableHeader } from 'material-ui/Table';
+import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
+import Divider from "material-ui/Divider";
 
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-
-import IconButton from 'material-ui/IconButton';
-import ImageEdit from "material-ui/svg-icons/image/edit";
-import Chip from "material-ui/Chip";
+// material icon
+import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
 
 // components
 import NavigationContainer from "./NavigationContainer";
+import RoleTableHeader from "../components/Role/RoleTableHeader";
+import RoleTableBody from "../components/Role/RoleTableBody";
 
 // actions
 import {
   requestFetchRoles
 } from "../actions";
-
-const RoleTableHeader = ({headers}) => {
-  return (
-    <TableRow>
-      {headers.map( (header, idx) => (
-        <TableHeaderColumn key={idx}>{header.name}</TableHeaderColumn>
-      ))}
-    </TableRow>
-  );
-};
-
-const RoleTableBody = ({role, key}) => {
-  return (
-    <TableRow key={key}>
-      <TableRowColumn>{role.name}</TableRowColumn>
-      <TableRowColumn>{role.description}</TableRowColumn>
-      <TableRowColumn>
-        <div style={{ display: "flex" }}>
-          {role.actions.map( (action, idx) => {
-            return <Chip key={idx} style={{ marginRight: 10 }}>{action.label}</Chip>;
-          })}
-        </div>
-      </TableRowColumn>
-      <TableRowColumn>
-        <IconButton containerElement={<Link to={`/roles/${role._id}`} />}>
-          <ImageEdit />
-        </IconButton>
-      </TableRowColumn>
-    </TableRow>
-  );
-};
 
 class RoleContainer extends Component {
   componentWillMount() {
@@ -86,6 +48,7 @@ class RoleContainer extends Component {
           <CardTitle title="ロール管理" />
           <CardText>
             <div style={{ display: "flex" }}>
+
               <div style={{ width: "80%" }}>
                 <Table>
 
@@ -99,6 +62,17 @@ class RoleContainer extends Component {
                   </TableBody>
 
                 </Table>
+              </div>
+
+              <div style={{ width: "20%", paddingLeft: 15 }}>
+                <Divider />
+                <Menu>
+                  <MenuItem
+                    primaryText="ロール作成"
+                    leftIcon={<ActionVerifiedUser />}
+                    onTouchTap={() => this.props.history.push("/roles/create")}
+                    />
+                </Menu>
               </div>
 
             </div>
