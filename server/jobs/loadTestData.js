@@ -145,6 +145,8 @@ var meta_infos = [
   }
 ];
 
+db.meta_infos.insert(meta_infos);
+
 // ===============================
 //  actions collection
 // ===============================
