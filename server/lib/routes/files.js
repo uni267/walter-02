@@ -57,29 +57,30 @@ router.get("/", (req, res, next) => {
 
 // ファイル検索
 router.get("/search", (req, res, next) => {
-  const { q } = req.query;
-  const conditions = {
-    name: { $regex: q },
-    is_display: true
-  };
+  co(function* () {
+    try {
+      const conditions = {
+        name: { $regex: req.query.q },
+        is_display: true
+      };
 
-  File.aggregate([
-    { $match: conditions },
-    { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
-  ])
-    .then( files => {
+      const files = yield File.aggregate([
+        { $match: conditions },
+        { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
+      ]);
+
       res.json({
         status: { success: true },
         body: files
       });
-    })
-    .catch( err => {
+    }
+    catch (e) {
       res.json({
-        status: { success: false, message: "ファイルの取得に失敗", errors: err },
+        status: { success: false, message: "ファイルの取得に失敗", errors: e },
         body: []
       });
-    });
-
+    }
+  });
 });
 
 // ファイル詳細
