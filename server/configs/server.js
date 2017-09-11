@@ -1,8 +1,8 @@
 // mongoの接続先情報
 export const SERVER_CONF = {
   development: {
-    // url: "mongodb://172.16.55.74",  // virtualbox
-    url: "mongodb://192.168.56.10",  // virtualbox
+    url: "mongodb://172.16.55.74",  // 社内docker
+    // url: "mongodb://192.168.56.10",  // virtualbox
     db_name: "walter",
     port: 3333
   },
@@ -24,7 +24,8 @@ export const STORAGE_CONF = {
     provider: "openstack",
     username: "test:tester",
     password: "testing",
-    authUrl: "http://192.168.56.10:8080/auth/v1.0",
+    // authUrl: "http://192.168.56.10:8080/auth/v1.0", // virtualbox
+    authUrl: "http://172.16.55.75:8080/auth/v1.0",  // 社内docker
     version: 1
   },
 
