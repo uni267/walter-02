@@ -26,7 +26,7 @@ function* watchCreateRole() {
       const payload = yield call(API.fetchRoles, localStorage.getItem("tenantId"));
       yield put(initRoles(payload.data.body));
       yield put(loadingEnd());
-      yield call(task.history.push("/roles"));
+      yield task.history.push("/roles");
     }
     catch (e) {
       const { errors } = e.response.data.status;

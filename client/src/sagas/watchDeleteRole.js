@@ -20,7 +20,7 @@ function* watchDeleteRole() {
       yield call(API.deleteRole, task.role);
       const payload = yield call(API.fetchRoles, localStorage.getItem("tenantId"));
       yield put(initRoles(payload.data.body));
-      yield call(task.history.push("/roles"));
+      yield task.history.push("/roles");
     }
     catch (e) {
       console.log(e);
