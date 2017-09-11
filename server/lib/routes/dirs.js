@@ -61,15 +61,19 @@ router.get("/", (req, res, next) => {
 //         |- folder2
 //         |- folder3 -- folder3-1 
 router.get("/tree", (req, res, next) => {
+  co(function* () {
+    try {
+      const { root_id } = req.query;
+      if (root_id === undefined ||
+          root_id === null ||
+          root_id === "") throw "root_id is empty";
 
-  const root_id = mongoose.Types.ObjectId(req.query.root_id);
+      const root = yield File.findById(root_id);
 
-  File.findById(root_id)
-    .then( root => {
-      res.root = root;
+      if (root === null) throw "root is empty";
 
-      return Dir.aggregate([
-        { $match: { ancestor: root_id, depth: 1 } },
+      const dirs = yield Dir.aggregate([
+        { $match: { ancestor: root._id, depth: 1 } },
         { $lookup:
           {
             from: "files",
@@ -80,36 +84,53 @@ router.get("/tree", (req, res, next) => {
         }
       ]);
 
-    })
-    .then( dirs => {
       if (dirs.length === 0) {
-        return {
-          _id: res.root._id,
-          name: res.root.name,
+        res.json({
+          _id: root._id,
+          name: root.name,
           children: []
-        };
+        });
+      } else {
+
+        const children = dirs.map(dir => {
+          if (dir.descendant[0].is_display) {
+            return {
+              _id: dir.descendant[0]._id,
+              name: dir.descendant[0].name
+            };
+          } else {
+            return null;
+          }
+        }).filter( child => child !== null);
+
+        res.json({
+          _id: root._id,
+          name: root.name,
+          children: children
+        });
+
+      }
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "root_id is empty":
+        errors.root_id = e;
+        break;
+      case "root is empty":
+        errors.root = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
       }
 
-      const children = dirs.map(dir => {
-        if (dir.descendant[0].is_display) {
-          return {
-            _id: dir.descendant[0]._id,
-            name: dir.descendant[0].name
-          };
-        } else {
-          return null;
-        }
-      }).filter( child => child !== null);
-
-      return {
-        _id: res.root._id,
-        name: res.root.name,
-        children: children
-      };
-    })
-    .then( dirs => res.json(dirs) )
-    .catch( err => console.log(err) );
-
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 // フォルダ作成
