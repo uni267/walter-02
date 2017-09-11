@@ -246,6 +246,11 @@ class API {
   static deleteRoleOfAction(role_id, action_id) {
     return client.delete(`/api/v1/roles/${role_id}/actions/${action_id}`);
   }
+
+  static createRole(role) {
+    const body = { role, tenant_id: localStorage.getItem("tenantId") };
+    return client.post(`/api/v1/roles`, body);
+  }
 }
 
 export { API };

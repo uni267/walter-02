@@ -417,3 +417,7 @@ export const clearRoleValidationError = () => ({
 export const deleteRoleOfAction = (role_id, action_id) => ({
   type: "DELETE_ROLE_OF_ACTION", role_id, action_id
 });
+
+export const createRole = (role, history) => ({
+  type: "CREATE_ROLE", role, history
+});

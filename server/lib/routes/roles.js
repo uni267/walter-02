@@ -153,6 +153,48 @@ router.patch("/:role_id/description", (req, res, next) => {
   });
 });
 
+// 新規作成
+router.post("/", (req, res, next) => {
+  co(function* () {
+    try {
+      const { role, tenant_id } = req.body;
+
+      if (role.name === undefined ||
+          role.name === null ||
+          role.name === "") throw "name is empty";
+
+      const newRole = new Role();
+      newRole.name = role.name;
+      newRole.description = role.description;
+      newRole.tenant_id = mongoose.Types.ObjectId(tenant_id);
+
+      const createdRole = yield newRole.save();
+
+      res.json({
+        status: { success: true },
+        body: createdRole
+      });
+    }
+    catch (e) {
+      console.log(e);
+      let errors = {};
+
+      switch (e) {
+      case "name is empty":
+        errors.name = "ロール名が空のため作成に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+});
+
 // action削除
 router.delete("/:role_id/actions/:action_id", (req, res, next) => {
   co(function* () {
