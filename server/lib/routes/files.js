@@ -334,51 +334,59 @@ router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
 
 // タグの追加
 router.post("/:file_id/tags", (req, res, next) => {
+  co(function* () {
+    try {
+      const file_id = req.params.file_id;
+      const tag_id = req.body._id;
+      if (file_id === null ||
+          file_id === undefined ||
+          file_id === "") throw "file_id is empty";
 
-  const file_id = req.params.file_id;
-  const tag_id = req.body._id;
+      if (tag_id === null ||
+          tag_id === undefined ||
+          tag_id === "") throw "tag_id is empty";
 
-  const tasks = [
-    File.findById(file_id).then( file => file ),
-    Tag.findById(tag_id).then( tag => tag )
-  ];
+      const [ file, tag ] = yield [ File.findById(file_id), Tag.findById(tag_id)];
 
-  // 念のため渡されたタグIDのレコードが存在するかをチェックする
-  Promise.all(tasks)
-    .then( result => {
-      const [ file, tag ] = result;
+      if (file === null) throw "file is empty";
+      if (tag === null) throw "tag is empty";
 
-      file.tags = file.tags.concat(tag._id);
-      return file.save();
-    })
-    .then( updatedFile => {
+      file.tags = [ ...file.tags, tag._id ];
+      const changedFile = yield file.save();
 
-      return File.aggregate([
-        { $match: { _id: updatedFile._id } },
-        {
-          $lookup: {
-            from: "tags",
-            localField: "tags",
-            foreignField: "_id",
-            as: "tags"
-          }
-        }
-      ]);
+      const tags = yield Tag.find({ _id: { $in: file.tags } });
 
-    })
-    .then( files => {
       res.json({
-        status: { success: true, message: "タグを追加しました" },
-        body: files[0]
+        status: { success: true },
+        body: { ...file.toObject(), tags }
       });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: { success: false, message: "タグの追加に失敗", errors: err },
-        body: {}
-      });
-    });
+    }
+    catch (e) {
+      let errors = {};
 
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = e;
+        break;
+      case "tag_id is empty":
+        errors.tag_id = e;
+        break;
+      case "file is empty":
+        errors.file = e;
+        break;
+      case "tag is empty":
+        errors.tag = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 // タグの削除
