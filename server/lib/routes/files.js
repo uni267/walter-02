@@ -391,50 +391,59 @@ router.post("/:file_id/tags", (req, res, next) => {
 
 // タグの削除
 router.delete("/:file_id/tags/:tag_id", (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id, tag_id } = req.params;    
 
-  const { file_id, tag_id } = req.params;
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
 
-  const tasks = [
-    File.findById(file_id).then( file => file ),
-    Tag.findById(tag_id).then( tag => tag )
-  ];
+      if (tag_id === undefined ||
+          tag_id === null ||
+          tag_id === "") throw "tag_id is empty";
 
-  Promise.all(tasks)
-    .then( result => {
-      const file = result[0];
-      const tag = result[1];
+      const [ file, tag ] = yield [ File.findById(file_id), Tag.findById(tag_id) ];
 
-      // ObjectIDを文字列にキャストし比較する
+      if (file === null) throw "file is empty";
+      if (tag === null) throw "tag is empty";
+
       file.tags = file.tags.filter( file_tag => file_tag.toString() !== tag.id );
-      return file.save();
-    })
-    .then( updatedFile => {
+      const changedFile = yield file.save();
 
-      return File.aggregate([
-        { $match: { _id: updatedFile._id } },
-        {
-          $lookup: {
-            from: "tags",
-            localField: "tags",
-            foreignField: "_id",
-            as: "tags"
-          }
-        }
-      ]);
-    })
-    .then( files => {
+      const tags = yield Tag.find({ _id: { $in: file.tags } });
+
       res.json({
         status: { success: true },
-        body: files[0]
+        body: { ...file.toObject(), tags }
       });
-    })
-    .catch( err => {
-      console.log(err);
-      res.status(500).json({
-        status: { success: false, message: "タグの削除に失敗", errors: err },
-        body: {}
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = e;
+        break;
+      case "tag_id is empty":
+        errors.tag_id = e;
+        break;
+      case "file is empty":
+        errors.file = e;
+        break;
+      case "tag is empty":
+        errors.tag = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
       });
-    });
+    }
+  });
 
 });
 
