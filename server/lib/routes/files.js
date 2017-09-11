@@ -9,6 +9,7 @@ import File from "../models/File";
 import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
+import Tenant from "../models/Tenant";
 
 import { SECURITY_CONF } from "../../configs/server";
 
@@ -18,11 +19,16 @@ const router = Router();
 router.get("/", (req, res, next) => {
   co(function* () {
     try {
-      const { dir_id } = req.query;
+      let { dir_id } = req.query;
 
+      // デフォルトはテナントのホーム
       if (dir_id === null ||
           dir_id === undefined ||
-          dir_id === "") throw "dir_id is empty";
+          dir_id === "") {
+
+        const tenant = yield Tenant.findById(res.user.tenant_id);
+        dir_id = tenant.home_dir_id;
+      }
 
       const conditions = {
         dir_id: mongoose.Types.ObjectId(dir_id)
