@@ -8,6 +8,7 @@ import { Router } from "express";
 import File from "../models/File";
 import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
+import User from "../models/User";
 
 import { SECURITY_CONF } from "../../configs/server";
 
@@ -202,16 +203,16 @@ router.patch("/:file_id/move", (req, res, next) => {
       // @todo ちゃんとメッセージを実装する
       switch (e) {
       case "file_id is empty":
-        errors.unknown = e;
+        errors.file_id = e;
         break;
       case "dir_id is empty":
-        errors.unknown = e;
+        errors.dir_id = e;
         break;
       case "file is empty":
-        errors.unknown = e;
+        errors.file = e;
         break;
       case "dir is empty":
-        errors.unknown = e;
+        errors.dir = e;
         break;
       default:
         errors.unknown = e;
@@ -230,41 +231,55 @@ router.patch("/:file_id/move", (req, res, next) => {
 const upload = multer({ dest: "uploads/" });
 
 router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
-  const myFile = req.files.myFile[0];
-  const dir_id = req.body.dir_id;
 
-  const file = new File();
-  file.name = myFile.originalname;
-  file.blob_path = myFile.path;
-  file.mime_type = myFile.mimetype;
-  file.size = myFile.size;
-  file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
-  file.is_dir = false;
-  file.dir_id = dir_id;
-  file.is_display = true;
-  file.is_star = false;
-  file.tags = [];
-  file.histories = [];
-  file.authorities = [];
-  file.meta_infos = [];
+  // jwt.vefifyはasyncかつpromiseを返却しない
+  const verifyPromise = (token) => {
+    return new Promise( (resolve, reject) => {
+      const { secretKey } = SECURITY_CONF.development;
 
-  new Promise( (resolve, reject) => {
-    const token = req.headers["x-auth-cloud-storage"];
-    const { secretKey } = SECURITY_CONF.development;
-
-    jwt.verify(token, secretKey, (err, decoded) => {
-      if (err) {
-        reject(err);
-      }
-      else {
+      jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) reject(err);
         resolve(decoded);
-      }
+      });
     });
+  };
 
-  })
-    .then( decoded => {
-      const user = decoded._doc;
-      delete user.password;
+  co(function* () {
+    try {
+      const myFile = req.files.myFile[0];
+      const dir_id = req.body.dir_id;
+
+      if (myFile === null ||
+          myFile === undefined ||
+          myFile === "") throw "myFile is empty";
+
+      if (dir_id === null ||
+          dir_id === undefined ||
+          dir_id === "") throw "dir_id is empty";
+
+      const dir = yield File.findById(dir_id);
+
+      if (dir === null) throw "dir is empty";
+
+      const file = new File();
+      file.name = myFile.originalname;
+      file.blob_path = myFile.path;
+      file.mime_type = myFile.mimetype;
+      file.size = myFile.size;
+      file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+      file.is_dir = false;
+      file.dir_id = dir_id;
+      file.is_display = true;
+      file.is_star = false;
+      file.tags = [];
+      file.histories = [];
+      file.authorities = [];
+      file.meta_infos = [];
+
+      const decoded = yield verifyPromise(req.headers["x-auth-cloud-storage"]);
+      const user = yield User.findById(decoded._doc._id);
+
+      if (user === null) throw "user is empty";
 
       const authority = {
         user: user,
@@ -281,24 +296,22 @@ router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {
       };
 
       file.histories = file.histories.concat(history);
-      return file.save();
-    })
-    .then( file => {
-      res.json({
-        status: { success: true, message: "ファイルをアップロードしました" },
-        body: file
-      });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: {
-          success: false,
-          message: "ファイルのアップロードに失敗しました",
-          errors: err },
-        body: {}
-      });
-    });
+      const changedFile = yield file.save();
 
+      res.json({
+        status: { success: true },
+        body: changedFile
+      });
+    }
+    catch (e) {
+      let errors = {};
+      errors.unknown = e;
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
   
 
