@@ -84,26 +84,41 @@ router.get("/search", (req, res, next) => {
 });
 
 // ファイル詳細
-router.get("/:id", (req, res, next) => {
-  const file_id = mongoose.Types.ObjectId(req.params.id);
+router.get("/:file_id", (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id } = req.params;
 
-  File.aggregate([
-    { $match: { _id: file_id } },
-    { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
-  ])
-    .then( files => {
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
+
+      const file = yield File.findById(file_id);
+      const tags = yield Tag.find({ _id: { $in: file.tags } });
+
       res.json({
         status: { success: true },
-        body: files[0]
+        body: { ...file.toObject(), tags }
       });
-    })
-    .catch( err => {
-      console.log(err);
-      res.status(500).json({
-        status: { success: false, message: "ファイルの取得に失敗", errors: err }
-      });
-    });
 
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = "file_id is empty";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 // ファイル名変更
