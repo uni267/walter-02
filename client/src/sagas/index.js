@@ -42,6 +42,8 @@ import watchSaveRoleName from "./watchSaveRoleName";
 import watchSaveRoleDescription from "./watchSaveRoleDescription";
 import watchDeleteRoleOfAction from "./watchDeleteRoleOfAction";
 import watchCreateRole from "./watchCreateRole";
+import watchFetchActions from "./watchFetchActions";
+import watchAddRoleOfAction from "./watchAddRoleOfAction";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -86,6 +88,8 @@ function* Saga() {
   yield fork(watchSaveRoleDescription);
   yield fork(watchDeleteRoleOfAction);
   yield fork(watchCreateRole);
+  yield fork(watchFetchActions);
+  yield fork(watchAddRoleOfAction);
 }
 
 export default Saga;

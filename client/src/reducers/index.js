@@ -27,6 +27,7 @@ import user from "./userReducer";
 import groups from "./groupsReducer";
 import group from "./groupReducer";
 import role from "./roleReducer";
+import actions from "./actionsReducer";
 
 const fileApp = combineReducers({
   files,
@@ -54,7 +55,8 @@ const fileApp = combineReducers({
   user,
   groups,
   group,
-  role
+  role,
+  actions
 });
 
 export default fileApp;

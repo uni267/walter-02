@@ -421,3 +421,15 @@ export const deleteRoleOfAction = (role_id, action_id) => ({
 export const createRole = (role, history) => ({
   type: "CREATE_ROLE", role, history
 });
+
+export const requestFetchActions = () => ({
+  type: "REQUEST_FETCH_ACTIONS"
+});
+
+export const initActions = (actions) => ({
+  type: "INIT_ACTIONS", actions
+});
+
+export const addRoleOfAction = (role_id, action_id) => ({
+  type: "ADD_ROLE_OF_ACTION", role_id, action_id
+});

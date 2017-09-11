@@ -19,19 +19,21 @@ import RoleOfAction from "../components/Role/RoleOfAction";
 // actions
 import {
   requestFetchRole,
+  requestFetchActions,
   changeRoleName,
   changeRoleDescription,
   saveRoleName,
   saveRoleDescription,
   clearRoleValidationError,
-  deleteRoleOfAction
+  deleteRoleOfAction,
+  addRoleOfAction
 } from "../actions";
 
 class RoleDetailContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {
+      searchAction: {
         text: ""
       }
     };
@@ -39,16 +41,17 @@ class RoleDetailContainer extends Component {
 
   componentWillMount() {
     this.props.requestFetchRole(this.props.match.params.id);
+    this.props.requestFetchActions(this.props.tenant.tenant_id);
     this.props.clearRoleValidationError();
   }
 
   render() {
     const title = `${this.props.role.name}の詳細`;
 
-    console.log(this.props.role.actions);
     return (
       <div>
         <NavigationContainer />
+
         <Card>
           <CardTitle title={<TitleWithGoBack title={title} />} />
           <CardText>
@@ -67,7 +70,13 @@ class RoleDetailContainer extends Component {
                 <Card>
                   <CardTitle subtitle="アクション" />
                   <CardText>
-                    <RoleOfAction {...this.props} />
+                    <RoleOfAction
+                      {...this.props}
+                      clearSearchActionText={() => {
+                        this.setState({ searchAction: { text: "" } });
+                      }}
+                      searchAction={this.state.searchAction}
+                      />
                   </CardText>
                 </Card>
               </div>
@@ -85,12 +94,14 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     role: state.role.data,
     changedRole: state.role.changed,
-    validationErrors: state.role.errors
+    validationErrors: state.role.errors,
+    actions: state.actions
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchRole: (role_id) => dispatch(requestFetchRole(role_id)),
+  requestFetchActions: () => dispatch(requestFetchActions()),
   changeRoleName: (name) => dispatch(changeRoleName(name)),
   changeRoleDescription: (description) => dispatch(changeRoleDescription(description)),
   saveRoleName: (role) => dispatch(saveRoleName(role)),
@@ -98,7 +109,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   clearRoleValidationError: () => dispatch(clearRoleValidationError()),
   deleteRoleOfAction: (role_id, action_id) => {
     dispatch(deleteRoleOfAction(role_id, action_id));
-  }
+  },
+  addRoleOfAction: (role_id, action_id) => dispatch(addRoleOfAction(role_id, action_id))
 });
 
 RoleDetailContainer = connect(mapStateToProps, mapDispatchToProps)(RoleDetailContainer);

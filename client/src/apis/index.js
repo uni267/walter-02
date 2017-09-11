@@ -251,6 +251,14 @@ class API {
     const body = { role, tenant_id: localStorage.getItem("tenantId") };
     return client.post(`/api/v1/roles`, body);
   }
+
+  static fetchActions() {
+    return client.get(`/api/v1/actions`);
+  }
+
+  static addRoleOfAction(role_id, action_id) {
+    return client.patch(`/api/v1/roles/${role_id}/actions/${action_id}`);
+  }
 }
 
 export { API };

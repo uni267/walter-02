@@ -1,11 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// material ui
 import Chip from "material-ui/Chip";
+import AutoComplete from "material-ui/AutoComplete";
+import MenuItem from "material-ui/MenuItem";
 
 const RoleOfAction = ({
   role,
-  deleteRoleOfAction
+  actions,
+  deleteRoleOfAction,
+  addRoleOfAction,
+  searchAction,
+  clearSearchActionText
 }) => {
   const renderActions = (actions) => {
     return actions.map( (action, idx) => {
@@ -22,14 +29,35 @@ const RoleOfAction = ({
     });
   };
 
+  const _actions = actions.filter( action => {
+    return !role.actions.map(_action => _action._id).includes(action._id);
+  }).map( action => {
+    return {
+      _id: action._id,
+      text: action.label,
+      value: <MenuItem primaryText={action.label} />
+    };
+  });
+
   return (
     <div>
-      <div>
+      <div style={{ display: "flex" }}>
         {renderActions(role.actions)}
       </div>
 
       <div>
-        
+        <AutoComplete
+          hintText="アクションを追加"
+          floatingLabelText="アクション名"
+          searchText={searchAction.text}
+          onTouchTap={clearSearchActionText}
+          onNewRequest={(action) => {
+            addRoleOfAction(role._id, action._id);
+          }}
+          openOnFocus={true}
+          filter={(text, key) => key.indexOf(text) !== -1}
+          dataSource={_actions}
+          />
       </div>
     </div>
   );

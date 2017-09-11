@@ -8,6 +8,7 @@ import TagRouter from "./tags";
 import MetaInfoRouter from "./metaInfos";
 import GroupRouter from "./groups";
 import RoleRouter from "./roles";
+import ActionRouter from "./actions";
 
 // debug
 import TestRouter from "./test";
@@ -23,6 +24,7 @@ router.use("/api/v1/tags", TagRouter);
 router.use("/api/v1/meta_infos", MetaInfoRouter);
 router.use("/api/v1/groups", GroupRouter);
 router.use("/api/v1/roles", RoleRouter);
+router.use("/api/v1/actions", ActionRouter);
 
 // debug
 router.use("/test", TestRouter);
