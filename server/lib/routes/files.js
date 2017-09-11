@@ -449,39 +449,76 @@ router.delete("/:file_id/tags/:tag_id", (req, res, next) => {
 
 // メタ情報の追加
 router.post("/:file_id/meta", (req, res, next) => {
-  const file_id = mongoose.Types.ObjectId(req.params.file_id);
-  const { meta, value } = req.body;
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
 
-  const tasks = [
-    File.findById(file_id).then( file => file ),
-    MetaInfo.findById(mongoose.Types.ObjectId(meta._id)).then( meta => meta)
-  ];
+      const { meta, value } = req.body;
 
-  Promise.all(tasks)
-    .then( result => {
-      const [ _file, _meta ] = result;
+      if (meta._id === undefined) throw "meta is empty";
+
+      if (value === undefined ||
+          value === null ||
+          value === "") throw "value is empty";
+
+      const [ file, metaInfo ] = yield [
+        File.findById(file_id),
+        MetaInfo.findById(meta._id)
+      ];
+
+      if (file === null) throw "file is empty";
+      if (metaInfo === null) throw "metaInfo is empty";
 
       const pushMeta = {
-        meta_info_id: _meta._id,
-        key: _meta.key,
+        meta_info_id: metaInfo._id,
+        key: metaInfo.key,
         value: value,
-        value_type: _meta.value_type
+        value_type: metaInfo.value_type
       };
 
-      _file.meta_infos = [..._file.meta_infos, pushMeta];
-      return _file.save();
-    })
-    .then( _file => {
+      file.meta_infos = [ ...file.meta_infos, pushMeta ];
+
+      const changedFile = yield file.save();
+
       res.json({
         status: { success: true },
-        body: _file
+        body: changedFile
       });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: { success: false, errors: err }
+
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = e;
+        break;
+      case "meta is empty":
+        errors.meta = e;
+        break;
+      case "value is empty":
+        errors.value = e;
+        break;
+      case "file is empty":
+        errors.file = e;
+        break;
+      case "metaInfo is empty":
+        errors.metaInfo = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
       });
-    });
+    }
+  });
+
 });
 
 // メタ情報の削除
