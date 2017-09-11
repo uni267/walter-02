@@ -176,7 +176,6 @@ router.post("/", (req, res, next) => {
       });
     }
     catch (e) {
-      console.log(e);
       let errors = {};
 
       switch (e) {
@@ -189,6 +188,42 @@ router.post("/", (req, res, next) => {
       }
 
       res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+});
+
+// 削除
+router.delete("/:role_id", (req, res, next) => {
+  co(function* () {
+    try {
+      const { role_id } = req.params;
+      const role = yield Role.findById(role_id);
+
+      if (role === null) throw "role is empty";
+
+      const deletedRole = role.remove();
+
+      res.json({
+        status: { success: true },
+        body: deletedRole
+      });
+
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "role is empty":
+        errors.role = "指定されたロールが見つからないため削除に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.json({
         status: { success: false, errors }
       });
     }

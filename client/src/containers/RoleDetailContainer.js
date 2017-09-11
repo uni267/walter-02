@@ -8,7 +8,10 @@ import {
   Card, 
   CardTitle, 
   CardText, 
+  CardActions
 } from 'material-ui/Card';
+
+import FlatButton from "material-ui/FlatButton";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -26,7 +29,8 @@ import {
   saveRoleDescription,
   clearRoleValidationError,
   deleteRoleOfAction,
-  addRoleOfAction
+  addRoleOfAction,
+  deleteRole
 } from "../actions";
 
 class RoleDetailContainer extends Component {
@@ -83,6 +87,14 @@ class RoleDetailContainer extends Component {
             </div>
 
           </CardText>
+          <CardActions>
+            <FlatButton label="閉じる" primary={true} href="/roles" />
+            <FlatButton
+              label="削除"
+              secondary={true}
+              onTouchTap={() => this.props.deleteRole(this.props.role)}
+              />
+          </CardActions>
         </Card>
       </div>
     );
@@ -110,7 +122,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteRoleOfAction: (role_id, action_id) => {
     dispatch(deleteRoleOfAction(role_id, action_id));
   },
-  addRoleOfAction: (role_id, action_id) => dispatch(addRoleOfAction(role_id, action_id))
+  addRoleOfAction: (role_id, action_id) => dispatch(addRoleOfAction(role_id, action_id)),
+  deleteRole: (role) => dispatch(deleteRole(role, ownProps.history))
 });
 
 RoleDetailContainer = connect(mapStateToProps, mapDispatchToProps)(RoleDetailContainer);

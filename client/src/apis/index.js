@@ -259,6 +259,10 @@ class API {
   static addRoleOfAction(role_id, action_id) {
     return client.patch(`/api/v1/roles/${role_id}/actions/${action_id}`);
   }
+
+  static deleteRole(role) {
+    return client.delete(`/api/v1/roles/${role._id}`);
+  }
 }
 
 export { API };
