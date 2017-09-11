@@ -123,28 +123,50 @@ router.get("/:file_id", (req, res, next) => {
 
 // ファイル名変更
 router.patch("/:file_id/rename", (req, res, next) => {
-  const file_id = req.params.file_id;
-  const changedFname = req.body.name;
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      const changedFileName = req.body.name;
 
-  File.findById(file_id)
-    .then( file => {
-      file.name = changedFname;
-      return file.save();
-    })
-    .then( file => {
+      if (file_id === null ||
+          file_id === undefined ||
+          file_id === "") throw "file_id is empty";
+
+      if (changedFileName === null ||
+          changedFileName === undefined ||
+          changedFileName === "") throw "name is empty";
+
+      const file = yield File.findById(file_id);
+      file.name = changedFileName;
+      const changedFile = yield file.save();
+
       res.json({
         status: { success: true },
-        body: file
+        body: changedFile
       });
-    })
-    .catch( err => {
-      console.log(err);
-      res.status(500).json({
-        status: { success: false, message: "ファイル名の変更に失敗", errors: err },
-        body: {}
+
+    }
+    catch (e) {
+      console.log(e);
+      let errors = {};
+
+      switch (e) {
+      case "file_id is empty":
+        errors.fild_id = "file_id is empty";
+        break;
+      case "name is empty":
+        errors.name = "ファイル名が空のため変更に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
       });
-    });
-  
+    }
+  });
 });
 
 // ファイル移動
