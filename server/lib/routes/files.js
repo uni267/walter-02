@@ -523,39 +523,63 @@ router.post("/:file_id/meta", (req, res, next) => {
 
 // メタ情報の削除
 router.delete("/:file_id/meta/:meta_id", (req, res, next) => {
-  const file_id = mongoose.Types.ObjectId(req.params.file_id);
-  const meta_id = mongoose.Types.ObjectId(req.params.meta_id);
+  co(function* () {
+    try {
+      const { file_id, meta_id } = req.params;
 
-  const tasks = [
-    File.findById(file_id).then( file => file ),
-    MetaInfo.findById(meta_id).then( meta => meta )
-  ];
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
 
-  Promise.all(tasks)
-    .then( result => {
-      const [ file, meta ] = result;
+      if (meta_id === undefined ||
+          meta_id === null ||
+          meta_id === "") throw "meta_id is empty";
 
-      if (file === null) throw "指定されたファイルがみつかりません";
-      if (meta === null) throw "指定されたメタ情報がみつかりません";
+      const [ file, metaInfo ] = yield [
+        File.findById(file_id),
+        MetaInfo.findById(meta_id)
+      ];
+
+      if (file === null) throw "file is empty";
+      if (metaInfo === null) throw "metaInfo is empty";
 
       file.meta_infos = file.meta_infos.filter( _meta => {
-        return _meta.meta_info_id.toString() !== meta._id.toString();
+        return _meta.meta_info_id.toString() !== metaInfo._id.toString();
       });
 
-      return file.save();
-    })
-    .then( file => {
+      const changedFile = yield file.save();
+
       res.json({
         status: { success: true },
-        body: file
+        body: changedFile
       });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: { success: false, errors: err }
-      });
-    });
+    }
+    catch (e) {
+      let errors = {};
 
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = e;
+        break;
+      case "meta_id is empty":
+        errors.meta_id = e;
+        break;
+      case "file is empty":
+        errors.file = e;
+        break;
+      case "metaInfo is empty":
+        errors.metaInfo = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 export default router;
