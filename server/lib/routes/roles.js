@@ -54,12 +54,10 @@ router.get("/:role_id", (req, res, next) => {
       if (role === null || role === undefined) throw "role is not found";
 
       const actions = yield Action.find({ _id: { $in: role.actions } });
-      const _role = role.toObject();
-      _role.actions = actions;
 
       res.json({
         status: { success: true },
-        body: _role
+        body: { ...role.toObject(), actions }
       });
     }
     catch (e) {
