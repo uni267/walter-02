@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import co from "co";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import moment from "moment";
@@ -14,27 +15,44 @@ const router = Router();
 
 // ファイル一覧
 router.get("/", (req, res, next) => {
-  const conditions = Object.assign({}, req.query);
+  co(function* () {
+    try {
+      const { dir_id } = req.query;
 
-  conditions.dir_id = mongoose.Types.ObjectId(conditions.dir_id);
+      if (dir_id === null ||
+          dir_id === undefined ||
+          dir_id === "") throw "dir_id is empty";
 
-  File.aggregate([
-    { $match: conditions },
-    { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
-  ])
-    .then( files => {
+      const conditions = {
+        dir_id: mongoose.Types.ObjectId(dir_id)
+      };
+
+      const files = yield File.aggregate([
+        { $match: conditions },
+        { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
+      ]);
+
       res.json({
         status: { success: true },
         body: files
       });
-    })
-    .catch( err => {
-      res.json({
-        status: { success: false, message: "エラー", errors: err },
-        body: {}
-      });
-    });      
+    }
+    catch (e) {
+      let errors = {};
+      switch (e) {
+      case "dir_id is empty":
+        errors.dir_id = "dir_id is empty";
+        break;
+      default:
+        errors.unknown = e;
+      }
 
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  });
 });
 
 // ファイル検索
