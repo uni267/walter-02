@@ -178,11 +178,11 @@ router.post("/", (req, res, next) => {
 
 // パスワード変更
 router.patch("/:user_id/password", (req, res, next) => {
-  const { user_id } = req.params;
-  const { current_password, new_password } = req.body;
+  co(function* () {
+    try {
+      const { user_id } = req.params;
+      const { current_password, new_password } = req.body;
 
-  User.findById(user_id)
-    .then( user => {
       if (current_password === null || 
           current_password === ""   ||
           current_password === undefined) throw "current password is empty";
@@ -191,33 +191,32 @@ router.patch("/:user_id/password", (req, res, next) => {
           new_password === ""   ||
           new_password === undefined) throw "new password is empty";
 
+      const user = yield User.findById(user_id);
       if (user === null || user === undefined) throw "user not found";
 
-      const sha = crypto.createHash("sha512");
-      sha.update(current_password);
-      const hash = sha.digest("hex");
+      const current_sha = crypto.createHash("sha512");
+      current_sha.update(current_password);
+      const current_hash = current_sha.digest("hex");
       
-      if (hash !== user.password) throw "password is not match";
+      if (current_hash !== user.password) throw "password is not match";
 
-      return user;
-    })
-    .then( user => {
-      const sha = crypto.createHash("sha512");
-      sha.update(new_password);
-      const hash = sha.digest("hex");
-      user.password = hash;
-      return user.save();
-    })
-    .then( changedUser => {
+      const new_sha = crypto.createHash("sha512");
+      new_sha.update(new_password);
+      const new_hash = new_sha.digest("hex");
+      user.password = new_hash;
+
+      const changedUser = yield user.save();
+
       res.json({
-        status: { success: true, message: "パスワードが変更されました" },
+        status: { success: true },
         body: changedUser
       });
-    })
-    .catch( err => {
+      
+    }
+    catch (e) {
       let errors = {};
 
-      switch (err) {
+      switch (e) {
       case "current password is empty":
         errors.current_password = "パスワードが空のため変更に失敗しました";
         break;
@@ -239,42 +238,56 @@ router.patch("/:user_id/password", (req, res, next) => {
         status: { success: false, errors }
       });
 
-    });
+    }
+  });
 });
 
 // パスワード変更(管理者)
 router.patch("/:user_id/password_force", (req, res, next) => {
-  const { user_id } = req.params;
-  const { password } = req.body;
+  co(function* () {
+    try {
+      const { user_id } = req.params;
+      const { password } = req.body;
 
-  User.findById(user_id)
-    .then( user => {
-      if (password === null ||
-          password === "" ||
-          password === undefined) throw "password is empty";
+      if (user_id === undefined ||
+          user_id === null ||
+          user_id === "") throw "user_id is empty";
+
+      if (password === undefined ||
+          password === null ||
+          password === "") throw "password is empty";
+
+      const user = yield User.findById(user_id);
+
+      if (user === null) throw "user is empty";
 
       const sha = crypto.createHash("sha512");
       sha.update(password);
       const hash = sha.digest("hex");
 
       user.password = hash;
-      return user.save();
-    })
-    .then( user => {
+      const changedUser = yield user.save();
+
       res.json({
         status: { success: true },
-        body: user
+        body: changedUser
       });
-    })
-    .catch( err => {
+    }
+    catch (e) {
       let errors = {};
       
-      switch (err) {
+      switch (e) {
+      case "user_id is empty":
+        errors.user_id = e;
+        break;
       case "password is empty":
         errors.password = "パスワードが空のため変更に失敗しました";
         break;
+      case "user is empty":
+        errors.user = e;
+        break;
       default:
-        errors.unknown = err;
+        errors.unknown = e;
         break;
       }
 
@@ -282,32 +295,49 @@ router.patch("/:user_id/password_force", (req, res, next) => {
         status: { success: false, errors }
       });
 
-    });
+    }
+  });
 });
 
 // 有効/無効のトグル
 router.patch("/:user_id/enabled", (req, res, next) => {
-  const user_id = req.params.user_id;
+  co(function* () {
+    try {
+      const { user_id } = req.params;
+      if (user_id === undefined ||
+          user_id === null ||
+          user_id === "") throw "user_id is empty";
 
-  User.findById(user_id)
-    .then( user => {
-      if (!user) throw "指定されたユーザは存在しません";
+      const user = yield User.findById(user_id);
+      if (user === null) throw "user is empty";
 
       user.enabled = !user.enabled;
-      user.save();
-    })
-    .then( user => {
+      const changedUser = yield user.save();
+
       res.json({
         status: { success: true },
-        body: user
+        body: changedUser
       });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: { success: false, message: err }
-      });
-    });
+    }
+    catch (e) {
+      let errors = {};
+      switch (e) {
+      case "user_id is empty":
+        errors.user_id = e;
+        break;
+      case "user is empty":
+        errors.user = "指定されたユーザは存在しません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
 
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 // 表示名変更
@@ -357,47 +387,53 @@ router.patch("/:user_id/name", (req, res, next) => {
 
 // メールアドレス変更
 router.patch("/:user_id/email", (req, res, next) => {
-  const user_id = req.params.user_id;
-  const email = req.body.email;
+  co(function* () {
+    try {
+      const { user_id } = req.params;
+      const { email } = req.body;
 
-  User.findById(user_id)
-    .then( user => {
-      if (user === ""
-          || user === null
-          || user === undefined) throw "user not found";
+      if (user_id === "" ||
+          user_id === undefined ||
+          user_id === null) throw "user_id is empty";
 
       if (email === ""
           || email === null
           || email === undefined) throw "email is empty";
 
+      const user = yield User.findById(user_id);
+      if (user === null) throw "user is empty";
+
       user.email = email;
-      return user.save();
-    })
-    .then( user => {
+      const changedUser = yield user.save();
+
       res.json({
         status: { success: true },
-        body: user
+        body: changedUser
       });
-    })
-    .catch( err => {
+    }
+    catch (e) {
       let errors = {};
-
-      switch (err) {
-      case "user not found":
-        errors.user = "指定されたユーザが見つからないため変更に失敗しました";
+      switch (e) {
+      case "user_id is empty":
+        errors.user_id = e;
         break;
       case "email is empty":
         errors.email = "メールアドレスが空のため変更に失敗しました";
         break;
+      case "user is empty":
+        errors.user = "指定されたユーザが見つからないため変更に失敗しました";
+        break;
       default:
-        errors = err;
+        errors.unknown = e;
         break;
       }
-      
+
       res.status(400).json({
         status: { success: false, errors }
       });
-    });
+    }
+
+  });
 });
 
 
