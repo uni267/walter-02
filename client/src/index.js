@@ -22,7 +22,7 @@ import App from './containers/App';
 const sagaMiddleware = createSagaMiddleware(Saga);
 const store = createStore(
   reducer, 
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
   applyMiddleware(sagaMiddleware),
   applyMiddleware(logger)
 );
