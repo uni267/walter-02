@@ -28,6 +28,7 @@ import groups from "./groupsReducer";
 import group from "./groupReducer";
 import role from "./roleReducer";
 import actions from "./actionsReducer";
+import fileDetailSearch from "./fileDetailSearchReducer";
 
 const fileApp = combineReducers({
   files,
@@ -56,7 +57,8 @@ const fileApp = combineReducers({
   groups,
   group,
   role,
-  actions
+  actions,
+  fileDetailSearch
 });
 
 export default fileApp;

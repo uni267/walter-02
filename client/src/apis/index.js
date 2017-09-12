@@ -263,6 +263,14 @@ class API {
   static deleteRole(role) {
     return client.delete(`/api/v1/roles/${role._id}`);
   }
+
+  static fetchFileSearchItems(tenant_id) {
+    const config = {
+      params: { tenant_id }
+    };
+
+    return client.get(`/api/v1/files/search_items`, config);
+  }
 }
 
 export { API };

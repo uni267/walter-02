@@ -437,3 +437,11 @@ export const addRoleOfAction = (role_id, action_id) => ({
 export const deleteRole = (role, history) => ({
   type: "DELETE_ROLE", role, history
 });
+
+export const requestFetchFileSearchItems = (tenant_id) => ({
+  type: "REQUEST_FETCH_FILE_SEARCH_ITEMS", tenant_id
+});
+
+export const initFileDetailSearchItems = (items) => ({
+  type: "INIT_FILE_DETAIL_SEARCH_ITEMS", items
+});

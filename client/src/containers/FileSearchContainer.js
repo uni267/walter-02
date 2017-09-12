@@ -9,7 +9,10 @@ import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
 
 // actions
-import { searchFileSimple } from "../actions";
+import {
+  searchFileSimple,
+  requestFetchFileSearchItems
+} from "../actions";
 
 const styles = {
   buttonContainer: {
@@ -31,7 +34,10 @@ class FileSearchContainer extends Component {
       anchorEl: {},
       searchItems: []
     };
+  }
 
+  componentWillMount() {
+    this.props.requestFetchFileSearchItems(this.props.tenant.tenant_id);
   }
 
   handleOpen = (event) => {
@@ -76,9 +82,7 @@ class FileSearchContainer extends Component {
         <div style={styles.buttonContainer}>
           <div>
             <AddFilterBtn
-              searchItems={this.state.searchItems}
-              open={this.state.open}
-              anchorEl={this.state.anchorEl}
+              { ...this.state }
               handleOpen={this.handleOpen}
               handleClose={this.handleClose}
               handleMenuTouchTap={this.handleMenuTouchTap}
@@ -106,11 +110,17 @@ class FileSearchContainer extends Component {
 };
 
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    tenant: state.tenant,
+    fileDetailSearch: state.fileDetailSearch
+  };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFileSimple: (value) => { dispatch(searchFileSimple(value)); }
+  searchFileSimple: (value) => dispatch(searchFileSimple(value)),
+  requestFetchFileSearchItems: (tenant_id) => {
+    dispatch(requestFetchFileSearchItems(tenant_id));
+  }
 });
 
 FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);
