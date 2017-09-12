@@ -11,7 +11,11 @@ import DetailSearch from "../components/FileSearch/DetailSearch";
 // actions
 import {
   searchFileSimple,
-  requestFetchFileSearchItems
+  requestFetchFileSearchItems,
+  toggleFileDetailSearchPopover,
+  fileDetailSearchAnchorElement,
+  searchItemPick,
+  searchItemNotPick
 } from "../actions";
 
 const styles = {
@@ -27,79 +31,31 @@ const styles = {
 };
 
 class FileSearchContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-      anchorEl: {},
-      searchItems: []
-    };
-  }
-
   componentWillMount() {
     this.props.requestFetchFileSearchItems(this.props.tenant.tenant_id);
   }
 
-  handleOpen = (event) => {
-    event.preventDefault();
-
-    this.setState({
-      open: true,
-      anchorEl: event.currentTarget
-    });
-  }
-
-  handleClose = () => {
-    this.setState({
-      open: false
-    });
-  }
-
-  handleMenuTouchTap = (menu) => {
-    this.setState({
-      searchItems: this.state.searchItems.map(item => {
-        return item.id === menu.id ? {...item, picked: true} : item;
-      })
-    });
-  };
-
-  handleDelete = (menu) => {
-    this.setState({
-      searchItems: this.state.searchItems.map(m => {
-        return m.id === menu.id ? {...m, picked: false} : m;
-      })
-    });
-  };
-
   render() {
-
-    const isSimple = this.state.searchItems.filter(item => item.picked).length === 0;
-
     return (
       <div style={{marginTop: 10, marginRight: 25, marginBottom: 15}}>
 
         {/* フィルタ追加ボタン */}
         <div style={styles.buttonContainer}>
           <div>
-            <AddFilterBtn
-              { ...this.state }
-              handleOpen={this.handleOpen}
-              handleClose={this.handleClose}
-              handleMenuTouchTap={this.handleMenuTouchTap}
-              />
+            <AddFilterBtn { ...this.props } />
           </div>
         </div>
 
         <div style={styles.formContainer}>
           {/* 簡易検索 */}
-          { isSimple
+          { this.props.isSimple
             ? <SimpleSearch {...this.props} hintText="ファイル名を入力" />
             : null }
             
           {/* 詳細検索 */}
-          {this.state.searchItems.map(
+          {this.props.searchItems.map(
               (menu, idx) => menu.picked ?
-              <DetailSearch menu={menu} key={idx} handleDelete={this.handleDelete} />
+              <DetailSearch menu={menu} key={idx} {...this.props} />
                 : null
           )}
 
@@ -112,7 +68,10 @@ class FileSearchContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     tenant: state.tenant,
-    fileDetailSearch: state.fileDetailSearch
+    searchItems: state.fileDetailSearch.items,
+    open: state.fileDetailSearch.open,
+    anchorElement: state.fileDetailSearch.anchorElement,
+    isSimple: state.fileDetailSearch.items.find(item => item.picked) === undefined
   };
 };
 
@@ -120,7 +79,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFileSimple: (value) => dispatch(searchFileSimple(value)),
   requestFetchFileSearchItems: (tenant_id) => {
     dispatch(requestFetchFileSearchItems(tenant_id));
-  }
+  },
+  toggleFileDetailSearchPopover: () => dispatch(toggleFileDetailSearchPopover()),
+  fileDetailSearchAnchorElement: (event) => dispatch(fileDetailSearchAnchorElement(event)),
+  searchItemPick: (item) => dispatch(searchItemPick(item)),
+  searchItemNotPick: (item) => dispatch(searchItemNotPick(item))
 });
 
 FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);

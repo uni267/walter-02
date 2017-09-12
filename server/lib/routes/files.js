@@ -102,10 +102,10 @@ router.get("/search_items", (req, res, next) => {
       }).select({ key: 1, value_type: 1 });
 
       const base_items = [
-        { _id: null, key: "ファイル名", value_type: "String" },
-        { _id: null, key: "お気に入り", value_type: "Bool" },
-        { _id: null, key: "タグ", value_type: "String" },
-        { _id: null, key: "更新日時", value_type: "Date" }
+        { _id: 1, key: "ファイル名", value_type: "String" },
+        { _id: 2, key: "お気に入り", value_type: "Bool" },
+        { _id: 3, key: "タグ", value_type: "String" },
+        { _id: 4, key: "更新日時", value_type: "Date" }
       ];
 
       res.json({

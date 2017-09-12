@@ -445,3 +445,19 @@ export const requestFetchFileSearchItems = (tenant_id) => ({
 export const initFileDetailSearchItems = (items) => ({
   type: "INIT_FILE_DETAIL_SEARCH_ITEMS", items
 });
+
+export const toggleFileDetailSearchPopover = () => ({
+  type: "TOGGLE_FILE_DETAIL_SEARCH_POPOVER"
+});
+
+export const fileDetailSearchAnchorElement = (event) => ({
+  type: "FILE_DETAIL_SEARCH_ANCHOR_ELEMENT", event
+});
+
+export const searchItemPick = (item) => ({
+  type: "SEARCH_ITEM_PICK", item
+});
+
+export const searchItemNotPick = (item) => ({
+  type: "SEARCH_ITEM_NOT_PICK", item
+});

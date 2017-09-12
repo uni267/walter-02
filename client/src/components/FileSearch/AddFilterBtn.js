@@ -8,19 +8,19 @@ import MenuItem from 'material-ui/MenuItem';
 
 // ファイル検索でフィルタ追加ボタンをrenderするコンポーネント
 const AddFilterBtn =({
-  searchItems,
   open,
-  anchorEl,
-  handleOpen,
-  handleClose,
-  handleMenuTouchTap
+  searchItems,
+  toggleFileDetailSearchPopover,
+  fileDetailSearchAnchorElement,
+  anchorElement,
+  searchItemPick
 }) => {
-  const render = (menu, idx) => {
+  const renderItem = (item, idx) => {
     return (
       <MenuItem
         key={idx}
-        primaryText={menu.label}
-        onTouchTap={() => handleMenuTouchTap(menu)}
+        primaryText={item.key}
+        onTouchTap={() => searchItemPick(item)}
         />
     );
   };
@@ -29,19 +29,23 @@ const AddFilterBtn =({
     <div>
       <RaisedButton
         label="フィルタ追加"
-        onTouchTap={handleOpen} />
+        onTouchTap={(e) => {
+          fileDetailSearchAnchorElement(e);
+          toggleFileDetailSearchPopover();
+        }} />
 
       <Popover 
         open={open}
-        anchorEl={anchorEl}
+        anchorEl={anchorElement}
         anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
         targetOrigin={{horizontal: 'left', vertical: 'top'}}
-        onRequestClose={handleClose}
+        onRequestClose={toggleFileDetailSearchPopover}
         >
 
         <Menu>
-          {searchItems.map(
-          (menu, idx) => !menu.picked ? render(menu, idx) : null)}
+          {searchItems.map( (item, idx) => {
+            return !item.picked ? renderItem(item, idx) : null;
+          })}
         </Menu>
       </Popover>
       
@@ -50,12 +54,12 @@ const AddFilterBtn =({
 };
 
 AddFilterBtn.propTypes = {
-  searchItems: PropTypes.array.isRequired,
   open: PropTypes.bool.isRequired,
-  anchorEl: PropTypes.object.isRequired,
-  handleOpen: PropTypes.func.isRequired,
-  handleClose: PropTypes.func.isRequired,
-  handleMenuTouchTap: PropTypes.func.isRequired
+  searchItems: PropTypes.array.isRequired,
+  toggleFileDetailSearchPopover: PropTypes.func.isRequired,
+  fileDetailSearchAnchorElement: PropTypes.func.isRequired,
+  anchorElement: PropTypes.object.isRequired,
+  searchItemPick: PropTypes.func.isRequired
 };
 
 export default AddFilterBtn;
