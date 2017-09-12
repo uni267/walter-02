@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import TextField from "material-ui/TextField";
 
 const SimpleSearch = ({
-  searchFileSimple
+  searchFileSimple,
+  hintText
 }) => {
   let searchValue = "";
 
@@ -20,7 +21,7 @@ const SimpleSearch = ({
         ref={(input) => searchValue = input}
         style={{width: 270}}
         onKeyDown={handleKeyDown}
-        hintText=""
+        hintText={hintText}
         floatingLabelText="簡易検索"
         />
     </div>
@@ -28,7 +29,8 @@ const SimpleSearch = ({
 };
 
 SimpleSearch.propTypes = {
-  searchFileSimple: PropTypes.func.isRequired
+  searchFileSimple: PropTypes.func.isRequired,
+  hintText: PropTypes.string
 };
 
 export default SimpleSearch;

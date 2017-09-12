@@ -15,8 +15,6 @@ function* watchSearchFileSimple() {
       const { dirId } = yield select(state => state.tenant);
 
       const dirs = [
-        { _id: dirId, name: "Top" },
-        "sep",
         { _id: dirId, name: "検索結果" }
       ];
 
