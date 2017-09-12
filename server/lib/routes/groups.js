@@ -9,19 +9,27 @@ const router = Router();
 // index
 router.get("/", (req, res, next) => {
 
-  Group.find({ tenant_id: mongoose.Types.ObjectId(req.query.tenant_id) })
-    .then( groups => {
-      res.groups = groups;
+  co(function* () {
+    try {
+      const { tenant_id } = req.query;
+      if (tenant_id === undefined ||
+          tenant_id === null ||
+          tenant_id === "") throw "tenant_id is empty";
+
+      const groups = yield Group.find({
+        tenant_id: mongoose.Types.ObjectId(tenant_id)
+      });
+
       const group_ids = groups.map( group => group._id );
-      return User.find({ groups: { $in: group_ids } },
-                       { name: 1, groups: 1 });
-    })
-    .then( users => {
-      return res.groups.map( group => {
+
+      const users = yield User.find({ groups: { $in: group_ids } });
+
+      const _groups = groups.map( group => {
+
         const belongs_to = users.filter( user => {
           return user.groups
             .map(group => group.toString())
-            .includes(group.id.toString());
+            .includes(group._id.toString());
         });
 
         return {
@@ -29,67 +37,76 @@ router.get("/", (req, res, next) => {
           belongs_to
         };
       });
-    })
-    .then( groups => {
+
       res.json({
         status: { success: true },
-        body: groups
+        body: _groups
       });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: { success: false, errors: err }
+    }
+    catch (e) {
+      let errors = {};
+      switch (e) {
+      case "tenant_id is empty":
+        errors.tenant_id = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+      res.status(400).json({
+        status: { success: false, errors }
       });
-    });
+    }
+  });
 });
 
 // view
 router.get("/:group_id", (req, res, next) => {
-  const group_id = req.params.group_id;
+  co(function* () {
+    try {
+      const { group_id } = req.params;
 
-  Group.findById(group_id)
-    .then( group => {
-      if (group === null) throw "group not found";
+      if (group_id === undefined ||
+          group_id === null ||
+          group_id === "") throw "group_id is empty";
 
-      res.group = group;
-      return;
-    })
-    .then( () => {
-      return User.find({ groups: res.group._id });
-    })
-    .then( users => {
-      const group = res.group.toObject();
-      group.belongs_to = users;
+      const group = yield Group.findById(group_id);
+
+      if (group === null) throw "group is empty";
+
+      const users = yield User.find({ groups: group._id });
 
       res.json({
         status: { success: true },
-        body: group
+        body: { ...group.toObject(), belongs_to: users }
       });
-    })
-    .catch( err => {
-      let errors;
+    }
+    catch (e) {
+      let errors = {};
 
-      switch (err) {
-      case "group not found":
-        errors = "group not found";
+      switch (e) {
+      case "group_id is empty":
+        errors.group_id = e;
+        break;
+      case "group is empty":
+        errors.group = e;
         break;
       default:
-        errors = err;
-        break;
+        errors.unknown = e;
+        break;        
       }
 
-      res.status(500).json({
+      res.status(400).json({
         status: { success: false, errors }
       });
-
-    });
+    }
+  });
 });
 
 // 名称変更
 router.patch("/:group_id/name", (req, res, next) => {
 
-  const main = function* () {
-
+  co(function* () {
     try {
       const { name } = req.body;
 
@@ -129,17 +146,13 @@ router.patch("/:group_id/name", (req, res, next) => {
         status: { success: false, errors }
       });
     }
-
-  };
-
-  co(main);
-
+  });
 });
 
 // 備考変更
 router.patch("/:group_id/description", (req, res, next) => {
 
-  const main = function* () {
+  co(function* () {
     const { description } = req.body;
     const { group_id } = req.params;
     
@@ -171,14 +184,12 @@ router.patch("/:group_id/description", (req, res, next) => {
         status: { success: false, errors }
       });
     }
-  };
-
-  co(main);
+  });
 });
 
 // 新規作成
 router.post("/", (req, res, next) => {
-  const main = function*() {
+  co(function*() {
 
     try {
       const group = new Group(req.body.group);
@@ -210,16 +221,12 @@ router.post("/", (req, res, next) => {
         status: { success: false, errors }
       });
     }
-
-  };
-
-  co(main);
-  
+  });
 });
 
 // 削除
 router.delete("/:group_id", (req, res, next) => {
-  const main = function* () {
+  co(function* () {
     const { group_id } = req.params;
 
     try {
@@ -252,9 +259,7 @@ router.delete("/:group_id", (req, res, next) => {
       });
     }
 
-  };
-
-  co(main);
+  });
 });
 
 export default router;
