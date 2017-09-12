@@ -10,84 +10,119 @@ const router = Router();
 
 // ユーザ一覧
 router.get("/", (req, res, next) => {
+  co(function* () {
+    try {
+      const { q, tenant_id } = req.query;
 
-  let conditions = {
-    tenant_id: mongoose.Types.ObjectId(req.query.tenant_id)
-  };
+      if (tenant_id === undefined ||
+          tenant_id === null ||
+          tenant_id === "") throw "tenant_id is empty";
 
-  if (req.query.q) {
-    conditions = {
-      $and: [
-        { tenant_id: mongoose.Types.ObjectId(req.query.tenant_id) },
-        { name: new RegExp(req.query.q, "i") }
-      ]
-    };
-  }
+      const tenant = yield Tenant.findById(tenant_id);
+      if (tenant === null) throw "tenant is empty";
 
-  User.aggregate([
-    { $match: conditions },
-    { $lookup:
-      { from: "groups", localField: "groups", foreignField: "_id", as: "groups" }
-    }
-  ])
-    .then (users => {
+      let conditions;
+
+      if (q) {
+        conditions = {
+          tenant_id: mongoose.Types.ObjectId(tenant_id)
+        };
+      }
+      else {
+        conditions = {
+          $and: [
+            { tenant_id: mongoose.Types.ObjectId(tenant_id) },
+            { name: new RegExp(q, "i") }
+          ]
+        };
+      }
+
+      const users = yield User.aggregate([
+        { $match: conditions },
+        { $lookup:
+          { from: "groups", localField: "groups", foreignField: "_id", as: "groups" }
+        }
+      ]);
+
       res.json({
         status: { success: true },
         body: users
       });
-    })
-    .catch( err => {
-      res.status(500).json({
-        status: { success: false, message: "エラー", errors: err },
-        body: {}
-      });
-    });
+    }
+    catch (e) {
+      let errors = {};
 
+      switch (e) {
+      case "tenant_id is empty":
+        errors.tenant_id = e;
+        break;
+      case "tenant is empty":
+        errors.tenant = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 // ユーザ詳細
-router.get("/:id", (req, res, next) => {
+router.get("/:user_id", (req, res, next) => {
+  co(function* () {
+    try {
+      const { user_id } = req.params;
+      if (user_id === undefined ||
+          user_id === null ||
+          user_id === "") throw "user_id is empty";
 
-  User.findById(req.params.id)
-    .then( user => {
-      res.user = user;
-      return Tenant.findById(user.tenant_id);
-    })
-    .then( tenant => {
-      res.tenant = tenant;
-      const group_ids = res.user.groups.map( group => mongoose.Types.ObjectId(group));
-      return Group.find({ _id: group_ids });
-    })
-    .then( groups => {
-      res.groups = groups;
-      return;
-    })
-    .then( () => {
-      const user = {
-        ...res.user.toObject(),
-        tenant: res.tenant.toObject(),
-        groups: res.groups
-      };
+      const user = yield User.findById(user_id);
+      if (user === null) throw "user is empty";
+
+      const tenant = yield Tenant.findById(user.tenant_id);
+
+      const group_ids = user.groups.map( group => mongoose.Types.ObjectId(group) );
+      const groups = yield Group.find({ _id: group_ids });
 
       res.json({
         status: { success: true },
-        body: user
+        body: {
+          ...user.toObject(),
+          tenant: tenant.toObject(),
+          groups
+        }
       });
-    })
-    .catch( err => {
-      console.log(err);
-      res.status(500).json({
-        status: { success: false, message: "ユーザ取得時にエラー" },
-        body: {}
-      });
-    });
+    }
+    catch (e) {
+      let errors = {};
 
+      switch (e) {
+      case "user_id is empty":
+        errors.user_id = e;
+        break;
+      case "user is empty":
+        errors.user = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 });
 
 // ユーザ追加
 router.post("/", (req, res, next) => {
 
-  const main = function*() {
+  co(function*() {
 
     try {
       const user = new User(req.body.user);
@@ -138,10 +173,7 @@ router.post("/", (req, res, next) => {
         status: { success: false, errors }
       });
     }
-  };
-
-  co(main);
-
+  });
 });
 
 // パスワード変更
