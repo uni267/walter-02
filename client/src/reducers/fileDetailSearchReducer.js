@@ -1,7 +1,8 @@
 const initialState = {
   open: false,
   anchorElement: {},
-  items: []
+  items: [],
+  searchValues: []
 };
 
 const fileDetailSearchReducer = (state = initialState, action) => {
@@ -32,10 +33,26 @@ const fileDetailSearchReducer = (state = initialState, action) => {
   case "SEARCH_ITEM_NOT_PICK":
     return {
       ...state,
-      items: state.items.map( item => {
-        return item._id === action.item._id ?
-          { ...item, picked: false } : item;
-      })
+      items: state.items.map( item => (
+        item._id === action.item._id ? { ...item, picked: false } : item
+      )),
+      searchValues: state.searchValues.filter(val => val._id !== action.item._id)
+    };
+  case "SEARCH_VALUE_CHANGE":
+    let searchValues;
+
+    if (state.searchValues.find( obj => obj._id === action.item._id )) {
+      searchValues = state.searchValues.map( obj => {
+        return obj._id === action.item._id ?
+          { ...obj, value: action.value } : obj;
+      });
+    } else {
+      searchValues = [...state.searchValues, {...action.item, value: action.value }];
+    }
+
+    return {
+      ...state,
+      searchValues: searchValues
     };
   default:
     return state;

@@ -461,3 +461,7 @@ export const searchItemPick = (item) => ({
 export const searchItemNotPick = (item) => ({
   type: "SEARCH_ITEM_NOT_PICK", item
 });
+
+export const searchValueChange = (item, value) => ({
+  type: "SEARCH_VALUE_CHANGE", item, value
+});

@@ -9,34 +9,35 @@ import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 
 const DetailSearch = ({
-  menu,
-  handleDelete
+  item,
+  searchItemNotPick,
+  searchValueChange
 }) => {
-  const textField = (menu) => {
+  const textField = (item) => {
     return (
       <TextField
-        onChange={() => console.log("change") }
-        floatingLabelText={menu.label}
-        hintText={menu.label}
+        onChange={(e, value) => searchValueChange(item, value) }
+        floatingLabelText={item.key}
+        hintText={item.key}
         />
     );
   };
 
-  const datePicker = (menu) => {
+  const datePicker = (item) => {
     return (
       <DatePicker
-        onChange={() => console.log("") }
-        floatingLabelText={menu.label}
-        hintText={menu.label}
+        onChange={(e, value) => searchValueChange(item, value) }
+        floatingLabelText={item.key}
+        hintText={item.key}
         />
     );
   };
 
-  const selectField = (menu) => {
+  const selectField = (item) => {
     return (
       <SelectField
-        floatingLabelText={menu.label}
-        onChange={() => console.log("change") }
+        floatingLabelText={item.key}
+        onChange={(e, value) => searchValueChange(item, value) }
         >
 
         <MenuItem value={null} primaryText="" />
@@ -47,16 +48,19 @@ const DetailSearch = ({
   };
 
   let searchForm;
-  if (menu.type === "string") {
+  switch (item.value_type) {
+  case "String":
     searchForm = textField;
-  }
-
-  if (menu.type === "date") {
+    break;
+  case "Date":
     searchForm = datePicker;
-  }
-
-  if (menu.type === "boolean") {
+    break;
+  case "Bool":
     searchForm = selectField;
+    break;
+  default:
+    searchForm = textField;
+    break;
   }
 
   return (
@@ -64,19 +68,18 @@ const DetailSearch = ({
 
       <IconButton
         style={{marginTop: 23}}
-        onClick={() => handleDelete(menu) } >
+        onClick={() => searchItemNotPick(item) } >
         <ContentRemoveCircleOutline />
       </IconButton>
 
-      {searchForm(menu)}
+      {searchForm(item)}
 
     </div>
   );
 };
 
 DetailSearch.propTypes = {
-  menu: PropTypes.object.isRequired,
-  handleDelete: PropTypes.func.isRequired
+  item: PropTypes.object.isRequired
 };
 
 export default DetailSearch;

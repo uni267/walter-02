@@ -15,7 +15,8 @@ import {
   toggleFileDetailSearchPopover,
   fileDetailSearchAnchorElement,
   searchItemPick,
-  searchItemNotPick
+  searchItemNotPick,
+  searchValueChange
 } from "../actions";
 
 const styles = {
@@ -31,6 +32,13 @@ const styles = {
 };
 
 class FileSearchContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchValueObjects: []
+    };
+  }
+
   componentWillMount() {
     this.props.requestFetchFileSearchItems(this.props.tenant.tenant_id);
   }
@@ -54,8 +62,11 @@ class FileSearchContainer extends Component {
             
           {/* 詳細検索 */}
           {this.props.searchItems.map(
-              (menu, idx) => menu.picked ?
-              <DetailSearch menu={menu} key={idx} {...this.props} />
+              (item, idx) => item.picked ?
+              <DetailSearch
+                  item={item}
+                  key={idx}
+                  {...this.props} />
                 : null
           )}
 
@@ -83,7 +94,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleFileDetailSearchPopover: () => dispatch(toggleFileDetailSearchPopover()),
   fileDetailSearchAnchorElement: (event) => dispatch(fileDetailSearchAnchorElement(event)),
   searchItemPick: (item) => dispatch(searchItemPick(item)),
-  searchItemNotPick: (item) => dispatch(searchItemNotPick(item))
+  searchItemNotPick: (item) => dispatch(searchItemNotPick(item)),
+  searchValueChange: (item, value) => dispatch(searchValueChange(item, value))
 });
 
 FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);
