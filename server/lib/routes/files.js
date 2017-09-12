@@ -87,6 +87,38 @@ router.get("/search", (req, res, next) => {
   });
 });
 
+// ファイル検索項目一覧
+router.get("/search_items", (req, res, next) => {
+  co(function* () {
+    try {
+      const { tenant_id } = req.query;
+
+      if (tenant_id === undefined ||
+          tenant_id === null ||
+          tenant_id === "") throw "tenant_id is empty";
+
+      const meta_infos = yield MetaInfo.find({
+        tenant_id: mongoose.Types.ObjectId(tenant_id)
+      }).select({ key: 1, value_type: 1 });
+
+      const base_items = [
+        { _id: null, key: "ファイル名", value_type: "String" },
+        { _id: null, key: "お気に入り", value_type: "Bool" },
+        { _id: null, key: "タグ", value_type: "String" },
+        { _id: null, key: "更新日時", value_type: "Date" }
+      ];
+
+      res.json({
+        status: { success: true },
+        body: [ ...base_items, ...meta_infos ]
+      });
+    }
+    catch (e) {
+      res.status(400).json({ e });
+    }
+  });
+});
+
 // ファイル詳細
 router.get("/:file_id", (req, res, next) => {
   co(function* () {
