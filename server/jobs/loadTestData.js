@@ -130,17 +130,50 @@ var tenant = db.tenants.findOne({ name: "test" });
 var meta_infos = [
   {
     tenant_id: tenant._id,
+    key: "ファイル名", 
+    key_type: "name",
+    value_type: "String"
+  },
+  {
+    tenant_id: tenant._id,
+    key: "お気に入り",
+    key_type: "is_star",
+    value_type: "Bool"
+  },
+  {
+    tenant_id: tenant._id,
+    key: "タグ",
+    key_type: "tags",
+    value_type: "String"
+  },
+  { 
+    tenant_id: tenant._id,
+    key: "更新日時(より小さい)", 
+    key_type: "modified_less",
+    value_type: "Date"
+  },
+  { 
+    tenant_id: tenant._id,
+    key: "更新日時(より大きい)", 
+    key_type: "modified_greater",
+    value_type: "Date"
+  },
+  {
+    tenant_id: tenant._id,
     key: "取引先コード",
+    key_type: "meta",
     value_type: "String"
   },
   {
     tenant_id: tenant._id,
     key: "取引先名",
+    key_type: "meta",
     value_type: "String"
   },
   {
     tenant_id: tenant._id,
     key: "明細番号",
+    key_type: "meta",
     value_type: "Number"
   }
 ];
