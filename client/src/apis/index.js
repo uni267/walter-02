@@ -106,8 +106,13 @@ class API {
   }
 
   static searchFiles(value) {
-    return client.get(`/api/v1/files/search?q=${value}`)
-      .then( res => res );
+    const config = {
+      params: {
+        q: value
+      }
+    };
+
+    return client.get(`/api/v1/files/search`, config);
   }
 
   static fetchDirTree(root_id) {
@@ -271,6 +276,15 @@ class API {
 
     return client.get(`/api/v1/files/search_items`, config);
   }
+
+  static searchFilesDetail(values) {
+    const config = {
+      params: values
+    };
+
+    return client.get("/api/v1/files/search_detail", config);
+  }
+
 }
 
 export { API };

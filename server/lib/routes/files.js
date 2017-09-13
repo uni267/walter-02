@@ -99,22 +99,70 @@ router.get("/search_items", (req, res, next) => {
 
       const meta_infos = yield MetaInfo.find({
         tenant_id: mongoose.Types.ObjectId(tenant_id)
-      }).select({ key: 1, value_type: 1 });
-
-      const base_items = [
-        { _id: 1, key: "ファイル名", value_type: "String" },
-        { _id: 2, key: "お気に入り", value_type: "Bool" },
-        { _id: 3, key: "タグ", value_type: "String" },
-        { _id: 4, key: "更新日時", value_type: "Date" }
-      ];
+      }).select({ key: 1, key_type: 1, value_type: 1 });
 
       res.json({
         status: { success: true },
-        body: [ ...base_items, ...meta_infos ]
+        body: meta_infos
       });
     }
     catch (e) {
       res.status(400).json({ e });
+    }
+  });
+});
+
+// 詳細検索
+router.get("/search_detail", (req, res, next) => {
+  const buildQuery = (item) => {
+    switch ( item.key_type ) {
+    case "name":
+      return ({
+        [item.key_type]: {
+          $regex: item.value
+        },
+        is_display: true
+      });
+    case "modified_less":
+      return ({
+        modified: {
+          $lt: item.value
+        }
+      });
+    case "modified_greater":
+      return ({
+        modified: {
+          $gt: item.value
+        }
+      });
+    default:
+      return ({
+        [item.key_type]: item.value,
+        is_display: true
+      });
+    }
+  };
+
+  co(function* () {
+    try {
+      const queries = Object.keys(req.query)
+            .map( k => JSON.parse(req.query[k]) );
+
+      const base_items = queries.filter( q => q.key_type !== "meta" );
+      const meta_items = queries.filter( q => q.key_type === "meta" );
+
+      const base_queries = Object.assign(...base_items.map(buildQuery));
+
+      console.log(base_queries);
+      const files = yield File.find(base_queries);
+
+      res.json({
+        status: { success: true },
+        body: files
+      });
+    }
+    catch (e) {
+      res.json({e});
     }
   });
 });

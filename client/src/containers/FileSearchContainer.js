@@ -11,6 +11,7 @@ import DetailSearch from "../components/FileSearch/DetailSearch";
 // actions
 import {
   searchFileSimple,
+  searchFileDetail,
   requestFetchFileSearchItems,
   toggleFileDetailSearchPopover,
   fileDetailSearchAnchorElement,
@@ -32,13 +33,6 @@ const styles = {
 };
 
 class FileSearchContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchValueObjects: []
-    };
-  }
-
   componentWillMount() {
     this.props.requestFetchFileSearchItems(this.props.tenant.tenant_id);
   }
@@ -80,6 +74,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     tenant: state.tenant,
     searchItems: state.fileDetailSearch.items,
+    searchValues: state.fileDetailSearch.searchValues,
     open: state.fileDetailSearch.open,
     anchorElement: state.fileDetailSearch.anchorElement,
     isSimple: state.fileDetailSearch.items.find(item => item.picked) === undefined
@@ -88,6 +83,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFileSimple: (value) => dispatch(searchFileSimple(value)),
+  searchFileDetail: () => dispatch(searchFileDetail()),
   requestFetchFileSearchItems: (tenant_id) => {
     dispatch(requestFetchFileSearchItems(tenant_id));
   },

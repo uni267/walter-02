@@ -11,12 +11,17 @@ import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-cir
 const DetailSearch = ({
   item,
   searchItemNotPick,
-  searchValueChange
+  searchValueChange,
+  searchFileDetail,
+  searchValues
 }) => {
   const textField = (item) => {
     return (
       <TextField
         onChange={(e, value) => searchValueChange(item, value) }
+        onKeyPress={ e => {
+          if (e.key === "Enter") searchFileDetail();
+        }}
         floatingLabelText={item.key}
         hintText={item.key}
         />
@@ -24,9 +29,18 @@ const DetailSearch = ({
   };
 
   const datePicker = (item) => {
+    const selectValue = searchValues.filter( value => value._id === item._id );
+    const value = selectValue[0] === undefined
+          ? null
+          : selectValue[0].value;
+
     return (
       <DatePicker
-        onChange={(e, value) => searchValueChange(item, value) }
+        onChange={(e, value) => {
+          searchValueChange(item, value);
+          searchFileDetail();
+        }}
+        value={value}
         floatingLabelText={item.key}
         hintText={item.key}
         />
@@ -34,10 +48,20 @@ const DetailSearch = ({
   };
 
   const selectField = (item) => {
+    const selectValue = searchValues.filter( value => value._id === item._id );
+
+    const value = selectValue[0] === undefined
+          ? null
+          : selectValue[0].value;
+
     return (
       <SelectField
         floatingLabelText={item.key}
-        onChange={(e, value) => searchValueChange(item, value) }
+        value={value}
+        onChange={(e, idx, value) => {
+          searchValueChange(item, value);
+          searchFileDetail();
+        }}
         >
 
         <MenuItem value={null} primaryText="" />
