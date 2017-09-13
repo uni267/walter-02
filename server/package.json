@@ -7,7 +7,7 @@
     "start": "nodemon lib/index.js --exec babel-node",
     "build": "babel lib -d dist",
     "serve": "node dist/index.js",
-    "test": "mocha --compilers js:espower-babel/guess --watch lib/**/test/*.js"
+    "test": "mocha --compilers js:espower-babel/guess --watch lib/**/test/*.spec.js"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
@@ -40,6 +40,7 @@
     "mocha": "^3.5.0",
     "morgan": "^1.8.2",
     "nodemon": "^1.11.0",
-    "power-assert": "^1.4.4"
+    "power-assert": "^1.4.4",
+    "supertest": "^3.0.0"
   }
 }
