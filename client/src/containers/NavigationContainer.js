@@ -49,7 +49,7 @@ class NavigationContainer extends Component {
         link: `/home/${this.props.tenant.dirId}`
       },
       {
-        name: "タグ一覧",
+        name: "タグ管理",
         link: `/tags/?user_id${this.props.session.user_id}`
       },
       {
