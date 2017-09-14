@@ -317,6 +317,10 @@ class API {
     const body = { tag };
     return client.post("/api/v1/tags", body);
   }
+
+  static deleteTag(tag_id) {
+    return client.delete(`/api/v1/tags/${tag_id}`);
+  }
 }
 
 export { API };

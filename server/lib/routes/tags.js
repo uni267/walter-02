@@ -72,6 +72,7 @@ router.get("/:tag_id", (req, res, next) => {
   });
 });
 
+// 新規作成
 router.post("/", (req, res, next) => {
   co(function* () {
     try {
@@ -99,6 +100,38 @@ router.post("/", (req, res, next) => {
       switch (e) {
       case "label is empty":
         errors.label = "タグ名は必須です";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+});
+
+// 削除
+router.delete("/:tag_id", (req, res, next) => {
+  co(function* () {
+    try {
+      const { tag_id } = req.params;
+      const tag = yield Tag.findById(tag_id);
+      if (tag === null) throw "tag is empty";
+
+      const deletedTag = yield tag.remove();
+      res.json({
+        status: { success: true },
+        body: deletedTag
+      });
+    }
+    catch (e) {
+      let errors = {};
+      switch (e) {
+      case "tag is empty":
+        errors.tag = e;
         break;
       default:
         errors.unknown = e;

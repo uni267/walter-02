@@ -93,12 +93,6 @@ export const deleteDirTree = (dir) => ({
   dir
 });
 
-export const deleteTag = (file_id, tag) => ({
-  type: "DELETE_TAG",
-  file_id,
-  tag
-});
-
 export const addTag = (file_id, tag) => ({
   type: "ADD_TAG",
   file_id,
@@ -512,4 +506,8 @@ export const saveTagValidationError = (errors) => ({
 
 export const createTag = (tag, history) => ({
   type: "CREATE_TAG", tag, history
+});
+
+export const deleteTag = (tag_id, history) => ({
+  type: "DELETE_TAG", tag_id, history
 });

@@ -38,6 +38,11 @@ class TagDetailContainer extends Component {
         </CardText>
         <CardActions>
           <FlatButton label="閉じる" primary={true} href="/tags" />
+          <FlatButton
+            label="削除"
+            secondary={true}
+            onTouchTap={() => this.props.deleteTag(this.props.tag._id)}
+            />
         </CardActions>
       </Card>
       </div>
@@ -60,7 +65,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeTagDescription: (value) => dispatch(actions.changeTagDescription(value)),
   saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
   saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
-  saveTagDescription: (tag) => dispatch(actions.saveTagDescription(tag))
+  saveTagDescription: (tag) => dispatch(actions.saveTagDescription(tag)),
+  deleteTag: (tag_id) => dispatch(actions.deleteTag(tag_id, ownProps.history))
 });
 
 TagDetailContainer = connect(mapStateToProps, mapDispatchToProps)(TagDetailContainer);
