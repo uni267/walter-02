@@ -1,8 +1,10 @@
 import { Router } from "express";
+import mongoose from "mongoose";
 import co from "co";
 import Tag from "../models/Tag";
 
 const router = Router();
+const ObjectId = mongoose.Types.ObjectId;
 
 // 一覧
 router.get("/", (req, res, next) => {
@@ -63,6 +65,46 @@ router.get("/:tag_id", (req, res, next) => {
         errors.unknown = e;
         break;
       }
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+});
+
+router.post("/", (req, res, next) => {
+  co(function* () {
+    try {
+      const { tag } = req.body;
+      if (tag.label === undefined ||
+          tag.label === null ||
+          tag.label === "") throw "label is empty";
+
+      const newTag = new Tag();
+      newTag.label = tag.label;
+      newTag.color = tag.color;
+      newTag.description = tag.color;
+      newTag.tenant_id = ObjectId(res.user.tenant_id);
+
+      const createdTag = yield newTag.save();
+
+      res.json({
+        status: { success: true },
+        body: createdTag
+      });
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "label is empty":
+        errors.label = "タグ名は必須です";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
       res.status(400).json({
         status: { success: false, errors }
       });

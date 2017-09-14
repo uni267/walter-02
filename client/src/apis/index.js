@@ -312,6 +312,11 @@ class API {
 
     return client.patch(`/api/v1/tags/${tag._id}/description`, body);
   }
+
+  static createTag(tag) {
+    const body = { tag };
+    return client.post("/api/v1/tags", body);
+  }
 }
 
 export { API };

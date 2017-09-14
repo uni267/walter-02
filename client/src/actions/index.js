@@ -509,3 +509,7 @@ export const saveTagDescription = (tag) => ({
 export const saveTagValidationError = (errors) => ({
   type: "SAVE_TAG_VALIDATION_ERROR", errors
 });
+
+export const createTag = (tag, history) => ({
+  type: "CREATE_TAG", tag, history
+});
