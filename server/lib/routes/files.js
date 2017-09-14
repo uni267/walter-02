@@ -64,7 +64,10 @@ router.get("/search", (req, res, next) => {
   co(function* () {
     try {
       const conditions = {
-        name: { $regex: req.query.q },
+        $or: [
+          { name: { $regex: req.query.q } },
+          { "meta_infos.value": { $regex: req.query.q } }
+        ],
         is_display: true
       };
 
