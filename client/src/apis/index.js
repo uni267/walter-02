@@ -285,6 +285,33 @@ class API {
     return client.get("/api/v1/files/search_detail", config);
   }
 
+  static fetchTag(tag_id) {
+    return client.get(`/api/v1/tags/${tag_id}`);
+  }
+
+  static saveTagLabel(tag) {
+    const body = {
+      label: tag.label
+    };
+
+    return client.patch(`/api/v1/tags/${tag._id}/label`, body);
+  }
+
+  static saveTagColor(tag) {
+    const body = {
+      color: tag.color
+    };
+
+    return client.patch(`/api/v1/tags/${tag._id}/color`, body);
+  }
+
+  static saveTagDescription(tag) {
+    const body = {
+      description: tag.description
+    };
+
+    return client.patch(`/api/v1/tags/${tag._id}/description`, body);
+  }
 }
 
 export { API };

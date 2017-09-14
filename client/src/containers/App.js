@@ -40,7 +40,7 @@ class App extends Component {
                   <Route path="/groups/:id" component={GroupDetailContainer} />
                   <Route exact path="/tags" component={TagContainer} />
                   <Route exact path="/tags/create" component={TagCreateContainer} />
-                  <Route exact path="/tags/:id" component={TagDetailContainer} />
+                  <Route path="/tags/:id" component={TagDetailContainer} />
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
                   <Route exact path="/home" component={HomeContainer} />
                   <Route path="/home/:id" component={HomeContainer} />

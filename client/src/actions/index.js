@@ -473,3 +473,39 @@ export const searchFileDetail = () => ({
 export const initTags = (tags) => ({
   type: "INIT_TAGS", tags
 });
+
+export const initTag = (tag) => ({
+  type: "INIT_TAG", tag
+});
+
+export const requestFetchTag = (tag_id) => ({
+  type: "REQUEST_FETCH_TAG", tag_id
+});
+
+export const changeTagLabel = (value) => ({
+  type: "CHANGE_TAG_LABEL", value
+});
+
+export const changeTagColor = (value) => ({
+  type: "CHANGE_TAG_COLOR", value
+});
+
+export const changeTagDescription = (value) => ({
+  type: "CHANGE_TAG_DESCRIPTION", value
+});
+
+export const saveTagLabel = (tag) => ({
+  type: "SAVE_TAG_LABEL", tag
+});
+
+export const saveTagColor = (tag) => ({
+  type: "SAVE_TAG_COLOR", tag
+});
+
+export const saveTagDescription = (tag) => ({
+  type: "SAVE_TAG_DESCRIPTION", tag
+});
+
+export const saveTagValidationError = (errors) => ({
+  type: "SAVE_TAG_VALIDATION_ERROR", errors
+});

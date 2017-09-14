@@ -4,7 +4,8 @@ mongoose.Promise = global.Promise;
 
 const TagSchema = Schema({
   color: String,
-  label: String
+  label: String,
+  description: String
 });
 
 const Tag = mongoose.model("tags", TagSchema, "tags");
