@@ -13,7 +13,7 @@ import {
 
 function* watchSearchFileDetail() {
   while (true) {
-    const task = yield take(searchFileDetail().type);
+    yield take(searchFileDetail().type);
     yield put(loadingStart());
 
     try {
