@@ -6,6 +6,7 @@ import { API } from "../apis";
 import {
   searchFileDetail,
   initFiles,
+  initDir,
   loadingStart,
   loadingEnd
 } from "../actions";
@@ -25,6 +26,13 @@ function* watchSearchFileDetail() {
 
       const payload = yield call(API.searchFilesDetail, searchParams);
       yield put(initFiles(payload.data.body));
+
+      const { dirId } = yield select(state => state.tenant);
+      const dirs = [
+        { _id: dirId, name: "検索結果" }
+      ];
+
+      yield put(initDir(dirs));
     }
     catch (e) {
 
