@@ -10,7 +10,6 @@ import * as actions from "../actions";
 function* watchCreateTag() {
   while (true) {
     const task = yield take(actions.createTag().type);
-    yield put(actions.initTag({}));
     yield put(actions.loadingStart());
 
     try {
@@ -19,10 +18,10 @@ function* watchCreateTag() {
       const payload = yield call(API.fetchTags);
       yield put(actions.initTags(payload.data.body));
       yield put(actions.loadingEnd());
+      yield put(actions.initTag({}));
       yield task.history.push("/tags");
     }
     catch (e) {
-      console.log(e);
       const { errors } = e.response.data.status;
       yield put(actions.saveTagValidationError(errors));
       yield put(actions.loadingEnd());
