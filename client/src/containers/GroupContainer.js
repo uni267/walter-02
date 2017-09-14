@@ -10,11 +10,7 @@ import {
   CardText
 } from 'material-ui/Card';
 
-import {
-  Table,
-  TableBody,
-  TableHeader
-} from 'material-ui/Table';
+import { Table, TableBody, TableHeader } from 'material-ui/Table';
 
 import SocialGroupAdd from "material-ui/svg-icons/social/group-add";
 import Menu from "material-ui/Menu";
