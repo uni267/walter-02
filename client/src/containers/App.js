@@ -18,6 +18,9 @@ import GroupCreateContainer from "./GroupCreateContainer";
 import RoleContainer from "./RoleContainer";
 import RoleDetailContainer from "./RoleDetailContainer";
 import RoleCreateContainer from "./RoleCreateContainer";
+import TagContainer from "./TagContainer";
+import TagCreateContainer from "./TagCreateContainer";
+import TagDetailContainer from "./TagDetailContainer";
 
 class App extends Component {
   render() {
@@ -35,6 +38,9 @@ class App extends Component {
                   <Route exact path="/groups" component={GroupContainer} />
                   <Route exact path="/groups/create" component={GroupCreateContainer} />
                   <Route path="/groups/:id" component={GroupDetailContainer} />
+                  <Route exact path="/tags" component={TagContainer} />
+                  <Route exact path="/tags/create" component={TagCreateContainer} />
+                  <Route exact path="/tags/:id" component={TagDetailContainer} />
                   <Route path="/file-detail/:id" component={FileDetailContainer} />
                   <Route exact path="/home" component={HomeContainer} />
                   <Route path="/home/:id" component={HomeContainer} />
