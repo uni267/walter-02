@@ -50,7 +50,7 @@ class NavigationContainer extends Component {
       },
       {
         name: "タグ管理",
-        link: `/tags/?user_id${this.props.session.user_id}`
+        link: `/tags`
       },
       {
         name: "容量管理",
