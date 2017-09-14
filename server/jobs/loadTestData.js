@@ -4,8 +4,12 @@
 db.files.drop();
 db.dirs.drop();
 db.tenants.drop();
+db.groups.drop();
 db.users.drop();
 db.tags.drop();
+db.meta_infos.drop();
+db.actions.drop();
+db.roles.drop();
 
 // ===============================
 //  files collection
