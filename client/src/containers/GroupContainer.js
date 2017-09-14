@@ -3,9 +3,6 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
-// router
-import { Link } from "react-router-dom";
-
 // material
 import { 
   Card, 
@@ -16,65 +13,23 @@ import {
 import {
   Table,
   TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
+  TableHeader
 } from 'material-ui/Table';
 
 import SocialGroupAdd from "material-ui/svg-icons/social/group-add";
-import Chip from 'material-ui/Chip';
-import IconButton from 'material-ui/IconButton';
-import ImageEdit from "material-ui/svg-icons/image/edit";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";
+import GroupTableHeader from "../components/Group/GroupTableHeader";
+import GroupTableBody from "../components/Group/GroupTableBody";
 
 // actions
 import {
   requestFetchGroups
 } from "../actions";
-
-const GroupTableHeader = ({ headers }) => {
-  return (
-    <TableRow>
-      {headers.map( (header, idx) => (
-        <TableHeaderColumn key={idx}>{header.name}</TableHeaderColumn>
-      ))}
-    </TableRow>
-  );
-};
-
-const GroupTableBody = ({ group, key }) => {
-
-  const renderUser = (user, key) => {
-    return (
-      <Chip key={key} style={{ marginRight: 10 }}>
-        {user.name}
-      </Chip>
-    );
-  };
-
-  return (
-    <TableRow>
-      <TableRowColumn>{group.name}</TableRowColumn>
-      <TableRowColumn>{group.description}</TableRowColumn>
-      <TableRowColumn>
-        <div style={{ display: "flex" }}>
-          {group.belongs_to.map( (user, idx) => renderUser(user, idx) )}
-        </div>
-      </TableRowColumn>
-      <TableRowColumn>
-        <IconButton containerElement={<Link to={`/groups/${group._id}`} />}>
-          <ImageEdit />
-        </IconButton>
-      </TableRowColumn>
-    </TableRow>
-  );
-};
 
 class GroupContainer extends Component {
   componentWillMount() {
