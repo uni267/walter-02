@@ -21,6 +21,10 @@ import TagCreateBasic from "../components/Tag/TagCreateBasic";
 import * as actions from "../actions";
 
 class TagCreateContainer extends Component {
+  componentWillMount() {
+    this.props.initTag({});
+  }
+
   render() {
     return (
       <div>
@@ -67,7 +71,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
   saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
   saveTagDescription: (tag) => dispatch(actions.saveTagDescription(tag)),
-  createTag: (tag) => dispatch(actions.createTag(tag, ownProps.history))
+  createTag: (tag) => dispatch(actions.createTag(tag, ownProps.history)),
+  initTag: (tag) => dispatch(actions.initTag(tag))
 });
 
 TagCreateContainer = connect(mapStateToProps, mapDispatchToProps)(TagCreateContainer);

@@ -10,7 +10,7 @@ import * as actions from "../actions";
 function* watchCreateTag() {
   while (true) {
     const task = yield take(actions.createTag().type);
-    console.log(task);
+    yield put(actions.initTag({}));
     yield put(actions.loadingStart());
 
     try {
