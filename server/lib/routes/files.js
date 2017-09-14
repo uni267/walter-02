@@ -127,18 +127,21 @@ router.get("/search_detail", (req, res, next) => {
       return ({
         modified: {
           $lt: item.value
-        }
+        },
+        is_display: true
       });
     case "modified_greater":
       return ({
         modified: {
           $gt: item.value
-        }
+        },
+        is_display: true
       });
     case "meta":
       return ({
         "meta_infos.meta_info_id": mongoose.Types.ObjectId(item._id),
-        "meta_infos.value": { $regex: item.value }
+        "meta_infos.value": { $regex: item.value },
+        is_display: true
       });
     default:
       return ({
