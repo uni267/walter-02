@@ -7,12 +7,12 @@ import * as actions from "../actions";
 
 function* watchFetchTags() {
   while (true) {
-    yield take(actions.requestFetchTags().type);
+    const task = yield take(actions.requestFetchTags().type);
     yield put(actions.loadingStart());
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchTags);
+      const payload = yield call(API.fetchTags, task.user_id);
       yield put(actions.initTags(payload.data.body));
     }
     catch (e) {
