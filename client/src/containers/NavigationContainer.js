@@ -49,6 +49,10 @@ class NavigationContainer extends Component {
         link: `/home/${this.props.tenant.dirId}`
       },
       {
+        name: "タグ一覧",
+        link: `/tags/?user_id${this.props.session.user_id}`
+      },
+      {
         name: "容量管理",
         link: `/home/${this.props.tenant.dirId}`
       },
@@ -98,7 +102,8 @@ const mapStateToProps = (state) => {
   return {
     notifications: state.notifications,
     changePassword: state.changePassword,
-    tenant: state.tenant
+    tenant: state.tenant,
+    session: state.session
   };
 };
 
