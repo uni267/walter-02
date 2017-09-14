@@ -469,3 +469,7 @@ export const searchValueChange = (item, value) => ({
 export const searchFileDetail = () => ({
   type: "SEARCH_FILE_DETAIL"
 });
+
+export const initTags = (tags) => ({
+  type: "INIT_TAGS", tags
+});
