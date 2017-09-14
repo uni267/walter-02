@@ -135,6 +135,11 @@ router.get("/search_detail", (req, res, next) => {
           $gt: item.value
         }
       });
+    case "meta":
+      return ({
+        "meta_infos.meta_info_id": mongoose.Types.ObjectId(item._id),
+        "meta_infos.value": { $regex: item.value }
+      });
     default:
       return ({
         [item.key_type]: item.value,
@@ -151,10 +156,15 @@ router.get("/search_detail", (req, res, next) => {
       const base_items = queries.filter( q => q.key_type !== "meta" );
       const meta_items = queries.filter( q => q.key_type === "meta" );
 
-      const base_queries = Object.assign(...base_items.map(buildQuery));
+      const base_queries = base_items[0] === undefined 
+            ? {}
+            : Object.assign(...base_items.map(buildQuery));
 
-      console.log(base_queries);
-      const files = yield File.find(base_queries);
+      const meta_queries = meta_items[0] === undefined
+            ? {}
+            : Object.assign(...meta_items.map(buildQuery));
+
+      const files = yield File.find({ ...base_queries, ...meta_queries });
 
       res.json({
         status: { success: true },
@@ -162,6 +172,7 @@ router.get("/search_detail", (req, res, next) => {
       });
     }
     catch (e) {
+      console.log(e);
       res.json({e});
     }
   });
