@@ -38,69 +38,77 @@ class FileActionContainer extends Component {
     };
   }
 
-  isCheckedFilesEmpty = () => this.props.checkedFiles.length === 0;
-
   render() {
-    if (this.isCheckedFilesEmpty()) {
-      return (
-        <div style={{marginRight: 30}}>
-          <Menu>
-            <MenuItem
-              primaryText="アップロード"
-              leftIcon={<FileCloudUpload />}
-              onTouchTap={() => this.setState({ addFile: { open: true } })}
-              />
+    let items = [
+      (
+        <MenuItem
+          primaryText="アップロード"
+          leftIcon={<FileCloudUpload />}
+          onTouchTap={() => this.setState({ addFile: { open: true } })}
+          />
+      ),
+      (
+        <MenuItem
+          primaryText="新しいフォルダ"
+          leftIcon={<FileCreateNewFolder />}
+          onTouchTap={this.props.toggleCreateDir}
+          />
+      ),
+      (
+        <MenuItem
+          primaryText="ごみ箱"
+          leftIcon={<ActionDelete />}
+          onTouchTap={() => {
+            this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
+          }}
+          />
+      )
+    ];
 
-              <MenuItem
-                primaryText="新しいフォルダ"
-                leftIcon={<FileCreateNewFolder />}
-                onTouchTap={this.props.toggleCreateDir}
-                />
-
-              <MenuItem
-                primaryText="ごみ箱"
-                leftIcon={<ActionDelete />}
-                onTouchTap={() => {
-                  this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
-                }}
-                />
-          </Menu>
-
-          <AddFileDialog
-            dir_id={this.props.dir_id}
-            open={this.state.addFile.open}
-            closeDialog={() => this.setState({ addFile: { open: false } })}
-            { ...this.props }
-            />
-
-            <AddDirDialog
-              dir_id={this.props.dir_id}
-              { ...this.props }
-              />
-
-        </div>
-      );
-    }
-    else {
-      return (
-        <div style={{ marginRight: 30 }}>
-          <Menu>
+    if (this.props.checkedFiles.length > 0) {
+      items = [ ...items,
+        [
+          (
             <MenuItem
               primaryText="移動"
               leftIcon={<ContentContentCut />}
               />
+          ),
+          (
             <MenuItem
               primaryText="コピー"
               leftIcon={<ContentContentCopy />}
               />
+          ),
+          (
             <MenuItem
               primaryText="削除"
               leftIcon={<ActionDelete />}
               />
-          </Menu>
-        </div>
-      );
+          )
+        ]
+      ];
     }
+    return (
+      <div style={{marginRight: 30}}>
+        <Menu>
+          {items.map( item => item )}
+        </Menu>
+
+        <AddFileDialog
+          dir_id={this.props.dir_id}
+          open={this.state.addFile.open}
+          closeDialog={() => this.setState({ addFile: { open: false } })}
+          { ...this.props }
+          />
+
+          <AddDirDialog
+            dir_id={this.props.dir_id}
+            { ...this.props }
+            />
+
+      </div>
+    );
   }
 }
 
