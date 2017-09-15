@@ -68,7 +68,7 @@ class File extends Component {
     this.props.triggerSnackbar(message);
   }
 
-  onClickCheckBox() {
+  onClickCheckBox = () => {
     this.setState({ checked: !this.state.checked });
   };
 
