@@ -53,6 +53,7 @@ import watchSaveTagColor from "./watchSaveTagColor";
 import watchSaveTagDescription from "./watchSaveTagDescription";
 import watchCreateTag from "./watchCreateTag";
 import watchDeleteTag from "./watchDeleteTag";
+import watchDeleteFiles from "./watchDeleteFiles";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -108,6 +109,7 @@ function* Saga() {
   yield fork(watchSaveTagDescription);
   yield fork(watchCreateTag);
   yield fork(watchDeleteTag);
+  yield fork(watchDeleteFiles);
 }
 
 export default Saga;

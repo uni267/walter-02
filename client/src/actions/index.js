@@ -519,3 +519,7 @@ export const toggleFileCheck = (file) => ({
 export const toggleFileCheckAll = (value) => ({
   type: "TOGGLE_FILE_CHECK_ALL", value
 });
+
+export const deleteFiles = (files) => ({
+  type: "DELETE_FILES", files
+});

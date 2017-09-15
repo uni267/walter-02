@@ -13,7 +13,7 @@ import MenuItem from "material-ui/MenuItem";
 import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
-// icon
+// material icons
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
 import ContentContentCut from "material-ui/svg-icons/content/content-cut";
@@ -84,6 +84,7 @@ class FileActionContainer extends Component {
             <MenuItem
               primaryText="削除"
               leftIcon={<ActionDelete />}
+              onTouchTap={() => this.props.deleteFiles(this.props.checkedFiles)}
               />
           )
         ]
@@ -137,7 +138,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(actions.deleteAuthority(file_id, authority_id));
   },
   toggleCreateDir: () => dispatch(actions.toggleCreateDir()),
-  uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files))
+  uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
+  deleteFiles: (files) => dispatch(actions.deleteFiles(files))
 });
 
 FileActionContainer = connect(
