@@ -277,15 +277,12 @@ class FileListContainer extends Component {
   renderRow = (file, idx) => {
     const dirComponent = (
       <Dir 
+        { ...this.props }
         key={idx} 
-        history={this.props.history}
         dir={file}
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
         headers={headers}
-        triggerSnackbar={this.props.triggerSnackbar}
-        editDir={this.props.editFileByIndex}
-        handleMoveDir={this.props.toggleMoveDirDialog}
         handleCopyDir={this.toggleCopyDirDialog}
         handleDeleteDir={this.toggleDeleteDirDialog}
         handleAuthorityDir={this.toggleAuthorityDirDialog}
@@ -295,12 +292,12 @@ class FileListContainer extends Component {
 
     const fileComponent = (
       <File
+        { ...this.props }
         key={idx}
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
         headers={headers}
         file={file}
-        { ...this.props }
         handleAuthorityFile={this.toggleAuthorityFileDialog}
         handleMoveFile={this.toggleMoveFileDialog}
         handleCopyFile={this.toggleCopyFileDialog}
