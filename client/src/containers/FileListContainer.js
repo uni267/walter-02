@@ -309,6 +309,18 @@ class FileListContainer extends Component {
     return file.is_dir ? dirComponent : fileComponent;
   };
 
+  renderFileIsEmpty = () => {
+    return (
+      <div style={styles.row}>
+        <div style={styles.tableRow}></div>
+        <div style={styles.tableRow}></div>
+        <div style={styles.tableRow}>
+          フォルダ内にファイルが存在しません
+        </div>
+      </div>
+    );
+  };
+
   render() {
     const { FILE } = NativeTypes;
 
@@ -342,7 +354,7 @@ class FileListContainer extends Component {
           >
 
           {this.props.files.length === 0
-            ? "フォルダが空です(デザインはこれから)"
+            ? this.renderFileIsEmpty()
             : this.props.files.map( (file, idx) => this.renderRow(file, idx) )
           }
 
