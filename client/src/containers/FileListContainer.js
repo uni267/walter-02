@@ -387,6 +387,7 @@ class FileListContainer extends Component {
 
         <DeleteFileDialog
           { ...this.props }
+          open={this.props.deleteFileState.open}
           file={this.props.deleteFileState.file} />
 
         <MoveFileDialog

@@ -208,7 +208,7 @@ class File extends Component {
 
             <MenuItem
               primaryText="削除"
-              onTouchTap={() => this.props.handleDeleteFile(file)} />
+              onTouchTap={() => this.props.toggleDeleteFileDialog(file)} />
 
             <MenuItem
               primaryText="権限を変更"
