@@ -350,13 +350,13 @@ class FileListContainer extends Component {
 
         <TableBodyWrapper
           accepts={[FILE]}
-          onDrop={this.handleFileDrop}
-          >
+          onDrop={this.handleFileDrop}>
 
-          {this.props.files.length === 0
-            ? this.renderFileIsEmpty()
-            : this.props.files.map( (file, idx) => this.renderRow(file, idx) )
-          }
+          <div style={{ paddingBottom: 30 }} >
+            {this.props.files.length === 0
+              ? this.renderFileIsEmpty()
+              : this.props.files.map( (file, idx) => this.renderRow(file, idx) )}
+          </div>
 
         </TableBodyWrapper>
 
