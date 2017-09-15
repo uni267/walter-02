@@ -22,7 +22,7 @@ function* watchMoveFile() {
       console.log(e);
     }
     finally {
-      yield put({ type: "LOADING_END" });
+      yield put(actions.loadingEnd());
     }
   }
 }
