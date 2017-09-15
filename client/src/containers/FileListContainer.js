@@ -157,11 +157,6 @@ class FileListContainer extends Component {
     }
   }
 
-  moveFile = (dir_id, file_id) => {
-    this.props.moveFile(file_id, dir_id);
-    this.props.triggerSnackbar("ファイルを移動しました");
-  };
-
   toggleDeleteDirDialog = (dir = {}) => {
     this.setState({
       deleteDirDialog: {
@@ -259,9 +254,7 @@ class FileListContainer extends Component {
   };
 
   moveFile = (file) => {
-    this.props.moveFile(
-      this.props.selectedDir.id, file.id
-    );
+    this.props.moveFile(this.props.selectedDir, file);
     this.toggleMoveFileDialog();
     this.props.triggerSnackbar(`${file.name}を移動しました`);
   };
@@ -439,7 +432,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  moveFile: (dir_id, file_id) => dispatch(actions.moveFile(dir_id, file_id)),
+  moveFile: (dir, file) => dispatch(actions.moveFile(dir, file)),
   copyFile: (dir_id, file) => dispatch(actions.copyFile(dir_id, file)),
   deleteFile: (file) => dispatch(actions.deleteFile(file)),
   deleteDirTree: (dir) => dispatch(actions.deleteDirTree(dir)),
