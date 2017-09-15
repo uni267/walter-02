@@ -21,6 +21,7 @@ import ContentContentCut from "material-ui/svg-icons/content/content-cut";
 // components
 import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
+import MoveFileDialog from "../components/File/MoveFileDialog";
 
 // actions
 import * as actions from "../actions";
@@ -31,12 +32,13 @@ class FileActionContainer extends Component {
     this.state = {
       addFile: {
         open: false
-      },
-      createDir: {
-        open: false
       }
     };
   }
+
+  moveFiles = (files) => {
+    this.props.moveFiles(this.props.selectedDir, files);
+  };
 
   render() {
     let items = [
@@ -71,6 +73,7 @@ class FileActionContainer extends Component {
           (
             <MenuItem
               primaryText="移動"
+              onTouchTap={this.props.toggleMoveFilesDialog}
               leftIcon={<ContentContentCut />}
               />
           ),
@@ -108,6 +111,12 @@ class FileActionContainer extends Component {
             { ...this.props }
             />
 
+          <MoveFileDialog
+            open={this.props.moveFilesState.open}
+            handleClose={this.props.toggleMoveFilesDialog}
+            moveFile={this.moveFiles}
+            file={this.props.checkedFiles} />
+
       </div>
     );
   }
@@ -120,7 +129,9 @@ const mapStateToProps = (state) => {
     roles: state.roles,
     users: state.users,
     createDirState: state.createDir,
-    tenant: state.tenant
+    tenant: state.tenant,
+    selectedDir: state.dirTree.selected,
+    moveFilesState: state.moveFilesState
   };
 };
 
@@ -139,7 +150,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   toggleCreateDir: () => dispatch(actions.toggleCreateDir()),
   uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
-  deleteFiles: (files) => dispatch(actions.deleteFiles(files))
+  deleteFiles: (files) => dispatch(actions.deleteFiles(files)),
+  moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
+  toggleMoveFilesDialog: () => dispatch(actions.toggleMoveFilesDialog())
 });
 
 FileActionContainer = connect(

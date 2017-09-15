@@ -433,6 +433,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   moveFile: (dir, file) => dispatch(actions.moveFile(dir, file)),
+  moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
   copyFile: (dir_id, file) => dispatch(actions.copyFile(dir_id, file)),
   deleteFile: (file) => dispatch(actions.deleteFile(file)),
   deleteDirTree: (dir) => dispatch(actions.deleteDirTree(dir)),

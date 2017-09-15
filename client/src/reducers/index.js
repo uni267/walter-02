@@ -30,6 +30,7 @@ import role from "./roleReducer";
 import actions from "./actionsReducer";
 import fileDetailSearch from "./fileDetailSearchReducer";
 import tag from "./tagReducer";
+import moveFilesState from "./moveFilesReducer";
 
 const fileApp = combineReducers({
   files,
@@ -60,7 +61,8 @@ const fileApp = combineReducers({
   role,
   actions,
   fileDetailSearch,
-  tag
+  tag,
+  moveFilesState
 });
 
 export default fileApp;

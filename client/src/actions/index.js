@@ -523,3 +523,11 @@ export const toggleFileCheckAll = (value) => ({
 export const deleteFiles = (files) => ({
   type: "DELETE_FILES", files
 });
+
+export const moveFiles = (dir, files) => ({
+  type: "MOVE_FILES", dir, files
+});
+
+export const toggleMoveFilesDialog = () => ({
+  type: "TOGGLE_MOVE_FILES_DIALOG"
+});
