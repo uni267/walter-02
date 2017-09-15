@@ -5,76 +5,108 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 // router
-import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 // material
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
+import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
+import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
 // icon
 import ActionDelete from "material-ui/svg-icons/action/delete";
+import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
+import ContentContentCut from "material-ui/svg-icons/content/content-cut";
 
 // components
 import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
 
 // actions
-import {
-  createDir,
-  toggleCreateDir,
-  triggerSnackbar,
-  pushFileToBuffer,
-  clearFilesBuffer,
-  addAuthority,
-  deleteAuthority,
-  uploadFiles
-} from "../actions";
+import * as actions from "../actions";
 
 class FileActionContainer extends Component {
-  render() {
-    const deleteIcon = (
-      <ActionDelete />
-    );
+  constructor(props) {
+    super(props);
+    this.state = {
+      addFile: {
+        open: false
+      },
+      createDir: {
+        open: false
+      }
+    };
+  }
 
-    return (
-      <div style={{marginRight: 30}}>
-        <Menu>
+  isCheckedFilesEmpty = () => this.props.checkedFiles.length === 0;
+
+  render() {
+    if (this.isCheckedFilesEmpty()) {
+      return (
+        <div style={{marginRight: 30}}>
+          <Menu>
+            <MenuItem
+              primaryText="アップロード"
+              leftIcon={<FileCloudUpload />}
+              onTouchTap={() => this.setState({ addFile: { open: true } })}
+              />
+
+              <MenuItem
+                primaryText="新しいフォルダ"
+                leftIcon={<FileCreateNewFolder />}
+                onTouchTap={this.props.toggleCreateDir}
+                />
+
+              <MenuItem
+                primaryText="ごみ箱"
+                leftIcon={<ActionDelete />}
+                onTouchTap={() => {
+                  this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
+                }}
+                />
+          </Menu>
+
           <AddFileDialog
             dir_id={this.props.dir_id}
-            filesBuffer={this.props.filesBuffer}
-            pushFileToBuffer={this.props.pushFileToBuffer}
-            triggerSnackbar={this.props.triggerSnackbar}
-            clearFilesBuffer={this.props.clearFilesBuffer}
-            uploadFiles={this.props.uploadFiles}
+            open={this.state.addFile.open}
+            closeDialog={() => this.setState({ addFile: { open: false } })}
+            { ...this.props }
             />
 
-          <AddDirDialog
-            dir_id={this.props.dir_id}
-            roles={this.props.roles}
-            users={this.props.users}
-            addAuthority={this.props.addAuthority}
-            deleteAuthority={this.props.deleteAuthority}
-            triggerSnackbar={this.props.triggerSnackbar}
-            toggleCreateDir={this.props.toggleCreateDir}
-            createDir={this.props.createDir}
-            createDirState={this.props.createDirState}
-            />
-
-          <Link to={`/home/${this.props.tenant.trashDirId}`}
-                style={{textDecoration: "none"}}>
-            <MenuItem
-              primaryText="ごみ箱"
-              leftIcon={deleteIcon}
+            <AddDirDialog
+              dir_id={this.props.dir_id}
+              { ...this.props }
               />
-          </Link>
-        </Menu>
-      </div>
-    );
+
+        </div>
+      );
+    }
+    else {
+      return (
+        <div style={{ marginRight: 30 }}>
+          <Menu>
+            <MenuItem
+              primaryText="移動"
+              leftIcon={<ContentContentCut />}
+              />
+            <MenuItem
+              primaryText="コピー"
+              leftIcon={<ContentContentCopy />}
+              />
+            <MenuItem
+              primaryText="削除"
+              leftIcon={<ActionDelete />}
+              />
+          </Menu>
+        </div>
+      );
+    }
   }
 }
 
 const mapStateToProps = (state) => {
   return {
+    checkedFiles: state.files.filter( file => file.checked ),
     filesBuffer: state.filesBuffer,
     roles: state.roles,
     users: state.users,
@@ -84,20 +116,20 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  createDir: (dir_name) => { dispatch(createDir(ownProps.dir_id, dir_name)); },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
+  createDir: (dir_name) => dispatch(actions.createDir(ownProps.dir_id, dir_name)),
+  triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
   pushFileToBuffer: (dir_id, file_name) => { 
-    dispatch(pushFileToBuffer(dir_id, file_name));
+    dispatch(actions.pushFileToBuffer(dir_id, file_name));
   },
-  clearFilesBuffer: () => { dispatch(clearFilesBuffer()); },
+  clearFilesBuffer: () => dispatch(actions.clearFilesBuffer()),
   addAuthority: (file_id, user, role) => {
-    dispatch(addAuthority(file_id, user, role));
+    dispatch(actions.addAuthority(file_id, user, role));
   },
   deleteAuthority: (file_id, authority_id) => {
-    dispatch(deleteAuthority(file_id, authority_id));
+    dispatch(actions.deleteAuthority(file_id, authority_id));
   },
-  toggleCreateDir: () => { dispatch(toggleCreateDir()); },
-  uploadFiles: (dir_id, files) => { dispatch(uploadFiles(dir_id, files)); }
+  toggleCreateDir: () => dispatch(actions.toggleCreateDir()),
+  uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files))
 });
 
 FileActionContainer = connect(
@@ -109,4 +141,4 @@ FileActionContainer.propTypes = {
   dir_id: PropTypes.string.isRequired
 };
 
-export default FileActionContainer;
+export default withRouter(FileActionContainer);

@@ -93,14 +93,8 @@ class AddDirDialog extends Component {
   render() {
     return (
       <div>
-        <MenuItem
-          primaryText="新しいフォルダ"
-          leftIcon={<FileCreateNewFolder />}
-          onTouchTap={this.props.toggleCreateDir} />
-
         {this.renderCreateDirDialog()}
         {this.renderAddAuthorityDialog()}
-
       </div>
     );
   }

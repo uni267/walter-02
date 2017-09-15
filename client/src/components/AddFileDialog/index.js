@@ -62,19 +62,19 @@ const styles = {
   }
 };
 
-class AddFileDialog extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      addFile: { open: false }
-    };
-  }
-
-  onDrop = (files) => {
-    this.props.uploadFiles(this.props.dir_id, files);
+const AddFileDialog = ({
+  dir_id,
+  open,
+  uploadFiles,
+  closeDialog,
+  clearFilesBuffer,
+  filesBuffer
+}) => {
+  const onDrop = (files) => {
+    uploadFiles(dir_id, files);
   };
 
-  renderFilesBuffer = (file, idx) => {
+  const renderFilesBuffer = (file, idx) => {
     return (
       <div style={styles.bufferRow} key={idx}>
         <div style={{...styles.bufferCol, width: "30%"}}>
@@ -97,56 +97,48 @@ class AddFileDialog extends Component {
     );
   };
 
-  render() {
-    const actions = [
-      (
-        <FlatButton
-          label="Close"
-          primary={true}
-          onTouchTap={() => {
-            this.props.clearFilesBuffer();
-            this.setState({ addFile: { open: false } });
-          }} />
-      )
-    ];
+  const actions = [
+    (
+      <FlatButton
+        label="Close"
+        primary={true}
+        onTouchTap={() => {
+          clearFilesBuffer();
+          closeDialog();
+        }} />
+    )
+  ];
 
-    return (
-      <div>
-        <MenuItem
-          primaryText="アップロード"
-          leftIcon={<FileCloudUpload />}
-          onTouchTap={() => this.setState({ addFile: { open: true } })} />
+  return (
+    <div>
+      <Dialog
+        title="ファイルをアップロード"
+        actions={actions}
+        modal={true}
+        open={open}
+        onRequestClose={closeDialog}
+        autoScrollBodyContent={true}
+        contentStyle={styles.dialog}
+        >
 
-          <Dialog
-            title="ファイルをアップロード"
-            actions={actions}
-            modal={true}
-            open={this.state.addFile.open}
-            onRequestClose={() => this.setState({ addFile: { open: false } })}
-            autoScrollBodyContent={true}
-            contentStyle={styles.dialog}
-            >
-
+        <div>
+          <Dropzone onDrop={onDrop} style={styles.dropzone}>
+            <FileCloudUpload style={styles.cloudIcon} /><br />
             <div>
-              <Dropzone onDrop={this.onDrop} style={styles.dropzone}>
-                <FileCloudUpload style={styles.cloudIcon} /><br />
-                <div>
-                  ファイルをドロップまたは<br /><br />
-                  <RaisedButton primary={true} label="ファイルを選択" />
-                </div>
-              </Dropzone>
+              ファイルをドロップまたは<br /><br />
+              <RaisedButton primary={true} label="ファイルを選択" />
             </div>
+          </Dropzone>
+        </div>
 
-            <div style={styles.bufferWrapper}>
-              {this.props.filesBuffer.map(this.renderFilesBuffer)}
-            </div>
+        <div style={styles.bufferWrapper}>
+          {filesBuffer.map(renderFilesBuffer)}
+        </div>
 
-          </Dialog>
-
-      </div>
-    );
-  }
-}
+      </Dialog>
+    </div>
+  );
+};
 
 AddFileDialog.propTypes = {
   dir_id: PropTypes.string.isRequired,
