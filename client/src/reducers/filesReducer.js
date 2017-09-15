@@ -4,11 +4,16 @@ const filesReducer = (state = [], action) => {
   case "INIT_FILES":
     return action.files.map( file => ({ ...file, checked: false }) );
 
-  case "TOGGLE_FILE_CHECKED":
+  case "TOGGLE_FILE_CHECK":
     return state.map( file => {
       return file._id === action.file._id
         ? { ...file, checked: !action.file.checked } : file;
     });
+
+  case "TOGGLE_FILE_CHECK_ALL":
+    return action.value
+      ? state.map( file => ({ ...file, checked: true }) )
+      : state.map( file => ({ ...file, checked: false }) );
 
   case "SORT_FILE":
     let _state = state.slice();

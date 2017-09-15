@@ -512,6 +512,10 @@ export const deleteTag = (tag_id, history) => ({
   type: "DELETE_TAG", tag_id, history
 });
 
-export const toggleFileChecked = (file) => ({
-  type: "TOGGLE_FILE_CHECKED", file
+export const toggleFileCheck = (file) => ({
+  type: "TOGGLE_FILE_CHECK", file
+});
+
+export const toggleFileCheckAll = (value) => ({
+  type: "TOGGLE_FILE_CHECK_ALL", value
 });

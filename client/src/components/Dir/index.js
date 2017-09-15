@@ -47,16 +47,11 @@ class Dir extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: false,
       hover: false,
       editDir: { open: false },
       historiesDir: { open: false }
     };
 
-  }
-
-  onClickCheckBox = () => {
-    this.setState({ checked: !this.state.checked });
   }
 
   toggleHover = () => {
@@ -127,7 +122,7 @@ class Dir extends Component {
     const { rowStyle, cellStyle, headers } = this.props;
 
     const isActive = canDrop && isOver;
-    const backgroundColor = isActive || this.state.checked 
+    const backgroundColor = isActive || dir.checked 
         ? "rgb(232, 232, 232)" : "inherit";
 
     const favorite_icon = (
@@ -147,7 +142,7 @@ class Dir extends Component {
       );
     };
 
-    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
+    const checkOpacity = this.state.hover || dir.checked ? 1 : 0.1;
 
     return connectDropTarget(
       <div
@@ -157,8 +152,9 @@ class Dir extends Component {
 
         <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
+            checked={dir.checked}
             style={{...style.checkbox, opacity: checkOpacity}}
-            onCheck={this.onClickCheckBox} />
+            onCheck={() => this.props.toggleFileCheck(dir)} />
 
           <Checkbox
             disabled={true}

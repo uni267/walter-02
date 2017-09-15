@@ -1,6 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// material
+import Checkbox from 'material-ui/Checkbox';
+
 const FileListHeader = ({
   idx,
   header,
@@ -8,7 +11,8 @@ const FileListHeader = ({
   setSortTarget,
   toggleSortTarget,
   fileSortTarget,
-  sortFile
+  sortFile,
+  toggleFileCheckAll
 }) => {
   const onSortClick = (e) => {
     const target = e.target.dataset.sortKey;
@@ -26,14 +30,26 @@ const FileListHeader = ({
     );
   };
 
-  return (
-    <div key={idx}
-         onClick={onSortClick}
-         data-sort-key={header.key}
-         style={{...style, width: header.width}}>
-      {header.label}
-    </div>
-  );
+  if ( header.key === "checkbox" ) {
+    return (
+      <div key={idx} style={{ ...style, width: header.width }}>
+        <Checkbox
+          onCheck={(e, value) => toggleFileCheckAll(value) }
+          style={{ opacity: 0.7 }}
+          />
+      </div>
+    );
+  }
+  else {
+    return (
+      <div key={idx}
+           onClick={onSortClick}
+           data-sort-key={header.key}
+           style={{...style, width: header.width}}>
+        {header.label}
+      </div>
+    );
+  }
 };
 
 FileListHeader.propTypes = {

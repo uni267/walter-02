@@ -166,8 +166,9 @@ class File extends Component {
 
         <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
+            checked={file.checked}
             style={{...style.checkbox, opacity: checkOpacity}}
-            onCheck={() => this.props.toggleFileChecked(file)} />
+            onCheck={() => this.props.toggleFileCheck(file)} />
 
           <Checkbox
             style={style.checkbox}
