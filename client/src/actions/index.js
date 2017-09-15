@@ -511,3 +511,7 @@ export const createTag = (tag, history) => ({
 export const deleteTag = (tag_id, history) => ({
   type: "DELETE_TAG", tag_id, history
 });
+
+export const toggleFileChecked = (file) => ({
+  type: "TOGGLE_FILE_CHECKED", file
+});

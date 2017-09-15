@@ -49,13 +49,11 @@ class File extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: false,
       hover: false,
       editFile: {
         open: false
       }
     };
-
   }
 
   onClickStar = (file) => {
@@ -67,10 +65,6 @@ class File extends Component {
 
     this.props.triggerSnackbar(message);
   }
-
-  onClickCheckBox = () => {
-    this.setState({ checked: !this.state.checked });
-  };
 
   toggleHover = () => {
     this.setState({ hover: !this.state.hover });
@@ -143,9 +137,9 @@ class File extends Component {
 
     const opacity = isDragging ? 0.3 : 1;
 
-    const backgroundColor = this.state.checked ? "rgb(232, 232, 232)" : "inherit";
+    const backgroundColor = file.checked ? "rgb(232, 232, 232)" : "inherit";
 
-    const checkOpacity = this.state.hover || this.state.checked ? 1 : 0.1;
+    const checkOpacity = this.state.hover || file.checked ? 1 : 0.1;
 
     const action_menu_icon = () => {
       const opacity = this.state.hover ? 1 : 0.1;
@@ -173,7 +167,7 @@ class File extends Component {
         <div style={{...cellStyle, width: headers[0].width}}>
           <Checkbox
             style={{...style.checkbox, opacity: checkOpacity}}
-            onCheck={this.onClickCheckBox} />
+            onCheck={() => this.props.toggleFileChecked(file)} />
 
           <Checkbox
             style={style.checkbox}

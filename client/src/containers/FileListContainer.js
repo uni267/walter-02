@@ -468,7 +468,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteMetaInfo: (file, metaInfo) => { 
     dispatch(actions.deleteMetaInfo(file, metaInfo));
   },
-  toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file))
+  toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file)),
+  toggleFileChecked: (file) => dispatch(actions.toggleFileChecked(file))
 });
 
 FileListContainer = connect(
