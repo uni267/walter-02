@@ -28,7 +28,7 @@ router.post("/", (req, res, next) => {
       if (user.password !== hash) throw "password is invalid";
 
       const { secretKey } = SECURITY_CONF.development;
-      const token = jwt.sign(user, secretKey, { expiresIn: "24h" });
+      const token = jwt.sign(user, secretKey, { expiresIn: "7d" });
 
       const tenant = yield Tenant.findOne(user.tenant_id);
 
