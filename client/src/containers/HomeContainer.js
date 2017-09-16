@@ -12,7 +12,6 @@ import FileActionContainer from "./FileActionContainer";
 import FileSearchContainer from "./FileSearchContainer";
 import DirBoxContainer from "./DirBoxContainer";
 import FileListContainer from "./FileListContainer";
-import FileSnackbar from "../components/FileSnackbar";
 
 // actions
 import {
@@ -61,10 +60,6 @@ class HomeContainer extends Component {
             <div style={{width: "22%"}}>
               <FileActionContainer dir_id={dirId} />
             </div>
-
-            <FileSnackbar
-              closeSnackbar={this.props.closeSnackbar}
-              snackbar={this.props.snackbar} />
 
           </div>
         </Card>
