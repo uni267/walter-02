@@ -7,8 +7,8 @@ const initialState = {
 const tagReducer = (state = initialState, action) => {
   switch ( action.type ) {
   case "INIT_TAG":
-    return action.tag === undefined
-      ? initialState.data
+    return action.tag === undefined || action.tag._id === undefined
+      ? initialState
       : {
         data: action.tag,
         changedTag: action.tag,
