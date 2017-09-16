@@ -3,30 +3,25 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import {
-  deleteRole,
-  initRoles,
-  loadingStart,
-  loadingEnd
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchDeleteRole() {
   while (true) {
-    const task = yield take(deleteRole().type);
-    yield put(loadingStart());
+    const task = yield take(actions.deleteRole().type);
+    yield put(actions.loadingStart());
 
     try {
       yield call(delay, 1000);
       yield call(API.deleteRole, task.role);
       const payload = yield call(API.fetchRoles, localStorage.getItem("tenantId"));
-      yield put(initRoles(payload.data.body));
+      yield put(actions.initRoles(payload.data.body));
       yield task.history.push("/roles");
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("ロールを削除しました"));
     }
     catch (e) {
       console.log(e);
-    }
-    finally {
-      yield put(loadingEnd());
+      yield put(actions.loadingEnd());
     }
   }
 }
