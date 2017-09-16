@@ -17,6 +17,8 @@ function* watchDeleteTag() {
       yield put(actions.initTags(payload.data.body));
       yield put(actions.loadingEnd());
       yield task.history.push("/tags");
+      yield put(actions.triggerSnackbar("タグを削除しました"));
+      yield put(actions.initTag());
     }
     catch (e) {
       console.log(e);

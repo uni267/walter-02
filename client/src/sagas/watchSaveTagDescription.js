@@ -15,12 +15,12 @@ function* watchSaveTagDescription() {
       yield call(API.saveTagDescription, task.tag);
       const payload = yield call(API.fetchTag, task.tag._id);
       yield put(actions.initTag(payload.data.body));
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("タグの備考を保存しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
       yield put(actions.saveTagValidationError(errors));
-    }
-    finally {
       yield put(actions.loadingEnd());
     }
   }

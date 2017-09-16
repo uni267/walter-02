@@ -22,7 +22,7 @@ import * as actions from "../actions";
 
 class TagCreateContainer extends Component {
   componentWillMount() {
-    this.props.initTag({});
+    this.props.initTag();
   }
 
   render() {

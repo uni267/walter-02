@@ -15,12 +15,12 @@ function* watchSaveTagColor() {
       yield call(API.saveTagColor, task.tag);
       const payload = yield call(API.fetchTag, task.tag._id);
       yield put(actions.initTag(payload.data.body));
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("タグの色を保存しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
       yield put(actions.saveTagValidationError(errors));
-    }
-    finally {
       yield put(actions.loadingEnd());
     }
   }
