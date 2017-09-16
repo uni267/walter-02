@@ -4,7 +4,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // material ui
+import Snackbar from "material-ui/Snackbar";
 import CircularProgress from 'material-ui/CircularProgress';
+
+// actions
+import * as actions from "../actions";
 
 const styles = {
   circular: {
@@ -19,7 +23,7 @@ const styles = {
   }
 };
 
-class LoadingContainer extends Component {
+class NotifyStatusContainer extends Component {
   render() {
     const circular = this.props.loading.start
           ? <CircularProgress size={90} thickness={6} style={styles.circular} />
@@ -28,6 +32,7 @@ class LoadingContainer extends Component {
     return (
       <div>
         {circular}
+        <Snackbar { ...this.props } duration={2000} />
         {this.props.children}
       </div>
     );
@@ -36,10 +41,16 @@ class LoadingContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    loading: state.loading
+    loading: state.loading,
+    open: state.snackbar.open,
+    message: state.snackbar.message
   };
 };
 
-LoadingContainer = connect(mapStateToProps)(LoadingContainer);
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  closeSnackbar: () => dispatch(actions.closeSnackbar())
+});
 
-export default LoadingContainer;
+NotifyStatusContainer = connect(mapStateToProps)(NotifyStatusContainer);
+
+export default NotifyStatusContainer;
