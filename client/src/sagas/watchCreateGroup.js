@@ -5,33 +5,27 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  createGroup,
-  loadingStart,
-  loadingEnd,
-  initGroups,
-  saveGroupValidationError,
-  clearGroupValidationError
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchCreateGroup() {
   while (true) {
-    const task = yield take(createGroup().type);
-    yield put(clearGroupValidationError());
+    const task = yield take(actions.createGroup().type);
+    yield put(actions.clearGroupValidationError());
 
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.createGroup, task.group);
       const payload = yield call(API.fetchGroup, localStorage.getItem("tenantId"));
-      yield put(initGroups(payload.data.body));
-      yield put(loadingEnd());
-      yield call(task.history.push("/groups"));
+      yield put(actions.initGroups(payload.data.body));
+      yield put(actions.loadingEnd());
+      yield task.history.push("/groups");
+      yield put(actions.triggerSnackbar("グループを作成しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
-      yield put(saveGroupValidationError(errors));
-      yield put(loadingEnd());
+      yield put(actions.saveGroupValidationError(errors));
+      yield put(actions.loadingEnd());
     }
   }
 }

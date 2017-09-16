@@ -3,32 +3,26 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import {
-  saveGroupName,
-  initGroup,
-  loadingStart,
-  loadingEnd,
-  saveGroupValidationError,
-  clearGroupValidationError
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchSaveGroupName() {
   while (true) {
-    const task = yield take(saveGroupName().type);
-    yield put(clearGroupValidationError());
+    const task = yield take(actions.saveGroupName().type);
+    yield put(actions.clearGroupValidationError());
 
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.saveGroupName, task.group);
       const payload = yield call(API.fetchGroupById, task.group._id);
-      yield put(initGroup(payload.data.body));
-      yield put(loadingEnd());
+      yield put(actions.initGroup(payload.data.body));
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("グループ名を変更しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
-      yield put(saveGroupValidationError(errors));
-      yield put(loadingEnd());
+      yield put(actions.saveGroupValidationError(errors));
+      yield put(actions.loadingEnd());
     }
   }
 }

@@ -5,30 +5,25 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  deleteGroup,
-  loadingStart,
-  loadingEnd,
-  initGroups
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchDeleteGroup() {
   while (true) {
-    const task = yield take(deleteGroup().type);
+    const task = yield take(actions.deleteGroup().type);
     console.log(task);
 
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.deleteGroup, task.group_id);
       const payload = yield call(API.fetchGroup, localStorage.getItem("tenantId"));
-      yield put(initGroups(payload.data.body));
-      yield call(task.history.push("/groups"));
+      yield put(actions.initGroups(payload.data.body));
+      yield task.history.push("/groups");
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("グループを削除しました"));
     }
     catch (e) {
-    }
-    finally {
-      yield put(loadingEnd());
+      yield put(actions.loadingEnd());
     }
   }
 }
