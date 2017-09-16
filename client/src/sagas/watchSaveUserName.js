@@ -3,33 +3,26 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import {
-  saveUserName,
-  changeUserValidationError,
-  clearUserValidationError,
-  initUser,
-  loadingStart,
-  loadingEnd
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchSaveUserName() {
   while (true) {
-    const task = yield take(saveUserName().type);
-    yield put(clearUserValidationError());
+    const task = yield take(actions.saveUserName().type);
+    yield put(actions.clearUserValidationError());
 
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.saveUserName, task.user);
       const payload = yield call(API.fetchUser, task.user._id);
-      yield put(initUser(payload.data.body));
+      yield put(actions.initUser(payload.data.body));
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("ユーザ名を変更しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
-      yield put(changeUserValidationError(errors));
-    }
-    finally {
-      yield put(loadingEnd());
+      yield put(actions.changeUserValidationError(errors));
+      yield put(actions.loadingEnd());
     }
   }
 }
