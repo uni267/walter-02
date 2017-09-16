@@ -1,11 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 // material
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import RaisedButton from "material-ui/RaisedButton";
-import MenuItem from "material-ui/MenuItem";
 import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 

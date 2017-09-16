@@ -5,8 +5,6 @@ import PropTypes from "prop-types";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import TextField from "material-ui/TextField";
-import MenuItem from "material-ui/MenuItem";
-import FileCreateNewFolder from "material-ui/svg-icons/file/create-new-folder";
 
 // components
 import Authority from "../Authority";

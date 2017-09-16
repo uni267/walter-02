@@ -7,9 +7,6 @@ import { connect } from "react-redux";
 import Snackbar from "material-ui/Snackbar";
 import CircularProgress from 'material-ui/CircularProgress';
 
-// actions
-import * as actions from "../actions";
-
 const styles = {
   circular: {
     position: "absolute",
@@ -47,10 +44,6 @@ const mapStateToProps = (state, ownProps) => {
     duration: state.snackbar.duration
   };
 };
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  closeSnackbar: () => dispatch(actions.closeSnackbar())
-});
 
 NotifyStatusContainer = connect(mapStateToProps)(NotifyStatusContainer);
 

@@ -3,9 +3,6 @@ import React, { Component } from "react";
 // store
 import { connect } from "react-redux";
 
-// router
-import { Link } from "react-router-dom";
-
 // material
 import { 
   Card, 
