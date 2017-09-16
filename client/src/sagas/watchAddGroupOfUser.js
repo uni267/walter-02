@@ -5,20 +5,14 @@ import { call, put, take, all } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  addGroupOfUser,
-  initUser,
-  initGroup,
-  loadingStart,
-  loadingEnd
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchAddGroupOfUser() {
   while (true) {
-    const task = yield take(addGroupOfUser().type);
+    const task = yield take(actions.addGroupOfUser().type);
 
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.addGroupOfUser, task.user_id, task.group_id);
 
@@ -30,16 +24,16 @@ function* watchAddGroupOfUser() {
       const payloads = yield all(fetchJobs);
       
       const putJobs = [
-        put(initUser(payloads[0].data.body)),
-        put(initGroup(payloads[1].data.body))
+        put(actions.initUser(payloads[0].data.body)),
+        put(actions.initGroup(payloads[1].data.body))
       ];
 
       yield all(putJobs);
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("ユーザをグループに追加しました"));
     }
     catch (e) {
-    }
-    finally {
-      yield put(loadingEnd());
+      yield put(actions.loadingEnd());
     }
   }
 }
