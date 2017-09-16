@@ -8,7 +8,7 @@ import AuthenticationContainer from "./AuthenticationContainer";
 import HomeContainer from "./HomeContainer";
 import FileDetailContainer from "./FileDetailContainer";
 import LoginContainer from "./LoginContainer";
-import LoadingContainer from "./LoadingContainer";
+import NotifyStatusContainer from "./NotifyStatusContainer";
 import UserContainer from "./UserContainer";
 import UserDetailContainer from "./UserDetailContainer";
 import UserCreateContainer from "./UserCreateContainer";
@@ -27,7 +27,7 @@ class App extends Component {
     return (
       <BrowserRouter>
         <Switch>
-          <LoadingContainer>
+          <NotifyStatusContainer>
             <Switch>
               <Route exact path="/login" component={LoginContainer} />
               <AuthenticationContainer>
@@ -51,7 +51,7 @@ class App extends Component {
                 </Switch>
               </AuthenticationContainer>
             </Switch>
-          </LoadingContainer>
+          </NotifyStatusContainer>
         </Switch>
       </BrowserRouter>
     );
