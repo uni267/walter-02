@@ -32,7 +32,7 @@ class NotifyStatusContainer extends Component {
     return (
       <div>
         {circular}
-        <Snackbar { ...this.props } duration={2000} />
+        <Snackbar { ...this.props } />
         {this.props.children}
       </div>
     );
@@ -43,7 +43,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     loading: state.loading,
     open: state.snackbar.open,
-    message: state.snackbar.message
+    message: state.snackbar.message,
+    duration: state.snackbar.duration
   };
 };
 
