@@ -5,31 +5,27 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  createUser,
-  initUsers,
-  loadingStart,
-  loadingEnd,
-  changeUserValidationError
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchCreateUser() {
   while (true) {
-    const task = yield take(createUser().type);
+    const task = yield take(actions.createUser().type);
     
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.createUser, task.user);
       const payload = yield call(API.fetchUsers, localStorage.getItem("tenantId"));
-      yield put(initUsers(payload.data.body));
-      yield put(loadingEnd());
-      yield call(task.history.push("/users"));
+      yield put(actions.initUsers(payload.data.body));
+      yield put(actions.loadingEnd());
+      yield task.history.push("/users");
+      yield put(actions.triggerSnackbar("ユーザを作成しました"));
     }
     catch (e) {
+      console.log(e);
       const { errors } = e.response.data.status;
-      yield put(changeUserValidationError(errors));
-      yield put(loadingEnd());
+      yield put(actions.changeUserValidationError(errors));
+      yield put(actions.loadingEnd());
     }
   }
 }
