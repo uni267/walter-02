@@ -18,8 +18,9 @@ function* watchCreateTag() {
       const payload = yield call(API.fetchTags);
       yield put(actions.initTags(payload.data.body));
       yield put(actions.loadingEnd());
-      yield put(actions.initTag({}));
+      yield put(actions.initTag());
       yield task.history.push("/tags");
+      yield put(actions.triggerSnackbar("タグを作成しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
