@@ -5,20 +5,14 @@ import { call, put, take, all } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  deleteGroupOfUser,
-  initUser,
-  initGroup,
-  loadingStart,
-  loadingEnd
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchDeleteGroupOfUser() {
   while (true) {
-    const task = yield take(deleteGroupOfUser().type);
+    const task = yield take(actions.deleteGroupOfUser().type);
 
     try {
-      yield put(loadingStart());
+      yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(API.deleteGroupOfUser, task.user_id, task.group_id);
 
@@ -30,17 +24,16 @@ function* watchDeleteGroupOfUser() {
       const payloads = yield all(fetchJobs);
 
       const putJobs = [
-        put(initUser(payloads[0].data.body)),
-        put(initGroup(payloads[1].data.body))
+        put(actions.initUser(payloads[0].data.body)),
+        put(actions.initGroup(payloads[1].data.body))
       ];
 
       yield all(putJobs);
+      yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("ユーザをグループから削除しました"));
     }
     catch (e) {
-      
-    }
-    finally {
-      yield put(loadingEnd());
+      yield put(actions.loadingEnd());
     }
   }
 }
