@@ -7,11 +7,13 @@ const initialState = {
 const tagReducer = (state = initialState, action) => {
   switch ( action.type ) {
   case "INIT_TAG":
-    return {
-      data: action.tag,
-      changedTag: action.tag,
-      validationErrors: {}
-    };
+    return action.tag === undefined
+      ? initialState.data
+      : {
+        data: action.tag,
+        changedTag: action.tag,
+        validationErrors: {}
+      };
   case "CHANGE_TAG_LABEL":
     return {
       ...state,
