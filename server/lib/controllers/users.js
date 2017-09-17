@@ -330,29 +330,28 @@ export const toggleEnabled = (req, res, next) => {
 };
 
 export const updateName = (req, res, next) => {
-  const user_id = req.params.user_id;
-  const name = req.body.name;
+  co(function* () {
+    try {
+      const user_id = req.params.user_id;
+      const name = req.body.name;
 
-  User.findById(user_id)
-    .then( user => {
-      if (user === null
-          || user === undefined
-          || user === "") throw "user not found";
+      if (name === null ||
+          name === undefined ||
+          name === "") throw "name is empty";
 
-      if (name === null
-          || name === undefined
-          || name === "") throw "name is empty";
+      const user = yield User.findById(user_id);
+      if (user === null) throw "user not found";
 
       user.name = name;
-      return user.save();
-    })
-    .then( user => {
+      const changedUser = yield user.save();
+
       res.json({
         status: { success: true },
-        body: user
+        body: changedUser
       });
-    })
-    .catch( err => {
+
+    }
+    catch (err) {
       let errors = {};
 
       switch (err) {
@@ -370,7 +369,8 @@ export const updateName = (req, res, next) => {
       res.status(400).json({
         status: { success: false, errors }
       });
-    });
+    }
+  });
 };
 
 export const updateEmail = (req, res, next) => {
@@ -423,60 +423,63 @@ export const updateEmail = (req, res, next) => {
 };
 
 export const addUserToGroup = (req, res, next) => {
-  const user_id = req.params.user_id;
-  const group_id = req.body.group_id;
+  co(function* () {
+    try {
+      const user_id = req.params.user_id;
+      const group_id = req.body.group_id;
 
-  const tasks = [
-    User.findById(user_id).then( user => user ),
-    Group.findById(group_id).then( group => group )
-  ];
+      const [ user, group ] = yield [
+        User.findById(user_id),
+        Group.findById(group_id)
+      ];
 
-  Promise.all(tasks)
-    .then( result => {
-      const [ user, group ] = result;
-      if (!user) throw `存在しないユーザです user_id: ${user_id}`;
-      if (!group) throw `存在しないグループです group_id: ${group_id}`;
+      if (user === null) throw `存在しないユーザです user_id: ${user_id}`;
+      if (group === null) throw `存在しないグループです group_id: ${group_id}`;
 
-      user.groups = [...user.groups, group._id];
-      return user.save();
-    })
-    .then( user => {
+      user.groups = [ ...user.groups, group._id ];
+
+      const changedUser = yield user.save();
+
       res.json({
         status: { success: true },
-        body: user
+        body: changedUser
       });
-    })
-    .catch( err => {
+    }
+    catch (err) {
       res.status(500).json({
         status: { success: false, errors: err }
       });
-    });
+    }
+  });
 };
 
 export const removeUserOfGroup = (req, res, next) => {
-  const { user_id, group_id } = req.params;
+  co(function* () {
+    try {
+      const { user_id, group_id } = req.params;    
 
-  const tasks = [
-    User.findById(user_id).then( user => user ),
-    Group.findById(group_id).then( group => group )
-  ];
+      const [ user, group ] = yield [
+        User.findById(user_id),
+        Group.findById(group_id)
+      ];
 
-  Promise.all(tasks)
-    .then( result => {
-      const [ user, group ] = result;
-      user.groups = user.groups.filter(
-        _group => _group.toString() !== group._id.toString() );
-      return user.save();
-    })
-    .then( user => {
+      if (user === null) throw "user is empty";
+      if (group === null) throw "group is empty";
+
+      user.groups = user.groups.filter( _group => (
+        _group.toString() !== group._id.toString()
+      ));
+    
+      const changedUser = yield user.save();
       res.json({
         status: { success: true },
-        body: user
+        body: changedUser
       });
-    })
-    .catch( err => {
+    }
+    catch (e) {
       res.status(500).json({
-        status: { success: false, errors: err }
+        status: { success: false, errors: e }
       });
-    });
+    }
+  });
 };
