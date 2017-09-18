@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import mongoose from "mongoose";
 import co from "co";
 import jwt from "jsonwebtoken";
@@ -13,6 +15,7 @@ import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
+import { Swift } from "../storages/Swift";
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -386,10 +389,17 @@ export const upload = (req, res, next) => {
       file.histories = file.histories.concat(history);
       const changedFile = yield file.save();
 
+      // ここからswiftへのput
+      // @fixme hardcording
+      const swift = new Swift();
+      const uploadFilePath = path.resolve(myFile.path);
+      const uploadedFile = yield swift.upload(uploadFilePath, changedFile._id.toString());
+
       res.json({
         status: { success: true },
         body: changedFile
       });
+
     }
     catch (e) {
       console.log(e);

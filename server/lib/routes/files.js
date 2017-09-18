@@ -31,7 +31,6 @@ router.route("/:file_id/rename").patch(controller.rename);
 // ファイル移動
 router.route("/:file_id/move").patch(controller.move);
 
-
 // タグの追加
 router.route("/:file_id/tags").post(controller.addTag);
 
