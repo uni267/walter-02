@@ -9,7 +9,7 @@ router.route("/")
   .post(controller.create);
 
 // 詳細, 削除
-router.route(":role_id")
+router.route("/:role_id")
   .get(controller.view)
   .delete(controller.remove);
 

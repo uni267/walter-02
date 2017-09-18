@@ -4,7 +4,7 @@ import Tag from "../models/Tag";
 
 const ObjectId = mongoose.Types.ObjectId;
 
-const index = (req, res, next) => {
+export const index = (req, res, next) => {
   co(function* () {
     try {
       const conditions = {
@@ -31,7 +31,7 @@ const index = (req, res, next) => {
   });
 };
 
-const view = (req, res, next) => {
+export const view = (req, res, next) => {
   co(function* () {
     try {
       const { tag_id } = req.params;
@@ -68,7 +68,7 @@ const view = (req, res, next) => {
   });
 };
 
-const create = (req, res, next) => {
+export const create = (req, res, next) => {
   co(function* () {
     try {
       const { tag } = req.body;
