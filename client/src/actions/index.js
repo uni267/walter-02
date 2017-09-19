@@ -531,3 +531,11 @@ export const moveFiles = (dir, files) => ({
 export const toggleMoveFilesDialog = () => ({
   type: "TOGGLE_MOVE_FILES_DIALOG"
 });
+
+export const requestFetchAnalysis = (tenant_id) => ({
+  type: "REQUEST_FETCH_ANALYSIS", tenant_id
+});
+
+export const initAnalysis = (analysis) => ({
+  type: "INIT_ANALYSIS", analysis
+});

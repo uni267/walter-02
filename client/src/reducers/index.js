@@ -31,6 +31,7 @@ import actions from "./actionsReducer";
 import fileDetailSearch from "./fileDetailSearchReducer";
 import tag from "./tagReducer";
 import moveFilesState from "./moveFilesReducer";
+import analysis from "./analysisReducer";
 
 const fileApp = combineReducers({
   files,
@@ -62,7 +63,8 @@ const fileApp = combineReducers({
   actions,
   fileDetailSearch,
   tag,
-  moveFilesState
+  moveFilesState,
+  analysis
 });
 
 export default fileApp;

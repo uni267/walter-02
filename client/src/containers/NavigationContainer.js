@@ -54,7 +54,7 @@ class NavigationContainer extends Component {
       },
       {
         name: "容量管理",
-        link: `/home/${this.props.tenant.dirId}`
+        link: `/analysis`
       },
       {
         name: "ユーザ管理",

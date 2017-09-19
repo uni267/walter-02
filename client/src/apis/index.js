@@ -321,6 +321,11 @@ class API {
   static deleteTag(tag_id) {
     return client.delete(`/api/v1/tags/${tag_id}`);
   }
+
+  static fetchAnalysis(tenant_id) {
+    const config = { tenant_id };
+    return client.get(`/api/v1/analysis`, config);
+  }
 }
 
 export { API };

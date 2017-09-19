@@ -21,6 +21,7 @@ import RoleCreateContainer from "./RoleCreateContainer";
 import TagContainer from "./TagContainer";
 import TagCreateContainer from "./TagCreateContainer";
 import TagDetailContainer from "./TagDetailContainer";
+import AnalysisContainer from "./AnalysisContainer";
 
 class App extends Component {
   render() {
@@ -47,6 +48,7 @@ class App extends Component {
                   <Route exact path="/roles" component={RoleContainer} />
                   <Route exact path="/roles/create" component={RoleCreateContainer} />
                   <Route path="/roles/:id" component={RoleDetailContainer} />
+                  <Route exact path="/analysis" component={AnalysisContainer} />
                   <Route component={HomeContainer} />
                 </Switch>
               </AuthenticationContainer>
