@@ -41,8 +41,10 @@ class MonitorContainer extends Component {
           <CardTitle title="容量管理" />
           <CardText>
             <div>
-              <BarChart width={1024} height={400} data={this.props.analysis}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5}} >
+              <CardTitle subtitle="使用容量推移" />
+
+              <BarChart width={1024} height={300} data={this.props.analysis}
+                        margin={{ top: 5, right: 30, left: 10, bottom: 5}} >
 
                 <XAxis dataKey="name" />
                 <YAxis dataKey="threshold" />
@@ -55,6 +57,24 @@ class MonitorContainer extends Component {
 
               </BarChart>
             </div>
+
+            <div>
+              <CardTitle subtitle="ファイル数推移" />
+              <BarChart width={1024} height={300} data={this.props.analysis}
+                        margin={{ top: 5, right: 30, left: 10, bottom: 5}} >
+
+                <XAxis dataKey="name" />
+                <YAxis />
+                <CartesianGrid strokeDasharray="1 1" />
+                <Tooltip />
+                <Legend />
+
+                <Bar
+                  barSize={45} dataKey="file_count" fill="#82ca9d" />
+
+              </BarChart>
+            </div>
+
           </CardText>
         </Card>
       </div>
