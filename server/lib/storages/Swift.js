@@ -38,6 +38,24 @@ class Swift {
     });
   }
 
+  getFiles(container_name) {
+    return new Promise( (resolve, reject) => {
+      this.client.getFiles(container_name, (err, files) => {
+        if (err) reject(err);
+        resolve(files);
+      });
+    });
+  }
+
+  getFile(container_name, file_name) {
+    return new Promise( (resolve, reject) => {
+      this.client.getFile(container_name, file_name, (err, file) => {
+        if (err) reject(err);
+        resolve(file);
+      });
+    });
+  }
+
   upload(srcFilePath, dstFileName) {
     console.log(srcFilePath, dstFileName);
 
@@ -56,6 +74,8 @@ class Swift {
 
     });
   }
+
+
 }
 
 export { Swift };
