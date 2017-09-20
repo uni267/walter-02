@@ -9,6 +9,8 @@ import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
 
 // actions
+import * as actions from "../actions";
+
 import {
   searchFileSimple,
   searchFileDetail,
@@ -35,6 +37,7 @@ const styles = {
 class FileSearchContainer extends Component {
   componentWillMount() {
     this.props.requestFetchFileSearchItems(this.props.tenant.tenant_id);
+    this.props.requestFetchTags();
   }
 
   render() {
@@ -77,21 +80,27 @@ const mapStateToProps = (state, ownProps) => {
     searchValues: state.fileDetailSearch.searchValues,
     open: state.fileDetailSearch.open,
     anchorElement: state.fileDetailSearch.anchorElement,
-    isSimple: state.fileDetailSearch.items.find(item => item.picked) === undefined
+    isSimple: state.fileDetailSearch.items.find(item => item.picked) === undefined,
+    tags: state.tags
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFileSimple: (value) => dispatch(searchFileSimple(value)),
-  searchFileDetail: () => dispatch(searchFileDetail()),
+  searchFileSimple: (value) => dispatch(actions.searchFileSimple(value)),
+  searchFileDetail: () => dispatch(actions.searchFileDetail()),
   requestFetchFileSearchItems: (tenant_id) => {
-    dispatch(requestFetchFileSearchItems(tenant_id));
+    dispatch(actions.requestFetchFileSearchItems(tenant_id));
   },
-  toggleFileDetailSearchPopover: () => dispatch(toggleFileDetailSearchPopover()),
-  fileDetailSearchAnchorElement: (event) => dispatch(fileDetailSearchAnchorElement(event)),
-  searchItemPick: (item) => dispatch(searchItemPick(item)),
-  searchItemNotPick: (item) => dispatch(searchItemNotPick(item)),
-  searchValueChange: (item, value) => dispatch(searchValueChange(item, value))
+  toggleFileDetailSearchPopover: () => {
+    dispatch(actions.toggleFileDetailSearchPopover());
+  },
+  fileDetailSearchAnchorElement: (event) => {
+    dispatch(actions.fileDetailSearchAnchorElement(event));
+  },
+  searchItemPick: (item) => dispatch(actions.searchItemPick(item)),
+  searchItemNotPick: (item) => dispatch(actions.searchItemNotPick(item)),
+  searchValueChange: (item, value) => dispatch(actions.searchValueChange(item, value)),
+  requestFetchTags: () => dispatch(actions.requestFetchTags())
 });
 
 FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);

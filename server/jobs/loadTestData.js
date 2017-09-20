@@ -152,7 +152,7 @@ var meta_infos = [
     tenant_id: tenant._id,
     key: "タグ",
     key_type: "tags",
-    value_type: "String"
+    value_type: "Tag"
   },
   { 
     tenant_id: tenant._id,

@@ -182,6 +182,11 @@ export const searchDetail = (req, res, next) => {
         "meta_infos.value": { $regex: item.value },
         is_display: true
       });
+    case "tags":
+      return ({
+        tags: mongoose.Types.ObjectId(item.value),
+        is_display: true
+      });
     default:
       return ({
         [item.key_type]: item.value,
@@ -206,6 +211,7 @@ export const searchDetail = (req, res, next) => {
             ? {}
             : Object.assign(...meta_items.map(buildQuery));
 
+      console.log({ ...base_queries, ...meta_queries });
       const files = yield File.find({ ...base_queries, ...meta_queries });
 
       res.json({

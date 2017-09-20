@@ -10,6 +10,7 @@ import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-cir
 
 const DetailSearch = ({
   item,
+  tags,
   searchItemNotPick,
   searchValueChange,
   searchFileDetail,
@@ -71,6 +72,30 @@ const DetailSearch = ({
     );
   };
 
+  const tagField = (item) => {
+    const handleChange = (event, index, value) => {
+      searchValueChange(item, value);
+      searchFileDetail();
+    };
+
+    const selectValue = searchValues.filter( value => value._id === item._id );
+
+    const value = selectValue[0] === undefined
+          ? null
+          : selectValue[0].value;
+
+    return (
+      <SelectField
+        floatingLabelText="タグを選択"
+        value={value}
+        onChange={handleChange} >
+        {tags.map( (tag, idx) => (
+          <MenuItem value={tag._id} primaryText={tag.label} />
+        ))}
+      </SelectField>
+    );
+  };
+
   let searchForm;
   switch (item.value_type) {
   case "String":
@@ -81,6 +106,9 @@ const DetailSearch = ({
     break;
   case "Bool":
     searchForm = selectField;
+    break;
+  case "Tag":
+    searchForm = tagField;
     break;
   default:
     searchForm = textField;
