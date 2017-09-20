@@ -184,6 +184,8 @@ class FileDetailContainer extends Component {
 
     const meta_infos = this.props.metaInfo.meta_infos.filter( meta => (
       meta.key_type === "meta"
+    )).filter( meta => (
+      !this.props.file.meta_infos.map(m => m.meta_info_id).includes(meta._id)
     ));
 
     return (
