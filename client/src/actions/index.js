@@ -20,9 +20,8 @@ export const toggleAddFile = () => ({
   type: "TOGGLE_ADD_FILE"
 });
 
-export const pushFileToBuffer = (dir_id, name) => ({
-  type: "PUSH_FILE_TO_BUFFER",
-  dir_id, name
+export const pushFileToBuffer = (file) => ({
+  type: "PUSH_FILE_TO_BUFFER", file
 });
 
 export const clearFilesBuffer = () => ({
