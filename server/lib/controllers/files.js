@@ -673,3 +673,46 @@ export const removeMeta = (req, res, next) => {
     }
   });
 };
+
+export const toggleStar = (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
+
+      const file = yield File.findById(file_id);
+
+      if (file === null) throw "file is empty";
+
+      file.is_star = !file.is_star;
+      const changedFile = yield file.save();
+
+      res.json({
+        status: { success: true },
+        body: changedFile
+      });
+
+    }
+    catch (e) {
+      let errors = {};
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = e;
+        break;
+      case "file is empty":
+        errors.file = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  });
+};

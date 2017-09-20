@@ -20,12 +20,10 @@ class API {
 
   static fetchFiles(dir_id) {
     const config = {
-      params: {
-        dir_id: dir_id
-      }
+      params: { dir_id }
     };
 
-    return client.get("/api/v1/files", config).then(res => res);
+    return client.get("/api/v1/files", config);
   }
 
   static fetchFile(file_id) {
@@ -325,6 +323,10 @@ class API {
   static fetchAnalysis(tenant_id) {
     const config = { tenant_id };
     return client.get(`/api/v1/analysis`, config);
+  }
+
+  static toggleStar(file) {
+    return client.patch(`/api/v1/files/${file._id}/toggle_star`);
   }
 }
 

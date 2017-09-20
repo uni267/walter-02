@@ -56,16 +56,6 @@ class File extends Component {
     };
   }
 
-  onClickStar = (file) => {
-    this.props.toggleStar(file);
-
-    const message = file.is_star
-          ? `${file.name}をマーク解除しました`
-          : `${file.name}をマークしました`;
-
-    this.props.triggerSnackbar(message);
-  }
-
   toggleHover = () => {
     this.setState({ hover: !this.state.hover });
   };
@@ -175,7 +165,7 @@ class File extends Component {
             checkedIcon={favorite_icon}
             uncheckedIcon={favorite_icon_border}
             checked={file.is_star}
-            onCheck={() => this.onClickStar(file)} />
+            onCheck={() => this.props.toggleStar(file)} />
         </div>
 
         {this.renderFileName()}

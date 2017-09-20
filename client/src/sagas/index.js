@@ -56,6 +56,7 @@ import watchDeleteTag from "./watchDeleteTag";
 import watchDeleteFiles from "./watchDeleteFiles";
 import watchMoveFiles from "./watchMoveFiles";
 import watchFetchAnalysis from "./watchFetchAnalysis";
+import watchToggleStar from "./watchToggleStar";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -114,6 +115,7 @@ function* Saga() {
   yield fork(watchDeleteFiles);
   yield fork(watchMoveFiles);
   yield fork(watchFetchAnalysis);
+  yield fork(watchToggleStar);
 }
 
 export default Saga;

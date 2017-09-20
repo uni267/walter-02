@@ -43,5 +43,8 @@ router.route("/:file_id/meta").post(controller.addMeta);
 // メタ情報の削除
 router.route("/:file_id/meta/:meta_id").delete(controller.removeMeta);
 
+// お気に入りのトグル
+router.route("/:file_id/toggle_star").patch(controller.toggleStar);
+
 export default router;
 

@@ -28,15 +28,6 @@ const filesReducer = (state = [], action) => {
 
     return _state;
     
-  case "TOGGLE_STAR":
-    return state.map(file => {
-      if (file.id === action.file_id) {
-        return {...file, is_star: !file.is_star};
-      } else {
-        return file;
-      }
-    });
-
   case "ADD_AUTHORITY":
     return state.map(file => {
       if (file.id === action.file_id) {

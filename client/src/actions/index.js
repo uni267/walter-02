@@ -67,8 +67,7 @@ export const editFileByIndex = (file) => ({
 });
 
 export const toggleStar = (file) => ({
-  type: "TOGGLE_STAR",
-  file_id: Number(file.id)
+  type: "TOGGLE_STAR", file
 });
 
 export const notifications = () => ({
@@ -539,3 +538,4 @@ export const requestFetchAnalysis = (tenant_id) => ({
 export const initAnalysis = (analysis) => ({
   type: "INIT_ANALYSIS", analysis
 });
+
