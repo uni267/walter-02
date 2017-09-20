@@ -7,14 +7,6 @@ import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import HardwareKeyboardArrowRight from "material-ui/svg-icons/hardware/keyboard-arrow-right";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
 
-const styles = {
-  childWrapper: {
-    marginLeft: 33,
-    marginTop: 10,
-    marginBottom: 10
-  }
-};
-
 class DirTree extends Component {
   constructor(props) {
     super(props);
@@ -53,48 +45,58 @@ class DirTree extends Component {
   };
 
   handleClick = () => {
-    this.setState({ viewChild: !this.state.viewChild });
-  };
-
-  hasChildren = () => {
-    return this.state.children.length === 0;
+    if (this.state.chilren !== null && this.state.children.length > 0) {
+      this.setState({ viewChild: !this.state.viewChild });
+    }
   };
 
   render() {
-    const childWrapper = this.props.dirTree.selected &&
+    const style = this.props.dirTree.selected !== null &&
           this.props.dirTree.selected._id === this.props.node._id
-          ? { ...styles.childWrapper, backgroundColor: "rgb(240, 240, 240)" }
-          : styles.childWrapper;
+          ? {
+            display: "flex",
+            paddingTop: 5,
+            paddingBottom: 5,
+            paddingLeft: 10,
+            paddingRight: 10,
+            backgroundColor: "rgb(240, 240, 240)"
+          }
+          : {
+            display: "flex",
+            paddingTop: 5,
+            paddingBottom: 5,
+            paddingLeft: 10,
+            paddingRight: 10
+          };
 
     return (
-      <div style={childWrapper}>
+      <div style={{ marginLeft: 25 }}>
 
         <div style={{ display: "flex" }}>
 
-          <div onClick={this.handleClick}>
-            {this.state.viewChild
-              ? <HardwareKeyboardArrowDown />
-              : <HardwareKeyboardArrowRight />
-            }
-          </div>
-
-          <div style={{ display: "flex", marginLeft: 7 }} 
+          <div style={{ display: "flex" }} 
                onClick={() => this.props.selectDirTree(this.props.node)}>
 
-            <div>
+            <div style={{ paddingTop: 5, paddingBottom: 5 }}
+              onClick={this.handleClick}>
               {this.state.viewChild
-                ? <FileFolderOpen />
-                : <FileFolder />
+                ? <HardwareKeyboardArrowDown />
+                : <HardwareKeyboardArrowRight />
               }
             </div>
 
-            <div style={{ marginLeft: 10 }}>
-              {this.props.node.name}
+            <div style={style}>
+              <div>
+                {this.state.viewChild ? <FileFolderOpen /> : <FileFolder />}
+              </div>
+              <div style={{ paddingLeft: 10 }}>
+                {this.props.node.name}
+              </div>
             </div>
+
           </div>
 
         </div>
-
         { this.state.viewChild ? this.renderChildren() : null }
       </div>
     );
