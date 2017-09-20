@@ -182,6 +182,10 @@ class FileDetailContainer extends Component {
         />
     );
 
+    const meta_infos = this.props.metaInfo.meta_infos.filter( meta => (
+      meta.key_type === "meta"
+    ));
+
     return (
       <Dialog
         title="メタ情報を編集"
@@ -193,7 +197,7 @@ class FileDetailContainer extends Component {
 
         <MetaInfo
           file={this.props.file}
-          metaInfo={this.props.metaInfo.meta_infos}
+          metaInfo={meta_infos}
           addMetaInfo={this.props.addMetaInfo}
           deleteMetaInfo={this.props.deleteMetaInfo}
           triggerSnackbar={this.props.triggerSnackbar} />
