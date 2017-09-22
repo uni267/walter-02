@@ -1,6 +1,8 @@
 import co from "co";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import Tenant from "../models/Tenant";
+
 import { SECURITY_CONF } from "../../configs/server";
 
 export const verifyToken = (req, res, next) => {
@@ -25,10 +27,12 @@ export const verifyToken = (req, res, next) => {
 
       const decoded = yield verifyPromise(authHeader);
       const user = yield User.findById(decoded._doc._id);
-
       if (user === null) throw "user is empty";
 
-      res.user = user;
+      const _user = user.toObject();
+      _user.tenant = yield Tenant.findById(user.tenant_id);
+
+      res.user = _user;
       next();
     }
     // @todo jwt.verifyのエラーを調査する
