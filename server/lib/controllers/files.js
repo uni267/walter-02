@@ -24,8 +24,7 @@ export const index = (req, res, next) => {
 
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
-        const tenant = yield Tenant.findById(res.user.tenant_id);
-        dir_id = tenant.home_dir_id;
+        dir_id = res.user.tenant.home_dir_id;
       }
 
       const conditions = {
@@ -351,7 +350,7 @@ export const upload = (req, res, next) => {
   co(function* () {
     try {
       const myFile = req.files.myFile[0];
-      const dir_id = req.body.dir_id;
+      let dir_id = req.body.dir_id;
 
       if (myFile === null ||
           myFile === undefined ||
@@ -359,7 +358,11 @@ export const upload = (req, res, next) => {
 
       if (dir_id === null ||
           dir_id === undefined ||
-          dir_id === "") throw "dir_id is empty";
+          dir_id === "" ||
+          dir_id === "undefined") {
+
+        dir_id = res.user.tenant.home_dir_id;
+      }
 
       const dir = yield File.findById(dir_id);
 
@@ -415,7 +418,6 @@ export const upload = (req, res, next) => {
 
     }
     catch (e) {
-      console.log(e);
       let errors = {};
 
       switch (e) {
