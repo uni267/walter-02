@@ -557,3 +557,10 @@ export const fileNextPage = () => ({
   type: "FILE_NEXT_PAGE"
 });
 
+export const deleteFileBuffer = (file) => ({
+  type: "DELETE_FILE_BUFFER", file
+});
+
+export const popFileToBuffer = (file) => ({
+  type: "POP_FILE_TO_BUFFER", file
+});

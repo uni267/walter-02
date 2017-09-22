@@ -150,6 +150,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(actions.pushFileToBuffer(dir_id, file_name));
   },
   clearFilesBuffer: () => dispatch(actions.clearFilesBuffer()),
+  deleteFileBuffer: (file) => dispatch(actions.deleteFileBuffer(file)),
   addAuthority: (file_id, user, role) => {
     dispatch(actions.addAuthority(file_id, user, role));
   },
@@ -161,7 +162,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteFiles: (files) => dispatch(actions.deleteFiles(files)),
   moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
   toggleMoveFilesDialog: () => dispatch(actions.toggleMoveFilesDialog()),
-  toggleDeleteFilesDialog: () => dispatch(actions.toggleDeleteFilesDialog())
+  toggleDeleteFilesDialog: () => dispatch(actions.toggleDeleteFilesDialog()),
+  deleteFile: (file) => dispatch(actions.deleteFile(file))
 });
 
 FileActionContainer = connect(

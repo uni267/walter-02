@@ -7,6 +7,7 @@ import FlatButton from "material-ui/FlatButton";
 import RaisedButton from "material-ui/RaisedButton";
 import FileCloudUpload from "material-ui/svg-icons/file/cloud-upload";
 import ActionDelete from "material-ui/svg-icons/action/delete";
+import IconButton from 'material-ui/IconButton';
 
 // DnD
 import Dropzone from "react-dropzone";
@@ -67,7 +68,8 @@ const AddFileDialog = ({
   uploadFiles,
   closeDialog,
   clearFilesBuffer,
-  filesBuffer
+  filesBuffer,
+  deleteFileBuffer
 }) => {
   const onDrop = (files) => {
     uploadFiles(dir_id, files);
@@ -87,10 +89,10 @@ const AddFileDialog = ({
         <div style={{...styles.bufferCol, width: "15%", padding: 10}}>
           {file.size} byte
         </div>
-        <div style={{...styles.bufferCol, width: "5%", padding: 10}}>
-          <ActionDelete
-            onClick={() => console.log("fire")}
-            />
+        <div style={{...styles.bufferCol, width: "5%" }}>
+          <IconButton>
+            <ActionDelete onClick={() => deleteFileBuffer(file)} />
+          </IconButton>
         </div>
       </div>
     );
