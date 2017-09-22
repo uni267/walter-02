@@ -16,6 +16,7 @@ function* watchDeleteFiles() {
       yield all(jobs);
       const payload = yield call(API.fetchFiles, task.files[0].dir_id, 0);
       yield put(actions.initFiles(payload.data.body));
+      yield put(actions.initFileTotal(payload.data.status.total));
       yield put(actions.toggleDeleteFilesDialog());
     }
     catch (e) {
