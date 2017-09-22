@@ -147,13 +147,20 @@ class FileListContainer extends Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    this.props.requestFetchFiles(this.props.match.params.id);
     this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.match.params.id !== nextProps.match.params.id) {
+      this.props.requestFetchFiles(this.props.match.params.id);
+    }
   }
 
   handleFileDrop = (item, monitor) => {
     if (monitor) {
-      this.props.uploadFiles(this.props.dir_id, monitor.getItem().files);
+      this.props.uploadFiles(this.props.match.params.id, monitor.getItem().files);
     }
   }
 
@@ -427,6 +434,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+  requestFetchFiles: (dir_id) => dispatch(actions.requestFetchFiles(dir_id)),
   moveFile: (dir, file) => dispatch(actions.moveFile(dir, file)),
   moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
   copyFile: (dir_id, file) => dispatch(actions.copyFile(dir_id, file)),

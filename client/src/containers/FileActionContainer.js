@@ -100,7 +100,7 @@ class FileActionContainer extends Component {
         </Menu>
 
         <AddFileDialog
-          dir_id={this.props.dir_id}
+          dir_id={this.props.match.params.id}
           open={this.state.addFile.open}
           closeDialog={() => this.setState({ addFile: { open: false } })}
           { ...this.props }

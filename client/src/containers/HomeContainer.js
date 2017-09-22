@@ -22,16 +22,6 @@ import {
 from "../actions";
 
 class HomeContainer extends Component {
-  componentWillMount() {
-    this.props.requestFetchFiles(this.props.match.params.id);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.match.params.id !== nextProps.match.params.id) {
-      this.props.requestFetchFiles(nextProps.match.params.id);
-    }
-  }
-
   render() {
     const dirId = this.props.match.params.id;
 
