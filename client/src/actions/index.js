@@ -141,9 +141,8 @@ export const requestHomeDir = (user_id) => ({
   user_id
 });
 
-export const requestFetchFiles = (dir_id) => ({
-  type: "REQUEST_FETCH_FILES",
-  dir_id
+export const requestFetchFiles = (dir_id, page) => ({
+  type: "REQUEST_FETCH_FILES", dir_id, page
 });
 
 export const requestFetchFile = (file_id) => ({
@@ -538,3 +537,10 @@ export const initAnalysis = (analysis) => ({
   type: "INIT_ANALYSIS", analysis
 });
 
+export const initFileTotal = (total) => ({
+  type: "INIT_FILE_TOTAL", total
+});
+
+export const fileNextPage = () => ({
+  type: "FILE_NEXT_PAGE"
+});

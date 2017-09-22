@@ -148,15 +148,29 @@ class FileListContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.requestFetchFiles(this.props.match.params.id);
+    this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
     this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+  }
+
+  componentDidMount() {
+    window.addEventListener("scroll", this.onScroll);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
-      this.props.requestFetchFiles(this.props.match.params.id);
+      this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
+    }
+
+    if (this.props.page < nextProps.page) {
+      this.props.requestFetchFiles(this.props.match.params.id, nextProps.page);
     }
   }
+
+  onScroll = (e) => {
+    if (window.pageYOffset > (1410 * (this.props.page + 1))) {
+      this.props.fileNextPage();
+    }
+  };
 
   handleFileDrop = (item, monitor) => {
     if (monitor) {
@@ -429,12 +443,13 @@ const mapStateToProps = (state, ownProps) => {
     deleteFileState: state.deleteFile,
     dirTree: state.dirTree,
     tenant: state.tenant,
-    metaInfo: state.metaInfo
+    metaInfo: state.metaInfo,
+    total: state.filePagination.total,
+    page: state.filePagination.page
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchFiles: (dir_id) => dispatch(actions.requestFetchFiles(dir_id)),
   moveFile: (dir, file) => dispatch(actions.moveFile(dir, file)),
   moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
   copyFile: (dir_id, file) => dispatch(actions.copyFile(dir_id, file)),
@@ -452,7 +467,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   setSortTarget: (target) => dispatch(actions.setSortTarget(target)),
   toggleSortTarget: () => dispatch(actions.toggleSortTarget()),
   sortFile: (sorted, desc) => dispatch(actions.sortFile(sorted, desc)),
-  requestFetchFiles: (dir_id) => dispatch(actions.requestFetchFiles(dir_id)),
+  requestFetchFiles: (dir_id, page) => dispatch(actions.requestFetchFiles(dir_id, page)),
   uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
   toggleDeleteFileDialog: (file) => dispatch(actions.toggleDeleteFileDialog(file)),
   toggleMoveDirDialog: (dir) => dispatch(actions.toggleMoveDirDialog(dir)),
@@ -467,7 +482,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file)),
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
-  toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value))
+  toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
+  fileNextPage: () => dispatch(actions.fileNextPage())
 });
 
 FileListContainer = connect(

@@ -18,9 +18,9 @@ class API {
     return client.get(`/api/v1/users/${user_id}`).then( res => res );
   }
 
-  static fetchFiles(dir_id) {
+  static fetchFiles(dir_id, page) {
     const config = {
-      params: { dir_id }
+      params: { dir_id, page }
     };
 
     return client.get("/api/v1/files", config);

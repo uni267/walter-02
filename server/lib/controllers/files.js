@@ -20,7 +20,7 @@ import { Swift } from "../storages/Swift";
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      let { dir_id } = req.query;
+      let { dir_id, page } = req.query;
 
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
@@ -32,13 +32,20 @@ export const index = (req, res, next) => {
         dir_id: mongoose.Types.ObjectId(dir_id)
       };
 
+      // pagination
+      if (page === undefined || page === null || page === "") page = 0;
+      const limit = 30; // @todo 件数はconfigなどに持たせる？
+      const offset = page * limit;
+
+      const total = yield File.find(conditions).count();
+
       const files = yield File.aggregate([
         { $match: conditions },
         { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
-      ]);
+      ]).skip(offset).limit(limit);
 
       res.json({
-        status: { success: true },
+        status: { success: true, total },
         body: files
       });
     }

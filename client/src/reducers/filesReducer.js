@@ -2,7 +2,7 @@ const filesReducer = (state = [], action) => {
   switch ( action.type ) {
 
   case "INIT_FILES":
-    return action.files.map( file => ({ ...file, checked: false }) );
+    return state.concat( action.files.map( file => ({ ...file, checked: false })) );
 
   case "TOGGLE_FILE_CHECK":
     return state.map( file => {
