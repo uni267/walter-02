@@ -145,6 +145,10 @@ export const requestFetchFiles = (dir_id, page) => ({
   type: "REQUEST_FETCH_FILES", dir_id, page
 });
 
+export const requestFetchNextFiles = (dir_id, page) => ({
+  type: "REQUEST_FETCH_NEXT_FILES", dir_id, page
+});
+
 export const requestFetchFile = (file_id) => ({
   type: "REQUEST_FETCH_FILE",
   file_id
@@ -227,6 +231,10 @@ export const initFile = (file) => ({
 
 export const initFiles = (files) => ({
   type: "INIT_FILES", files
+});
+
+export const initNextFiles = (files) => ({
+  type: "INIT_NEXT_FILES", files
 });
 
 export const initDir = (dirs) => ({

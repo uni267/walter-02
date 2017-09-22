@@ -162,12 +162,14 @@ class FileListContainer extends Component {
     }
 
     if (this.props.page < nextProps.page) {
-      this.props.requestFetchFiles(this.props.match.params.id, nextProps.page);
+      this.props.requestFetchNextFiles(this.props.match.params.id, nextProps.page);
     }
   }
 
   onScroll = (e) => {
-    if (window.pageYOffset > (1410 * (this.props.page + 1))) {
+    const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
+
+    if (window.pageYOffset > nextPageThreshold) {
       this.props.fileNextPage();
     }
   };
@@ -467,7 +469,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   setSortTarget: (target) => dispatch(actions.setSortTarget(target)),
   toggleSortTarget: () => dispatch(actions.toggleSortTarget()),
   sortFile: (sorted, desc) => dispatch(actions.sortFile(sorted, desc)),
-  requestFetchFiles: (dir_id, page) => dispatch(actions.requestFetchFiles(dir_id, page)),
+  requestFetchFiles: (dir_id, page) => {
+    dispatch(actions.requestFetchFiles(dir_id, page));
+  },
+  requestFetchNextFiles: (dir_id, page) => {
+    dispatch(actions.requestFetchNextFiles(dir_id, page));
+  },
   uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
   toggleDeleteFileDialog: (file) => dispatch(actions.toggleDeleteFileDialog(file)),
   toggleMoveDirDialog: (dir) => dispatch(actions.toggleMoveDirDialog(dir)),
