@@ -158,7 +158,7 @@ class FileListContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
-      this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
+      this.props.requestFetchFiles(nextProps.match.params.id, this.props.page);
     }
 
     if (this.props.page < nextProps.page) {
