@@ -1,4 +1,8 @@
-const initialState = [];
+const initialState = {
+  rate: [],
+  usage: [],
+  file_count: []
+};
 
 const analysisReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -10,3 +14,4 @@ const analysisReducer = (state = initialState, action) => {
 };
 
 export default analysisReducer;
+210,88,76

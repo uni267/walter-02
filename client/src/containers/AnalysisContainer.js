@@ -12,7 +12,11 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Line
+  Line,
+  PieChart,
+  Pie,
+  Sector,
+  Cell
 } from "recharts";
 
 // material ui
@@ -34,6 +38,11 @@ class MonitorContainer extends Component {
   }
 
   render() {
+    const colors = [
+      "#d2584c", // 使用中
+      "#00bcd4"  // 空き
+    ];
+
     return (
       <div>
         <NavigationContainer />
@@ -41,9 +50,25 @@ class MonitorContainer extends Component {
           <CardTitle title="容量管理" />
           <CardText>
             <div>
+              <CardTitle subtitle="使用率"/>
+              <PieChart width={700} height={300}>
+                <Pie
+                  data={this.props.rate}
+                  innerRadius={30}
+                  outerRadius={150}
+                  fill="#8884d8"
+                  paddingAngle={2}
+                  label >
+                  {colors.map( (color, idx) => <Cell fill={color} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </div>
+
+            <div>
               <CardTitle subtitle="使用容量推移" />
 
-              <BarChart width={1024} height={300} data={this.props.analysis}
+              <BarChart width={1024} height={300} data={this.props.usage}
                         margin={{ top: 5, right: 30, left: 10, bottom: 5}} >
 
                 <XAxis dataKey="name" />
@@ -60,7 +85,7 @@ class MonitorContainer extends Component {
 
             <div>
               <CardTitle subtitle="ファイル数推移" />
-              <BarChart width={1024} height={300} data={this.props.analysis}
+              <BarChart width={1024} height={300} data={this.props.fileCount}
                         margin={{ top: 5, right: 30, left: 10, bottom: 5}} >
 
                 <XAxis dataKey="name" />
@@ -84,7 +109,9 @@ class MonitorContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    analysis: state.analysis,
+    rate: state.analysis.rate,
+    usage: state.analysis.usage,
+    fileCount: state.analysis.file_count,
     tenant: state.tenant
   };
 };
