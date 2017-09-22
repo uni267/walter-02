@@ -521,6 +521,10 @@ export const deleteFiles = (files) => ({
   type: "DELETE_FILES", files
 });
 
+export const toggleDeleteFilesDialog = () => ({
+  type: "TOGGLE_DELETE_FILES_DIALOG"
+});
+
 export const moveFiles = (dir, files) => ({
   type: "MOVE_FILES", dir, files
 });
@@ -544,3 +548,4 @@ export const initFileTotal = (total) => ({
 export const fileNextPage = () => ({
   type: "FILE_NEXT_PAGE"
 });
+

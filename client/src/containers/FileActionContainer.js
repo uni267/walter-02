@@ -22,6 +22,7 @@ import ContentContentCut from "material-ui/svg-icons/content/content-cut";
 import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
 import MoveFileDialog from "../components/File/MoveFileDialog";
+import DeleteAllFilesDialog from "../components/File/DeleteAllFilesDialog";
 
 // actions
 import * as actions from "../actions";
@@ -87,7 +88,7 @@ class FileActionContainer extends Component {
             <MenuItem
               primaryText="削除"
               leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.deleteFiles(this.props.checkedFiles)}
+              onTouchTap={this.props.toggleDeleteFilesDialog}
               />
           )
         ]
@@ -117,6 +118,12 @@ class FileActionContainer extends Component {
             moveFile={this.moveFiles}
             file={this.props.checkedFiles} />
 
+          <DeleteAllFilesDialog
+            open={this.props.deleteFilesDialog.open}
+            handleClose={this.props.toggleDeleteFilesDialog}
+            deleteFiles={this.props.deleteFiles}
+            files={this.props.checkedFiles}
+            />
       </div>
     );
   }
@@ -131,7 +138,8 @@ const mapStateToProps = (state) => {
     createDirState: state.createDir,
     tenant: state.tenant,
     selectedDir: state.dirTree.selected,
-    moveFilesState: state.moveFilesState
+    moveFilesState: state.moveFilesState,
+    deleteFilesDialog: state.deleteFiles
   };
 };
 
@@ -152,7 +160,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
   deleteFiles: (files) => dispatch(actions.deleteFiles(files)),
   moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
-  toggleMoveFilesDialog: () => dispatch(actions.toggleMoveFilesDialog())
+  toggleMoveFilesDialog: () => dispatch(actions.toggleMoveFilesDialog()),
+  toggleDeleteFilesDialog: () => dispatch(actions.toggleDeleteFilesDialog())
 });
 
 FileActionContainer = connect(
