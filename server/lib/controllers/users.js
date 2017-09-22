@@ -132,9 +132,7 @@ export const add = (req, res, next) => {
           || user.password === null
           || user.password === "") throw "password is empty";
 
-      const sha = crypto.createHash("sha512");
-      sha.update(user.password);
-      const hash = sha.digest("hex");
+      const hash = crypto.createHash("sha512").update(user.password).digest("hex");
       user.password = hash;
       
       const createdUser = yield user.save();
@@ -186,15 +184,11 @@ export const updatePassword = (req, res, next) => {
       const user = yield User.findById(user_id);
       if (user === null || user === undefined) throw "user not found";
 
-      const current_sha = crypto.createHash("sha512");
-      current_sha.update(current_password);
-      const current_hash = current_sha.digest("hex");
+      const current_hash = crypto.createHash("sha512").update(current_password).digest("hex");
       
       if (current_hash !== user.password) throw "password is not match";
 
-      const new_sha = crypto.createHash("sha512");
-      new_sha.update(new_password);
-      const new_hash = new_sha.digest("hex");
+      const new_hash = crypto.createHash("sha512").update(new_password).digest("hex");
       user.password = new_hash;
 
       const changedUser = yield user.save();

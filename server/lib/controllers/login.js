@@ -18,9 +18,7 @@ export const authentication = (req, res, next) => {
 
       if (user === null) throw "user is empty";
 
-      const sha = crypto.createHash("sha512");
-      sha.update(password);
-      const hash = sha.digest("hex");
+      const hash = crypto.createHash("sha512").update(password).digest("hex");
 
       if (user.password !== hash) throw "password is invalid";
 
