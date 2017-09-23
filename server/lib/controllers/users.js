@@ -132,6 +132,12 @@ export const add = (req, res, next) => {
           || user.password === null
           || user.password === "") throw "password is empty";
 
+      let _user = yield User.findOne({ name: user.name });
+      if (_user !== null) throw "name is duplicate";
+
+      _user = yield User.findOne({ email: user.email });
+      if (_user !== null) throw "email is duplicate";
+
       const hash = crypto.createHash("sha512").update(user.password).digest("hex");
       user.password = hash;
       
@@ -149,8 +155,14 @@ export const add = (req, res, next) => {
       case "name is empty":
         errors.name = "表示名が空です";
         break;
+      case "name is duplicate":
+        errors.name = "既に同名のユーザが存在しています";
+        break;
       case "email is empty":
         errors.email = "メールアドレスが空です";
+        break;
+      case "email is duplicate":
+        errors.email = "同じメールアドレスが既に存在しています";
         break;
       case "password is empty":
         errors.password = "パスワードが空です";
