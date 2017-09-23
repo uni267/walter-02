@@ -16,6 +16,7 @@ import FlatButton from "material-ui/FlatButton";
 // components
 import NavigationContainer from "./NavigationContainer";
 import TagCreateBasic from "../components/Tag/TagCreateBasic";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import * as actions from "../actions";
@@ -30,7 +31,7 @@ class TagCreateContainer extends Component {
       <div>
         <NavigationContainer />
         <Card>
-          <CardTitle title="タグ作成" />
+          <CardTitle title={<TitleWithGoBack title="タグ作成" />} />
           <CardText>
             <div style={{ display: "flex" }}>
               <Card style={{ width: "35%", marginRight: 20 }}>

@@ -19,6 +19,7 @@ import FlatButton from 'material-ui/FlatButton';
 // components
 import NavigationContainer from "./NavigationContainer";
 import UserDetailBasic from "../components/User/UserDetailBasic";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import {
@@ -39,7 +40,7 @@ class UserCreateContainer extends Component {
       <div>
         <NavigationContainer />
         <Card>
-          <CardTitle title="ユーザを作成" />
+          <CardTitle title={<TitleWithGoBack title="ユーザを作成"/>} />
           <CardText>
 
             <div style={{ display: "flex" }}>

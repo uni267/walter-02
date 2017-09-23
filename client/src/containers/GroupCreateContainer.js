@@ -15,6 +15,7 @@ import FlatButton from "material-ui/FlatButton";
 // components
 import NavigationContainer from "./NavigationContainer";
 import GroupDetailBasic from "../components/Group/GroupDetailBasic";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import {
@@ -30,7 +31,7 @@ class GroupCreateContainer extends Component {
         <NavigationContainer />
 
         <Card>
-          <CardTitle title="グループ作成" />
+          <CardTitle title={<TitleWithGoBack title="グループ作成" />} />
           <CardText>
 
             <div style={{ display: "flex" }}>

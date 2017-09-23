@@ -15,6 +15,7 @@ import FlatButton from "material-ui/FlatButton";
 // components
 import NavigationContainer from "./NavigationContainer";
 import RoleCreateBasic from "../components/Role/RoleCreateBasic";
+import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import {
@@ -30,7 +31,7 @@ class RoleCreateContainer extends Component {
         <NavigationContainer />
 
         <Card>
-          <CardTitle title="ロール作成" />
+          <CardTitle title={<TitleWithGoBack title="ロール作成" />} />
           <CardText>
             <div style={{ display: "flex" }}>
               <Card style={{ width: "35%", marginRight: 20 }}>
