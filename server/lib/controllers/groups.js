@@ -65,6 +65,9 @@ export const create = (req, res, next) => {
           || group.name === null
           || group.name === "") throw "name is empty";
 
+      const _group = yield Group.findOne({ name: group.name });
+      if ( _group !== null ) throw "name is duplicate";
+
       const createdGroup = yield group.save();
 
       res.json({
@@ -79,6 +82,9 @@ export const create = (req, res, next) => {
       switch (err) {
       case "name is empty":
         errors.name = "名称が空のため作成に失敗しました";
+        break;
+      case "name is duplicate":
+        errors.name = "同名のグループが既に存在するため作成に失敗しました";
         break;
       default:
         errors = err;
