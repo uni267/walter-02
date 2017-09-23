@@ -48,6 +48,9 @@ export const create = (req, res, next) => {
           role.name === null ||
           role.name === "") throw "name is empty";
 
+      const _role = yield Role.findOne({ name: role.name });
+      if ( _role !== null ) throw "name is duplicate";
+
       const newRole = new Role();
       newRole.name = role.name;
       newRole.description = role.description;
@@ -66,6 +69,9 @@ export const create = (req, res, next) => {
       switch (e) {
       case "name is empty":
         errors.name = "ロール名が空のため作成に失敗しました";
+        break;
+      case "name is duplicate":
+        errors.name = "同名のロールが既に存在するため作成に失敗しました";
         break;
       default:
         errors.unknown = e;
