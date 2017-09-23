@@ -210,7 +210,7 @@ class File extends Component {
 
             <MenuItem
               primaryText="メタ情報を編集"
-              onTouchTap={() => this.props.handleMetaInfo(file)} />
+              onTouchTap={() => this.props.toggleMetaInfoDialog(file)} />
 
             <MenuItem
               primaryText="履歴を閲覧"

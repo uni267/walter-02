@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import co from "co";
 
 import MetaInfo from "../models/MetaInfo";
+import Tenant from "../models/Tenant";
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -11,9 +12,15 @@ export const index = (req, res, next) => {
           tenant_id === null ||
           tenant_id === "") throw "tenant_id is empty";
 
-      const meta_infos = yield MetaInfo.find({
-        tenant_id: mongoose.Types.ObjectId(tenant_id)
-      });
+      const tenant = yield Tenant.findById(tenant_id);
+      if (tenant === null) throw "tenant is empty";
+
+      const conditions = {
+        tenant_id: tenant._id,
+        key_type: "meta"
+      };
+
+      const meta_infos = yield MetaInfo.find(conditions);
 
       res.json({
         status: { success: true },

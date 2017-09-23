@@ -346,16 +346,13 @@ class FileListContainer extends Component {
     return (
       <div>
         <div style={styles.row}>
-          {headers.map( (header, idx) => {
-            return (
-              <FileListHeader
-                key={idx} 
-                header={header}
-                style={styles.tableHeader}
-                { ...this.props }
-                />
-            );
-          })}
+          {headers.map( (header, idx) => (
+            <FileListHeader
+              key={idx} 
+              header={header}
+              style={styles.tableHeader}
+              { ...this.props } />
+          ))}
         </div>
 
         <TableBodyWrapper
@@ -429,8 +426,13 @@ class FileListContainer extends Component {
           handleClose={this.toggleTagFileDialog}
           file={this.state.tagFileDialog.file} />
 
-        <MetaInfoDialog { ...this.props } />
-
+        <MetaInfoDialog
+          open={this.props.metaInfo.dialog_open}
+          handleClose={this.props.toggleMetaInfoDialog}
+          file={this.props.metaInfo.target_file}
+          metaInfo={this.props.metaInfo.meta_infos}
+          addMetaInfo={this.props.addMetaInfo}
+          deleteMetaInfo={this.props.deleteMetaInfo} />
       </div>
     );
   }
