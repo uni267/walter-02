@@ -328,6 +328,16 @@ class API {
   static toggleStar(file) {
     return client.patch(`/api/v1/files/${file._id}/toggle_star`);
   }
+
+  static downloadFile(file) {
+    const config = {
+      params: {
+        file_id: file._id
+      }
+    };
+
+    return client.get(`/api/v1/files/download`, config);
+  }
 }
 
 export { API };

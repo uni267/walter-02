@@ -449,7 +449,8 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     metaInfo: state.metaInfo,
     total: state.filePagination.total,
-    page: state.filePagination.page
+    page: state.filePagination.page,
+    downloadBlob: state.downloadFile
   };
 };
 
@@ -492,7 +493,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file)),
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
   toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
-  fileNextPage: () => dispatch(actions.fileNextPage())
+  fileNextPage: () => dispatch(actions.fileNextPage()),
+  downloadFile: (file) => dispatch(actions.downloadFile(file))
 });
 
 FileListContainer = connect(

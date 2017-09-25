@@ -103,6 +103,28 @@ export const view = (req, res, next) => {
   });
 };
 
+export const download = (req, res, next) => {
+  co(function* () {
+    try {
+      const swift = new Swift();
+
+      const { file_id }  = req.query;
+      const tenant_name = res.user.tenant.name;
+
+      // @fixme tenant_name=container_nameにする
+      const file = yield swift.downloadFile("walter", file_id);
+
+      res.json({
+        status: { success: true },
+        body: file
+      });
+    }
+    catch (e) {
+      console.log(e);
+    }
+  });
+};
+
 export const search = (req, res, next) => {
   co(function* () {
     try {

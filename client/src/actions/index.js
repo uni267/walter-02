@@ -42,9 +42,7 @@ export const toggleSortTarget = () => ({
 });
 
 export const sortFile = (sorted, desc) => ({
-  type: "SORT_FILE",
-  sorted,
-  desc
+  type: "SORT_FILE", sorted, desc
 });
 
 export const moveFile = (dir, file) => ({
@@ -563,4 +561,8 @@ export const deleteFileBuffer = (file) => ({
 
 export const popFileToBuffer = (file) => ({
   type: "POP_FILE_TO_BUFFER", file
+});
+
+export const downloadFile = (file) => ({
+  type: "DOWNLOAD_FILE", file
 });

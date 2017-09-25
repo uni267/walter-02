@@ -10,8 +10,8 @@ const fields = upload_path.fields([ { name: "myFile" } ]);
 // ファイル一覧
 router.get("/", controller.index);
 
-// ファイルアップロード
-router.post("/", fields, controller.upload);
+// ファイルダウンロード
+router.get("/download", controller.download);
 
 // ファイル検索
 router.route("/search").get(controller.search);
@@ -21,6 +21,9 @@ router.route("/search_items").get(controller.searchItems);
 
 // 詳細検索
 router.route("/search_detail").get(controller.searchDetail);
+
+// ファイルアップロード
+router.post("/", fields, controller.upload);
 
 // ファイル詳細
 router.route("/:file_id").get(controller.view);

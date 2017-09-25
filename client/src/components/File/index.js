@@ -198,6 +198,7 @@ class File extends Component {
             <MenuItem
               primaryText="ダウンロード"
               leftIcon={<FileFileDownload />}
+              onTouchTap={() => this.props.downloadFile(file)}
               />
             <MenuItem
               primaryText="ファイル名変更"

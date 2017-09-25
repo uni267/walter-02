@@ -68,7 +68,7 @@ const fileApp = combineReducers({
   tag,
   moveFilesState,
   analysis,
-  filePagination,
+  filePagination
 });
 
 export default fileApp;
