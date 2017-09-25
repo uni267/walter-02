@@ -91,30 +91,6 @@ class Authority extends Component {
     });
   }
 
-  autoCompleteFilter = (searchText, key) => {
-    return key.indexOf(searchText) !== -1;
-  }
-
-  onUserRequestNew = (searchText) => {
-    this.setState({ user: searchText });
-  }
-
-  onUserClick = () => {
-    this.setState({
-      user: { text: "" }
-    });
-  }
-
-  onRoleRequestNew = (searchText) => {
-    this.setState({ role: searchText });
-  }
-
-  onRoleClick = () => {
-    this.setState({
-      role: { text: "" }
-    });
-  }
-
   onAddClick = () => {
     this.props.addAuthority(
       this.props.file.id,
@@ -198,9 +174,9 @@ class Authority extends Component {
             hintText="ユーザ名またはグループ名を入力"
             searchText={this.state.user.text}
             floatingLabelText="ユーザ名またはグループ名を入力"
-            onTouchTap={this.onUserClick}
-            onNewRequest={this.onUserRequestNew}
-            filter={this.autoCompleteFilter}
+            onTouchTap={() => this.setState({ user: { text: "" } }) }
+            onNewRequest={(text) => this.setState({ user: text })}
+            filter={(text, key) => key.indexOf(text) !== -1 }
             openOnFocus={true}
             dataSource={this.users} />
 
@@ -209,9 +185,9 @@ class Authority extends Component {
             hintText="ロールを入力"
             searchText={this.state.role.text}
             floatingLabelText="ロールを入力"
-            onTouchTap={this.onRoleClick}
-            onNewRequest={this.onRoleRequestNew}
-            filter={this.autoCompleteFilter}
+            onTouchTap={() => this.setState({ role: { text: "" } })}
+            onNewRequest={(text) => this.setState({ role: text }) }
+            filter={(text, key) => key.indexOf(text) !== -1 }
             openOnFocus={true}
             dataSource={this.roles} />
 
