@@ -66,14 +66,7 @@ class Authority extends Component {
       }
     };
 
-    this.onUserRequestNew = this.onUserRequestNew.bind(this);
-    this.onUserClick = this.onUserClick.bind(this);
-    this.onRoleRequestNew = this.onRoleRequestNew.bind(this);
-    this.onRoleClick = this.onRoleClick.bind(this);
-    this.onAddClick = this.onAddClick.bind(this);
-    this.onDeleteClick = this.onDeleteClick.bind(this);
-
-    this.roles = props.roles.map(role => {
+    this.roles = this.props.roles.map(role => {
       const text = role.name;
       const icon = <HardwareSecurity />;
       const value = (
@@ -98,31 +91,31 @@ class Authority extends Component {
     });
   }
 
-  autoCompleteFilter(searchText, key) {
+  autoCompleteFilter = (searchText, key) => {
     return key.indexOf(searchText) !== -1;
   }
 
-  onUserRequestNew(searchText) {
+  onUserRequestNew = (searchText) => {
     this.setState({ user: searchText });
   }
 
-  onUserClick() {
+  onUserClick = () => {
     this.setState({
       user: { text: "" }
     });
   }
 
-  onRoleRequestNew(searchText) {
+  onRoleRequestNew = (searchText) => {
     this.setState({ role: searchText });
   }
 
-  onRoleClick() {
+  onRoleClick = () => {
     this.setState({
       role: { text: "" }
     });
   }
 
-  onAddClick() {
+  onAddClick = () => {
     this.props.addAuthority(
       this.props.file.id,
       this.state.user.user,
@@ -135,12 +128,12 @@ class Authority extends Component {
     });
   }
 
-  onDeleteClick(file_id, auth_id) {
+  onDeleteClick = (file_id, auth_id) => {
     this.props.deleteAuthority(file_id, auth_id);
     this.props.triggerSnackbar("権限を削除しました");    
   }
 
-  renderAuthorities(file) {
+  renderAuthorities = (file) => {
     return file.authorities.map( (auth, idx) => {
       const deleteDisabled = auth.user.is_owner;
 
