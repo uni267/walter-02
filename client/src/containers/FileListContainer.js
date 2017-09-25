@@ -303,6 +303,7 @@ class FileListContainer extends Component {
         handleDeleteDir={this.toggleDeleteDirDialog}
         handleAuthorityDir={this.toggleAuthorityDirDialog}
         handleHistoryDir={this.toggleHistoryDirDialog}
+        editDir={this.props.editFileByIndex}
         />
     );
 
