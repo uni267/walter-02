@@ -10,14 +10,22 @@ import { Link } from "react-router-dom";
 
 // material
 import Checkbox from 'material-ui/Checkbox';
-import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import MenuItem from "material-ui/MenuItem";
 import IconButton from "material-ui/IconButton";
+import IconMenu from "material-ui/IconMenu";
+import TextField from "material-ui/TextField";
+
+// material icons
 import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import IconMenu from "material-ui/IconMenu";
-import TextField from "material-ui/TextField";
+import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
+import ContentForward from "material-ui/svg-icons/content/forward";
+import EditorModeEdit from "material-ui/svg-icons/editor/mode-edit";
+import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
+import ActionDelete from "material-ui/svg-icons/action/delete";
+import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
+import ActionHistory from "material-ui/svg-icons/action/history";
 
 const style = {
   dir: {
@@ -180,26 +188,32 @@ class Dir extends Component {
 
             <MenuItem
               primaryText="フォルダ名変更"
+              leftIcon={<EditorModeEdit />}
               onTouchTap={() => this.setState({ editDir: { open: true } })} />
 
             <MenuItem
               primaryText="移動"
+              leftIcon={<ContentForward />}
               onTouchTap={() => this.props.handleMoveDir(this.props.dir)} />
 
             <MenuItem
               primaryText="コピー"
+              leftIcon={<ContentContentCopy />}
               onTouchTap={this.props.handleCopyDir} />
 
             <MenuItem
               primaryText="削除" 
+              leftIcon={<ActionDelete />}
               onTouchTap={() => this.props.handleDeleteDir(dir)} />
 
             <MenuItem
               primaryText="権限を変更"
+              leftIcon={<ActionVerifiedUser />}
               onTouchTap={() => this.props.handleAuthorityDir(dir)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
+              leftIcon={<ActionHistory />}
               onTouchTap={() => this.props.handleHistoryDir(dir)} />
 
           </IconMenu>
