@@ -14,6 +14,14 @@ import {
   triggerSnackbar
 } from "../actions";
 
+// material icons
+import ActionLabel from "material-ui/svg-icons/action/label";
+import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
+import ActionList from "material-ui/svg-icons/action/list";
+import ActionDonutSmall from "material-ui/svg-icons/action/donut-small";
+import SocialPerson from "material-ui/svg-icons/social/person";
+import SocialGroup from "material-ui/svg-icons/social/group";
+
 // components
 import AccountDialog from "../components/Account/AccountDialog";
 import AppMenu from "../components/AppMenu";
@@ -46,27 +54,33 @@ class NavigationContainer extends Component {
     const menus = [
       {
         name: "ファイル一覧",
-        link: `/home/${this.props.tenant.dirId}`
+        link: `/home/${this.props.tenant.dirId}`,
+        icon: <ActionList />
       },
       {
         name: "タグ管理",
-        link: `/tags`
+        link: `/tags`,
+        icon: <ActionLabel />
       },
       {
         name: "容量管理",
-        link: `/analysis`
+        link: `/analysis`,
+        icon: <ActionDonutSmall />
       },
       {
         name: "ユーザ管理",
-        link: "/users"
+        link: "/users",
+        icon: <SocialPerson />
       },
       {
         name: "グループ管理",
-        link: "/groups"
+        link: "/groups",
+        icon: <SocialGroup />
       },
       {
         name: "ロール管理",
-        link: "/roles"
+        link: "/roles",
+        icon: <ActionVerifiedUser />
       }
     ];
 

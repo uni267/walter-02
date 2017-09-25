@@ -22,6 +22,7 @@ const AppMenu = ({
         key={idx}
         onTouchTap={toggle}
         containerElement={link}
+        leftIcon={menu.icon}
         primaryText={menu.name} />
     );
   };
