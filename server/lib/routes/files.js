@@ -5,7 +5,7 @@ import * as controller from "../controllers/files";
 const router = Router();
 
 const upload_path = multer({ dest: "uploads/" });
-const fields = upload_path.fields([ { name: "myFile" } ]);
+const fields = upload_path.fields([ { name: "myFile[]" } ]);
 
 // ファイル一覧
 router.get("/", controller.index);

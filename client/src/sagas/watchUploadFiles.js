@@ -11,24 +11,19 @@ function* watchUploadFiles() {
     yield call(delay, files.length * 1000);
 
     try {
-      const tasks = files.map( file => call(API.fileUpload, dir_id, file) );
-      const uploadPayloads = yield all(tasks);
+      const uploadPayload = yield call(API.filesUpload, dir_id, files);
 
-      const buffers = uploadPayloads.map( pay => pay.data.body )
-            .map( body => put(actions.pushFileToBuffer(body)));
-
+      const buffers = uploadPayload.data.body.map( body => put(actions.pushFileToBuffer(body)) );
       yield all(buffers);
 
+      const uploadFileIds = uploadPayload.data.body.map( body => body._id );
+
       const filesPayload = yield call(API.fetchFiles, dir_id);
-
-      const uploadFileIds = uploadPayloads.map( pay => pay.data.body)
-            .map( body => body._id);
-
       yield put(actions.initFiles(filesPayload.data.body));
 
-      const toggleCheckTasks = filesPayload.data.body.filter( file => {
-        return uploadFileIds.includes(file._id);
-      }).map( file => put(actions.toggleFileCheck(file)) );
+      const toggleCheckTasks = filesPayload.data.body.filter( file => (
+        uploadFileIds.includes(file._id)
+      )).map( file => put(actions.toggleFileCheck(file)) );
 
       yield all(toggleCheckTasks);
       yield put(actions.triggerSnackbar("ファイルをアップロードしました"));

@@ -371,12 +371,13 @@ export const upload = (req, res, next) => {
 
   co(function* () {
     try {
-      const myFile = req.files.myFile[0];
+      const myFiles = req.files["myFile[]"];
       let dir_id = req.body.dir_id;
 
-      if (myFile === null ||
-          myFile === undefined ||
-          myFile === "") throw "myFile is empty";
+      if (myFiles === null ||
+          myFiles === undefined ||
+          myFiles === "" ||
+          myFiles.length === 0) throw "myFile is empty";
 
       if (dir_id === null ||
           dir_id === undefined ||
@@ -390,52 +391,55 @@ export const upload = (req, res, next) => {
 
       if (dir === null) throw "dir is empty";
 
-      const file = new File();
-      file.name = myFile.originalname;
-      file.blob_path = myFile.path;
-      file.mime_type = myFile.mimetype;
-      file.size = myFile.size;
-      file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
-      file.is_dir = false;
-      file.dir_id = dir_id;
-      file.is_display = true;
-      file.is_star = false;
-      file.tags = [];
-      file.histories = [];
-      file.authorities = [];
-      file.meta_infos = [];
-
       const decoded = yield verifyPromise(req.headers["x-auth-cloud-storage"]);
       const user = yield User.findById(decoded._doc._id);
 
-      if (user === null) throw "user is empty";
+      const createFiles = myFiles.map( _file => {
+        const file = new File();
+        file.name = _file.originalname;
+        file.blob_path = _file.path;
+        file.mime_type = _file.mimetype;
+        file.size = _file.size;
+        file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+        file.is_dir = false;
+        file.dir_id = dir_id;
+        file.is_display = true;
+        file.is_star = false;
+        file.tags = [];
+        file.histories = [];
+        file.authorities = [];
+        file.meta_infos = [];
 
-      const authority = {
-        user: user,
-        role: { name: "full control", actions: [ "read", "write", "authority" ] }
-      };
+        if (user === null) throw "user is empty";
 
-      file.authorities = file.authorities.concat(authority);
+        const authority = {
+          user: user,
+          role: { name: "full control", actions: [ "read", "write", "authority" ] }
+        };
 
-      const history = {
-        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
-        user: user,
-        action: "新規作成",
-        body: ""
-      };
+        file.authorities = file.authorities.concat(authority);
 
-      file.histories = file.histories.concat(history);
-      const changedFile = yield file.save();
+        const history = {
+          modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+          user: user,
+          action: "新規作成",
+          body: ""
+        };
 
-      // ここからswiftへのput
-      // @fixme hardcording
-      const swift = new Swift();
-      const uploadFilePath = path.resolve(myFile.path);
-      const uploadedFile = yield swift.upload(uploadFilePath, changedFile._id.toString());
+        file.histories = file.histories.concat(history);
+
+        // ここからswiftへのput
+        const swift = new Swift();
+        swift.upload(path.resolve(_file.path), file._id.toString());
+
+        return file;
+      });
+
+      const changedFiles = yield createFiles.map( file => file.save() );
 
       res.json({
         status: { success: true },
-        body: changedFile
+        body: changedFiles
       });
 
     }

@@ -74,13 +74,17 @@ class API {
     return client.post(`/api/v1/dirs`, body).then( res => res );
   }
 
-  static fileUpload(dir_id, file) {
+  static filesUpload(dir_id, files) {
+    const form = new FormData();
 
-    let form = new FormData();
-    form.append("myFile", file);
     form.append("dir_id", dir_id);
 
-    return client.post(`/api/v1/files`, form).then( res => res );
+    files.forEach( file => {
+      file.dir_id = dir_id;
+      form.append("myFile[]", file);
+    });
+
+    return client.post(`/api/v1/files`, form);
   }
 
   static deleteFile(file) {
