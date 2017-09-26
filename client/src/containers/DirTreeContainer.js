@@ -9,19 +9,10 @@ import DirTree from "../components/DirTree";
 // material
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
+
 // actions
 import { requestFetchDirTree, selectDirTree } from "../actions";
-
-const styles = {
-  dirWrapper: {
-    padding: 15,
-    marginTop: 30,
-    marginBottom: 30,
-    backgroundColor: "rgb(255, 255, 255)",
-    border: "solid 1px",
-    borderColor: "rgb(200, 200, 200)"
-  }
-};
 
 class DirTreeContainer extends Component {
   componentWillMount() {
@@ -60,32 +51,29 @@ class DirTreeContainer extends Component {
             };
 
       return (
-        <div style={styles.dirWrapper}>
-
-          <div style={{ display: "flex" }}>
-
-            <div style={{ paddingTop: 5, paddingBottom: 5 }}>
-              <HardwareKeyboardArrowDown />
+        <Card style={{ marginTop: 30, marginBottom: 30 }}>
+          <CardText>
+            <div style={{ display: "flex" }}>
+              <div style={{ paddingTop: 5, paddingBottom: 5 }}>
+                <HardwareKeyboardArrowDown />
+              </div>
+              <div style={style}
+                   onClick={() => this.props.selectDirTree(node)}>
+                <div>
+                  <FileFolderOpen />
+                </div>
+                <div style={{ marginLeft: 10 }}>
+                  <p style={{ margin: 0, padding: 0 }}>
+                    {node.name}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div style={style}
-                 onClick={() => this.props.selectDirTree(node)}>
-              <div>
-                <FileFolderOpen />
-              </div>
+            {node.children.map( (node, idx) => this.renderDirTree(node, idx) )}
 
-              <div style={{ marginLeft: 10 }}>
-                <p style={{ margin: 0, padding: 0 }}>
-                  {node.name}
-                </p>
-              </div>
-
-            </div>
-          </div>
-
-          {node.children.map( (node, idx) => this.renderDirTree(node, idx) )}
-
-        </div>
+          </CardText>
+        </Card>
       );
     }
   }
