@@ -13,7 +13,10 @@ function* watchUploadFiles() {
     try {
       const uploadPayload = yield call(API.filesUpload, dir_id, files);
 
-      const buffers = uploadPayload.data.body.map( body => put(actions.pushFileToBuffer(body)) );
+      const buffers = uploadPayload.data.body.map( body => (
+        put(actions.pushFileToBuffer(body))
+      ));
+
       yield all(buffers);
 
       const uploadFileIds = uploadPayload.data.body.map( body => body._id );
