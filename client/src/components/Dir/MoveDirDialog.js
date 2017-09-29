@@ -42,7 +42,6 @@ class MoveDirDialog extends Component {
         modal={false}
         autoScrollBodyContent={true}
         onRequestClose={this.props.toggleMoveDirDialog}
-        bodyStyle={{ backgroundColor: "rgb(240, 240, 240)" }}
         actions={actions} >
 
         <DirTreeContainer />
