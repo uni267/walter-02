@@ -1,0 +1,65 @@
+#+STARTUP: indent
+
+* 環境設定
+** 共通(osx)
+- nodeが既にインストールされているかの確認
+  nodebrew上にnodejsをインストールしたいので既存のnodeは削除する
+
+#+begin_src 
+$ node --version
+#+end_src
+
+- nodebrewのインストール
+#+begin_src shell
+$ curl -L git.io/nodebrew | perl - setup
+#+end_src
+
+- bashrcにpathを追加
+#+begin_src shell
+$ vi ~/.bashrc
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+
+$ source ~/.bashrc
+#+end_src
+
+- nodejs本体をインストール
+#+begin_src shell
+$ nodebrew install v6.11.0
+$ nodebrew use v6.11.0
+$ node --version
+v6.11.0
+#+end_src
+
+- 任意のパスにcloud storageのリポジトリをclone
+#+begin_src shell
+$ cd /path/to/work
+$ git clone https://github.com/knb-wkm/walter-02.git
+#+end_src
+
+** サーバサイド
+
+- npm
+#+begin_src shell
+$ cd /path/to/walter-02
+$ cd server
+$ npm install
+#+end_src
+
+- 起動
+#+begin_src shell
+$ npm start
+#+end_src
+
+** フロントエンド
+
+- npm
+#+begin_src shell
+$ cd /path/to/walter-02
+$ cd client
+$ npm install
+#+end_src
+
+- 起動
+#+begin_src shell
+$ npm start
+#+end_src
