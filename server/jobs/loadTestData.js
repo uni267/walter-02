@@ -199,6 +199,10 @@ var actions = [
   {
     name: "write",
     label: "書き込み"
+  },
+  {
+    name: "authority",
+    label: "権限変更"
   }
 ];
 
@@ -226,6 +230,16 @@ var roles = [
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
   },
+  {
+    name: "フルコントロール",
+    description: "読み取り + 書き込み + 権限変更",
+    actions: [
+      db.actions.findOne({ name: "read" })._id,
+      db.actions.findOne({ name: "write" })._id,
+      db.actions.findOne({ name: "authority" })._id
+    ],
+    tenant_id: db.tenants.findOne({ name: "test" })._id
+  }
 ];
 
 db.roles.insert(roles);
