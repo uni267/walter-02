@@ -63,3 +63,68 @@ $ npm install
 #+begin_src shell
 $ npm start
 #+end_src
+
+** コンテナを作成
+- 事前にmongo, openstack-swiftのコンテナを作成しておく
+- docker serverに以下の内容をdocker-compose.ymlとして保存する
+#+begin_src yaml
+version: "2"
+services:
+  mongo:
+    container_name: "walter-db2"
+    image: "mongo"
+    privileged: true
+    networks:
+      platform:
+        ipv4_address: 172.16.55.xx
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/tmp:/tmp"
+    environment:
+      LANG: "ja_JP.UTF-8"
+  swift:
+    container_name: "walter-swift2"
+    image: "morrisjobke/docker-swift-onlyone"
+    privileged: true
+    networks:
+      platform:
+        ipv4_address: 172.16.55.xx
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/tmp:/tmp"
+    environment:
+      LANG: "ja_JP.UTF-8"
+networks:
+  platform:
+    external: true
+#+end_src
+
+- docker-compose実行
+#+begin_src shell
+$ sudo /usr/local/bin/docker-compose -d up
+#+end_src
+
+** mongoのセットアップ
+
+- mongoをインストール
+#+begin_src shell
+$ brew install mongodb
+#+end_src
+
+- データ投入
+#+begin_src shell
+$ cd /path/to/walter-02/server/jobs
+
+# 部内Dockerのmongodbを指定する
+$ mongo 172.16.55.xx/walter --quiet localTestData.js
+#+end_src
+
+** openstack swiftのセットアップ
+
+- swift上にwalterのコンテナ(swiftでいうところのコンテナ)を作成する
+- swiftのdocker containerにbashにてログインしコンテナを作成
+#+begin_src shell
+$ sudo docker exec -it walter-swiftx /bin/bash
+$ swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post walter
+#+end_src
+
