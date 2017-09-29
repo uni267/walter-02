@@ -194,7 +194,7 @@ class Dir extends Component {
             <MenuItem
               primaryText="移動"
               leftIcon={<ContentForward />}
-              onTouchTap={() => this.props.handleMoveDir(this.props.dir)} />
+              onTouchTap={() => this.props.toggleMoveDirDialog(this.props.dir)} />
 
             <MenuItem
               primaryText="コピー"
