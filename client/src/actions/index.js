@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 export const toggleAddDir = () => ({
   type: "TOGGLE_ADD_DIR"
 });
@@ -71,14 +73,11 @@ export const notifications = () => ({
   type: "SHOW_ALL"
 });
 
-export const addAuthority = (file_id, user, role) => ({
-  type: "ADD_AUTHORITY",
-  file_id,
-  user,
-  role
+export const addAuthorityToFile = (file, user, role) => ({
+  type: "ADD_AUTHORITY_TO_FILE",  file,  user,  role
 });
 
-export const deleteAuthority = (file_id, authority_id) => ({
+export const deleteAuthorityToFile = (file_id, authority_id) => ({
   type: "DELETE_AUTHORITY",
   file_id,
   authority_id
@@ -565,4 +564,12 @@ export const popFileToBuffer = (file) => ({
 
 export const downloadFile = (file) => ({
   type: "DOWNLOAD_FILE", file
+});
+
+export const toggleAuthorityFileDialog = (file) => ({
+  type: actionTypes.TOGGLE_AUTHORITY_FILE_DIALOG, file
+});
+
+export const initAuthorityFileDialog = (file) => ({
+  type: actionTypes.INIT_AUTHORITY_FILE_DIALOG, file
 });

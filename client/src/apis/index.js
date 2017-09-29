@@ -18,7 +18,7 @@ class API {
     return client.get(`/api/v1/users/${user_id}`).then( res => res );
   }
 
-  static fetchFiles(dir_id, page) {
+  static fetchFiles(dir_id, page = 0) {
     const config = {
       params: { dir_id, page }
     };
@@ -27,7 +27,7 @@ class API {
   }
 
   static fetchFile(file_id) {
-    return client.get(`/api/v1/files/${file_id}`).then(res => res);
+    return client.get(`/api/v1/files/${file_id}`);
   }
 
   static fetchDirs(dir_id) {
@@ -342,6 +342,12 @@ class API {
 
     return client.get(`/api/v1/files/download`, config);
   }
+
+  static addAuthorityToFile(file, user, role) {
+    const body = { user, role };
+    return client.post(`/api/v1/files/${file._id}/authorities`, body);
+  }
+
 }
 
 export { API };

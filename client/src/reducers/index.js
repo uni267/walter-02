@@ -34,6 +34,7 @@ import tag from "./tagReducer";
 import moveFilesState from "./moveFilesReducer";
 import analysis from "./analysisReducer";
 import filePagination from "./filePaginationReducer";
+import addAuthority from "./addAuthorityReducer";
 
 const fileApp = combineReducers({
   files,
@@ -68,7 +69,8 @@ const fileApp = combineReducers({
   tag,
   moveFilesState,
   analysis,
-  filePagination
+  filePagination,
+  addAuthority
 });
 
 export default fileApp;

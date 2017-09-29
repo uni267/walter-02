@@ -46,6 +46,12 @@ router.route("/:file_id/meta").post(controller.addMeta);
 // メタ情報の削除
 router.route("/:file_id/meta/:meta_id").delete(controller.removeMeta);
 
+// ロールの追加
+router.route("/:file_id/authorities").post(controller.addAuthority);
+
+// ロールの削除
+router.route("/:file_id/authorities").delete(controller.removeAuthority);
+
 // お気に入りのトグル
 router.route("/:file_id/toggle_star").patch(controller.toggleStar);
 

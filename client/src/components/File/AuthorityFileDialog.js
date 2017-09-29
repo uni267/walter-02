@@ -14,8 +14,8 @@ const AuthorityFileDialog = ({
   file,
   users,
   roles,
-  addAuthority,
-  deleteAuthority,
+  addAuthorityToFile,
+  deleteAuthorityToFile,
   triggerSnackbar
 }) => {
   const actions = (
@@ -37,9 +37,9 @@ const AuthorityFileDialog = ({
       <Authority
         file={file}
         users={users}
-        roles={roles}
-        addAuthority={addAuthority}
-        deleteAuthority={deleteAuthority}
+        roles={roles.data}
+        addAuthorityToFile={addAuthorityToFile}
+        deleteAuthorityToFile={deleteAuthorityToFile}
         triggerSnackbar={triggerSnackbar} />
 
     </Dialog>
@@ -52,8 +52,8 @@ AuthorityFileDialog.propTypes = {
   file: PropTypes.object,
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
-  addAuthority: PropTypes.func.isRequired,
-  deleteAuthority: PropTypes.func.isRequired,
+  addAuthorityToFile: PropTypes.func.isRequired,
+  deleteAuthorityToFile: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired
 };
 

@@ -29,20 +29,21 @@ import FileBasic from "../components/FileBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import {
-  addAuthority,
-  deleteAuthority,
-  triggerSnackbar,
-  editFileByView,
-  addMetaInfo,
-  deleteMetaInfo,
-  requestFetchFile,
-  requestFetchTags,
-  requestAddTag,
-  requestDelTag,
-  requestFetchMetaInfo,
-  toggleMetaInfoDialog
-} from "../actions";
+import * as actions from "../actions";
+// import {
+//   addAuthority,
+//   deleteAuthority,
+//   triggerSnackbar,
+//   editFileByView,
+//   addMetaInfo,
+//   deleteMetaInfo,
+//   requestFetchFile,
+//   requestFetchTags,
+//   requestAddTag,
+//   requestDelTag,
+//   requestFetchMetaInfo,
+//   toggleMetaInfoDialog
+// } from "../actions";
 
 const styles = {
   fileImageWrapper: {
@@ -326,22 +327,26 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  addAuthority: (file_id, user, role) => {
-    dispatch(addAuthority(file_id, user, role));
+  addAuthorityToFile: (file_id, user, role) => {
+    dispatch(actions.addAuthorityToFile(file_id, user, role));
   },
-  deleteAuthority: (file_id, authority_id) => {
-    dispatch(deleteAuthority(file_id, authority_id));
+  deleteAuthorityToFile: (file_id, authority_id) => {
+    dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
   },
-  editFileByView: (file) => { dispatch(editFileByView(file)); },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  addMetaInfo: (file, metaInfo, value) => { dispatch(addMetaInfo(file, metaInfo, value)); },
-  deleteMetaInfo: (file, metaInfo) => { dispatch(deleteMetaInfo(file, metaInfo)); },
-  requestFetchFile: (file_id) => { dispatch(requestFetchFile(file_id)); },
-  requestFetchTags: () => { dispatch(requestFetchTags()); },
-  requestAddTag: (file, tag) => { dispatch(requestAddTag(file, tag)); },
-  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); },
-  requestFetchMetaInfo: (tenant_id) => { dispatch(requestFetchMetaInfo(tenant_id)); },
-  toggleMetaInfoDialog: (file) => { dispatch(toggleMetaInfoDialog(file)); }
+  editFileByView: (file) => dispatch(actions.editFileByView(file)),
+  triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
+  addMetaInfo: (file, metaInfo, value) => {
+    dispatch(actions.addMetaInfo(file, metaInfo, value));
+  },
+  deleteMetaInfo: (file, metaInfo) => dispatch(actions.deleteMetaInfo(file, metaInfo)),
+  requestFetchFile: (file_id) => dispatch(actions.requestFetchFile(file_id)),
+  requestFetchTags: () => dispatch(actions.requestFetchTags()),
+  requestAddTag: (file, tag) => dispatch(actions.requestAddTag(file, tag)),
+  requestDelTag: (file, tag) => dispatch(actions.requestDelTag(file, tag)),
+  requestFetchMetaInfo: (tenant_id) => {
+    dispatch(actions.requestFetchMetaInfo(tenant_id));
+  },
+  toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file))
 });
 
 FileDetailContainer = connect(

@@ -35,15 +35,6 @@ const style = {
     borderBottom: "1px solid lightgray"
   },
 
-  inputWrapper: {
-    marginLeft: 20,
-    marginBottom: 40
-  },
-
-  autoComplete: {
-    marginRight: 30
-  },
-
   roleListWrapper: {
     marginTop: 20
   }
@@ -65,59 +56,23 @@ class Authority extends Component {
         auth_id: null
       }
     };
-
-    this.roles = this.props.roles.map(role => {
-      const text = role.name;
-      const icon = <HardwareSecurity />;
-      const value = (
-        <MenuItem
-          primaryText={role.name}
-          leftIcon={icon} />
-      );
-
-      return { text, role, value };
-    });
-
-    this.users = props.users.map(user => {
-      const text = user.name_jp;
-      const icon = user.type === "user" ? <SocialPerson /> : <SocialGroup />;
-      const primaryText = user.name_jp;
-
-      const value = (
-        <MenuItem primaryText={primaryText} leftIcon={icon} />
-      );
-
-      return { text, user, value };
-    });
   }
 
-  onAddClick = () => {
-    this.props.addAuthority(
-      this.props.file.id,
-      this.state.user.user,
-      this.state.role.role
-    );
-    this.props.triggerSnackbar("権限を追加しました");
-    this.setState({
-      user: { text: "" },
-      role: { text: "" }
-    });
-  }
-
-  onDeleteClick = (file_id, auth_id) => {
-    this.props.deleteAuthority(file_id, auth_id);
-    this.props.triggerSnackbar("権限を削除しました");    
-  }
+  // onDeleteClick = (file_id, auth_id) => {
+  //   this.props.deleteAuthority(file_id, auth_id);
+  //   this.props.triggerSnackbar("権限を削除しました");    
+  // }
 
   renderAuthorities = (file) => {
     return file.authorities.map( (auth, idx) => {
+
+      // @fixme 所有者かどうかはroleにもたせるべき
       const deleteDisabled = auth.user.is_owner;
 
       return (
         <div key={idx} style={style.row}>
           <div style={{...style.cell, width: "160px"}}>
-            {auth.user.name_jp}
-            {auth.user.is_owner ? "(所有者)" : null}
+            {auth.user.name}
           </div>
           <div style={{...style.cell, width: "160px"}}>
             {auth.role.name}
@@ -125,7 +80,7 @@ class Authority extends Component {
           <div style={{...style.cell, width: "120px"}}>
             <RaisedButton
               label="削除"
-              disabled={deleteDisabled}              
+              disabled={true}
               onClick={() => this.setState({
                 deleteDialog: {
                   open: true,
@@ -141,6 +96,26 @@ class Authority extends Component {
   }
 
   render() {
+    const roles = this.props.roles.map( role => {
+      return {
+        text: role.name,
+        role: role,
+        value: (
+          <MenuItem primaryText={role.name} leftIcon={<HardwareSecurity />}/>
+        )
+      };
+    });
+
+    const users = this.props.users.map( user => {
+      return {
+        text: user.name,
+        user: user,
+        value: (
+          <MenuItem primaryText={user.name} leftIcon={<SocialPerson />} />
+        )
+      };
+    });
+
     const deleteDialogActions = [
       (
         <RaisedButton
@@ -168,9 +143,9 @@ class Authority extends Component {
 
     return (
       <div>
-        <div style={style.inputWrapper}>
+        <div style={{ marginLeft: 20, marginBottom: 40 }}>
           <AutoComplete
-            style={style.autoComplete}
+            style={{ marginRight: 30 }}
             hintText="ユーザ名またはグループ名を入力"
             searchText={this.state.user.text}
             floatingLabelText="ユーザ名またはグループ名を入力"
@@ -178,10 +153,10 @@ class Authority extends Component {
             onNewRequest={(text) => this.setState({ user: text })}
             filter={(text, key) => key.indexOf(text) !== -1 }
             openOnFocus={true}
-            dataSource={this.users} />
+            dataSource={users} />
 
           <AutoComplete
-            style={style.autoComplete}
+            style={{ marginRight: 30 }}
             hintText="ロールを入力"
             searchText={this.state.role.text}
             floatingLabelText="ロールを入力"
@@ -189,16 +164,22 @@ class Authority extends Component {
             onNewRequest={(text) => this.setState({ role: text }) }
             filter={(text, key) => key.indexOf(text) !== -1 }
             openOnFocus={true}
-            dataSource={this.roles} />
+            dataSource={roles} />
 
           <RaisedButton
             label="追加"
             primary={addClickable}
             disabled={!addClickable}
-            onTouchTap={this.onAddClick} />
+            onTouchTap={() => {
+              this.props.addAuthorityToFile(
+                this.props.file,
+                this.state.user.user,
+                this.state.role.role
+              );
+            }} />
         </div>
         
-        <div style={style.roleListWrapper}>
+        <div style={{ marginTop: 20 }}>
           {this.renderAuthorities(this.props.file)}
         </div>
 

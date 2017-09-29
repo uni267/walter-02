@@ -120,10 +120,6 @@ class FileListContainer extends Component {
         open: false,
         dir: {}
       },
-      authorityFileDialog: {
-        open: false,
-        file: {}
-      },
       deleteFileDialog: {
         open: false,
         file: {}
@@ -150,6 +146,8 @@ class FileListContainer extends Component {
   componentWillMount() {
     this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
     this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+    this.props.requestFetchRoles(this.props.tenant.tenant_id);
+    this.props.requestFetchUsers(this.props.tenant.tenant_id);
   }
 
   componentDidMount() {
@@ -211,15 +209,6 @@ class FileListContainer extends Component {
       historyDirDialog: {
         open: !this.state.historyDirDialog.open,
         dir: dir
-      }
-    });
-  };
-
-  toggleAuthorityFileDialog = (file = {}) => {
-    this.setState({
-      authorityFileDialog: {
-        open: !this.state.authorityFileDialog.open,
-        file: file
       }
     });
   };
@@ -396,8 +385,9 @@ class FileListContainer extends Component {
 
         <AuthorityFileDialog
           { ...this.props }
-          open={this.state.authorityFileDialog.open}
-          handleClose={this.toggleAuthorityFileDialog}
+          file={this.props.addAuthority.file}
+          open={this.props.addAuthority.open}
+          handleClose={this.props.toggleAuthorityFileDialog}
         />
 
         <DeleteFileDialog
@@ -451,7 +441,8 @@ const mapStateToProps = (state, ownProps) => {
     metaInfo: state.metaInfo,
     total: state.filePagination.total,
     page: state.filePagination.page,
-    downloadBlob: state.downloadFile
+    downloadBlob: state.downloadFile,
+    addAuthority: state.addAuthority
   };
 };
 
@@ -464,11 +455,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   editFileByIndex: (file) => dispatch(actions.editFileByIndex(file)),
   triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
   toggleStar: (file) => dispatch(actions.toggleStar(file)),
-  addAuthority: (file_id, user, role) => {
-    dispatch(actions.addAuthority(file_id, user, role));
+  addAuthorityToFile: (file, user, role) => {
+    dispatch(actions.addAuthorityToFile(file, user, role));
   },
-  deleteAuthority: (file_id, authority_id) => {
-    dispatch(actions.deleteAuthority(file_id, authority_id));
+  deleteAuthorityToFile: (file_id, authority_id) => {
+    dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
   },
   setSortTarget: (target) => dispatch(actions.setSortTarget(target)),
   toggleSortTarget: () => dispatch(actions.toggleSortTarget()),
@@ -495,7 +486,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
   toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
   fileNextPage: () => dispatch(actions.fileNextPage()),
-  downloadFile: (file) => dispatch(actions.downloadFile(file))
+  downloadFile: (file) => dispatch(actions.downloadFile(file)),
+  requestFetchRoles: (tenant_id) => dispatch(actions.requestFetchRoles(tenant_id)),
+  requestFetchUsers: (tenant_id) => dispatch(actions.requestFetchUsers(tenant_id)),
+  toggleAuthorityFileDialog: (file) => {
+    dispatch(actions.toggleAuthorityFileDialog(file));
+  }
 });
 
 FileListContainer = connect(

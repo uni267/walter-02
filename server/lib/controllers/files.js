@@ -15,6 +15,7 @@ import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
+import Role from "../models/Role";
 import { Swift } from "../storages/Swift";
 
 export const index = (req, res, next) => {
@@ -357,18 +358,6 @@ export const move = (req, res, next) => {
 };
 
 export const upload = (req, res, next) => {
-  // jwt.vefifyはasyncかつpromiseを返却しない
-  const verifyPromise = (token) => {
-    return new Promise( (resolve, reject) => {
-      const { secretKey } = SECURITY_CONF.development;
-
-      jwt.verify(token, secretKey, (err, decoded) => {
-        if (err) reject(err);
-        resolve(decoded);
-      });
-    });
-  };
-
   co(function* () {
     try {
       const myFiles = req.files["myFile[]"];
@@ -391,8 +380,12 @@ export const upload = (req, res, next) => {
 
       if (dir === null) throw "dir is empty";
 
-      const decoded = yield verifyPromise(req.headers["x-auth-cloud-storage"]);
-      const user = yield User.findById(decoded._doc._id);
+      const user = yield User.findById(res.user._id);
+
+      const role = yield Role.findOne({
+        tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
+        name: "フルコントロール" // @fixme
+      });
 
       const createFiles = myFiles.map( _file => {
         const file = new File();
@@ -412,12 +405,8 @@ export const upload = (req, res, next) => {
 
         if (user === null) throw "user is empty";
 
-        const authority = {
-          user: user,
-          role: { name: "full control", actions: [ "read", "write", "authority" ] }
-        };
-
-        file.authorities = file.authorities.concat(authority);
+        // アップロードしたユーザが所有者となる
+        file.authorities = file.authorities.concat({ user: user, group: null, role });
 
         const history = {
           modified: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -756,4 +745,64 @@ export const toggleStar = (req, res, next) => {
 
     }
   });
+};
+
+export const addAuthority = (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      const { user, role } = req.body;
+
+      const file = yield File.findById(file_id);
+      if (file === null) throw "file is empty";
+
+      const _user = yield User.findById(user._id);
+      if (_user === null) throw "user is empty";
+
+      const _role = yield Role.findById(role._id);
+      if (_role === null) throw "role is empty";
+
+      file.authorities = [ 
+        ...file.authorities,
+        {
+          role: _role,
+          group: null,
+          user: _user
+        }
+      ];
+
+      const changedFile = yield file.save();
+
+      res.json({
+        status: { success: true },
+        body: changedFile
+      });
+
+    }
+    catch (e) {
+      console.log(e);
+      const errors = {};
+      switch (e) {
+      case "file is empty":
+        errors.file = "追加対象のファイルが見つかりません";
+        break;
+      case "user is empty":
+        errors.user = "追加対象のユーザが見つかりません";
+        break;
+      case "role is empty":
+        errors.role = "追加対象のロールが見つかりません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+export const removeAuthority = (req, res, next) => {
 };

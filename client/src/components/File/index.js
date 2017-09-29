@@ -223,7 +223,7 @@ class File extends Component {
             <MenuItem
               primaryText="権限を変更"
               leftIcon={<ActionVerifiedUser />}
-              onTouchTap={() => this.props.handleAuthorityFile(file)} />
+              onTouchTap={() => this.props.toggleAuthorityFileDialog(file)} />
 
             <MenuItem
               primaryText="タグを編集"

@@ -151,11 +151,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   clearFilesBuffer: () => dispatch(actions.clearFilesBuffer()),
   deleteFileBuffer: (file) => dispatch(actions.deleteFileBuffer(file)),
-  addAuthority: (file_id, user, role) => {
-    dispatch(actions.addAuthority(file_id, user, role));
+  addAuthorityToFile: (file_id, user, role) => {
+    dispatch(actions.addAuthorityToFile(file_id, user, role));
   },
-  deleteAuthority: (file_id, authority_id) => {
-    dispatch(actions.deleteAuthority(file_id, authority_id));
+  deleteAuthorityToFile: (file_id, authority_id) => {
+    dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
   },
   toggleCreateDir: () => dispatch(actions.toggleCreateDir()),
   uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),

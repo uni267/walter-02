@@ -7,6 +7,7 @@ import * as actions from "../actions";
 function* watchUploadFiles() {
   while (true) {
     const { dir_id, files } = yield take(actions.uploadFiles().type);
+    console.log(files);
     yield put(actions.loadingStart());
     yield call(delay, files.length * 1000);
 
