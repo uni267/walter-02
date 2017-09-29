@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
+import path from "path";
 
 import { SERVER_CONF } from "../configs/server"; // mongoのipなど
 import router from "./routes";
@@ -21,6 +22,7 @@ app.use( (req, res, next) => {
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(morgan({ format: "dev", immediate: true }));
+app.use(express.static(path.join(__dirname, "public")));
 
 // 環境変数
 // 開発 => development、社内テスト => integration、本番 => production
