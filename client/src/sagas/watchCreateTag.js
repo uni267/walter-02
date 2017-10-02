@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchCreateTag() {
   while (true) {
     const task = yield take(actions.createTag().type);
@@ -14,8 +16,8 @@ function* watchCreateTag() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.createTag, task.tag);
-      const payload = yield call(API.fetchTags);
+      yield call(api.createTag, task.tag);
+      const payload = yield call(api.fetchTags);
       yield put(actions.initTags(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.initTag());

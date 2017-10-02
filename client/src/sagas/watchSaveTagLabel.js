@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveTagLabel() {
   while (true) {
     const task = yield take(actions.saveTagLabel().type);
@@ -12,8 +14,8 @@ function* watchSaveTagLabel() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.saveTagLabel, task.tag);
-      const payload = yield call(API.fetchTag, task.tag._id);
+      yield call(api.saveTagLabel, task.tag);
+      const payload = yield call(api.fetchTag, task.tag._id);
       yield put(actions.initTag(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("タグ名を保存しました"));

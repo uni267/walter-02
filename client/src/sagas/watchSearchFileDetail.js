@@ -11,6 +11,8 @@ import {
   loadingEnd
 } from "../actions";
 
+const api = new API();
+
 function* watchSearchFileDetail() {
   while (true) {
     yield take(searchFileDetail().type);
@@ -24,7 +26,7 @@ function* watchSearchFileDetail() {
         ...searchValues.map(v => ({ [v._id]: { ...v } }))
       );
 
-      const payload = yield call(API.searchFilesDetail, searchParams);
+      const payload = yield call(api.searchFilesDetail, searchParams);
       yield put(initFiles(payload.data.body));
 
       const { dirId } = yield select(state => state.tenant);

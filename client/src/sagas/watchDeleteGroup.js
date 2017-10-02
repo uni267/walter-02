@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchDeleteGroup() {
   while (true) {
     const task = yield take(actions.deleteGroup().type);
@@ -15,8 +17,8 @@ function* watchDeleteGroup() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.deleteGroup, task.group_id);
-      const payload = yield call(API.fetchGroup, localStorage.getItem("tenantId"));
+      yield call(api.deleteGroup, task.group_id);
+      const payload = yield call(api.fetchGroup, localStorage.getItem("tenantId"));
       yield put(actions.initGroups(payload.data.body));
       yield task.history.push("/groups");
       yield put(actions.loadingEnd());

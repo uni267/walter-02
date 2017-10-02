@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchFetchFiles() {
   while (true) {
     const { dir_id, page } = yield take(actions.requestFetchFiles().type);
@@ -16,8 +18,8 @@ function* watchFetchFiles() {
       yield call(delay, 500);
 
       const [ files, dirs ] = yield all([
-        call(API.fetchFiles, dir_id, page),
-        call(API.fetchDirs, dir_id)
+        call(api.fetchFiles, dir_id, page),
+        call(api.fetchDirs, dir_id)
       ]);
 
       yield put(actions.initFileTotal(files.data.status.total));

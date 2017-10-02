@@ -14,4 +14,3 @@ const analysisReducer = (state = initialState, action) => {
 };
 
 export default analysisReducer;
-210,88,76

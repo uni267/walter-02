@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveTagColor() {
   while (true) {
     const task = yield take(actions.saveTagColor().type);
@@ -12,8 +14,8 @@ function* watchSaveTagColor() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.saveTagColor, task.tag);
-      const payload = yield call(API.fetchTag, task.tag._id);
+      yield call(api.saveTagColor, task.tag);
+      const payload = yield call(api.fetchTag, task.tag._id);
       yield put(actions.initTag(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("タグの色を保存しました"));

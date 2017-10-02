@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveUserPasswordForce() {
   while (true) {
     const task = yield take(actions.saveUserPasswordForce().type);
@@ -13,8 +15,8 @@ function* watchSaveUserPasswordForce() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.saveUserPasswordForce, task.user);
-      const payload = yield call(API.fetchUser, task.user._id);
+      yield call(api.saveUserPasswordForce, task.user);
+      const payload = yield call(api.fetchUser, task.user._id);
       yield put(actions.initUser(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("パスワードを変更しました"));

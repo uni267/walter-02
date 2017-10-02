@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchToggleUser() {
   while (true) {
     const task = yield take(actions.toggleUser().type);
@@ -15,8 +17,8 @@ function* watchToggleUser() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.toggleUser, task.user_id);
-      const payload = yield call(API.fetchUser, task.user_id);
+      yield call(api.toggleUser, task.user_id);
+      const payload = yield call(api.fetchUser, task.user_id);
       const user = payload.data.body;
       yield put(actions.initUser(user));
       const message = user.enabled === true

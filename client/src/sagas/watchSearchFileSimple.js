@@ -3,6 +3,8 @@ import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
 
+const api = new API();
+
 function* watchSearchFileSimple() {
   while (true) {
     const { value } = yield take("SEARCH_FILE_SIMPLE");
@@ -10,7 +12,7 @@ function* watchSearchFileSimple() {
     yield call(delay, 1000);
 
     try {
-      const payload = yield call(API.searchFiles, value);
+      const payload = yield call(api.searchFiles, value);
       yield put({ type: "INIT_FILES", files: payload.data.body });
       const { dirId } = yield select(state => state.tenant);
 

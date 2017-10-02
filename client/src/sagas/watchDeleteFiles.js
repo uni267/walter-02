@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchDeleteFiles() {
   while (true) {
     const task = yield take(actions.deleteFiles().type);
@@ -12,9 +14,9 @@ function* watchDeleteFiles() {
     
     try {
       yield call(delay, 1000);
-      const jobs = task.files.map( file => call(API.deleteFile, file) );
+      const jobs = task.files.map( file => call(api.deleteFile, file) );
       yield all(jobs);
-      const payload = yield call(API.fetchFiles, task.files[0].dir_id, 0);
+      const payload = yield call(api.fetchFiles, task.files[0].dir_id, 0);
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.initFileTotal(payload.data.status.total));
       yield put(actions.toggleDeleteFilesDialog());

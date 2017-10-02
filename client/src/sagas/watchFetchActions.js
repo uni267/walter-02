@@ -10,6 +10,8 @@ import {
   loadingEnd
 } from "../actions";
 
+const api = new API();
+
 function* watchFetchActions() {
   while (true) {
     yield take(requestFetchActions().type);
@@ -17,7 +19,7 @@ function* watchFetchActions() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchActions);
+      const payload = yield call(api.fetchActions);
       yield put(initActions(payload.data.body));
     }
     catch (e) {

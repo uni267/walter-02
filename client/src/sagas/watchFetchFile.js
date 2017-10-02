@@ -4,6 +4,8 @@ import { call, put, take } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
+const api = new API();
+
 function* watchFetchFile() {
 
   while (true) {
@@ -12,7 +14,7 @@ function* watchFetchFile() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchFile, file_id);
+      const payload = yield call(api.fetchFile, file_id);
       yield put({ type: "INIT_FILE", file: payload.data.body });
     }
     catch (e) {

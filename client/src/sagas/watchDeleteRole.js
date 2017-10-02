@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchDeleteRole() {
   while (true) {
     const task = yield take(actions.deleteRole().type);
@@ -12,8 +14,8 @@ function* watchDeleteRole() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.deleteRole, task.role);
-      const payload = yield call(API.fetchRoles, localStorage.getItem("tenantId"));
+      yield call(api.deleteRole, task.role);
+      const payload = yield call(api.fetchRoles, localStorage.getItem("tenantId"));
       yield put(actions.initRoles(payload.data.body));
       yield task.history.push("/roles");
       yield put(actions.loadingEnd());

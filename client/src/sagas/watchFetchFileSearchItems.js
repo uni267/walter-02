@@ -10,6 +10,8 @@ import {
   loadingEnd
 } from "../actions";
 
+const api = new API();
+
 function* watchFetchFileSearchItems() {
   while (true) {
     const task = yield take(requestFetchFileSearchItems().type);
@@ -17,7 +19,7 @@ function* watchFetchFileSearchItems() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchFileSearchItems);
+      const payload = yield call(api.fetchFileSearchItems);
       yield put(initFileDetailSearchItems(payload.data.body));
     }
     catch (e) {

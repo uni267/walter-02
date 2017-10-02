@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchDeleteRoleOfAction() {
   while (true) {
     const task = yield take(actions.deleteRoleOfAction().type);
@@ -14,8 +16,8 @@ function* watchDeleteRoleOfAction() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.deleteRoleOfAction, task.role_id, task.action_id);
-      const payload = yield call(API.fetchRole, task.role_id);
+      yield call(api.deleteRoleOfAction, task.role_id, task.action_id);
+      const payload = yield call(api.fetchRole, task.role_id);
       yield put(actions.initRole(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ロールからアクションを削除しました"));

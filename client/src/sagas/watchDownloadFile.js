@@ -7,6 +7,8 @@ import * as actions from "../actions";
 
 import { saveAs } from "file-saver";
 
+const api = new API();
+
 function* watchDownloadFile() {
   while (true) {
     const { file } = yield take(actions.downloadFile().type);
@@ -14,7 +16,7 @@ function* watchDownloadFile() {
     try {
       yield call(delay, 1000);
       yield put(actions.loadingStart());
-      const payload = yield call(API.downloadFile, file);
+      const payload = yield call(api.downloadFile, file);
       const blob = yield new Blob([ payload.data.body ], { type: file.mime_type });
       yield saveAs(blob, file.name);
     }

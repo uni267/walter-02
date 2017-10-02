@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchMoveFiles() {
   while (true) {
     const task = yield take(actions.moveFiles().type);
@@ -13,9 +15,9 @@ function* watchMoveFiles() {
     try {
       yield call(delay, 1000);
       const { dir, files } = task;
-      const jobs = files.map( file => call(API.moveFile, dir, file) );
+      const jobs = files.map( file => call(api.moveFile, dir, file) );
       yield all(jobs);
-      const payload = yield call(API.fetchFiles, files[0].dir_id);
+      const payload = yield call(api.fetchFiles, files[0].dir_id);
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.toggleMoveFilesDialog());
     }

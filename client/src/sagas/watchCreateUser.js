@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchCreateUser() {
   while (true) {
     const task = yield take(actions.createUser().type);
@@ -14,8 +16,8 @@ function* watchCreateUser() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.createUser, task.user);
-      const payload = yield call(API.fetchUsers, localStorage.getItem("tenantId"));
+      yield call(api.createUser, task.user);
+      const payload = yield call(api.fetchUsers, localStorage.getItem("tenantId"));
       yield put(actions.initUsers(payload.data.body));
       yield put(actions.loadingEnd());
       yield task.history.push("/users");

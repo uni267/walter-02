@@ -10,6 +10,8 @@ import {
   initGroup
 } from "../actions";
 
+const api = new API();
+
 function* watchFetchGroup() {
   while (true) {
     const task = yield take(requestFetchGroup().type);
@@ -17,7 +19,7 @@ function* watchFetchGroup() {
     try {
       yield put(loadingStart());
       yield call(delay, 1000);
-      const payload = yield call(API.fetchGroupById, task.group_id);
+      const payload = yield call(api.fetchGroupById, task.group_id);
       yield put(initGroup(payload.data.body));
     }
     catch (e) {

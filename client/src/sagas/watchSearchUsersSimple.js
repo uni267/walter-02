@@ -12,6 +12,8 @@ import {
   initUsers
 } from "../actions";
 
+const api = new API();
+
 function* watchSearchUsersSimple() {
   while (true) {
     const task = yield take(searchUsersSimple().type);
@@ -19,7 +21,7 @@ function* watchSearchUsersSimple() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.searchUsersSimple, task.tenant_id, task.keyword);
+      const payload = yield call(api.searchUsersSimple, task.tenant_id, task.keyword);
       yield put(initUsers(payload.data.body));
     }
     catch (e) {

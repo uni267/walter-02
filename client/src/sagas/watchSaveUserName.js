@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveUserName() {
   while (true) {
     const task = yield take(actions.saveUserName().type);
@@ -13,8 +15,8 @@ function* watchSaveUserName() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.saveUserName, task.user);
-      const payload = yield call(API.fetchUser, task.user._id);
+      yield call(api.saveUserName, task.user);
+      const payload = yield call(api.fetchUser, task.user._id);
       yield put(actions.initUser(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ユーザ名を変更しました"));

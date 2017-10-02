@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchAddRoleOfAction() {
   while (true) {
     const task = yield take(actions.addRoleOfAction().type);
@@ -12,8 +14,8 @@ function* watchAddRoleOfAction() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.addRoleOfAction, task.role_id, task.action_id);
-      const payload = yield call(API.fetchRole, task.role_id);
+      yield call(api.addRoleOfAction, task.role_id, task.action_id);
+      const payload = yield call(api.fetchRole, task.role_id);
       yield put(actions.initRole(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ロールにアクションを追加しました"));

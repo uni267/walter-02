@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveRoleDescription() {
   while (true) {
     const task = yield take(actions.saveRoleDescription().type);
@@ -13,8 +15,8 @@ function* watchSaveRoleDescription() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.saveRoleDescription, task.role);
-      const payload = yield call(API.fetchRole, task.role._id);
+      yield call(api.saveRoleDescription, task.role);
+      const payload = yield call(api.fetchRole, task.role._id);
       yield put(actions.initRole(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ロールの備考を変更しました"));

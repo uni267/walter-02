@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveGroupName() {
   while (true) {
     const task = yield take(actions.saveGroupName().type);
@@ -13,8 +15,8 @@ function* watchSaveGroupName() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.saveGroupName, task.group);
-      const payload = yield call(API.fetchGroupById, task.group._id);
+      yield call(api.saveGroupName, task.group);
+      const payload = yield call(api.fetchGroupById, task.group._id);
       yield put(actions.initGroup(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("グループ名を変更しました"));

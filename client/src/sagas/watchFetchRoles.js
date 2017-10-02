@@ -10,6 +10,8 @@ import {
   loadingEnd,
 } from "../actions";
 
+const api = new API();
+
 function* watchFetchRoles() {
   while (true) {
     const task = yield take(requestFetchRoles().type);
@@ -17,7 +19,7 @@ function* watchFetchRoles() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchRoles, task.tenant_id);
+      const payload = yield call(api.fetchRoles, task.tenant_id);
       yield put(initRoles(payload.data.body));
     }
     catch (e) {

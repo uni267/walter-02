@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchAddGroupOfUser() {
   while (true) {
     const task = yield take(actions.addGroupOfUser().type);
@@ -14,11 +16,11 @@ function* watchAddGroupOfUser() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.addGroupOfUser, task.user_id, task.group_id);
+      yield call(api.addGroupOfUser, task.user_id, task.group_id);
 
       const fetchJobs = [
-        call(API.fetchUser, task.user_id),
-        call(API.fetchGroupById, task.group_id)
+        call(api.fetchUser, task.user_id),
+        call(api.fetchGroupById, task.group_id)
       ];
 
       const payloads = yield all(fetchJobs);

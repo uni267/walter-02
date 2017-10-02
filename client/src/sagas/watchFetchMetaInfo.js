@@ -10,6 +10,8 @@ import {
 
 import { API } from "../apis";
 
+const api = new API();
+
 function* watchFetchMetaInfo() {
   while (true) {
     const task = yield take(requestFetchMetaInfo().type);
@@ -17,7 +19,7 @@ function* watchFetchMetaInfo() {
     yield call(delay, 1000);
 
     try {
-      const payload = yield call(API.fetchMetaInfos);
+      const payload = yield call(api.fetchMetaInfos);
       yield put(initMetaInfo(payload.data.body));
     }
     catch (e) {

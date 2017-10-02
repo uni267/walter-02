@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveRoleName() {
   while (true) {
     const task = yield take(actions.saveRoleName().type);
@@ -13,8 +15,8 @@ function* watchSaveRoleName() {
     
     try {
       yield call(delay, 1000);
-      yield call(API.saveRoleName, task.role);
-      const payload = yield call(API.fetchRole, task.role._id);
+      yield call(api.saveRoleName, task.role);
+      const payload = yield call(api.fetchRole, task.role._id);
       yield put(actions.initRole(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ロール名を変更しました"));

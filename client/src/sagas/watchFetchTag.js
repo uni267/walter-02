@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchFetchTag() {
   while (true) {
     const task = yield take(actions.requestFetchTag().type);
@@ -12,7 +14,7 @@ function* watchFetchTag() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchTag, task.tag_id);
+      const payload = yield call(api.fetchTag, task.tag_id);
       yield put(actions.initTag(payload.data.body));
     }
     catch (e) {

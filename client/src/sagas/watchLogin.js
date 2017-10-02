@@ -7,6 +7,8 @@ import { API } from "../apis";
 // action
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchLogin() {
   while (true) {
     const task = yield take(actions.requestLogin().type);
@@ -14,7 +16,7 @@ function* watchLogin() {
 
     try {
       yield call(delay, 500);
-      const payload = yield call(API.login, task.name, task.password);
+      const payload = yield call(api.login, task.name, task.password);
       const { user, token } = payload.data.body;
       localStorage.setItem("token", token);
       const { _id, name, home_dir_id, trash_dir_id } = user.tenant;

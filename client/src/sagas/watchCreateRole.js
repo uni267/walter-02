@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchCreateRole() {
   while (true) {
     const task = yield take(actions.createRole().type);
@@ -15,8 +17,8 @@ function* watchCreateRole() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.createRole, task.role);
-      const payload = yield call(API.fetchRoles, localStorage.getItem("tenantId"));
+      yield call(api.createRole, task.role);
+      const payload = yield call(api.fetchRoles, localStorage.getItem("tenantId"));
       yield put(actions.initRoles(payload.data.body));
       yield put(actions.loadingEnd());
       yield task.history.push("/roles");

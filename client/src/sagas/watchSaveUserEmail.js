@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchSaveUserEmail() {
   while (true) {
     const task = yield take(actions.saveUserEmail().type);
@@ -13,8 +15,8 @@ function* watchSaveUserEmail() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.saveUserEmail, task.user);
-      const payload = yield call(API.fetchUser, task.user._id);
+      yield call(api.saveUserEmail, task.user);
+      const payload = yield call(api.fetchUser, task.user._id);
       yield put(actions.initUser(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("メールアドレスを変更しました"));

@@ -13,6 +13,8 @@ import {
   triggerSnackbar
 } from "../actions";
 
+const api = new API();
+
 function* watchDeleteMetaInfo() {
   while (true) {
     const { file, metaInfo } = yield take(deleteMetaInfo().type);
@@ -20,8 +22,8 @@ function* watchDeleteMetaInfo() {
 
     try {
       yield call(delay, 1000);
-      yield call(API.deleteMetaInfo, file, metaInfo);
-      const payload = yield call(API.fetchFile, file._id);
+      yield call(api.deleteMetaInfo, file, metaInfo);
+      const payload = yield call(api.fetchFile, file._id);
       yield put(initFile(payload.data.body));
       yield put(triggerSnackbar("メタ情報を削除しました"));
     }

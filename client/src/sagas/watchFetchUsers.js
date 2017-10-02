@@ -10,6 +10,8 @@ import {
   loadingEnd
 } from "../actions";
 
+const api = new API();
+
 function* watchFetchUsers() {
   while (true) {
     const task = yield take(requestFetchUsers().type);
@@ -17,7 +19,7 @@ function* watchFetchUsers() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchUsers);
+      const payload = yield call(api.fetchUsers);
       yield put(initUsers(payload.data.body));
     }
     catch (e) {

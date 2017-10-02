@@ -4,6 +4,8 @@ import { call, put, take } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
+const api = new API();
+
 function* watchEditFileByIndex() {
   while (true) {
     const { file } = yield take("EDIT_FILE_BY_INDEX");
@@ -11,8 +13,8 @@ function* watchEditFileByIndex() {
     try {
       yield put({ type: "LOADING_START" });
       yield call(delay, 1000);
-      yield call(API.editFile, file);
-      const payload = yield call(API.fetchFiles, file.dir_id);
+      yield call(api.editFile, file);
+      const payload = yield call(api.fetchFiles, file.dir_id);
       yield put({ type: "INIT_FILES", files: payload.data.body });
     }
     catch (e) {

@@ -7,6 +7,8 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchCreateGroup() {
   while (true) {
     const task = yield take(actions.createGroup().type);
@@ -15,8 +17,8 @@ function* watchCreateGroup() {
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
-      yield call(API.createGroup, task.group);
-      const payload = yield call(API.fetchGroup, localStorage.getItem("tenantId"));
+      yield call(api.createGroup, task.group);
+      const payload = yield call(api.fetchGroup, localStorage.getItem("tenantId"));
       yield put(actions.initGroups(payload.data.body));
       yield put(actions.loadingEnd());
       yield task.history.push("/groups");

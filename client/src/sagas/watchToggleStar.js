@@ -5,6 +5,8 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchToggleStar() {
   while (true) {
     const task = yield take(actions.toggleStar().type);
@@ -12,8 +14,8 @@ function* watchToggleStar() {
 
     try {
       yield call(delay, 500);
-      yield call(API.toggleStar, task.file);
-      const payload = yield call(API.fetchFiles, task.file.dir_id);
+      yield call(api.toggleStar, task.file);
+      const payload = yield call(api.fetchFiles, task.file.dir_id);
       yield put(actions.initFiles(payload.data.body));
       const message = yield task.file.is_star === false
             ? "お気に入りに設定しました"

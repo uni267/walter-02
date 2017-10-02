@@ -4,6 +4,8 @@ import { call, put, take, all } from "redux-saga/effects";
 import { API } from "../apis";
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchUploadFiles() {
   while (true) {
     const { dir_id, files } = yield take(actions.uploadFiles().type);
@@ -12,7 +14,7 @@ function* watchUploadFiles() {
     yield call(delay, files.length * 1000);
 
     try {
-      const uploadPayload = yield call(API.filesUpload, dir_id, files);
+      const uploadPayload = yield call(api.filesUpload, dir_id, files);
 
       const buffers = uploadPayload.data.body.map( body => (
         put(actions.pushFileToBuffer(body))
@@ -22,7 +24,7 @@ function* watchUploadFiles() {
 
       const uploadFileIds = uploadPayload.data.body.map( body => body._id );
 
-      const filesPayload = yield call(API.fetchFiles, dir_id);
+      const filesPayload = yield call(api.fetchFiles, dir_id);
       yield put(actions.initFiles(filesPayload.data.body));
 
       const toggleCheckTasks = filesPayload.data.body.filter( file => (

@@ -1,80 +1,84 @@
 import axios from "axios";
 
-const client = axios.create({
-  headers: {
-    "X-Auth-Cloud-Storage": localStorage.getItem("token")
+// const client = axios.create({
+//   headers: {
+//     "X-Auth-Cloud-Storage": localStorage.getItem("token")
+//   }
+// });
+
+export class API {
+  constructor() {
+    this.client = axios.create({
+      headers: {
+        "X-Auth-Cloud-Storage": localStorage.getItem("token")
+      }
+    });
   }
-});
 
-class API {
-
-  static login(name, password) {
+  login = (name, password) => {
     const data = { email: name, password: password };
 
     return axios.post("/api/login", data).then( res => res );
   };
 
-  static fetchUserById(user_id) {
-    return client.get(`/api/v1/users/${user_id}`).then( res => res );
-  }
+  fetchUserById = (user_id) => {
+    this.client.get(`/api/v1/users/${user_id}`);
+  };
 
-  static fetchFiles(dir_id, page = 0) {
+  fetchFiles = (dir_id, page = 0) => {
     const config = {
       params: { dir_id, page }
     };
 
-    return client.get("/api/v1/files", config);
-  }
+    return this.client.get("/api/v1/files", config);
+  };
 
-  static fetchFile(file_id) {
-    return client.get(`/api/v1/files/${file_id}`);
-  }
+  fetchFile = (file_id) => {
+    return this.client.get(`/api/v1/files/${file_id}`);
+  };
 
-  static fetchDirs(dir_id) {
+  fetchDirs = (dir_id) => {
     const config = {
       params: {
         dir_id: dir_id
       }
     };
 
-    return client.get("/api/v1/dirs", config).then(res => res);
-  }
+    return this.client.get("/api/v1/dirs", config);
+  };
 
-  static fetchTags() {
-    return client.get("/api/v1/tags").then(res => res);
-  }
+  fetchTags = () => {
+    return this.client.get("/api/v1/tags").then(res => res);
+  };
 
-  static fetchAddTag(file, tag) {
-    return client.post(`/api/v1/files/${file._id}/tags`, tag)
-      .then( res => res );
-  }
+  fetchAddTag = (file, tag) => {
+    return this.client.post(`/api/v1/files/${file._id}/tags`, tag);
+  };
 
-  static fetchDelTag(file, tag) {
-    return client.delete(`/api/v1/files/${file._id}/tags/${tag._id}`)
-      .then( res => res );
-  }
+  fetchDelTag = (file, tag) => {
+    return this.client.delete(
+      `/api/v1/files/${file._id}/tags/${tag._id}`);
+  };
 
-  static editFile(file) {
-    return client.patch(`/api/v1/files/${file._id}/rename`, file)
-      .then( res => res );
-  }
+  editFile = (file) => {
+    return this.client.patch(`/api/v1/files/${file._id}/rename`, file);
+  };
 
-  static changePassword(current_password, new_password) {
+  changePassword = (current_password, new_password) => {
     const user_id = localStorage.getItem("userId");
     const body = { current_password, new_password };
 
-    return client.patch(`/api/v1/users/${user_id}/password`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/users/${user_id}/password`, body);
+  };
 
-  static createDir(dir_id, dir_name) {
+  createDir = (dir_id, dir_name) => {
     const token = localStorage.getItem("token");
     const body = { dir_id, dir_name, token };
 
-    return client.post(`/api/v1/dirs`, body).then( res => res );
-  }
+    return this.client.post(`/api/v1/dirs`, body);
+  };
 
-  static filesUpload(dir_id, files) {
+  filesUpload = (dir_id, files) => {
     const form = new FormData();
 
     form.append("dir_id", dir_id);
@@ -84,268 +88,258 @@ class API {
       form.append("myFile[]", file);
     });
 
-    return client.post(`/api/v1/files`, form);
-  }
+    return this.client.post(`/api/v1/files`, form);
+  };
 
-  static deleteFile(file) {
+  deleteFile = (file) => {
     const body = { dir_id: localStorage.getItem("trashDirId") };
 
     // ファイル削除はごみ箱への移動なのでapi的にはmoveとする
-    return client.patch(`/api/v1/files/${file._id}/move`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/files/${file._id}/move`, body);
+  };
 
-  static moveFile(dir, file) {
+  moveFile = (dir, file) => {
     const body = { dir_id: dir._id };
-    return client.patch(`/api/v1/files/${file._id}/move`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/files/${file._id}/move`, body);
+  };
 
-  static moveDir(destinationDir, movingDir) {
+  moveDir = (destinationDir, movingDir) => {
     const body = { destinationDir };
-    return client.patch(`/api/v1/dirs/${movingDir._id}/move`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/dirs/${movingDir._id}/move`, body);
+  };
 
-  static searchFiles(value) {
+  searchFiles = (value) => {
     const config = {
       params: {
         q: value
       }
     };
 
-    return client.get(`/api/v1/files/search`, config);
-  }
+    return this.client.get(`/api/v1/files/search`, config);
+  };
 
-  static fetchDirTree(root_id) {
-    return client.get(`/api/v1/dirs/tree/?root_id=${root_id}`)
-      .then( res => res );
-  }
+  fetchDirTree = (root_id) => {
+    return this.client.get(`/api/v1/dirs/tree/?root_id=${root_id}`);
+  };
 
-  static fetchMetaInfos() {
-    return client.get(`/api/v1/meta_infos`);
-  }
+  fetchMetaInfos = () => {
+    return this.client.get(`/api/v1/meta_infos`);
+  };
 
-  static addMetaInfo(file, meta, value) {
+  addMetaInfo = (file, meta, value) => {
     const body = { meta, value };
 
-    return client.post(`/api/v1/files/${file._id}/meta`, body)
-      .then( res => res );
+    return this.client.post(`/api/v1/files/${file._id}/meta`, body);
+  };
+
+  deleteMetaInfo = (file, meta) => {
+    return this.client.delete(
+      `/api/v1/files/${file._id}/meta/${meta.meta_info_id}`);
   }
 
-  static deleteMetaInfo(file, meta) {
-    return client.delete(`/api/v1/files/${file._id}/meta/${meta.meta_info_id}`)
-      .then( res => res );
-  }
+  fetchUsers = () => {
+    return this.client.get(`/api/v1/users`);
+  };
 
-  static fetchUsers() {
-    return client.get(`/api/v1/users`);
-  }
+  fetchUser = (user_id) => {
+    return this.client.get(`/api/v1/users/${user_id}`);
+  };
 
-  static fetchUser(user_id) {
-    return client.get(`/api/v1/users/${user_id}`)
-      .then( res => res );
-  }
+  fetchGroup = (tenant_id) => {
+    return this.client.get(`/api/v1/groups/?tenant_id=${tenant_id}`);
+  };
 
-  static fetchGroup(tenant_id) {
-    return client.get(`/api/v1/groups/?tenant_id=${tenant_id}`)
-      .then( res => res );
-  }
+  deleteGroupOfUser = (user_id, group_id) => {
+    return this.client.delete(
+      `/api/v1/users/${user_id}/groups/${group_id}`);
+  };
 
-  static deleteGroupOfUser(user_id, group_id) {
-    return client.delete(`/api/v1/users/${user_id}/groups/${group_id}`)
-      .then( res => res );
-  }
-
-  static addGroupOfUser(user_id, group_id) {
+  addGroupOfUser = (user_id, group_id) => {
     const body = { group_id };
 
-    return client.post(`/api/v1/users/${user_id}/groups`, body)
-      .then( res => res );
-  }
+    return this.client.post(`/api/v1/users/${user_id}/groups`, body);
+  };
 
-  static toggleUser(user_id) {
-    return client.patch(`/api/v1/users/${user_id}/enabled`)
-      .then( res => res );
-  }
+  toggleUser = (user_id) => {
+    return this.client.patch(`/api/v1/users/${user_id}/enabled`);
+  };
 
-  static saveUserName(user) {
+  saveUserName = (user) => {
     const body = { name: user.name };
 
-    return client.patch(`/api/v1/users/${user._id}/name`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/users/${user._id}/name`, body);
+  };
 
-  static saveUserEmail(user) {
+  saveUserEmail = (user) => {
     const body = { email: user.email };
 
-    return client.patch(`/api/v1/users/${user._id}/email`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/users/${user._id}/email`, body);
+  };
 
-  static saveUserPasswordForce(user) {
+  saveUserPasswordForce = (user) => {
     const body = { password: user.password };
 
-    return client.patch(`/api/v1/users/${user._id}/password_force`, body)
-      .then( res => res );
-  }
+    return this.client.patch(
+      `/api/v1/users/${user._id}/password_force`, body);
+  };
 
-  static searchUsersSimple(tenant_id, keyword) {
-    return client.get(`/api/v1/users/?tenant_id=${tenant_id}&q=${keyword}`)
-      .then( res => res );
-  }
+  searchUsersSimple = (tenant_id, keyword) => {
+    return this.client.get(
+      `/api/v1/users/?tenant_id=${tenant_id}&q=${keyword}`);
+  };
 
-  static fetchGroupById(group_id) {
-    return client.get(`/api/v1/groups/${group_id}`)
-      .then( res => res );
-  }
+  fetchGroupById = (group_id) => {
+    return this.client.get(`/api/v1/groups/${group_id}`);
+  };
 
-  static saveGroupName(group) {
+  saveGroupName = (group) => {
     const body = { name: group.name };
 
-    return client.patch(`/api/v1/groups/${group._id}/name`, body)
-      .then( res => res );
-  }
+    return this.client.patch(`/api/v1/groups/${group._id}/name`, body);
+  };
 
-  static saveGroupDescription(group) {
+  saveGroupDescription = (group) => {
     const body = { description: group.description };
 
-    return client.patch(`/api/v1/groups/${group._id}/description`, body)
-      .then( res => res );
-  }
+    return this.client.patch(
+      `/api/v1/groups/${group._id}/description`, body);
+  };
 
-  static createUser(user) {
+  createUser = (user) => {
     const body = { user };
     body.user.tenant_id = localStorage.getItem("tenantId");
-    return client.post(`/api/v1/users`, body).then( res => res );
-  }
+    return this.client.post(`/api/v1/users`, body);
+  };
 
-  static createGroup(group) {
+  createGroup = (group) => {
     const body = { group };
     body.group.tenant_id = localStorage.getItem("tenantId");
-    return client.post(`/api/v1/groups`, body).then( res => res );
-  }
+    return this.client.post(`/api/v1/groups`, body);
+  };
 
-  static deleteGroup(group_id) {
-    return client.delete(`/api/v1/groups/${group_id}`).then( res => res );
-  }
+  deleteGroup = (group_id) => {
+    return this.client.delete(`/api/v1/groups/${group_id}`);
+  };
 
-  static fetchRoles() {
-    return client.get(`/api/v1/roles`);
-  }
+  fetchRoles = () => {
+    return this.client.get(`/api/v1/roles`);
+  };
 
-  static fetchRole(role_id) {
-    return client.get(`/api/v1/roles/${role_id}`).then( res => res );
-  }
+  fetchRole = (role_id) => {
+    return this.client.get(`/api/v1/roles/${role_id}`);
+  };
 
-  static saveRoleName(role) {
+  saveRoleName = (role) => {
     const body = { name: role.name };
-    return client.patch(`/api/v1/roles/${role._id}/name`, body).then( res => res );
-  }
+    return this.client.patch(`/api/v1/roles/${role._id}/name`, body);
+  };
 
-  static saveRoleDescription(role) {
+  saveRoleDescription = (role) => {
     const body = { description: role.description };
-    return client.patch(`/api/v1/roles/${role._id}/description`, body);
-  }
+    return this.client.patch(
+      `/api/v1/roles/${role._id}/description`, body);
+  };
 
-  static deleteRoleOfAction(role_id, action_id) {
-    return client.delete(`/api/v1/roles/${role_id}/actions/${action_id}`);
-  }
+  deleteRoleOfAction = (role_id, action_id) => {
+    return this.client.delete(
+      `/api/v1/roles/${role_id}/actions/${action_id}`);
+  };
 
-  static createRole(role) {
+  createRole = (role) => {
     const body = { role, tenant_id: localStorage.getItem("tenantId") };
-    return client.post(`/api/v1/roles`, body);
-  }
+    return this.client.post(`/api/v1/roles`, body);
+  };
 
-  static fetchActions() {
-    return client.get(`/api/v1/actions`);
-  }
+  fetchActions = () => {
+    return this.client.get(`/api/v1/actions`);
+  };
 
-  static addRoleOfAction(role_id, action_id) {
-    return client.patch(`/api/v1/roles/${role_id}/actions/${action_id}`);
-  }
+  addRoleOfAction = (role_id, action_id) => {
+    return this.client.patch(
+      `/api/v1/roles/${role_id}/actions/${action_id}`);
+  };
 
-  static deleteRole(role) {
-    return client.delete(`/api/v1/roles/${role._id}`);
-  }
+  deleteRole = (role) => {
+    return this.client.delete(`/api/v1/roles/${role._id}`);
+  };
 
-  static fetchFileSearchItems() {
-    return client.get(`/api/v1/files/search_items`);
-  }
+  fetchFileSearchItems = () => {
+    return this.client.get(`/api/v1/files/search_items`);
+  };
 
-  static searchFilesDetail(values) {
+  searchFilesDetail = (values) => {
     const config = {
       params: values
     };
 
-    return client.get("/api/v1/files/search_detail", config);
-  }
+    return this.client.get("/api/v1/files/search_detail", config);
+  };
 
-  static fetchTag(tag_id) {
-    return client.get(`/api/v1/tags/${tag_id}`);
-  }
+  fetchTag = (tag_id) => {
+    return this.client.get(`/api/v1/tags/${tag_id}`);
+  };
 
-  static saveTagLabel(tag) {
+  saveTagLabel = (tag) => {
     const body = {
       label: tag.label
     };
 
-    return client.patch(`/api/v1/tags/${tag._id}/label`, body);
-  }
+    return this.client.patch(`/api/v1/tags/${tag._id}/label`, body);
+  };
 
-  static saveTagColor(tag) {
+  saveTagColor = (tag) => {
     const body = {
       color: tag.color
     };
 
-    return client.patch(`/api/v1/tags/${tag._id}/color`, body);
-  }
+    return this.client.patch(`/api/v1/tags/${tag._id}/color`, body);
+  };
 
-  static saveTagDescription(tag) {
+  saveTagDescription = (tag) => {
     const body = {
       description: tag.description
     };
 
-    return client.patch(`/api/v1/tags/${tag._id}/description`, body);
-  }
+    return this.client.patch(`/api/v1/tags/${tag._id}/description`, body);
+  };
 
-  static createTag(tag) {
+  createTag = (tag) => {
     const body = { tag };
-    return client.post("/api/v1/tags", body);
-  }
+    return this.client.post("/api/v1/tags", body);
+  };
 
-  static deleteTag(tag_id) {
-    return client.delete(`/api/v1/tags/${tag_id}`);
-  }
+  deleteTag = (tag_id) => {
+    return this.client.delete(`/api/v1/tags/${tag_id}`);
+  };
 
-  static fetchAnalysis(tenant_id) {
+  fetchAnalysis = (tenant_id) => {
     const config = { tenant_id };
-    return client.get(`/api/v1/analysis`, config);
-  }
+    return this.client.get(`/api/v1/analysis`, config);
+  };
 
-  static toggleStar(file) {
-    return client.patch(`/api/v1/files/${file._id}/toggle_star`);
-  }
+  toggleStar = (file) => {
+    return this.client.patch(`/api/v1/files/${file._id}/toggle_star`);
+  };
 
-  static downloadFile(file) {
+  downloadFile = (file) => {
     const config = {
       params: {
         file_id: file._id
       }
     };
 
-    return client.get(`/api/v1/files/download`, config);
-  }
+    return this.client.get(`/api/v1/files/download`, config);
+  };
 
-  static addAuthorityToFile(file, user, role) {
+  addAuthorityToFile = (file, user, role) => {
     const body = { user, role };
-    return client.post(`/api/v1/files/${file._id}/authorities`, body);
-  }
+    return this.client.post(
+      `/api/v1/files/${file._id}/authorities`, body);
+  };
 
-  static verifyToken(token) {
+  verifyToken = (token) => {
     const body = { token };
-    return client.post(`/api/login/verify_token`, body);
-  }
+    return this.client.post(`/api/login/verify_token`, body);
+  };
 }
 
-export { API };

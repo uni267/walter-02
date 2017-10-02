@@ -11,6 +11,8 @@ import {
   loadingEnd
 } from "../actions";
 
+const api = new API();
+
 function* watchFetchUser() {
   while (true) {
     const task = yield take(requestFetchUser().type);
@@ -20,8 +22,8 @@ function* watchFetchUser() {
     try {
       yield call(delay, 1000);
       const [user, group] = yield all([
-        call(API.fetchUser, task.user_id),
-        call(API.fetchGroup, task.tenant_id)
+        call(api.fetchUser, task.user_id),
+        call(api.fetchGroup, task.tenant_id)
       ]);
 
       yield put(initUser(user.data.body));

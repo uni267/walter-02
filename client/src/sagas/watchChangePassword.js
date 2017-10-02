@@ -4,6 +4,8 @@ import { call, put, take } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
+const api = new API();
+
 function* watchChangePassword() {
 
   while (true) {
@@ -13,7 +15,7 @@ function* watchChangePassword() {
       yield put({ type: "LOADING_START" });
       yield call(delay, 1000);
 
-      yield call(API.changePassword, current_password, new_password);
+      yield call(api.changePassword, current_password, new_password);
       yield put({ type: "CHANGE_PASSWORD_SUCCESS" });
       yield put({ type: "TRIGGER_SNACK", message: "パスワードを変更しました" });
     }

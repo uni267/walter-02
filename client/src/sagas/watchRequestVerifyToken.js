@@ -5,13 +5,15 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
+const api = new API();
+
 function* watchRequestVerifyToken() {
   while (true) {
     const { token } = yield take(actions.requestVerifyToken().type);
     yield put(actions.loadingStart());
 
     try {
-      const payload = yield call(API.verifyToken, token);
+      const payload = yield call(api.verifyToken, token);
       const { user } = payload.data.body;
       const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
       yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
