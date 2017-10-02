@@ -22,17 +22,16 @@ export const authentication = (req, res, next) => {
 
       if (user.password !== hash) throw "password is invalid";
 
-      const { secretKey } = SECURITY_CONF.development;
-      const token = jwt.sign(user, secretKey, { expiresIn: "7d" });
-
       const tenant = yield Tenant.findOne(user.tenant_id);
+
+      const _user = { ...user.toObject(), tenant };
+
+      const { secretKey } = SECURITY_CONF.development;
+      const token = jwt.sign(_user, secretKey, { expiresIn: "7d" });
 
       res.json({
         status: { success: true },
-        body: {
-          token,
-          user: {...user.toObject(), tenant: tenant.toObject() }
-        }
+        body: { token, user: _user }
       });
     }
     catch (e) {
@@ -56,6 +55,32 @@ export const authentication = (req, res, next) => {
       res.status(400).json({
         status: { success: false, errors }
       });
+    }
+  });
+};
+
+export const verifyToken = (req, res, next) => {
+  const verifyPromise = (token) => {
+    return new Promise( (resolve, reject) => {
+      const { secretKey } = SECURITY_CONF.development;
+
+      jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) reject(err);
+        resolve(decoded);
+      });
+    });
+  };
+
+  co(function* () {
+    try {
+      const { token } = req.body;
+      const decoded = yield verifyPromise(token);
+      res.json({
+        status: { status: "success" },
+        body: { user: decoded }
+      });
+    }
+    catch (e) {
     }
   });
 };
