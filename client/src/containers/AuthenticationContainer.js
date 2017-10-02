@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter, Redirect, Route } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { requestLoginSuccess, putTenant } from "../actions";
+import * as actions from "../actions";
 
 // JWTを保持していない && store.sessionに認証情報がセットされていない
 // 場合のみログイン画面にリダイレクトする
@@ -12,7 +12,7 @@ class AuthenticationContainer extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (!this.props.session.login) this.userWillTransfer();
+    if (!nextProps.session.login) this.userWillTransfer();
   }
 
   haveToken = () => {
@@ -22,15 +22,9 @@ class AuthenticationContainer extends Component {
 
   userWillTransfer() {
     const token = localStorage.getItem("token");
-    const user_id = localStorage.getItem("userId");
-    const dir_id = localStorage.getItem("dirId");
-    const trash_dir_id = localStorage.getItem("trashDirId");
-    const tenant_id = localStorage.getItem("tenantId");
-    const tenant_name = localStorage.getItem("tenantName");
 
-    if (token && user_id && dir_id && trash_dir_id && tenant_id && tenant_name) {
-      this.props.putTenant(tenant_id, tenant_name, dir_id, trash_dir_id);
-      this.props.requestLoginSuccess("success", user_id);
+    if (token) {
+      this.props.requestVerifyToken(token);
     }
   }
 
@@ -53,10 +47,13 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   requestLoginSuccess: (message, user_id) => {
-    dispatch(requestLoginSuccess(message, user_id));
+    dispatch(actions.requestLoginSuccess(message, user_id));
   },
   putTenant: (tenant_id, name, dirId, trashDirId) => {
-    dispatch(putTenant(tenant_id, name, dirId, trashDirId));
+    dispatch(actions.putTenant(tenant_id, name, dirId, trashDirId));
+  },
+  requestVerifyToken: (token) => {
+    dispatch(actions.requestVerifyToken(token));
   }
 });
 

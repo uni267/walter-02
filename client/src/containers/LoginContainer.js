@@ -11,7 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from "material-ui/AppBar";
 
 // actions
-import { requestLogin, requestLoginSuccess, putTenant } from "../actions";
+import * as actions from "../actions";
 
 const styles = {
   wrapper: {
@@ -43,20 +43,14 @@ class LoginContainer extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (!this.props.session.login) this.userWillTransfer();
+    if (!nextProps.session.login) this.userWillTransfer();
   }
 
   userWillTransfer() {
     const token = localStorage.getItem("token");
-    const user_id = localStorage.getItem("userId");
-    const dir_id = localStorage.getItem("dirId");
-    const trash_dir_id = localStorage.getItem("trashDirId");
-    const tenant_id = localStorage.getItem("tenantId");
-    const tenant_name = localStorage.getItem("tenantName");
 
-    if (token && user_id && dir_id && trash_dir_id && tenant_id && tenant_name) {
-      this.props.putTenant(tenant_id, tenant_name, dir_id, trash_dir_id);
-      this.props.requestLoginSuccess("success", user_id);
+    if (token) {
+      this.props.requestVerifyToken(token);
     }
   }
 
@@ -128,12 +122,15 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestLogin: (name, password) => { dispatch(requestLogin(name, password)); },
+  requestLogin: (name, password) => dispatch(actions.requestLogin(name, password)),
   requestLoginSuccess: (message, user_id) => {
-    dispatch(requestLoginSuccess(message, user_id));
+    dispatch(actions.requestLoginSuccess(message, user_id));
+  },
+  requestVerifyToken: (token) => {
+    dispatch(actions.requestVerifyToken(token));
   },
   putTenant: (name, dirId, trashDirId) => {
-    dispatch(putTenant(name, dirId, trashDirId));
+    dispatch(actions.putTenant(name, dirId, trashDirId));
   }
 });
 

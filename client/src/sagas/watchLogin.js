@@ -5,38 +5,28 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // action
-import {
-  loadingEnd,
-  loadingStart,
-  requestLogin,
-  requestLoginFailed
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchLogin() {
   while (true) {
-    const task = yield take(requestLogin().type);
-    yield put(loadingStart());
+    const task = yield take(actions.requestLogin().type);
+    yield put(actions.loadingStart());
 
     try {
       yield call(delay, 500);
       const payload = yield call(API.login, task.name, task.password);
       const { user, token } = payload.data.body;
-
-      localStorage.setItem("dirId", user.tenant.home_dir_id);
-      localStorage.setItem("trashDirId", user.tenant.trash_dir_id);
-      localStorage.setItem("tenantName", user.tenant.name);
-      localStorage.setItem("tenantId", user.tenant._id);
       localStorage.setItem("token", token);
-      localStorage.setItem("userId", user._id);
-
+      const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
+      yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
+      yield put(actions.requestLoginSuccess("success", user._id));
     }
     catch (e) {
-      const message = e.response.data.status.message;
-      const errors = e.response.data.status.errors;
-      yield put(requestLoginFailed(message, errors));
+      const { message, errors } = e.response.data.status;
+      yield put(actions.requestLoginFailed(message, errors));
     }
     finally {
-      yield put(loadingEnd());
+      yield put(actions.loadingEnd());
     }
   }
 }
