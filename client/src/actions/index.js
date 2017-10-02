@@ -120,9 +120,7 @@ export const requestLogin = (name, password) => ({
 });
 
 export const requestLoginSuccess = (message, user_id) => ({
-  type: "REQUEST_LOGIN_SUCCESS",
-  message,
-  user_id
+  type: "REQUEST_LOGIN_SUCCESS",  message,  user_id
 });
 
 export const requestLoginFailed = (message, errors) => ({
@@ -246,8 +244,8 @@ export const updateMetaInfoTarget = (target_file) => ({
   type: "UPDATE_META_INFO_TARGET", target_file
 });
 
-export const requestFetchUsers = (tenant_id) => ({
-  type: "REQUEST_FETCH_USERS", tenant_id
+export const requestFetchUsers = () => ({
+  type: "REQUEST_FETCH_USERS"
 });
 
 export const requestFetchUser = (user_id, tenant_id) => ({
@@ -572,4 +570,8 @@ export const toggleAuthorityFileDialog = (file) => ({
 
 export const initAuthorityFileDialog = (file) => ({
   type: actionTypes.INIT_AUTHORITY_FILE_DIALOG, file
+});
+
+export const requestVerifyToken = (token) => ({
+  type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });

@@ -17,7 +17,7 @@ function* watchFetchMetaInfo() {
     yield call(delay, 1000);
 
     try {
-      const payload = yield call(API.fetchMetaInfos, task.tenant_id);
+      const payload = yield call(API.fetchMetaInfos);
       yield put(initMetaInfo(payload.data.body));
     }
     catch (e) {

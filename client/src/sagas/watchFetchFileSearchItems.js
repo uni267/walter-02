@@ -17,7 +17,7 @@ function* watchFetchFileSearchItems() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchFileSearchItems, task.tenant_id);
+      const payload = yield call(API.fetchFileSearchItems);
       yield put(initFileDetailSearchItems(payload.data.body));
     }
     catch (e) {

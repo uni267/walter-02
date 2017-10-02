@@ -26,7 +26,7 @@ export const verifyToken = (req, res, next) => {
           authHeader === "") throw "token is empty";
 
       const decoded = yield verifyPromise(authHeader);
-      const user = yield User.findById(decoded._doc._id);
+      const user = yield User.findById(decoded._id);
       if (user === null) throw "user is empty";
 
       const _user = user.toObject();
@@ -37,6 +37,7 @@ export const verifyToken = (req, res, next) => {
     }
     // @todo jwt.verifyのエラーを調査する
     catch (e) {
+      console.log(e);
       let errors = {};
 
       switch (e) {
@@ -47,7 +48,11 @@ export const verifyToken = (req, res, next) => {
         errors.user = e;
         break;
       default:
-        errors.unknown = e;
+        if (e.message === "jwt malformed" && e.name === "JsonWebTokenError") {
+          errors.token = e.name;
+        } else {
+          errors.unknown = e;
+        }
         break;
       }
 

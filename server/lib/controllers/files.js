@@ -5,6 +5,7 @@ import co from "co";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import moment from "moment";
+import morgan from "morgan";
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -22,7 +23,6 @@ export const index = (req, res, next) => {
   co(function* () {
     try {
       let { dir_id, page } = req.query;
-
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
         dir_id = res.user.tenant.home_dir_id;
@@ -41,7 +41,12 @@ export const index = (req, res, next) => {
 
       const files = yield File.aggregate([
         { $match: conditions },
-        { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
+        { $lookup: {
+          from: "tags",
+          localField: "tags",
+          foreignField: "_id",
+          as: "tags"
+        } }
       ]).skip(offset).limit(limit);
 
       res.json({
@@ -159,7 +164,7 @@ export const search = (req, res, next) => {
 export const searchItems = (req, res, next) => {
   co(function* () {
     try {
-      const { tenant_id } = req.query;
+      const { tenant_id } = res.user;
 
       if (tenant_id === undefined ||
           tenant_id === null ||
@@ -175,8 +180,12 @@ export const searchItems = (req, res, next) => {
       });
     }
     catch (e) {
-      console.log(e);
-      res.status(400).json({ e });
+      const errors = {};
+      errors.unknown = e;
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
     }
   });
 };

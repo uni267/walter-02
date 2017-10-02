@@ -7,7 +7,7 @@ import Tenant from "../models/Tenant";
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const { tenant_id } = req.query;
+      const { tenant_id } = res.user;
       if (tenant_id === undefined ||
           tenant_id === null ||
           tenant_id === "") throw "tenant_id is empty";

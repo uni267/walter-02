@@ -8,7 +8,8 @@ import Group from "../models/Group";
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const { q, tenant_id } = req.query;
+      const { q } = req.query;
+      const { tenant_id } = res.user;
 
       if (tenant_id === undefined ||
           tenant_id === null ||

@@ -3,14 +3,16 @@ import co from "co";
 import Role from "../models/Role";
 import Action from "../models/Action";
 
+const { ObjectId } = mongoose.Types;
+
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const tenant_id = mongoose.Types.ObjectId(req.query.tenant_id);
+      const { tenant_id } = res.user;
       const roles = yield Role.aggregate([
         {
           $match: {
-            tenant_id: tenant_id
+            tenant_id: ObjectId(tenant_id)
           }
         },
         {

@@ -17,7 +17,7 @@ function* watchFetchUsers() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(API.fetchUsers, task.tenant_id);
+      const payload = yield call(API.fetchUsers);
       yield put(initUsers(payload.data.body));
     }
     catch (e) {

@@ -122,9 +122,8 @@ class API {
       .then( res => res );
   }
 
-  static fetchMetaInfos(tenant_id) {
-    return client.get(`/api/v1/meta_infos/?tenant_id=${tenant_id}`)
-      .then( res => res );
+  static fetchMetaInfos() {
+    return client.get(`/api/v1/meta_infos`);
   }
 
   static addMetaInfo(file, meta, value) {
@@ -139,9 +138,8 @@ class API {
       .then( res => res );
   }
 
-  static fetchUsers(tenant_id) {
-    return client.get(`/api/v1/users/?tenant_id=${tenant_id}`)
-      .then( res => res );
+  static fetchUsers() {
+    return client.get(`/api/v1/users`);
   }
 
   static fetchUser(user_id) {
@@ -232,8 +230,8 @@ class API {
     return client.delete(`/api/v1/groups/${group_id}`).then( res => res );
   }
 
-  static fetchRoles(tenant_id) {
-    return client.get(`/api/v1/roles/?tenant_id=${tenant_id}`).then( res => res );
+  static fetchRoles() {
+    return client.get(`/api/v1/roles`);
   }
 
   static fetchRole(role_id) {
@@ -271,12 +269,8 @@ class API {
     return client.delete(`/api/v1/roles/${role._id}`);
   }
 
-  static fetchFileSearchItems(tenant_id) {
-    const config = {
-      params: { tenant_id }
-    };
-
-    return client.get(`/api/v1/files/search_items`, config);
+  static fetchFileSearchItems() {
+    return client.get(`/api/v1/files/search_items`);
   }
 
   static searchFilesDetail(values) {
@@ -348,6 +342,10 @@ class API {
     return client.post(`/api/v1/files/${file._id}/authorities`, body);
   }
 
+  static verifyToken(token) {
+    const body = { token };
+    return client.post(`/api/login/verify_token`, body);
+  }
 }
 
 export { API };
