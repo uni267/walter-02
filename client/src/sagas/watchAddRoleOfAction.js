@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchAddRoleOfAction() {
   while (true) {
     const task = yield take(actions.addRoleOfAction().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

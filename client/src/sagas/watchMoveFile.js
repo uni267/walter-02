@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchMoveFile() {
   while (true) {
     const task = yield take(actions.moveFile().type);
+    const api = new API();
     const { dir, file } = task;
     yield put(actions.loadingStart());
 

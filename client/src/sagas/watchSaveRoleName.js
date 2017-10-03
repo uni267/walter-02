@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchSaveRoleName() {
   while (true) {
     const task = yield take(actions.saveRoleName().type);
+    const api = new API();
     yield put(actions.loadingStart());
     yield put(actions.clearRoleValidationError());
     

@@ -7,12 +7,10 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchDeleteGroup() {
   while (true) {
     const task = yield take(actions.deleteGroup().type);
-    console.log(task);
+    const api = new API();
 
     try {
       yield put(actions.loadingStart());

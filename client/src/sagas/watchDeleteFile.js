@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchDeleteFile() {
   while (true) {
     const { file } = yield take(actions.deleteFile().type);
+    const api = new API();
     yield put(actions.loadingStart());
     yield call(delay, 1000);
 

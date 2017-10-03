@@ -4,12 +4,10 @@ import { call, put, take, all } from "redux-saga/effects";
 import { API } from "../apis";
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchUploadFiles() {
   while (true) {
     const { dir_id, files } = yield take(actions.uploadFiles().type);
-    console.log(files);
+    const api = new API();
     yield put(actions.loadingStart());
     yield call(delay, files.length * 1000);
 

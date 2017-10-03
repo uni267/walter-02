@@ -12,11 +12,10 @@ import {
   initUsers
 } from "../actions";
 
-const api = new API();
-
 function* watchSearchUsersSimple() {
   while (true) {
     const task = yield take(searchUsersSimple().type);
+    const api = new API();
     yield put(loadingStart());
 
     try {

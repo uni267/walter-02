@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchSaveUserPasswordForce() {
   while (true) {
     const task = yield take(actions.saveUserPasswordForce().type);
+    const api = new API();
     yield put(actions.clearUserValidationError());
 
     try {

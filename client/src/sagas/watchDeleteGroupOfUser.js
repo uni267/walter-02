@@ -7,11 +7,10 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchDeleteGroupOfUser() {
   while (true) {
     const task = yield take(actions.deleteGroupOfUser().type);
+    const api = new API();
 
     try {
       yield put(actions.loadingStart());

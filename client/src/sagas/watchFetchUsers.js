@@ -10,11 +10,10 @@ import {
   loadingEnd
 } from "../actions";
 
-const api = new API();
-
 function* watchFetchUsers() {
   while (true) {
     const task = yield take(requestFetchUsers().type);
+    const api = new API();
     yield put(loadingStart());
 
     try {

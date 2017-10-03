@@ -5,14 +5,13 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchAddAuthorityToFile() {
   while (true) {
     const { file, user, role } = yield take(
       actions.addAuthorityToFile().type
     );
 
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

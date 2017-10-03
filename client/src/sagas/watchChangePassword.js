@@ -4,12 +4,11 @@ import { call, put, take } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchChangePassword() {
 
   while (true) {
     const { current_password, new_password } = yield take("REQUEST_CHANGE_PASSWORD");
+    const api = new API();
 
     try {
       yield put({ type: "LOADING_START" });

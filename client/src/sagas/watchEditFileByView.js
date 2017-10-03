@@ -4,11 +4,10 @@ import { call, put, take } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchEditFileByView() {
   while (true) {
     const { file } = yield take("EDIT_FILE_BY_VIEW");
+    const api = new API();
 
     try {
       yield put({ type: "LOADING_START" });

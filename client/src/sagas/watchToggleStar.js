@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchToggleStar() {
   while (true) {
     const task = yield take(actions.toggleStar().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

@@ -15,11 +15,10 @@ import {
   updateMetaInfoTarget
 } from "../actions";
 
-const api = new API();
-
 function* watchAddMetaInfo() {
   while (true) {
     const { file, metaInfo, value } = yield take(addMetaInfo().type);
+    const api = new API();
     yield put(loadingStart());
 
     try {

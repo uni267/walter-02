@@ -3,11 +3,10 @@ import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchSearchFileSimple() {
   while (true) {
     const { value } = yield take("SEARCH_FILE_SIMPLE");
+    const api = new API();
     yield put({ type: "LOADING_START" });
     yield call(delay, 1000);
 

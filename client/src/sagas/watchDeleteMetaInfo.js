@@ -13,11 +13,10 @@ import {
   triggerSnackbar
 } from "../actions";
 
-const api = new API();
-
 function* watchDeleteMetaInfo() {
   while (true) {
     const { file, metaInfo } = yield take(deleteMetaInfo().type);
+    const api = new API();
     yield put(loadingStart());
 
     try {

@@ -4,11 +4,10 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchFetchNextFiles() {
   while (true) {
     const { dir_id, page } = yield take(actions.requestFetchNextFiles().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

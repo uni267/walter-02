@@ -7,12 +7,11 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchCreateUser() {
   while (true) {
     const task = yield take(actions.createUser().type);
-    
+    const api = new API();    
+
     try {
       yield put(actions.loadingStart());
       yield call(delay, 1000);

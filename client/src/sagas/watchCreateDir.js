@@ -3,11 +3,10 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchCreateDir() {
   while (true) {
     const { dir_id, dir_name } = yield take("CREATE_DIR");
+    const api = new API();
     yield put({ type: "LOADING_START" });
 
     try {

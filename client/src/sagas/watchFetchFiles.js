@@ -7,11 +7,10 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchFetchFiles() {
   while (true) {
     const { dir_id, page } = yield take(actions.requestFetchFiles().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

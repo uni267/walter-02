@@ -3,12 +3,11 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-const api = new API();
 
 function* watchMoveDir() {
   while (true) {
     const { destinationDir, movingDir } = yield take("MOVE_DIR");
-
+    const api = new API();
     yield put({ type: "LOADING_START" });
     yield call(delay, 1000);
 

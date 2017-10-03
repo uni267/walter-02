@@ -11,11 +11,10 @@ import {
   loadingEnd
 } from "../actions";
 
-const api = new API();
-
 function* watchSearchFileDetail() {
   while (true) {
     yield take(searchFileDetail().type);
+    const api = new API();
     yield put(loadingStart());
 
     try {

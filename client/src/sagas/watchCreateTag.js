@@ -7,11 +7,10 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchCreateTag() {
   while (true) {
     const task = yield take(actions.createTag().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

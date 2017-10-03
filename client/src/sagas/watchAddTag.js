@@ -3,11 +3,10 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchAddTag() {
   while (true) {
     const { file, tag } = yield take("REQUEST_ADD_TAG");
+    const api = new API();
     yield put({ type: "LOADING_START" });
 
     try {

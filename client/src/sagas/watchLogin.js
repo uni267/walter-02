@@ -7,11 +7,10 @@ import { API } from "../apis";
 // action
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchLogin() {
   while (true) {
     const task = yield take(actions.requestLogin().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

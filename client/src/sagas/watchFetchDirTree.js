@@ -3,11 +3,10 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchFetchDirTree() {
   while (true) {
     const { root_id } = yield take("REQUEST_FETCH_DIR_TREE");
+    const api = new API();
     yield put({ type: "LOADING_FETCH_DIR_TREE" });
     yield put({ type: "LOADING_START" });
     yield call(delay, 1000);

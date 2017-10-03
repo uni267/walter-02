@@ -10,11 +10,11 @@ import {
 
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchFetchMetaInfo() {
   while (true) {
     const task = yield take(requestFetchMetaInfo().type);
+    const api = new API();
+
     yield put(loadingStart());
     yield call(delay, 1000);
 

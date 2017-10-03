@@ -7,11 +7,10 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchCreateGroup() {
   while (true) {
     const task = yield take(actions.createGroup().type);
+    const api = new API();
     yield put(actions.clearGroupValidationError());
 
     try {

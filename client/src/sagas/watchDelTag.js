@@ -3,11 +3,10 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-const api = new API();
-
 function* watchDelTag() {
   while (true) {
     const { file, tag } = yield take("REQUEST_DEL_TAG");
+    const api = new API();
     yield put({ type: "LOADING_START" });
 
     try {

@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchRequestVerifyToken() {
   while (true) {
     const { token } = yield take(actions.requestVerifyToken().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {

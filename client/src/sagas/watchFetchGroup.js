@@ -10,11 +10,10 @@ import {
   initGroup
 } from "../actions";
 
-const api = new API();
-
 function* watchFetchGroup() {
   while (true) {
     const task = yield take(requestFetchGroup().type);
+    const api = new API();
 
     try {
       yield put(loadingStart());

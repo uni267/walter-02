@@ -7,11 +7,10 @@ import * as actions from "../actions";
 
 import { saveAs } from "file-saver";
 
-const api = new API();
-
 function* watchDownloadFile() {
   while (true) {
     const { file } = yield take(actions.downloadFile().type);
+    const api = new API();
 
     try {
       yield call(delay, 1000);

@@ -7,12 +7,10 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchToggleUser() {
   while (true) {
     const task = yield take(actions.toggleUser().type);
-    console.log("watch toggle user");
+    const api = new API();
 
     try {
       yield put(actions.loadingStart());

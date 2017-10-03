@@ -5,11 +5,10 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 
-const api = new API();
-
 function* watchDeleteFileBuffer() {
   while (true) {
     const { file } = yield take(actions.deleteFileBuffer().type);
+    const api = new API();
     yield put(actions.loadingStart());
 
     try {
