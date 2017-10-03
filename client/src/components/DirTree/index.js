@@ -23,7 +23,8 @@ class DirTree extends Component {
   }
 
   getChild = () => {
-    API.fetchDirTree(this.props.node._id)
+    const api = new API();
+    api.fetchDirTree(this.props.node._id)
       .then( payload => {
         this.setState({
           children: payload.data.children
