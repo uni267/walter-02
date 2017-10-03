@@ -7,13 +7,29 @@ const ObjectId = mongoose.Types.ObjectId;
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const conditions = {
-        $or: [
-          { tenant_id: res.user.tenant_id },
-          { user_id: res.user._id }
-        ]
-      };
 
+      const { q } = req.query;
+
+      let conditions;
+      if(q){
+        conditions = {
+          $and: [
+            { label: new RegExp(q, "i") }
+          ],
+          $or: [
+            { tenant_id: res.user.tenant_id },
+            { user_id: res.user._id }
+          ]
+        };
+      }else{
+        conditions = {
+          $or: [
+            { tenant_id: res.user.tenant_id },
+            { user_id: res.user._id },
+          ]
+        };
+      }
+console.info(conditions);
       const tags = yield Tag.find(conditions);
       res.json({
         status: { success: true },
@@ -21,6 +37,7 @@ export const index = (req, res, next) => {
       });
     }
     catch (e) {
+console.info(e);
       let errors = {};
       errors.unknown = e;
 
