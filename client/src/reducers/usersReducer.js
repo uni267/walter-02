@@ -1,6 +1,8 @@
+import * as actionTypes from "../actionTypes";
+
 const usersReducer = (state = [], action) => {
   switch ( action.type ) {
-  case "INIT_USERS":
+  case actionTypes.INIT_USERS:
     return action.users;
   default:
     return state;

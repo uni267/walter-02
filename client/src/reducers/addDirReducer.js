@@ -1,6 +1,8 @@
+import * as actionTypes from "../actionTypes";
+
 const addDirReducer = (state = { open: false }, action) => {
   switch (action.type) {
-  case "TOGGLE_ADD_DIR":
+  case actionTypes.TOGGLE_ADD_DIR:
     return {
       open: !state.open
     };

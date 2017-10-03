@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initial_snackbar = {
   open: false,
   message: "initialize",
@@ -6,12 +8,12 @@ const initial_snackbar = {
 
 const snackbarReducer = (state = initial_snackbar, action) => {
   switch (action.type) {
-  case "TRIGGER_SNACK":
+  case actionTypes.TRIGGER_SNACK:
     return {
       open: true,
       message: action.message
     };
-  case "CLOSE_SNACK":
+  case actionTypes.CLOSE_SNACK:
     return {
       open: false,
       message: "closed"

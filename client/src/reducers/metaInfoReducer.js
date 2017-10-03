@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   meta_infos: [],
   target_file: null,
@@ -6,18 +8,18 @@ const initialState = {
 
 const metaInfoReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "INIT_META_INFO":
+  case actionTypes.INIT_META_INFO:
     return {
       ...state,
       meta_infos: action.meta_infos
     };
-  case "TOGGLE_META_INFO_DIALOG":
+  case actionTypes.TOGGLE_META_INFO_DIALOG:
     return {
       ...state,
       target_file: action.target_file,
       dialog_open: !state.dialog_open
     };
-  case "UPDATE_META_INFO_TARGET":
+  case actionTypes.UPDATE_META_INFO_TARGET:
     return {
       ...state,
       target_file: action.target_file

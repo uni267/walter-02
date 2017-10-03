@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   open: false,
   errors: {}
@@ -5,18 +7,18 @@ const initialState = {
 
 const changePasswordReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "TOGGLE_CHANGE_PASSWORD_DIALOG":
+  case actionTypes.TOGGLE_CHANGE_PASSWORD_DIALOG:
     return {
       ...state,
       open: !state.open
     };
-  case "CHANGE_PASSWORD_SUCCESS":
+  case actionTypes.CHANGE_PASSWORD_SUCCESS:
     return {
       ...state,
       open: !state.open,
       errors: {}
     };
-  case "CHANGE_PASSWORD_FAILED":
+  case actionTypes.CHANGE_PASSWORD_FAILED:
     return {
       ...state,
       errors: action.errors

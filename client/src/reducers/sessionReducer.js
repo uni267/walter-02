@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   login: false,
   message: null,
@@ -7,14 +9,14 @@ const initialState = {
 
 const sessionReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "REQUEST_LOGIN_SUCCESS":
+  case actionTypes.REQUEST_LOGIN_SUCCESS:
     return {
       ...state,
       login: true,
       message: action.message,
       user_id: action.user_id
     };
-  case "REQUEST_LOGIN_FAILED":
+  case actionTypes.REQUEST_LOGIN_FAILED:
     return {
       ...state,
       start: false,
@@ -22,7 +24,7 @@ const sessionReducer = (state = initialState, action) => {
       message: action.message,
       errors: action.errors
     };
-  case "LOGOUT":
+  case actionTypes.LOGOUT:
     return initialState;
   default:
     return state;

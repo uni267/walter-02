@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   tenant_id: null,
   name: null,
@@ -7,7 +9,7 @@ const initialState = {
 
 const tenantReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "PUT_TENANT":
+  case actionTypes.PUT_TENANT:
     return {
       ...state,
       tenant_id: action.tenant_id,

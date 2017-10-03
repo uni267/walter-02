@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   open: false,
   errors: {}
@@ -6,13 +8,13 @@ const initialState = {
 const createDirReducer = (state = initialState, action) => {
 
   switch (action.type) {
-  case "TOGGLE_CREATE_DIR":
+  case actionTypes.TOGGLE_CREATE_DIR:
     return {
       ...state,
       open: !state.open,
       errors: {}
     };
-  case "CREATE_DIR_ERROR":
+  case actionTypes.CREATE_DIR_ERROR:
     return {
       ...state,
       errors: action.errors

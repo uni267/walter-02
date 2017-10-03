@@ -1,7 +1,9 @@
+import * as actionTypes from "../actionTypes";
+
 const dirsReducer = (state = [], action) => {
 
   switch (action.type) {
-  case "INIT_DIR":
+  case actionTypes.INIT_DIR:
     return action.dirs;
   default:
     return state;

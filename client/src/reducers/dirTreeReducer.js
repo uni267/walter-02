@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   loading: true,
   selected: null,
@@ -7,21 +9,20 @@ const initialState = {
 
 const dirTreeReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "LOADING_FETCH_DIR_TREE":
+  case actionTypes.LOADING_FETCH_DIR_TREE:
     return { ...state, loading: true };
-  case "PUT_DIR_TREE":
+  case actionTypes.PUT_DIR_TREE:
     return {
       ...state,
       loading: false,
       node: action.node
     };
-  case "SELECT_DIR_TREE":
+  case actionTypes.SELECT_DIR_TREE:
     return {
       ...state,
       selected: action.dir
     };
-  case "TOGGLE_MOVE_DIR_DIALOG":
-    console.log(action.dir);
+  case actionTypes.TOGGLE_MOVE_DIR_DIALOG:
     const move_dir = action.dir === undefined ? state.move_dir : action.dir;
 
     return {

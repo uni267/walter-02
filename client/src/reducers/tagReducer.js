@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   data: {},
   changedTag: {},
@@ -6,7 +8,7 @@ const initialState = {
 
 const tagReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "INIT_TAG":
+  case actionTypes.INIT_TAG:
     return action.tag === undefined || action.tag._id === undefined
       ? initialState
       : {
@@ -14,7 +16,7 @@ const tagReducer = (state = initialState, action) => {
         changedTag: action.tag,
         validationErrors: {}
       };
-  case "CHANGE_TAG_LABEL":
+  case actionTypes.CHANGE_TAG_LABEL:
     return {
       ...state,
       changedTag: {
@@ -22,7 +24,7 @@ const tagReducer = (state = initialState, action) => {
         label: action.value
       }
     };
-  case "CHANGE_TAG_COLOR":
+  case actionTypes.CHANGE_TAG_COLOR:
     return {
       ...state,
       changedTag: {
@@ -30,7 +32,7 @@ const tagReducer = (state = initialState, action) => {
         color: action.value
       }
     };
-  case "CHANGE_TAG_DESCRIPTION":
+  case actionTypes.CHANGE_TAG_DESCRIPTION:
     return {
       ...state,
       changedTag: {
@@ -38,7 +40,7 @@ const tagReducer = (state = initialState, action) => {
         description: action.value
       }
     };
-  case "SAVE_TAG_VALIDATION_ERROR":
+  case actionTypes.SAVE_TAG_VALIDATION_ERROR:
     return {
       ...state,
       validationErrors: {

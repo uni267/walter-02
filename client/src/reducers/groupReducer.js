@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   data: {
     belongs_to: []
@@ -11,14 +13,14 @@ const initialState = {
 const groupReducer = (state = initialState, action) => {
   switch ( action.type ) {
 
-  case "INIT_GROUP":
+  case actionTypes.INIT_GROUP:
     return {
       ...state,
       data: action.group,
       changed: action.group
     };
 
-  case "CHANGE_GROUP_NAME":
+  case actionTypes.CHANGE_GROUP_NAME:
     return {
       ...state,
       changed: {
@@ -27,7 +29,7 @@ const groupReducer = (state = initialState, action) => {
       }
     };
 
-  case "CHANGE_GROUP_DESCRIPTION":
+  case actionTypes.CHANGE_GROUP_DESCRIPTION:
     return {
       ...state,
       changed: {
@@ -36,12 +38,12 @@ const groupReducer = (state = initialState, action) => {
       }
     };
 
-  case "SAVE_GROUP_VALIDATION_ERROR":
+  case actionTypes.SAVE_GROUP_VALIDATION_ERROR:
     return {
       ...state,
       errors: action.errors
     };
-  case "CLEAR_GROUP_VALIDATION_ERROR":
+  case actionTypes.CLEAR_GROUP_VALIDATION_ERROR:
     return {
       ...state,
       errors: {}

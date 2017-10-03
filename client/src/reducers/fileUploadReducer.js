@@ -1,10 +1,12 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   blob: null
 };
 
 const fileUploadReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "PUT_BINARY_FILE":
+  case actionTypes.PUT_BINARY_FILE:
     return {
       ...state,
       blob: action.blob

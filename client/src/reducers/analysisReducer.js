@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   rate: [],
   usage: [],
@@ -6,7 +8,7 @@ const initialState = {
 
 const analysisReducer = (state = initialState, action) => {
   switch (action.type) {
-  case "INIT_ANALYSIS":
+  case actionTypes.INIT_ANALYSIS:
     return action.analysis;
   default:
     return state;

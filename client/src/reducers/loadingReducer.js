@@ -1,12 +1,14 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   start: false
 };
 
 const loadingReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "LOADING_START":
+  case actionTypes.LOADING_START:
     return {start: true};
-  case "LOADING_END":
+  case actionTypes.LOADING_END:
     return {start: false};
   default:
     return state;

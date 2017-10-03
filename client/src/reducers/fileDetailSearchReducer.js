@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   open: false,
   anchorElement: {},
@@ -7,22 +9,22 @@ const initialState = {
 
 const fileDetailSearchReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "TOGGLE_FILE_DETAIL_SEARCH_POPOVER":
+  case actionTypes.TOGGLE_FILE_DETAIL_SEARCH_POPOVER:
     return {
       ...state,
       open: !state.open
     };
-  case "FILE_DETAIL_SEARCH_ANCHOR_ELEMENT":
+  case actionTypes.FILE_DETAIL_SEARCH_ANCHOR_ELEMENT:
     return {
       ...state,
       anchorElement: action.event.currentTarget
     };
-  case "INIT_FILE_DETAIL_SEARCH_ITEMS":
+  case actionTypes.INIT_FILE_DETAIL_SEARCH_ITEMS:
     return {
       ...state,
       items: action.items
     };
-  case "SEARCH_ITEM_PICK":
+  case actionTypes.SEARCH_ITEM_PICK:
     return {
       ...state,
       items: state.items.map( item => {
@@ -30,7 +32,7 @@ const fileDetailSearchReducer = (state = initialState, action) => {
           { ...item, picked: true } : item;
       })
     };
-  case "SEARCH_ITEM_NOT_PICK":
+  case actionTypes.SEARCH_ITEM_NOT_PICK:
     return {
       ...state,
       items: state.items.map( item => (
@@ -38,7 +40,7 @@ const fileDetailSearchReducer = (state = initialState, action) => {
       )),
       searchValues: state.searchValues.filter(val => val._id !== action.item._id)
     };
-  case "SEARCH_VALUE_CHANGE":
+  case actionTypes.SEARCH_VALUE_CHANGE:
     let searchValues;
 
     if (state.searchValues.find( obj => obj._id === action.item._id )) {

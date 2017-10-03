@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   data: {
     enabled: true,
@@ -16,28 +18,28 @@ const initialState = {
 
 const userReducer = (state = initialState, action) => {
   switch ( action.type ) {
-  case "INIT_USER":
+  case actionTypes.INIT_USER:
     return {
       ...state,
       data: { ...action.user, password: "" },
       changed: { ...action.user, password: "" }
     };
-  case "CHANGE_USER_NAME":
+  case actionTypes.CHANGE_USER_NAME:
     return {
       ...state,
       changed: { ...state.changed, name: action.name }
     };
-  case "CHANGE_USER_PASSWORD":
+  case actionTypes.CHANGE_USER_PASSWORD:
     return {
       ...state,
       changed: { ...state.changed, password: action.password }
     };
-  case "CHANGE_USER_EMAIL":
+  case actionTypes.CHANGE_USER_EMAIL:
     return {
       ...state,
       changed: { ...state.changed, email: action.email }
     };
-  case "INIT_NEW_USER_TEMPLATE":
+  case actionTypes.INIT_NEW_USER_TEMPLATE:
     return {
       ...state,
       changed: {
@@ -48,12 +50,12 @@ const userReducer = (state = initialState, action) => {
         groups: []
       }
     };
-  case "CHANGE_USER_VALIDATION_ERROR":
+  case actionTypes.CHANGE_USER_VALIDATION_ERROR:
     return {
       ...state,
       errors: action.errors
     };
-  case "CLEAR_USER_VALIDATION_ERROR":
+  case actionTypes.CLEAR_USER_VALIDATION_ERROR:
     return {
       ...state,
       errors: {}

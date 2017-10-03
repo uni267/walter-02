@@ -1,3 +1,5 @@
+import * as actionTypes from "../actionTypes";
+
 const initialState = {
   data: {
     actions: []
@@ -10,13 +12,13 @@ const initialState = {
 
 const roleReducer = (state = initialState, action) => {
   switch (action.type) {
-  case "INIT_ROLE":
+  case actionTypes.INIT_ROLE:
     return {
       ...state,
       data: action.role,
       changed: action.role
     };
-  case "CHANGE_ROLE_NAME":
+  case actionTypes.CHANGE_ROLE_NAME:
     return {
       ...state,
       changed: {
@@ -24,7 +26,7 @@ const roleReducer = (state = initialState, action) => {
         name: action.name
       }
     };
-  case "CHANGE_ROLE_DESCRIPTION":
+  case actionTypes.CHANGE_ROLE_DESCRIPTION:
     return {
       ...state,
       changed: {
@@ -32,12 +34,12 @@ const roleReducer = (state = initialState, action) => {
         description: action.description
       }
     };
-  case "SAVE_ROLE_VALIDATION_ERROR":
+  case actionTypes.SAVE_ROLE_VALIDATION_ERROR:
     return {
       ...state,
       errors: action.errors
     };
-  case "CLEAR_ROLE_VALIDATION_ERROR":
+  case actionTypes.CLEAR_ROLE_VALIDATION_ERROR:
     return {
       ...state,
       errors: {}
