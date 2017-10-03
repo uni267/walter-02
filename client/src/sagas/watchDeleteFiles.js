@@ -1,5 +1,5 @@
 import { delay } from "redux-saga";
-import { call, put, take, all } from "redux-saga/effects";
+import { call, put, take, all, select } from "redux-saga/effects";
 
 import { API } from "../apis";
 
@@ -13,7 +13,8 @@ function* watchDeleteFiles() {
     
     try {
       yield call(delay, 1000);
-      const jobs = task.files.map( file => call(api.deleteFile, file) );
+      const trashDirId = yield select( state => state.tenant.trashDirId );
+      const jobs = task.files.map( file => call(api.deleteFile, file, trashDirId) );
       yield all(jobs);
       const payload = yield call(api.fetchFiles, task.files[0].dir_id, 0);
       yield put(actions.initFiles(payload.data.body));

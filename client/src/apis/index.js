@@ -85,8 +85,8 @@ export class API {
     return this.client.post(`/api/v1/files`, form);
   };
 
-  deleteFile = (file) => {
-    const body = { dir_id: localStorage.getItem("trashDirId") };
+  deleteFile = (file, trashDirId) => {
+    const body = { dir_id: trashDirId };
 
     // ファイル削除はごみ箱への移動なのでapi的にはmoveとする
     return this.client.patch(`/api/v1/files/${file._id}/move`, body);
