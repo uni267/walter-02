@@ -29,7 +29,7 @@ export const index = (req, res, next) => {
           ]
         };
       }
-console.info(conditions);
+
       const tags = yield Tag.find(conditions);
       res.json({
         status: { success: true },
@@ -37,7 +37,7 @@ console.info(conditions);
       });
     }
     catch (e) {
-console.info(e);
+
       let errors = {};
       errors.unknown = e;
 
