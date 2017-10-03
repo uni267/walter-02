@@ -22,15 +22,15 @@ export const index = (req, res, next) => {
 
       if (q) {
         conditions = {
-          tenant_id: mongoose.Types.ObjectId(tenant_id)
-        };
-      }
-      else {
-        conditions = {
           $and: [
             { tenant_id: mongoose.Types.ObjectId(tenant_id) },
             { name: new RegExp(q, "i") }
           ]
+        };
+      }
+      else {
+        conditions = {
+          tenant_id: mongoose.Types.ObjectId(tenant_id)
         };
       }
 
