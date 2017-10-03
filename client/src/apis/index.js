@@ -1,11 +1,5 @@
 import axios from "axios";
 
-// const client = axios.create({
-//   headers: {
-//     "X-Auth-Cloud-Storage": localStorage.getItem("token")
-//   }
-// });
-
 export class API {
   constructor() {
     this.client = axios.create({
