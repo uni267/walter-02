@@ -37,10 +37,6 @@ class UserContainer extends Component {
     this.props.requestFetchUsers(this.props.tenant.tenant_id);
   }
 
-  searchUsersSimple = (keyword) => {
-    this.props.searchUsersSimple(this.props.tenant.tenant_id, keyword);
-  };
-
   render() {
     const headers = [
       { name: "有効/無効" },
@@ -63,7 +59,14 @@ class UserContainer extends Component {
 
               <div style={{width: "80%"}}>
                 <div style={{display: "flex", flexDirection: "row-reverse"}}>
-                  <SimpleSearch searchFileSimple={this.searchUsersSimple} />
+                  <SimpleSearch
+                    searchFileSimple={(keyword) => {
+                      this.props.searchUsersSimple(
+                        this.props.tenant.tenant_id,
+                        keyword
+                      );
+                    }}
+                    />
                 </div>
               </div>
             </div>
