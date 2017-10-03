@@ -335,5 +335,14 @@ export class API {
     const body = { token };
     return this.client.post(`/api/login/verify_token`, body);
   };
+
+  searchTagSimple = (keyword) => {
+    const config = {
+      params: { q: keyword }
+    };
+
+    return this.client.get(`/api/v1/tags`, config);
+  };
+
 }
 

@@ -551,3 +551,7 @@ export const initAuthorityFileDialog = (file) => ({
 export const requestVerifyToken = (token) => ({
   type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });
+
+export const searchTagSimple = (keyword) => ({
+  type: actionTypes.SEARCH_TAG_SIMPLE, keyword
+});

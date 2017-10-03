@@ -62,6 +62,7 @@ import watchDeleteFileBuffer from "./watchDeleteFileBuffer";
 import watchDownloadFile from "./watchDownloadFile";
 import watchAddAuthorityToFile from "./watchAddAuthorityToFile";
 import watchRequestVerifyToken from "./watchRequestVerifyToken";
+import watchSearchTagSimple from "./watchSearchTagSimple";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -126,6 +127,7 @@ function* Saga() {
   yield fork(watchDownloadFile);
   yield fork(watchAddAuthorityToFile);
   yield fork(watchRequestVerifyToken);
+  yield fork(watchSearchTagSimple);
 }
 
 export default Saga;

@@ -79,6 +79,7 @@ export const TOGGLE_MOVE_DIR_DIALOG = "TOGGLE_MOVE_DIR_DIALOG";
 // タグ一覧
 export const REQUEST_FETCH_TAGS = "REQUEST_FETCH_TAGS";
 export const INIT_TAGS = "INIT_TAGS";
+export const SEARCH_TAG_SIMPLE = "SEARCH_TAG_SIMPLE";
 
 // タグ詳細
 export const INIT_TAG = "INIT_TAG";
