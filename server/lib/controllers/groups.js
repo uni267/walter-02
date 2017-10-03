@@ -6,14 +6,31 @@ import User from "../models/User";
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const { tenant_id } = req.query;
+
+      const { q } = req.query;
+      const { tenant_id } = res.user;
+
       if (tenant_id === undefined ||
           tenant_id === null ||
           tenant_id === "") throw "tenant_id is empty";
 
-      const groups = yield Group.find({
-        tenant_id: mongoose.Types.ObjectId(tenant_id)
-      });
+      let conditions;
+      if(q){
+        conditions = {
+          $and: [
+            {name: new RegExp(q, "i")} ,
+            {tenant_id: mongoose.Types.ObjectId(tenant_id)}
+          ]
+        };
+      }else{
+        conditions = {
+          $and: [
+            {tenant_id: mongoose.Types.ObjectId(tenant_id)}
+          ]
+        };
+      }
+
+      const groups = yield Group.find(conditions);
 
       const group_ids = groups.map( group => group._id );
 
