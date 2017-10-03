@@ -7,6 +7,7 @@
 /server/dump
 /server/uploads
 /server/lib/public/*
+/server/configs/server.js
 
 # testing
 /client/coverage
