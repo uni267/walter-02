@@ -128,3 +128,32 @@ $ sudo docker exec -it walter-swiftx /bin/bash
 $ swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post walter
 #+end_src
 
+** node(server side)のリソース参照先を設定
+
+- server.js.distをリネームし、先ほど作成したコンテナのアドレスを設定する
+#+begin_src shell
+$ cd /path/to/repos/server/configs
+$ cp server.js.dist server.js
+$ vi server.js
+#+end_src
+
+- server.jsの以下を編集
+#+begin_src js
+export const SERVER_CONF = {
+  development: {
+    url: "mongodb://172.16.55.xx",  // <- mongoのip
+    db_name: "walter",
+    port: 3333
+  }
+...
+export const STORAGE_CONF = {
+  // virtualbox
+  development: {
+    provider: "openstack",
+    username: "test:tester",
+    password: "testing",
+    authUrl: "http://172.16.55.75:8080/auth/v1.0",  // <- swiftのip
+    version: 1
+  }
+...
+#+end_src
