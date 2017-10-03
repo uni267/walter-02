@@ -1,18 +1,3 @@
-// フォルダ作成
-export const TOGGLE_ADD_DIR = "TOGGLE_ADD_DIR";
-export const CREATE_DIR = "CREATE_DIR";
-export const INIT_DIR = "INIT_DIR";
-
-// ファイルの権限変更
-export const TOGGLE_AUTHORITY_FILE_DIALOG = "TOGGLE_AUTHORITY_FILE_DIALOG";
-export const INIT_AUTHORITY_FILE_DIALOG = "INIT_AUTHORITY_FILE_DIALOG";
-export const ADD_AUTHORITY_TO_FILE = "ADD_AUTHORITY_TO_FILE";
-export const DELETE_AUTHORITY = "DELETE_AUTHORITY";
-
-// snackbar
-export const TRIGGER_SNACK = "TRIGGER_SNACK";
-export const CLOSE_SNACK = "CLOSE_SNACK";
-
 // ファイル一覧
 export const REQUEST_FETCH_FILES = "REQUEST_FETCH_FILES";
 export const REQUEST_FETCH_NEXT_FILES = "REQUEST_FETCH_NEXT_FILES";
@@ -36,6 +21,7 @@ export const PUSH_FILE_TO_BUFFER = "PUSH_FILE_TO_BUFFER";
 export const CLEAR_FILES_BUFFER = "CLEAR_FILES_BUFFER";
 export const DELETE_FILE_BUFFER = "DELETE_FILE_BUFFER";
 export const POP_FILE_TO_BUFFER = "POP_FILE_TO_BUFFER";
+export const PUT_BINARY_FILE = "PUT_BINARY_FILE";
 
 // ファイルダウンロード
 export const DOWNLOAD_FILE = "DOWNLOAD_FILE";
@@ -62,16 +48,29 @@ export const SORT_FILE = "SORT_FILE";
 // ファイルコピー
 export const COPY_FILE = "COPY_FILE";
 
-// お気に入り
+// ファイルの権限変更
+export const TOGGLE_AUTHORITY_FILE_DIALOG = "TOGGLE_AUTHORITY_FILE_DIALOG";
+export const INIT_AUTHORITY_FILE_DIALOG = "INIT_AUTHORITY_FILE_DIALOG";
+export const ADD_AUTHORITY_TO_FILE = "ADD_AUTHORITY_TO_FILE";
+export const DELETE_AUTHORITY = "DELETE_AUTHORITY";
+
+// お気に入りファイル
 export const TOGGLE_STAR = "TOGGLE_STAR";
 
 // お知らせ
 export const TOGGLE_NOTIFICATIONS = "TOGGLE_NOTIFICATIONS";
 
-// ディレクトリツリー
+// フォルダツリー
 export const DELETE_DIR_TREE = "DELETE_DIR_TREE";
 export const SELECT_DIR_TREE = "SELECT_DIR_TREE";
 export const REQUEST_FETCH_DIR_TREE = "REQUEST_FETCH_DIR_TREE";
+export const LOADING_FETCH_DIR_TREE = "LOADING_FETCH_DIR_TREE";
+export const PUT_DIR_TREE = "PUT_DIR_TREE";
+
+// フォルダ作成
+export const TOGGLE_ADD_DIR = "TOGGLE_ADD_DIR";
+export const CREATE_DIR = "CREATE_DIR";
+export const INIT_DIR = "INIT_DIR";
 
 // フォルダ移動
 export const MOVE_DIR = "MOVE_DIR";
@@ -122,6 +121,8 @@ export const LOGOUT = "LOGOUT";
 // パスワード変更
 export const REQUEST_CHANGE_PASSWORD = "REQUEST_CHANGE_PASSWORD";
 export const TOGGLE_CHANGE_PASSWORD_DIALOG = "TOGGLE_CHANGE_PASSWORD_DIALOG";
+export const CHANGE_PASSWORD_SUCCESS = "CHANGE_PASSWORD_SUCCESS";
+export const CHANGE_PASSWORD_FAILED = "CHANGE_PASSWORD_FAILED";
 
 // loadingのオーバレイ
 export const LOADING_START = "LOADING_START";
@@ -132,6 +133,7 @@ export const PUT_TENANT = "PUT_TENANT";
 
 // フォルダ作成
 export const TOGGLE_CREATE_DIR = "TOGGLE_CREATE_DIR";
+export const CREATE_DIR_ERROR = "CREATE_DIR_ERROR";
 
 // ユーザ一覧
 export const REQUEST_FETCH_USERS = "REQUEST_FETCH_USERS";
@@ -233,8 +235,13 @@ export const REQUEST_FETCH_ANALYSIS = "REQUEST_FETCH_ANALYSIS";
 export const INIT_ANALYSIS = "INIT_ANALYSIS";
 export const INIT_FILE_TOTAL = "INIT_FILE_TOTAL";
 
+// snackbar
+export const TRIGGER_SNACK = "TRIGGER_SNACK";
+export const CLOSE_SNACK = "CLOSE_SNACK";
+
 // ???
 export const REQUEST_VERIFY_TOKEN = "REQUEST_VERIFY_TOKEN";
-
 export const EDIT_FILE_BY_VIEW = "EDIT_FILE_BY_VIEW";
 export const EDIT_FILE_BY_INDEX = "EDIT_FILE_BY_INDEX";
+
+
