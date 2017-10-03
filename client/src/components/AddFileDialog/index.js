@@ -71,10 +71,6 @@ const AddFileDialog = ({
   filesBuffer,
   deleteFileBuffer
 }) => {
-  const onDrop = (files) => {
-    uploadFiles(dir_id, files);
-  };
-
   const renderFilesBuffer = (file, idx) => {
     return (
       <div style={styles.bufferRow} key={idx}>
@@ -123,7 +119,8 @@ const AddFileDialog = ({
         >
 
         <div>
-          <Dropzone onDrop={onDrop} style={styles.dropzone}>
+          <Dropzone
+            onDrop={(files) => uploadFiles(dir_id, files)} style={styles.dropzone}>
             <FileCloudUpload style={styles.cloudIcon} /><br />
             <div>
               ファイルをドロップまたは<br /><br />
