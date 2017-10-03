@@ -169,6 +169,7 @@ export const ADD_GROUP_OF_USER = "ADD_GROUP_OF_USER";
 
 // グループ一覧
 export const INIT_GROUPS = "INIT_GROUPS";
+export const SEARCH_GROUP_SIMPLE = "SEARCH_GROUP_SIMPLE";
 
 // グループ詳細
 export const REQUEST_FETCH_GROUP = "REQUEST_FETCH_GROUP";

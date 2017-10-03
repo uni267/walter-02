@@ -555,3 +555,7 @@ export const requestVerifyToken = (token) => ({
 export const searchTagSimple = (keyword) => ({
   type: actionTypes.SEARCH_TAG_SIMPLE, keyword
 });
+
+export const searchGroupSimple = (keyword) => ({
+  type: actionTypes.SEARCH_GROUP_SIMPLE, keyword
+});

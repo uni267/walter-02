@@ -344,5 +344,13 @@ export class API {
     return this.client.get(`/api/v1/tags`, config);
   };
 
+  searchGroupSimple = (keyword) => {
+    const config = {
+      params: { q: keyword }
+    };
+
+    return this.client.get(`/api/v1/groups`, config);
+  };
+
 }
 
