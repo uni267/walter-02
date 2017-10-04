@@ -193,5 +193,45 @@ export const updateKey = (req, res, next) => {
 }
 
 export const updateValueType = (req, res, next) => {
-  
+  co(function* (){
+    try{
+      const { tenant_id } = res.user;
+      const { metainfo_id } =req.params;
+      const { value_type } = req.body;
+
+      if (value_type === null ||
+          value_type === undefined ||
+          value_type === "") throw "value_type is empty"; 
+
+      const metainfo = yield MetaInfo.findById(metainfo_id);
+      if(metainfo === null) throw "metainfo not found";
+      if(metainfo.tenant_id.toString() !== tenant_id.toString() ) throw "tenant_id is diffrent";
+      if(metainfo.key_type !== KEY_TYPE_META ) throw "key_type is diffrent";
+
+      metainfo.value_type = value_type;
+      const changedMetainfo = yield metainfo.save();
+
+      res.json({
+        status: { success: true},
+        body: changedMetainfo
+      });
+
+    }
+    catch(err) {
+      let errors = {};
+
+      switch(err){
+        case "value_type is empty":
+          errors.value_type = err;
+          break;
+        default:
+          errors.unknown = err;
+          break;
+      }
+
+      res.status(400).json({
+        status: {success: false, errors}
+      });
+    }
+  });
 }
