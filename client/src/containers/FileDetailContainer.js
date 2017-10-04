@@ -30,20 +30,6 @@ import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import * as actions from "../actions";
-// import {
-//   addAuthority,
-//   deleteAuthority,
-//   triggerSnackbar,
-//   editFileByView,
-//   addMetaInfo,
-//   deleteMetaInfo,
-//   requestFetchFile,
-//   requestFetchTags,
-//   requestAddTag,
-//   requestDelTag,
-//   requestFetchMetaInfo,
-//   toggleMetaInfoDialog
-// } from "../actions";
 
 const styles = {
   fileImageWrapper: {
@@ -84,14 +70,14 @@ class FileDetailContainer extends Component {
   componentDidMount() {
     this.props.requestFetchFile(this.props.match.params.id);
     this.props.requestFetchTags();
-    this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+    this.props.requestFetchMetaInfos(this.props.tenant.tenant_id);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
       this.props.requestFetchFile(nextProps.match.params.id);
       this.props.requestFetchTags();
-      this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+      this.props.requestFetchMetaInfos(this.props.tenant.tenant_id);
     }
   }
 
@@ -343,8 +329,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchTags: () => dispatch(actions.requestFetchTags()),
   requestAddTag: (file, tag) => dispatch(actions.requestAddTag(file, tag)),
   requestDelTag: (file, tag) => dispatch(actions.requestDelTag(file, tag)),
-  requestFetchMetaInfo: (tenant_id) => {
-    dispatch(actions.requestFetchMetaInfo(tenant_id));
+  requestFetchMetaInfos: (tenant_id) => {
+    dispatch(actions.requestFetchMetaInfos(tenant_id));
   },
   toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file))
 });

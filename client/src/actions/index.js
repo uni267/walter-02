@@ -188,12 +188,12 @@ export const toggleMoveDirDialog = (dir) => ({
   type: actionTypes.TOGGLE_MOVE_DIR_DIALOG, dir
 });
 
-export const requestFetchMetaInfo = (tenant_id) => ({
-  type: actionTypes.REQUEST_FETCH_META_INFO, tenant_id
+export const requestFetchMetaInfos = (tenant_id) => ({
+  type: actionTypes.REQUEST_FETCH_META_INFOS, tenant_id
 });
 
-export const initMetaInfo = (meta_infos) => ({
-  type: actionTypes.INIT_META_INFO, meta_infos
+export const initMetaInfos = (meta_infos) => ({
+  type: actionTypes.INIT_META_INFOS, meta_infos
 });
 
 export const initFile = (file) => ({

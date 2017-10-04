@@ -145,7 +145,7 @@ class FileListContainer extends Component {
 
   componentWillMount() {
     this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
-    this.props.requestFetchMetaInfo(this.props.tenant.tenant_id);
+    this.props.requestFetchMetaInfos(this.props.tenant.tenant_id);
     this.props.requestFetchRoles(this.props.tenant.tenant_id);
     this.props.requestFetchUsers(this.props.tenant.tenant_id);
   }
@@ -473,8 +473,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
   toggleDeleteFileDialog: (file) => dispatch(actions.toggleDeleteFileDialog(file)),
   toggleMoveDirDialog: (dir) => dispatch(actions.toggleMoveDirDialog(dir)),
-  requestFetchMetaInfo: (tenant_id) => {
-    dispatch(actions.requestFetchMetaInfo(tenant_id));
+  requestFetchMetaInfos: (tenant_id) => {
+    dispatch(actions.requestFetchMetaInfos(tenant_id));
   },
   addMetaInfo: (file, metaInfo, value) => {
     dispatch(actions.addMetaInfo(file, metaInfo, value));
