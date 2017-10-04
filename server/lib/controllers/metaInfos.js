@@ -4,6 +4,8 @@ import co from "co";
 import MetaInfo from "../models/MetaInfo";
 import Tenant from "../models/Tenant";
 
+const KEY_TYPE_META = "meta";
+
 export const index = (req, res, next) => {
   co(function* () {
     try {
@@ -17,7 +19,7 @@ export const index = (req, res, next) => {
 
       const conditions = {
         tenant_id: tenant._id,
-        key_type: "meta"
+        key_type: KEY_TYPE_META
       };
 
       const meta_infos = yield MetaInfo.find(conditions);
@@ -66,7 +68,7 @@ export const add = (req, res, next) => {
           metainfo.value_type === null ||
           metainfo.value_type === "") throw "value_type is empty";
 
-      metainfo.key_type = "meta";
+      metainfo.key_type = KEY_TYPE_META;
       metainfo.tenant_id = tenant_id;
 
       let _metainfo = yield MetaInfo.findOne({ key: metainfo.key });
@@ -100,4 +102,96 @@ export const add = (req, res, next) => {
     }
 
   });
+}
+
+export const view = (req, res, next) => {
+  co(function* () {
+    try{
+      const { tenant_id } = res.user;
+      const { metainfo_id } = req.params;
+      if (metainfo_id === undefined ||
+        metainfo_id === null ||
+        metainfo_id === ""
+      ) throw "metainfo_id is empty";
+
+      const metainfo = yield MetaInfo.findById(metainfo_id);
+      if (metainfo == null) throw "metainfo is empty";
+      if(metainfo.tenant_id.toString() !== tenant_id.toString() ) throw "tenant_id is diffrent"
+
+      res.json({
+        status: { success: true},
+        body: {
+          ...metainfo.toObject()
+        }
+      });
+
+    }
+    catch(err){
+      let errors = {};
+
+      switch (err) {
+        case "metainfo_id is empty":
+          errors.metainfo_id = err;
+          break;
+        case "metainfo is empty":
+          errors.metainfo = err;
+          break;
+        default:
+          errors.unknown = err;
+          break;
+      }
+
+      res.status(400).json({
+        status: { success: false,errors}
+      });
+    }
+  });
+}
+
+export const updateKey = (req, res, next) => {
+  co(function* (){
+    try{
+      const { tenant_id } = res.user;
+      const { metainfo_id } =req.params;
+      const { key } = req.body;
+
+      if (key === null ||
+          key === undefined ||
+          key === "") throw "key is empty"; 
+
+      const metainfo = yield MetaInfo.findById(metainfo_id);
+      if(metainfo === null) throw "metainfo not found";
+      if(metainfo.tenant_id.toString() !== tenant_id.toString() ) throw "tenant_id is diffrent";
+      if(metainfo.key_type !== KEY_TYPE_META ) throw "key_type is diffrent";
+
+      metainfo.key = key;
+      const changedMetainfo = yield metainfo.save();
+
+      res.json({
+        status: { success: true},
+        body: changedMetainfo
+      });
+
+    }
+    catch(err) {
+      let errors = {};
+
+      switch(err){
+        case "key is empty":
+          errors.key = err;
+          break;
+        default:
+          errors.unknown = err;
+          break;
+      }
+
+      res.status(400).json({
+        status: {success: false, errors}
+      });
+    }
+  });
+}
+
+export const updateValueType = (req, res, next) => {
+  
 }
