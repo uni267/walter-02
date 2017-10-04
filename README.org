@@ -116,7 +116,7 @@ $ brew install mongodb
 $ cd /path/to/walter-02/server/jobs
 
 # 部内Dockerのmongodbを指定する
-$ mongo 172.16.55.xx/walter --quiet localTestData.js
+$ mongo 172.16.55.xx/walter --quiet loadTestData.js
 #+end_src
 
 ** openstack swiftのセットアップ
