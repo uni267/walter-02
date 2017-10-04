@@ -37,7 +37,7 @@ export const verifyToken = (req, res, next) => {
     }
     // @todo jwt.verifyのエラーを調査する
     catch (e) {
-      console.log(e);
+      
       let errors = {};
 
       switch (e) {

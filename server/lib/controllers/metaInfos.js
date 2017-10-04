@@ -235,3 +235,45 @@ export const updateValueType = (req, res, next) => {
     }
   });
 }
+
+export const remove = (req, res, next) => {
+  co(function* (){
+    try {
+      const { tenant_id } = res.user;
+      const { metainfo_id } = req.params;
+
+      const metainfo = yield MetaInfo.findById(metainfo_id);
+
+      console.info(metainfo);
+
+      if(metainfo === null) throw "metainfo not found";
+      if(metainfo.tenant_id.toString() !== tenant_id.toString()) throw "tenant_id is diffrent";
+      if(metainfo.key_type !== KEY_TYPE_META) throw "key_type is diffrent";
+
+      const removedMetainfo = yield metainfo.remove();
+
+      res.json({
+        status: { success: true },
+        body: removedMetainfo
+      });
+    }catch(err){
+      let errors = {};
+      switch(err){
+        case "metainfo not found":
+          errors.metainfo = "指定されたメタ情報が見つかりません";
+          break;
+        case "tenant_id is diffrent":
+        case "key_type is diffrent":
+          errors.metainfo = "指定されたメタ情報は削除できません";
+          break;
+        default:
+          errors = err;
+          break;
+      }
+
+      res.status(400).json({
+        status: { success: false,errors }
+      })
+    }
+  });
+};

@@ -8,9 +8,7 @@ router.route("/")
 
 router.route("/:metainfo_id")
   .get(controllers.view)  // 詳細
-
-router.route("/:metainfo_id")
-  .get(controllers.view);  // 詳細
+  .delete(controllers.remove); // 削除
 
 router.route("/:metainfo_id/key")
   .patch(controllers.updateKey);  // 表示名更新
