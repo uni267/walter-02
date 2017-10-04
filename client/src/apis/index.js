@@ -317,6 +317,7 @@ export class API {
 
   downloadFile = (file) => {
     const config = {
+      responseType: "arraybuffer",
       params: {
         file_id: file._id
       }

@@ -117,13 +117,13 @@ export const download = (req, res, next) => {
       const { file_id }  = req.query;
       const tenant_name = res.user.tenant.name;
 
-      // @fixme tenant_name=container_nameにする
-      const file = yield swift.downloadFile("walter", file_id);
+      const fileRecord = yield File.findById(file_id);
+      if (fileRecord === null) throw "file not found";
 
-      res.json({
-        status: { success: true },
-        body: file
-      });
+      // @fixme tenant_name=container_nameにする
+      const readStream = yield swift.downloadFile("walter", fileRecord);
+      readStream.on("data", data => res.write(data) );
+      readStream.on("end", () => res.end() );
     }
     catch (e) {
       console.log(e);

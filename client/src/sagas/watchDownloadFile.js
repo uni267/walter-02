@@ -16,8 +16,11 @@ function* watchDownloadFile() {
       yield call(delay, 1000);
       yield put(actions.loadingStart());
       const payload = yield call(api.downloadFile, file);
-      const blob = yield new Blob([ payload.data.body ], { type: file.mime_type });
-      yield saveAs(blob, file.name);
+
+      const download = new Blob(
+        [ payload.data ], { type: file.mime_type });
+
+      yield saveAs(download, file.name);
     }
     catch (e) {
       console.log(e);

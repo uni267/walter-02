@@ -56,29 +56,21 @@ class Swift {
     });
   }
 
-  downloadFile(container_name, file_name) {
+  downloadFile(container_name, file) {
     return new Promise( (resolve, reject) => {
-      let writeStream = fs.createWriteStream("/tmp/stream.tmp");
+      const stream = fs.createWriteStream("/tmp/stream.tmp");
 
-      // writeStreamにダウンロードしたファイルを書き込む
-      this.client.download(
-        { container: container_name, remote: file_name },
-        (err, result) => {
-          if (err) reject(err);
-        }
-      ).pipe( writeStream );
-
-      writeStream.on("finish", () => resolve(writeStream));
-      writeStream.on("error", err => reject(err) );
-    }).then( writeStream => new Promise( (resolve, reject) => {
-      let data = "";
-      let readStream = fs.createReadStream(writeStream.path);
-
-      readStream.on("data", (chunk) => data += chunk );
-      readStream.on("end", () => resolve(data));
-
-      readStream.on("error", (err) => reject(err) );
-    }));
+      this.client.download({
+        container: container_name,
+        remote: file._id.toString()
+      }, (err, result) => {
+        if (err) reject(err);
+      }).pipe(stream).on("finish", () => resolve(stream) );
+    }).then( writeStream => {
+      return new Promise( (resolve, reject) => {
+        resolve(fs.createReadStream(writeStream.path));
+      });
+    });
   }
 
   upload(srcFilePath, dstFileName) {
