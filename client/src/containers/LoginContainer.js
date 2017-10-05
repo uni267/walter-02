@@ -55,9 +55,9 @@ class LoginContainer extends Component {
   }
 
   login = () => {
-    const name = this.refs.name.getValue();
+    const account_name = this.refs.account_name.getValue();
     const password = this.refs.password.getValue();
-    this.props.requestLogin(name, password);
+    this.props.requestLogin(account_name, password);
   };
 
   handleKeyDown = (event) => {
@@ -82,11 +82,11 @@ class LoginContainer extends Component {
               <CardText>
 
                 <TextField
-                  ref="name"
+                  ref="account_name"
                   onKeyDown={this.handleKeyDown}
-                  hintText="example@foobar.com"
+                  hintText="example"
                   floatingLabelText="ユーザID"
-                  errorText={this.props.session.errors.name}
+                  errorText={this.props.session.errors.account_name}
                   style={styles.text} />
 
                 <br />

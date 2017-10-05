@@ -100,8 +100,8 @@ export const deleteMetaInfo = (file, metaInfo) => ({
   type: actionTypes.DELETE_META_INFO, file, metaInfo
 });
 
-export const requestLogin = (name, password) => ({
-  type: actionTypes.REQUEST_LOGIN, name, password
+export const requestLogin = (account_name, password) => ({
+  type: actionTypes.REQUEST_LOGIN, account_name, password
 });
 
 export const requestLoginSuccess = (message, user_id) => ({
@@ -266,6 +266,10 @@ export const toggleUser = (user_id) => ({
 
 export const changeUserName = (name) => ({
   type: actionTypes.CHANGE_USER_NAME, name
+});
+
+export const changeUserAccountName = (account_name) => ({
+  type: actionTypes.CHANGE_USER_ACCOUNT_NAME, account_name
 });
 
 export const changeUserValidationError = (errors) => ({

@@ -9,8 +9,8 @@ export class API {
     });
   }
 
-  login = (name, password) => {
-    const data = { email: name, password: password };
+  login = (account_name, password) => {
+    const data = { account_name, password };
 
     return axios.post("/api/login", data).then( res => res );
   };

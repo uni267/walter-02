@@ -6,16 +6,17 @@ import { API } from "../apis";
 
 // action
 import * as actions from "../actions";
+import * as actionTypes from "../actionTypes";
 
 function* watchLogin() {
   while (true) {
-    const task = yield take(actions.requestLogin().type);
+    const { account_name, password } = yield take(actionTypes.REQUEST_LOGIN);
     const api = new API();
     yield put(actions.loadingStart());
 
     try {
       yield call(delay, 500);
-      const payload = yield call(api.login, task.name, task.password);
+      const payload = yield call(api.login, account_name, password);
       const { user, token } = payload.data.body;
       localStorage.setItem("token", token);
       const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
