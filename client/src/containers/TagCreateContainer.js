@@ -25,6 +25,10 @@ class TagCreateContainer extends Component {
     this.props.initTag();
   }
 
+  componentWillUnmount() {
+    this.props.initTag();
+  }
+
   render() {
     return (
       <div>
@@ -48,7 +52,9 @@ class TagCreateContainer extends Component {
               onTouchTap={() => this.props.createTag(this.props.changedTag)}
               />
 
-              <FlatButton label="閉じる" href="/tags" />
+              <FlatButton
+                label="閉じる"
+                onTouchTap={() => this.props.history.push("/tags")} />
 
           </CardActions>
         </Card>

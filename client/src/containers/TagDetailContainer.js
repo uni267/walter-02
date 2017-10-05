@@ -20,6 +20,10 @@ class TagDetailContainer extends Component {
     this.props.requestFetchTag(this.props.match.params.id);
   }
 
+  componentWillUnmount() {
+    this.props.initTag();
+  }
+
   render() {
     return (
       <div>
@@ -37,7 +41,10 @@ class TagDetailContainer extends Component {
           </div>
         </CardText>
         <CardActions>
-          <FlatButton label="閉じる" primary={true} href="/tags" />
+          <FlatButton
+            label="閉じる"
+            primary={true}
+            onTouchTap={() => this.props.history.push("/tags")} />
           <FlatButton
             label="削除"
             secondary={true}
@@ -66,7 +73,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
   saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
   saveTagDescription: (tag) => dispatch(actions.saveTagDescription(tag)),
-  deleteTag: (tag_id) => dispatch(actions.deleteTag(tag_id, ownProps.history))
+  deleteTag: (tag_id) => dispatch(actions.deleteTag(tag_id, ownProps.history)),
+  initTag: () => dispatch(actions.initTag())
 });
 
 TagDetailContainer = connect(mapStateToProps, mapDispatchToProps)(TagDetailContainer);
