@@ -5,6 +5,9 @@ const router = Router();
 router.route("/")
   .get(controllers.index) // 一覧
   .post(controllers.add); // 作成
+  
+router.route("/value_type")
+  .get(controllers.valueType); // データ型一覧
 
 router.route("/:metainfo_id")
   .get(controllers.view)  // 詳細

@@ -191,3 +191,17 @@ export const updateKey = (req, res, next) => {
     }
   });
 }
+
+
+export const valueType = (req, res, next) => {
+  res.json({
+    status: {
+      seccusee: true,
+      value_type: [
+        {name: "String"},
+        {name: "Number"},
+        {name: "Date"}
+      ]
+    }
+  });
+}

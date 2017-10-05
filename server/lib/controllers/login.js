@@ -39,10 +39,10 @@ export const authentication = (req, res, next) => {
 
       switch (e) {
       case "account_name is empty":
-        errors.name = "ユーザ名が空です";
+        errors.account_name = "ユーザ名が空です";
         break;
       case "user is empty":
-        errors.name = "ユーザが存在しません";
+        errors.account_name = "ユーザが存在しません";
         break;
       case "password is invalid":
         errors.password = "パスワードに誤りがあります";
