@@ -4,6 +4,7 @@ mongoose.Promise = global.Promise;
 
 const UserSchema = Schema({
   type: String,
+  account_name: String,
   name: String,
   email: String,
   password: String,
