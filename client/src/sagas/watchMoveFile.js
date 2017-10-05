@@ -18,6 +18,8 @@ function* watchMoveFile() {
       const payload = yield call(api.fetchFiles, file.dir_id);
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.triggerSnackbar(`${file.name}を${dir.name}に移動しました`));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);

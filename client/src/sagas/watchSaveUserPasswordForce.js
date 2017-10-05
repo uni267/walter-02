@@ -19,6 +19,8 @@ function* watchSaveUserPasswordForce() {
       yield put(actions.initUser(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("パスワードを変更しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

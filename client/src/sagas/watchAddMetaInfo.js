@@ -5,37 +5,31 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  addMetaInfo,
-  initFile,
-  initFiles,
-  loadingStart,
-  loadingEnd,
-  triggerSnackbar,
-  updateMetaInfoTarget
-} from "../actions";
+import * as actions from "../actions";
 
 function* watchAddMetaInfo() {
   while (true) {
-    const { file, metaInfo, value } = yield take(addMetaInfo().type);
+    const { file, metaInfo, value } = yield take(actions.addMetaInfo().type);
     const api = new API();
-    yield put(loadingStart());
+    yield put(actions.loadingStart());
 
     try {
       yield call(delay, 1000);
       yield call(api.addMetaInfo, file, metaInfo, value);
       const filePayload = yield call(api.fetchFile, file._id);
-      yield put(initFile(filePayload.data.body));
-      yield put(updateMetaInfoTarget(filePayload.data.body));
+      yield put(actions.initFile(filePayload.data.body));
+      yield put(actions.updateMetaInfoTarget(filePayload.data.body));
 
       const filesPayload = yield call(api.fetchFiles, file.dir_id);
-      yield put(initFiles(filesPayload.data.body));
-      yield put(triggerSnackbar("メタ情報を追加しました"));
+      yield put(actions.initFiles(filesPayload.data.body));
+      yield put(actions.triggerSnackbar("メタ情報を追加しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
     }
     finally {
-      yield put(loadingEnd());
+      yield put(actions.loadingEnd());
     }
   }
 }

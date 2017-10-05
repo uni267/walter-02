@@ -19,6 +19,8 @@ function* watchSaveRoleDescription() {
       yield put(actions.initRole(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ロールの備考を変更しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);

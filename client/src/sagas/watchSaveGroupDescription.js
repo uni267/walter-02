@@ -18,6 +18,8 @@ function* watchSaveGroupDescription() {
       yield put(actions.initGroup(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("グループの備考を変更しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       yield put(actions.loadingEnd());

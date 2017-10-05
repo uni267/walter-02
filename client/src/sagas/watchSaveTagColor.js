@@ -18,6 +18,8 @@ function* watchSaveTagColor() {
       yield put(actions.initTag(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("タグの色を保存しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

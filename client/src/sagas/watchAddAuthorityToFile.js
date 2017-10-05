@@ -21,6 +21,8 @@ function* watchAddAuthorityToFile() {
       yield put(actions.initAuthorityFileDialog(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("権限を追加しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);

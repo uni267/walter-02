@@ -20,6 +20,8 @@ function* watchDeleteFile() {
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.toggleDeleteFileDialog(file));
       yield put(actions.triggerSnackbar(`${file.name}をごみ箱へ移動しました`));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);

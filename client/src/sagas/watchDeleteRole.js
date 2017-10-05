@@ -19,6 +19,8 @@ function* watchDeleteRole() {
       yield task.history.push("/roles");
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("ロールを削除しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);

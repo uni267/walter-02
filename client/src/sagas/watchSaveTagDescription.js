@@ -18,6 +18,8 @@ function* watchSaveTagDescription() {
       yield put(actions.initTag(payload.data.body));
       yield put(actions.loadingEnd());
       yield put(actions.triggerSnackbar("タグの備考を保存しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

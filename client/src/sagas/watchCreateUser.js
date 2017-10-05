@@ -21,6 +21,8 @@ function* watchCreateUser() {
       yield put(actions.loadingEnd());
       yield task.history.push("/users");
       yield put(actions.triggerSnackbar("ユーザを作成しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);

@@ -31,6 +31,8 @@ function* watchUploadFiles() {
 
       yield all(toggleCheckTasks);
       yield put(actions.triggerSnackbar("ファイルをアップロードしました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       console.log(e);
