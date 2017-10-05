@@ -40,6 +40,7 @@ class UserContainer extends Component {
   render() {
     const headers = [
       { name: "有効/無効" },
+      { name: "アカウント名" },
       { name: "表示名" },
       { name: "メールアドレス" },
       { name: "所属グループ" },

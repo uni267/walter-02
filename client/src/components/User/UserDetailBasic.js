@@ -10,9 +10,11 @@ const UserDetailBasic = ({
   user,
   toggleUser,
   changeUserName,
+  changeUserAccountName,
   changeUserEmail,
   changeUserPassword,
   saveUserName,
+  saveUserAccountName,
   saveUserEmail,
   saveUserPasswordForce,
   displaySaveButton = true
@@ -28,6 +30,22 @@ const UserDetailBasic = ({
             defaultToggled={user.data.enabled}
             />
         ) : null}
+
+      <TextField
+        value={user.changed.account_name}
+        onChange={(e, value) => changeUserAccountName(value)}
+        errorText={user.errors.account_name}
+        floatingLabelText="アカウント名"
+      />
+
+      {displaySaveButton ?
+       (
+         <FlatButton
+           label="保存"
+           primary={true}
+           onClick={() => saveUserAccountName(user.changed)} style={{ marginLeft: 10 }}
+           />
+       ) : null}
 
       <TextField
         value={user.changed.name}
@@ -87,6 +105,7 @@ UserDetailBasic.propTypes = {
   user: PropTypes.object.isRequired,
   toggleUser: PropTypes.func.isRequired,
   changeUserName: PropTypes.func.isRequired,
+  changeUserAccountName: PropTypes.func.isRequired,
   changeUserEmail: PropTypes.func.isRequired,
   changeUserPassword: PropTypes.func.isRequired,
   saveUserName: PropTypes.func.isRequired,

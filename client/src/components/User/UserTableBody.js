@@ -29,6 +29,9 @@ const UserTableBody = ({ user }) => {
         {user.enabled ? "有効" : "無効"}
       </TableRowColumn>
       <TableRowColumn>
+        {user.account_name}
+      </TableRowColumn>
+      <TableRowColumn>
         {user.name}
       </TableRowColumn>
       <TableRowColumn>

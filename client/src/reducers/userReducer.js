@@ -4,12 +4,14 @@ const initialState = {
   data: {
     enabled: true,
     name: "",
+    account_name: "",
     email: "",
     password: "",
     groups: []
   },
   changed: {
     name: "",
+    account_name: "",
     email: "",
     password: ""
   },
@@ -28,6 +30,14 @@ const userReducer = (state = initialState, action) => {
     return {
       ...state,
       changed: { ...state.changed, name: action.name }
+    };
+  case actionTypes.CHANGE_USER_ACCOUNT_NAME:
+    return {
+      ...state,
+      changed: {
+        ...state.changed,
+        account_name: action.account_name
+      }
     };
   case actionTypes.CHANGE_USER_PASSWORD:
     return {

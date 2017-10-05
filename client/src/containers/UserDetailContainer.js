@@ -14,18 +14,7 @@ import {
 } from 'material-ui/Card';
 
 // actions
-import {
-  requestFetchUser,
-  deleteGroupOfUser,
-  addGroupOfUser,
-  toggleUser,
-  changeUserName,
-  changeUserEmail,
-  changeUserPassword,
-  saveUserName,
-  saveUserEmail,
-  saveUserPasswordForce
-} from "../actions";
+import * as actions from "../actions";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -47,6 +36,10 @@ class UserDetailContainer extends Component {
     this.props.requestFetchUser(
       this.props.match.params.id, this.props.tenant.tenant_id
     );
+  }
+
+  componentWillUnmount() {
+    this.props.initNewUserTemplate();
   }
 
   render() {
@@ -85,7 +78,10 @@ class UserDetailContainer extends Component {
             </div>
           </CardText>
           <CardActions>
-            <FlatButton label="閉じる" primary={true} href="/users" />
+            <FlatButton
+              label="閉じる"
+              onTouchTap={() => this.props.history.push("/users")}
+              primary={true} />
           </CardActions>
         </Card>
       </div>
@@ -103,24 +99,31 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchUser: (user_id, tenant_id) => { 
-    dispatch(requestFetchUser(user_id, tenant_id));
+    dispatch(actions.requestFetchUser(user_id, tenant_id));
   },
   deleteGroupOfUser: (user_id, group_id) => {
-    dispatch(deleteGroupOfUser(user_id, group_id));
+    dispatch(actions.deleteGroupOfUser(user_id, group_id));
   },
   addGroupOfUser: (user_id, group_id) => {
-    dispatch(addGroupOfUser(user_id, group_id));
+    dispatch(actions.addGroupOfUser(user_id, group_id));
   },
   toggleUser: (user_id) => {
-    dispatch(toggleUser(user_id));
+    dispatch(actions.toggleUser(user_id));
   },
-  changeUserName: (name) => dispatch(changeUserName(name)),
-  changeUserEmail: (email) => dispatch(changeUserEmail(email)),
-  changeUserPassword: (password) => dispatch(changeUserPassword(password)),
-  saveUserName: (user) => dispatch(saveUserName(user)),
-  saveUserEmail: (user) => dispatch(saveUserEmail(user)),
-  saveUserPasswordForce: (user) => dispatch(saveUserPasswordForce(user))
+  changeUserName: (name) => dispatch(actions.changeUserName(name)),
+  changeUserAccountName: (account_name) => {
+    dispatch(actions.changeUserAccountName(account_name));
+  },
+  changeUserEmail: (email) => dispatch(actions.changeUserEmail(email)),
+  changeUserPassword: (password) => dispatch(actions.changeUserPassword(password)),
+  saveUserName: (user) => dispatch(actions.saveUserName(user)),
+  saveUserEmail: (user) => dispatch(actions.saveUserEmail(user)),
+  saveUserPasswordForce: (user) => dispatch(actions.saveUserPasswordForce(user)),
+  initNewUserTemplate: () => dispatch(actions.initNewUserTemplate())
 });
 
-UserDetailContainer = connect(mapStateToProps, mapDispatchToProps)(UserDetailContainer);
+UserDetailContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserDetailContainer);
 export default UserDetailContainer;
