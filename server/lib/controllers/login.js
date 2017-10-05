@@ -8,13 +8,13 @@ import Tenant from "../models/Tenant";
 export const authentication = (req, res, next) => {
   co(function* () {
     try {
-      const { email, password } = req.body;
+      const { account_name, password } = req.body;
 
-      if (email === undefined ||
-          email === null ||
-          email === "") throw "email is empty";
+      if (account_name === undefined ||
+          account_name === null ||
+          account_name === "") throw "account_name is empty";
 
-      const user = yield User.findOne({ email });
+      const user = yield User.findOne({ account_name });
 
       if (user === null) throw "user is empty";
 
@@ -38,7 +38,7 @@ export const authentication = (req, res, next) => {
       let errors = {};
 
       switch (e) {
-      case "email is empty":
+      case "account_name is empty":
         errors.name = "ユーザ名が空です";
         break;
       case "user is empty":
