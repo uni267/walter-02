@@ -28,6 +28,9 @@ router.route("/:user_id/password_force")
 router.route("/:user_id/enabled")
   .patch(controllers.toggleEnabled);  // 有効/無効
 
+router.route("/:user_id/account_name")
+  .patch(controllers.updateAccountName); // アカウント名変更
+
 router.route("/:user_id/name")
   .patch(controllers.updateName); // 表示名変更
 

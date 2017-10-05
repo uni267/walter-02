@@ -504,3 +504,48 @@ export const removeUserOfGroup = (req, res, next) => {
     }
   });
 };
+
+
+export const updateAccountName = (req, res, next) => {
+  co(function* () {
+    try {
+      const user_id = req.params.user_id;
+      const account_name = req.body.account_name;
+
+      if (account_name === null ||
+          account_name === undefined ||
+          account_name === "") throw "account_name is empty";
+
+      const user = yield User.findById(user_id);
+      if (user === null) throw "user not found";
+
+      user.account_name = account_name;
+      const changedUser = yield user.save();
+
+      res.json({
+        status: { success: true },
+        body: changedUser
+      });
+
+    }
+    catch (err) {
+      let errors = {};
+
+      switch (err) {
+      case "account_name is empty":
+        errors.account_name = "アカウント名が空のため変更に失敗しました。";
+        break;
+      case "user not found":
+        errors.user = "指定されたユーザが見つからないため変更に失敗しました";
+        break;
+      default:
+        errors = err;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
