@@ -87,7 +87,7 @@ var pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac1
 
 var user1 = {
   type: "user",
-  account_name: "a000",
+  account_name: "hanako",
   name: "hanako",
   email: "test",
   password: pass,
@@ -98,7 +98,7 @@ var user1 = {
 
 var user2 = {
   type: "user",
-  account_name: "a001",
+  account_name: "taro",
   name: "taro",
   email: "taro",
   password: pass,

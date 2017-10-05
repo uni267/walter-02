@@ -120,6 +120,17 @@ export const add = (req, res, next) => {
   co(function*() {
     try {
       const user = new User(req.body.user);
+      const { tenant_id } = res.user;
+      
+      if (tenant_id === undefined ||
+        tenant_id === null ||
+        tenant_id === "") throw "tenant_id is empty";
+        
+      user.tenant_id = tenant_id;
+
+      if (user.account_name === undefined
+          || user.account_name === null
+          || user.account_name === "") throw "account_name is empty";
 
       if (user.name === undefined
           || user.name === null
@@ -133,8 +144,8 @@ export const add = (req, res, next) => {
           || user.password === null
           || user.password === "") throw "password is empty";
 
-      let _user = yield User.findOne({ name: user.name });
-      if (_user !== null) throw "name is duplicate";
+      let _user = yield User.findOne({ account_name: user.account_name });
+      if (_user !== null) throw "account_name is duplicate";
 
       _user = yield User.findOne({ email: user.email });
       if (_user !== null) throw "email is duplicate";
@@ -156,8 +167,11 @@ export const add = (req, res, next) => {
       case "name is empty":
         errors.name = "表示名が空です";
         break;
-      case "name is duplicate":
-        errors.name = "既に同名のユーザが存在しています";
+      case "account_name is empty":
+          errors.name = "アカウント名が空です";
+          break;
+      case "account_name is duplicate":
+        errors.account_name = "既に同アカウント名のユーザが存在しています";
         break;
       case "email is empty":
         errors.email = "メールアドレスが空です";
