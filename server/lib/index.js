@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(morgan({ format: "dev", immediate: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, '../../client/build')));
 
 // 環境変数
 // 開発 => development、社内テスト => integration、本番 => production

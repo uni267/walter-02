@@ -10,11 +10,14 @@ import GroupRouter from "./groups";
 import RoleRouter from "./roles";
 import ActionRouter from "./actions";
 import AnalysisRouter from "./analysis";
+import ClientRouter from "./clients";
 
 // debug
 import TestRouter from "./test";
 
 const router = Router();
+
+router.use("/",ClientRouter);
 
 router.use("/api/v1/*", BeforeRouter);
 router.use("/api/login", LoginRouter);
