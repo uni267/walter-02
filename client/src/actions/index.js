@@ -292,6 +292,10 @@ export const saveUserName = (user) => ({
   type: actionTypes.SAVE_USER_NAME, user
 });
 
+export const saveUserAccountName = (user) => ({
+  type: actionTypes.SAVE_USER_ACCOUNT_NAME, user
+});
+
 export const saveUserEmail = (user) => ({
   type: actionTypes.SAVE_USER_EMAIL, user
 });

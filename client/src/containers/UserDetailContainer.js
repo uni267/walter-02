@@ -40,6 +40,7 @@ class UserDetailContainer extends Component {
 
   componentWillUnmount() {
     this.props.initNewUserTemplate();
+    this.props.clearUserValidationError();
   }
 
   render() {
@@ -117,9 +118,13 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeUserEmail: (email) => dispatch(actions.changeUserEmail(email)),
   changeUserPassword: (password) => dispatch(actions.changeUserPassword(password)),
   saveUserName: (user) => dispatch(actions.saveUserName(user)),
+  saveUserAccountName: (user) => {
+    dispatch(actions.saveUserAccountName(user));
+  },
   saveUserEmail: (user) => dispatch(actions.saveUserEmail(user)),
   saveUserPasswordForce: (user) => dispatch(actions.saveUserPasswordForce(user)),
-  initNewUserTemplate: () => dispatch(actions.initNewUserTemplate())
+  initNewUserTemplate: () => dispatch(actions.initNewUserTemplate()),
+  clearUserValidationError: () => dispatch(actions.clearUserValidationError())
 });
 
 UserDetailContainer = connect(

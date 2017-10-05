@@ -168,6 +168,11 @@ export class API {
     return this.client.patch(`/api/v1/users/${user._id}/name`, body);
   };
 
+  saveUserAccountName = (user) => {
+    const body = { account_name: user.account_name };
+    return this.client.patch(`/api/v1/users/${user._id}/account_name`, body);
+  };
+
   saveUserEmail = (user) => {
     const body = { email: user.email };
 

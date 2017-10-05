@@ -22,13 +22,7 @@ import UserDetailBasic from "../components/User/UserDetailBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import {
-  initNewUserTemplate,
-  changeUserName,
-  changeUserEmail,
-  changeUserPassword,
-  createUser
-} from "../actions";
+import * as actions from "../actions";
 
 class UserCreateContainer extends Component {
   componentWillMount() {
@@ -81,11 +75,14 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  initNewUserTemplate: () => dispatch(initNewUserTemplate()),
-  changeUserName: (name) => dispatch(changeUserName(name)),
-  changeUserEmail: (email) => dispatch(changeUserEmail(email)),
-  changeUserPassword: (password) => dispatch(changeUserPassword(password)),
-  createUser: (user, history) => dispatch(createUser(user, history))
+  initNewUserTemplate: () => dispatch(actions.initNewUserTemplate()),
+  changeUserName: (name) => dispatch(actions.changeUserName(name)),
+  changeUserAccountName: (account_name) => {
+    dispatch(actions.changeUserAccountName(account_name));
+  },
+  changeUserEmail: (email) => dispatch(actions.changeUserEmail(email)),
+  changeUserPassword: (password) => dispatch(actions.changeUserPassword(password)),
+  createUser: (user, history) => dispatch(actions.createUser(user, history))
 });
 
 UserCreateContainer = connect(
