@@ -4,7 +4,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 // material ui
-// material
 import { 
   Card, 
   CardTitle, 

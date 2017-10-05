@@ -120,6 +120,10 @@ export class API {
     return this.client.get(`/api/v1/meta_infos`);
   };
 
+  fetchMetaInfo = (metainfo_id) => {
+    return this.client.get(`/api/v1/meta_infos/${metainfo_id}`);
+  };
+
   addMetaInfo = (file, meta, value) => {
     const body = { meta, value };
 
@@ -351,6 +355,10 @@ export class API {
     };
 
     return this.client.get(`/api/v1/groups`, config);
+  };
+
+  createMetaInfo = (metainfo) => {
+    return this.client.post("/api/v1/meta_infos", { metainfo });
   };
 
 }

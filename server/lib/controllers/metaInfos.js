@@ -52,7 +52,7 @@ export const add = (req, res, next) => {
   co(function*() {
     try{
 
-      const metainfo = new MetaInfo(req.body);
+      const metainfo = new MetaInfo(req.body.metainfo);
 
       const { tenant_id } = res.user;
 
@@ -84,13 +84,13 @@ export const add = (req, res, next) => {
       let errors = {};
       switch (err) {
         case "key is empty":
-          errors.name = "表示名が空です";
+          errors.key = "key名が空です";
           break;
         case "key is duplicate":
-          errors.name = "既に同名の値が存在します";
+          errors.key = "既に同名の値が存在します";
           break;
         case "value_type is empty":
-          errors.name = "型が空です";
+          errors.value_type = "型が空です";
           break;
         default:
           errors = err;

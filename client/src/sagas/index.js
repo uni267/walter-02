@@ -64,6 +64,8 @@ import watchAddAuthorityToFile from "./watchAddAuthorityToFile";
 import watchRequestVerifyToken from "./watchRequestVerifyToken";
 import watchSearchTagSimple from "./watchSearchTagSimple";
 import watchSearchGroupSimple from "./watchSearchGroupSimple";
+import watchFetchMetaInfo from "./watchFetchMetaInfo";
+import watchCreateMetaInfo from "./watchCreateMetaInfo";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -130,6 +132,8 @@ function* Saga() {
   yield fork(watchRequestVerifyToken);
   yield fork(watchSearchTagSimple);
   yield fork(watchSearchGroupSimple);
+  yield fork(watchFetchMetaInfo);
+  yield fork(watchCreateMetaInfo);
 }
 
 export default Saga;

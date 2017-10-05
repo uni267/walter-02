@@ -192,8 +192,16 @@ export const requestFetchMetaInfos = (tenant_id) => ({
   type: actionTypes.REQUEST_FETCH_META_INFOS, tenant_id
 });
 
+export const requestFetchMetaInfo = (meta_id) => ({
+  type: actionTypes.REQUEST_FETCH_META_INFO, meta_id
+});
+
 export const initMetaInfos = (meta_infos) => ({
   type: actionTypes.INIT_META_INFOS, meta_infos
+});
+
+export const initMetaInfo = (meta_info) => ({
+  type: actionTypes.INIT_META_INFO, meta_info
 });
 
 export const initFile = (file) => ({
@@ -558,4 +566,24 @@ export const searchTagSimple = (keyword) => ({
 
 export const searchGroupSimple = (keyword) => ({
   type: actionTypes.SEARCH_GROUP_SIMPLE, keyword
+});
+
+export const changeMetaInfoKey = (key) => ({
+  type: actionTypes.CHANGE_META_INFO_KEY, key
+});
+
+export const changeMetaInfoValueType = (value_type) => ({
+  type: actionTypes.CHANGE_META_INFO_VALUE_TYPE, value_type
+});
+
+export const initChangedMetaInfo = () => ({
+  type: actionTypes.INIT_CHANGED_META_INFO
+});
+
+export const createMetaInfo = (metaInfo, history) => ({
+  type: actionTypes.CREATE_META_INFO, metaInfo, history
+});
+
+export const saveMetaInfoValidationErrors = (errors) => ({
+  type: actionTypes.SAVE_META_INFO_VALIDATION_ERRORS, errors
 });

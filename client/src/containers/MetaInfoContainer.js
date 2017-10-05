@@ -1,0 +1,119 @@
+import React, { Component } from "react";
+
+import { connect } from "react-redux";
+
+// material ui
+import { Card, CardTitle, CardText } from "material-ui/Card";
+import {
+  Table, 
+  TableBody,
+  TableHeader,
+  TableRow,
+  TableRowColumn
+} from "material-ui/Table";
+import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
+import ActionDescription from "material-ui/svg-icons/action/description";
+
+// components
+import NavigationContainer from "./NavigationContainer";
+import SimpleSearch from "../components/FileSearch/SimpleSearch";
+import MetaInfoTableHeader from "../components/MetaInfo/MetaInfoTableHeader";
+import MetaInfoTableBody from "../components/MetaInfo/MetaInfoTableBody";
+
+// actions
+import * as actions from "../actions";  
+
+class MetaInfoContainer extends Component {
+  componentWillMount() {
+    this.props.requestFetchMetaInfos();
+  }
+
+  renderMetaInfos = (metaInfos) => {
+    return metaInfos.length === 0
+      ?
+      (
+        <TableRow>
+          <TableRowColumn>表示するメタ情報はありません</TableRowColumn>
+        </TableRow>
+      )
+      : metaInfos.map( (meta, idx) => (
+        <MetaInfoTableBody meta={meta} key={idx} />
+      ));
+  };
+
+  render() {
+    const headers = [
+      { name: "key名" },
+      { name: "データ型" },
+      { name: "編集" },
+    ];
+
+    return (
+      <div>
+        <NavigationContainer />
+        <Card>
+          <CardText>
+            <div style={{ display: "flex" }}>
+
+              <div style={{ width: "75%" }}>
+                <CardTitle title="メタ情報管理" />
+              </div>
+
+              <div style={{ width: "25%" }}>
+                <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+                  <SimpleSearch
+                    searchFileSimple={ keyword => console.log(keyword) }
+                    hintText="メタ情報名を入力"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex" }}>
+
+              <div style={{ width: "80%" }}>
+                <Table>
+                  <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                    <MetaInfoTableHeader headers={headers} />
+                  </TableHeader>
+                  <TableBody displayRowCheckbox={false}>
+                    {this.renderMetaInfos(this.props.metaInfos)}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div style={{ width: "20%" }}>
+                <Menu>
+                  <MenuItem
+                    primaryText="メタ情報作成"
+                    leftIcon={<ActionDescription />}
+                    onTouchTap={() => (
+                      this.props.history.push("/meta_infos/create")
+                    )}
+                    />
+                </Menu>
+              </div>
+            </div>
+          </CardText>
+        </Card>
+      </div>
+    );
+  }
+
+}
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    tenant: state.tenant,
+    metaInfos: state.metaInfo.meta_infos
+  };
+};
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  requestFetchMetaInfos: () => dispatch(actions.requestFetchMetaInfos())
+});
+
+MetaInfoContainer = connect(mapStateToProps, mapDispatchToProps)(MetaInfoContainer);
+
+export default MetaInfoContainer;
