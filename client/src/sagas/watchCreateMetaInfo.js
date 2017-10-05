@@ -19,6 +19,9 @@ function* watchCreateMetaInfo() {
       yield put(actions.initMetaInfos(payload.data.body));
       yield history.push("/meta_infos");
       yield put(actions.loadingEnd());
+      yield put(actions.triggerSnackbar("メタ情報を作成しました"));
+      yield call(delay, 3000);
+      yield put(actions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;
