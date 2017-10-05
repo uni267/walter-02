@@ -153,9 +153,6 @@ export const create = (req, res, next) => {
   dir.authorities = [];
 
   // authoritiesを構築するためセッションからユーザ情報を抽出
-  const { token } = req.body;
-  const { secretKey } = SECURITY_CONF.development;
-
   const validationConditions = {
     name: dir_name,
     is_dir: true,
@@ -166,19 +163,7 @@ export const create = (req, res, next) => {
     .then( files => {
       if (files.length > 0) throw "name is duplication";
 
-      return new Promise( (resolve, reject) => {
-        jwt.verify(token, secretKey, (err, decoded) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(decoded);
-          }
-        });
-      });
-
-    })
-    .then( decoded => {
-      const user = decoded._doc;
+      const user = res.user;
       delete user.password;
 
       const authority = {
