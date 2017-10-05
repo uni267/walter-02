@@ -25,8 +25,10 @@ const UserDetailBasic = ({
         (
           <Toggle
             onToggle={() => toggleUser(user.data._id)}
+            thumbStyle={{ backgroundColor: "#ffcccc" }}
+            trackStyle={{ backgroundColor: "#ff9d9d" }}
             style={{ maxWidth: 200 }}
-            label="有効/無効"
+            label="無効/有効"
             defaultToggled={user.data.enabled}
             />
         ) : null}
