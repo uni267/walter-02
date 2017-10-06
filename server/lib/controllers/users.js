@@ -23,8 +23,11 @@ export const index = (req, res, next) => {
       if (q) {
         conditions = {
           $and: [
-            { tenant_id: mongoose.Types.ObjectId(tenant_id) },
-            { name: new RegExp(q, "i") }
+            { tenant_id: mongoose.Types.ObjectId(tenant_id) }
+          ],
+          $or: [
+            { name: new RegExp(q, "i") },
+            { account_name: new RegExp(q, "i") },
           ]
         };
       }
