@@ -42,31 +42,39 @@ class FileActionContainer extends Component {
   };
 
   render() {
-    let items = [
-      (
-        <MenuItem
-          primaryText="アップロード"
-          leftIcon={<FileCloudUpload />}
-          onTouchTap={() => this.setState({ addFile: { open: true } })}
-          />
-      ),
-      (
-        <MenuItem
-          primaryText="新しいフォルダ"
-          leftIcon={<FileCreateNewFolder />}
-          onTouchTap={this.props.toggleCreateDir}
-          />
-      ),
-      (
-        <MenuItem
-          primaryText="ごみ箱"
-          leftIcon={<ActionDelete />}
-          onTouchTap={() => {
-            this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
-          }}
-          />
-      )
-    ];
+    let items = [];
+
+    // カレントフォルダに依存するmenuなので検索結果では表示することができない
+    if (!this.props.isSearch) {
+      items = 
+        [ ...items,
+          [
+            (
+              <MenuItem
+                primaryText="アップロード"
+                leftIcon={<FileCloudUpload />}
+                onTouchTap={() => this.setState({ addFile: { open: true } })}
+                />
+            ),
+            (
+              <MenuItem
+                primaryText="新しいフォルダ"
+                leftIcon={<FileCreateNewFolder />}
+                onTouchTap={this.props.toggleCreateDir}
+                />
+            ),
+            (
+              <MenuItem
+                primaryText="ごみ箱"
+                leftIcon={<ActionDelete />}
+                onTouchTap={() => {
+                  this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
+                }}
+                />
+            )
+          ]
+        ];
+    }
 
     if (this.props.checkedFiles.length > 0) {
       items = [ ...items,

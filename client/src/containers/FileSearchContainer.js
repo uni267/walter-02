@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+// router
+import { withRouter } from "react-router-dom";
+
 // store
 import { connect } from "react-redux";
 
@@ -86,7 +89,9 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFileSimple: (value) => dispatch(actions.searchFileSimple(value)),
+  searchFileSimple: (value) => {
+    dispatch(actions.searchFileSimple(value, ownProps.history));
+  },
   searchFileDetail: () => dispatch(actions.searchFileDetail()),
   requestFetchFileSearchItems: (tenant_id) => {
     dispatch(actions.requestFetchFileSearchItems(tenant_id));
@@ -105,4 +110,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
 FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);
 
-export default FileSearchContainer;
+export default withRouter(FileSearchContainer);

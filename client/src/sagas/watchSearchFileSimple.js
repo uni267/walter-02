@@ -2,30 +2,21 @@ import { delay } from "redux-saga";
 import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
+import * as actions from "../actions";
+import * as actionTypes from "../actionTypes";
 
 function* watchSearchFileSimple() {
   while (true) {
-    const { value } = yield take("SEARCH_FILE_SIMPLE");
-    const api = new API();
-    yield put({ type: "LOADING_START" });
-    yield call(delay, 1000);
+    const { value, history } = yield take(actionTypes.SEARCH_FILE_SIMPLE);
+    if (value) {
+      const queryCollection = value
+            .replace(/\u3000/g, " ")
+            .split(" ")
+            .join("+");
 
-    try {
-      const payload = yield call(api.searchFiles, value);
-      yield put({ type: "INIT_FILES", files: payload.data.body });
-      const { dirId } = yield select(state => state.tenant);
-
-      const dirs = [
-        { _id: dirId, name: "検索結果" }
-      ];
-
-      yield put({ type: "INIT_DIR", dirs });
-    }
-    catch (e) {
-      console.log(e);
-    }
-    finally {
-      yield put({ type: "LOADING_END" });
+      history.push(`/files/search?q=${queryCollection}`);
+    } else {
+      history.push(`/files/search`);
     }
   }
 }

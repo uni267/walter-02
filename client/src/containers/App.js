@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import AuthenticationContainer from "./AuthenticationContainer";
 import HomeContainer from "./HomeContainer";
 import FileDetailContainer from "./FileDetailContainer";
+import FileSearchResultContainer from "./FileSearchResultContainer";
 import LoginContainer from "./LoginContainer";
 import NotifyStatusContainer from "./NotifyStatusContainer";
 import UserContainer from "./UserContainer";
@@ -45,7 +46,8 @@ class App extends Component {
                   <Route exact path="/tags" component={TagContainer} />
                   <Route exact path="/tags/create" component={TagCreateContainer} />
                   <Route path="/tags/:id" component={TagDetailContainer} />
-                  <Route path="/file-detail/:id" component={FileDetailContainer} />
+                  <Route exact path="/files/search" component={FileSearchResultContainer} />
+                  <Route path="/files/:id" component={FileDetailContainer} />
                   <Route exact path="/home" component={HomeContainer} />
                   <Route path="/home/:id" component={HomeContainer} />
                   <Route exact path="/roles" component={RoleContainer} />
