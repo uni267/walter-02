@@ -18,7 +18,7 @@ function* watchFetchRoles() {
 
     try {
       yield call(delay, 1000);
-      const payload = yield call(api.fetchRoles, task.tenant_id);
+      const payload = yield call(api.fetchRoles);
       yield put(initRoles(payload.data.body));
     }
     catch (e) {
