@@ -17,21 +17,8 @@ import FileListHeader from "../components/FileListHeader";
 
 // dir components
 import Dir from "../components/Dir";
-import MoveDirDialog from "../components/Dir/MoveDirDialog";
-import CopyDirDialog from "../components/Dir/CopyDirDialog";
-import DeleteDirDialog from "../components/Dir/DeleteDirDialog";
-import AuthorityDirDialog from "../components/Dir/AuthorityDirDialog";
-import HistoryDirDialog from "../components/Dir/HistoryDirDialog";
-
-// file components
 import File from "../components/File";
-import AuthorityFileDialog from "../components/File/AuthorityFileDialog";
-import DeleteFileDialog from "../components/File/DeleteFileDialog";
-import MoveFileDialog from "../components/File/MoveFileDialog";
-import CopyFileDialog from "../components/File/CopyFileDialog";
-import HistoryFileDialog from "../components/File/HistoryFileDialog";
-import TagFileDialog from "../components/File/TagFileDialog";
-import MetaInfoDialog from "../components/File/MetaInfoDialog";
+import FileOperationDialogContainer from "./FileOperationDialogContainer";
 
 // actions
 import * as actions from "../actions";
@@ -102,52 +89,9 @@ const fileType = {
 };
 
 class FileListContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      copyDirDialog: {
-        open: false
-      },
-      deleteDirDialog: {
-        open: false,
-        dir: {}
-      },
-      authorityDirDialog: {
-        open: false,
-        dir: {}
-      },
-      historyDirDialog: {
-        open: false,
-        dir: {}
-      },
-      deleteFileDialog: {
-        open: false,
-        file: {}
-      },
-      moveFileDialog: {
-        open: false,
-        file: {}
-      },
-      copyFileDialog: {
-        open: false,
-        file: {}
-      },
-      historyFileDialog: {
-        open: false,
-        file: fileType
-      },
-      tagFileDialog: {
-        open: false,
-        file: fileType
-      }
-    };
-  }
-
   componentWillMount() {
     this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
     this.props.requestFetchMetaInfos(this.props.tenant.tenant_id);
-    this.props.requestFetchRoles(this.props.tenant.tenant_id);
-    this.props.requestFetchUsers(this.props.tenant.tenant_id);
   }
 
   componentDidMount() {
@@ -164,6 +108,8 @@ class FileListContainer extends Component {
     }
   }
 
+  // onScroll pagination
+  // @todo スクロール幅の算出方法を改善する
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
 
@@ -172,112 +118,12 @@ class FileListContainer extends Component {
     }
   };
 
+  // finderからdropのハンドラ
   handleFileDrop = (item, monitor) => {
     if (monitor) {
       this.props.uploadFiles(this.props.match.params.id, monitor.getItem().files);
     }
   }
-
-  toggleDeleteDirDialog = (dir = {}) => {
-    this.setState({
-      deleteDirDialog: {
-        open: !this.state.deleteDirDialog.open,
-        dir: dir
-      }
-    });
-  };
-
-  toggleAuthorityDirDialog = (dir = {}) => {
-    this.setState({
-      authorityDirDialog: {
-        open: !this.state.authorityDirDialog.open,
-        dir: dir
-      }
-    });
-  };
-
-  toggleCopyDirDialog = () => {
-    this.setState({
-      copyDirDialog: {
-        open: !this.state.copyDirDialog.open
-      }
-    });
-  };
-
-  toggleHistoryDirDialog = (dir = {}) => {
-    this.setState({
-      historyDirDialog: {
-        open: !this.state.historyDirDialog.open,
-        dir: dir
-      }
-    });
-  };
-
-  toggleMoveFileDialog = (file = {}) => {
-    this.setState({
-      moveFileDialog: {
-        open: !this.state.moveFileDialog.open,
-        file: file
-      }
-    });
-  };
-
-  toggleCopyFileDialog = (file = {}) => {
-    this.setState({
-      copyFileDialog: {
-        open: !this.state.copyFileDialog.open,
-        file: file
-      }
-    });
-  };
-
-  toggleHistoryFileDialog = (file = fileType) => {
-    this.setState({
-      historyFileDialog: {
-        open: !this.state.historyFileDialog.open,
-        file: file
-      }
-    });
-  };
-
-  toggleTagFileDialog = (file = fileType) => {
-    this.setState({
-      tagFileDialog: {
-        open: !this.state.tagFileDialog.open,
-        file: file
-      }
-    });
-  };
-
-  toggleMetaInfoDialog = (file = {}) => {
-    this.setState({
-      metaInfoDialog: {
-        open: !this.state.metaInfoDialog.open,
-        file: file
-      }
-    });
-  };
-
-  deleteDir = (dir) => {
-    this.setState({ deleteDirDialog: { open: false } });
-    this.props.deleteFile(dir);
-    this.setState({ deleteDirDialog: { dir: {} } });
-    this.props.triggerSnackbar(`${dir.name}を削除しました`);
-  };
-
-  moveFile = (file) => {
-    this.props.moveFile(this.props.selectedDir, file);
-    this.toggleMoveFileDialog();
-    this.props.triggerSnackbar(`${file.name}を移動しました`);
-  };
-
-  copyFile = (file) => {
-    this.props.copyFile(
-      this.props.selectedDir.id, file
-    );
-    this.toggleCopyFileDialog();
-    this.props.triggerSnackbar(`${file.name}をコピーしました`);
-  };
 
   renderRow = (file, idx) => {
     const dirComponent = (
@@ -288,9 +134,9 @@ class FileListContainer extends Component {
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
         headers={headers}
-        handleCopyDir={this.toggleCopyDirDialog}
-        handleDeleteDir={this.toggleDeleteDirDialog}
-        handleAuthorityDir={this.toggleAuthorityDirDialog}
+        handleCopyDir={this.props.toggleCopyDirDialog}
+        handleDeleteDir={this.props.toggleDeleteDirDialog}
+        handleAuthorityDir={this.props.toggleAuthorityDirDialog}
         handleHistoryDir={this.toggleHistoryDirDialog}
         editDir={this.props.editFileByIndex}
         />
@@ -304,9 +150,7 @@ class FileListContainer extends Component {
         cellStyle={styles.tableRow}
         headers={headers}
         file={file}
-        handleAuthorityFile={this.toggleAuthorityFileDialog}
         handleMoveFile={this.toggleMoveFileDialog}
-        handleCopyFile={this.toggleCopyFileDialog}
         handleHistoryFile={this.toggleHistoryFileDialog}
         handleTagFile={this.toggleTagFileDialog}
         />
@@ -357,73 +201,7 @@ class FileListContainer extends Component {
 
         </TableBodyWrapper>
 
-        <MoveDirDialog />
-
-        <CopyDirDialog
-          open={this.state.copyDirDialog.open}
-          handleClose={this.toggleCopyDirDialog} />            
-
-        <DeleteDirDialog
-          { ...this.props }
-          dir={this.state.deleteDirDialog.dir}
-          open={this.state.deleteDirDialog.open}
-          deleteDir={this.deleteDir}
-          handleClose={this.toggleDeleteDirDialog}
-        />
-
-        <AuthorityDirDialog
-          { ...this.props }
-          open={this.state.authorityDirDialog.open}
-          handleClose={this.toggleAuthorityDirDialog}
-        />
-
-        <HistoryDirDialog
-          open={this.state.historyDirDialog.open}
-          dir={this.props.files.filter(filterHistoryDir)[0]}
-          handleClose={this.toggleHistoryDirDialog}
-        />
-
-        <AuthorityFileDialog
-          { ...this.props }
-          file={this.props.addAuthority.file}
-          open={this.props.addAuthority.open}
-          handleClose={this.props.toggleAuthorityFileDialog}
-        />
-
-        <DeleteFileDialog
-          { ...this.props }
-          open={this.props.deleteFileState.open}
-          file={this.props.deleteFileState.file} />
-
-        <MoveFileDialog
-          open={this.state.moveFileDialog.open}
-          handleClose={this.toggleMoveFileDialog}
-          moveFile={this.moveFile}
-          file={this.state.moveFileDialog.file} />
-
-        <CopyFileDialog
-          open={this.state.copyFileDialog.open}
-          handleClose={this.toggleCopyFileDialog}
-          copyFile={this.copyFile}
-          file={this.state.copyFileDialog.file} />
-
-        <HistoryFileDialog
-          open={this.state.historyFileDialog.open}
-          handleClose={this.toggleHistoryFileDialog}
-          file={this.state.historyFileDialog.file} />
-
-        <TagFileDialog
-          open={this.state.tagFileDialog.open}
-          handleClose={this.toggleTagFileDialog}
-          file={this.state.tagFileDialog.file} />
-
-        <MetaInfoDialog
-          open={this.props.metaInfo.dialog_open}
-          handleClose={this.props.toggleMetaInfoDialog}
-          file={this.props.metaInfo.target_file}
-          metaInfo={this.props.metaInfo.meta_infos}
-          addMetaInfo={this.props.addMetaInfo}
-          deleteMetaInfo={this.props.deleteMetaInfo} />
+        <FileOperationDialogContainer />
       </div>
     );
   }
@@ -431,8 +209,6 @@ class FileListContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     files: state.files,
-    roles: state.roles,
-    users: state.users,
     selectedDir: state.selectedDir,
     fileSortTarget: state.fileSortTarget,
     deleteFileState: state.deleteFile,
@@ -442,7 +218,7 @@ const mapStateToProps = (state, ownProps) => {
     total: state.filePagination.total,
     page: state.filePagination.page,
     downloadBlob: state.downloadFile,
-    addAuthority: state.addAuthority
+    addAuthority: state.addAuthorityFile
   };
 };
 
@@ -482,7 +258,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   deleteMetaInfo: (file, metaInfo) => { 
     dispatch(actions.deleteMetaInfo(file, metaInfo));
   },
-  toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file)),
+  toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file)),
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
   toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
   fileNextPage: () => dispatch(actions.fileNextPage()),
@@ -491,7 +267,14 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchUsers: (tenant_id) => dispatch(actions.requestFetchUsers(tenant_id)),
   toggleAuthorityFileDialog: (file) => {
     dispatch(actions.toggleAuthorityFileDialog(file));
-  }
+  },
+  toggleCopyDirDialog: () => dispatch(actions.toggleCopyDirDialog()),
+  toggleDeleteDirDialog: (dir) => dispatch(actions.toggleDeleteDirDialog(dir)),
+  toggleAuthorityDirDialog: (dir) => dispatch(actions.toggleAuthorityDirDialog(dir)),
+  toggleMoveFileDialog: (file) => dispatch(actions.toggleMoveFileDialog(file)),
+  toggleCopyFileDialog: (file) => dispatch(actions.toggleCopyFileDialog(file)),
+  toggleHistoryFileDialog: (file) => dispatch(actions.toggleHistoryFileDialog(file)),
+  toggleFileTagDialog: (file) => dispatch(actions.toggleFileTagDialog(file))
 });
 
 FileListContainer = connect(
