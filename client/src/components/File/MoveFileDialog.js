@@ -19,7 +19,7 @@ const MoveFileDialog = ({
     (
       <FlatButton
         label="移動"
-        onTouchTap={() => moveFile(file)}
+        onTouchTap={() => moveFile(dir, file)}
         primary={true}
         />
     ),
