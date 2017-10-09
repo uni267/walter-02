@@ -19,7 +19,7 @@ const CopyFileDialog = ({
     (
       <FlatButton
         label="コピー"
-        onTouchTap={() => copyFile(file, dir_id)}
+        onTouchTap={() => copyFile(dir_id, file)}
         primary={true}
         />
     ),
