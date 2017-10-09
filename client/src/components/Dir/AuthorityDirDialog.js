@@ -13,8 +13,8 @@ const AuthorityDirDialog = ({
   dir,
   users,
   roles,
-  addAuthority,
-  deleteAuthority,
+  addAuthorityToFile,
+  deleteAuthorityToFile,
   triggerSnackbar,
   handleClose
 }) => {
@@ -37,8 +37,8 @@ const AuthorityDirDialog = ({
         file={dir}
         users={users}
         roles={roles}
-        addAuthority={addAuthority}
-        deleteAuthority={deleteAuthority}
+        addAuthorityToFile={addAuthorityToFile}
+        deleteAuthorityToFile={deleteAuthorityToFile}
         triggerSnackbar={triggerSnackbar} />
 
     </Dialog>
@@ -50,8 +50,8 @@ AuthorityDirDialog.propTypes = {
   dir: PropTypes.object,
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
-  addAuthority: PropTypes.func.isRequired,
-  deleteAuthority: PropTypes.func.isRequired,
+  addAuthorityToFile: PropTypes.func.isRequired,
+  deleteAuthorityToFile: PropTypes.func.isRequired,
   triggerSnackbar: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired
 };

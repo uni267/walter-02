@@ -12,13 +12,14 @@ const CopyFileDialog = ({
   open,
   handleClose,
   copyFile,
-  file
+  file,
+  dir_id
 }) => {
   const actions = [
     (
       <FlatButton
         label="コピー"
-        onTouchTap={() => copyFile(file)}
+        onTouchTap={() => copyFile(file, dir_id)}
         primary={true}
         />
     ),

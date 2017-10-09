@@ -37,7 +37,7 @@ const AuthorityFileDialog = ({
       <Authority
         file={file}
         users={users}
-        roles={roles.data}
+        roles={roles}
         addAuthorityToFile={addAuthorityToFile}
         deleteAuthorityToFile={deleteAuthorityToFile}
         triggerSnackbar={triggerSnackbar} />
