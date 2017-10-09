@@ -165,7 +165,7 @@ class FileDetailContainer extends Component {
       <FlatButton
         label="閉じる"
         primary={true}
-        onTouchTap={this.props.toggleMetaInfoDialog}
+        onTouchTap={this.props.toggleFileMetaInfoDialog}
         />
     );
 
@@ -332,7 +332,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchMetaInfos: (tenant_id) => {
     dispatch(actions.requestFetchMetaInfos(tenant_id));
   },
-  toggleMetaInfoDialog: (file) => dispatch(actions.toggleMetaInfoDialog(file))
+  toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file))
 });
 
 FileDetailContainer = connect(
