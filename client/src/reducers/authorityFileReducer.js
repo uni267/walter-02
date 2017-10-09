@@ -5,7 +5,7 @@ const initialState = {
   file: {}
 };
 
-const addAuthorityReducer = (state = initialState, action) => {
+const authorityFileReducer = (state = initialState, action) => {
   switch (action.type) {
   case actionTypes.TOGGLE_AUTHORITY_FILE_DIALOG:
     return {
@@ -22,4 +22,4 @@ const addAuthorityReducer = (state = initialState, action) => {
   }
 };
 
-export default addAuthorityReducer;
+export default authorityFileReducer;

@@ -34,7 +34,15 @@ import tag from "./tagReducer";
 import moveFilesState from "./moveFilesReducer";
 import analysis from "./analysisReducer";
 import filePagination from "./filePaginationReducer";
-import addAuthority from "./addAuthorityReducer";
+import authorityFile from "./authorityFileReducer";
+import copyDir from "./copyDirReducer";
+import deleteDir from "./deleteDirReducer";
+import authorityDir from "./authorityDirReducer";
+import moveFile from "./moveFileReducer";
+import copyFile from "./copyFileReducer";
+import fileHistory from "./fileHistoryReducer";
+import fileTag from "./fileTagReducer";
+import fileMetaInfo from "./fileMetaInfoReducer";
 
 const fileApp = combineReducers({
   files,
@@ -70,7 +78,15 @@ const fileApp = combineReducers({
   moveFilesState,
   analysis,
   filePagination,
-  addAuthority
+  authorityFile,
+  copyDir,
+  deleteDir,
+  authorityDir,
+  moveFile,
+  copyFile,
+  fileHistory,
+  fileTag,
+  fileMetaInfo
 });
 
 export default fileApp;
