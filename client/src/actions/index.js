@@ -28,8 +28,12 @@ export const clearFilesBuffer = () => ({
   type: actionTypes.CLEAR_FILES_BUFFER
 });
 
-export const searchFileSimple = (value) => ({
-  type: actionTypes.SEARCH_FILE_SIMPLE, value
+export const searchFileSimple = (value, history) => ({
+  type: actionTypes.SEARCH_FILE_SIMPLE, value, history
+});
+
+export const fetchSearchFileSimple = (value) => ({
+  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value
 });
 
 export const setSortTarget = (sorted) => ({
@@ -188,8 +192,8 @@ export const toggleMoveDirDialog = (dir) => ({
   type: actionTypes.TOGGLE_MOVE_DIR_DIALOG, dir
 });
 
-export const requestFetchMetaInfos = (tenant_id) => ({
-  type: actionTypes.REQUEST_FETCH_META_INFOS, tenant_id
+export const requestFetchMetaInfos = () => ({
+  type: actionTypes.REQUEST_FETCH_META_INFOS
 });
 
 export const requestFetchMetaInfo = (meta_id) => ({
@@ -218,10 +222,6 @@ export const initNextFiles = (files) => ({
 
 export const initDir = (dirs) => ({
   type: actionTypes.INIT_DIR, dirs
-});
-
-export const toggleMetaInfoDialog = (target_file) => ({
-  type: actionTypes.TOGGLE_META_INFO_DIALOG, target_file
 });
 
 export const updateMetaInfoTarget = (target_file) => ({
@@ -360,8 +360,8 @@ export const deleteGroup = (group_id, history) => ({
   type: actionTypes.DELETE_GROUP, group_id, history
 });
 
-export const requestFetchRoles = (tenant_id) => ({
-  type: actionTypes.REQUEST_FETCH_ROLES, tenant_id
+export const requestFetchRoles = () => ({
+  type: actionTypes.REQUEST_FETCH_ROLES
 });
 
 export const initRoles = (roles) => ({
@@ -594,4 +594,36 @@ export const createMetaInfo = (metaInfo, history) => ({
 
 export const saveMetaInfoValidationErrors = (errors) => ({
   type: actionTypes.SAVE_META_INFO_VALIDATION_ERRORS, errors
+});
+
+export const toggleCopyDirDialog = () => ({
+  type: actionTypes.TOGGLE_COPY_DIR_DIALOG
+});
+
+export const toggleDeleteDirDialog = (dir) => ({
+  type: actionTypes.TOGGLE_DELETE_DIR_DIALOG, dir
+});
+
+export const toggleAuthorityDirDialog = (dir) => ({
+  type: actionTypes.TOGGLE_AUTHORITY_DIR_DIALOG, dir
+});
+
+export const toggleMoveFileDialog = (file) => ({
+  type: actionTypes.TOGGLE_MOVE_FILE_DIALOG, file
+});
+
+export const toggleCopyFileDialog = (file) => ({
+  type: actionTypes.TOGGLE_COPY_FILE_DIALOG, file
+});
+
+export const toggleHistoryFileDialog = (file) => ({
+  type: actionTypes.TOGGLE_HISTORY_FILE_DIALOG, file
+});
+
+export const toggleFileTagDialog = (file) => ({
+  type: actionTypes.TOGGLE_FILE_TAG_DIALOG, file
+});
+
+export const toggleFileMetaInfoDialog = (file) => ({
+  type: actionTypes.TOGGLE_FILE_META_INFO_DIALOG, file
 });

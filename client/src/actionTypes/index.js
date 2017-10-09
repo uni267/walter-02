@@ -28,11 +28,13 @@ export const DOWNLOAD_FILE = "DOWNLOAD_FILE";
 
 // ファイル検索
 export const SEARCH_FILE_SIMPLE = "SEARCH_FILE_SIMPLE";
+export const FETCH_SEARCH_FILE_SIMPLE = "FETCH_SEARCH_FILE_SIMPLE";
 
 // ファイル移動
 export const MOVE_FILE = "MOVE_FILE";
 export const MOVE_FILES = "MOVE_FILES";
 export const TOGGLE_MOVE_FILES_DIALOG = "TOGGLE_MOVE_FILES_DIALOG";
+export const TOGGLE_MOVE_FILE_DIALOG = "TOGGLE_MOVE_FILE_DIALOG";
 
 // ファイル削除
 export const DELETE_FILE = "DELETE_FILE";
@@ -47,12 +49,22 @@ export const SORT_FILE = "SORT_FILE";
 
 // ファイルコピー
 export const COPY_FILE = "COPY_FILE";
+export const TOGGLE_COPY_FILE_DIALOG = "TOGGLE_COPY_FILE_DIALOG";
 
 // ファイルの権限変更
 export const TOGGLE_AUTHORITY_FILE_DIALOG = "TOGGLE_AUTHORITY_FILE_DIALOG";
 export const INIT_AUTHORITY_FILE_DIALOG = "INIT_AUTHORITY_FILE_DIALOG";
 export const ADD_AUTHORITY_TO_FILE = "ADD_AUTHORITY_TO_FILE";
 export const DELETE_AUTHORITY = "DELETE_AUTHORITY";
+
+// ファイルの履歴
+export const TOGGLE_HISTORY_FILE_DIALOG = "TOGGLE_HISTORY_FILE_DIALOG";
+
+// ファイルのタグ
+export const TOGGLE_FILE_TAG_DIALOG = "TOGGLE_FILE_TAG_DIALOG";
+
+// ファイルのメタ情報
+export const TOGGLE_FILE_META_INFO_DIALOG = "TOGGLE_FILE_META_INFO_DIALOG";
 
 // お気に入りファイル
 export const TOGGLE_STAR = "TOGGLE_STAR";
@@ -71,10 +83,21 @@ export const PUT_DIR_TREE = "PUT_DIR_TREE";
 export const TOGGLE_ADD_DIR = "TOGGLE_ADD_DIR";
 export const CREATE_DIR = "CREATE_DIR";
 export const INIT_DIR = "INIT_DIR";
+export const TOGGLE_CREATE_DIR = "TOGGLE_CREATE_DIR";
+export const CREATE_DIR_ERROR = "CREATE_DIR_ERROR";
 
 // フォルダ移動
 export const MOVE_DIR = "MOVE_DIR";
 export const TOGGLE_MOVE_DIR_DIALOG = "TOGGLE_MOVE_DIR_DIALOG";
+
+// フォルダ削除
+export const TOGGLE_DELETE_DIR_DIALOG = "TOGGLE_DELETE_DIR_DIALOG";
+
+// フォルダコピー
+export const TOGGLE_COPY_DIR_DIALOG = "TOGGLE_COPY_DIR_DIALOG";
+
+// フォルダ編集
+export const TOGGLE_AUTHORITY_DIR_DIALOG = "TOGGLE_AUTHORITY_DIR_DIALOG";
 
 // タグ一覧
 export const REQUEST_FETCH_TAGS = "REQUEST_FETCH_TAGS";
@@ -122,6 +145,9 @@ export const SAVE_META_INFO_VALIDATION_ERRORS = "SAVE_META_INFO_VALIDATION_ERROR
 export const REQUEST_LOGIN = "REQUEST_LOGIN";
 export const REQUEST_LOGIN_SUCCESS = "REQUEST_LOGIN_SUCCESS";
 export const REQUEST_LOGIN_FAILED = "REQUEST_LOGIN_FAILED";
+export const REQUEST_VERIFY_TOKEN = "REQUEST_VERIFY_TOKEN";
+export const EDIT_FILE_BY_VIEW = "EDIT_FILE_BY_VIEW";
+export const EDIT_FILE_BY_INDEX = "EDIT_FILE_BY_INDEX";
 
 // ログアウト
 export const LOGOUT = "LOGOUT";
@@ -138,10 +164,6 @@ export const LOADING_END = "LOADING_END";
 
 // テナント
 export const PUT_TENANT = "PUT_TENANT";
-
-// フォルダ作成
-export const TOGGLE_CREATE_DIR = "TOGGLE_CREATE_DIR";
-export const CREATE_DIR_ERROR = "CREATE_DIR_ERROR";
 
 // ユーザ一覧
 export const REQUEST_FETCH_USERS = "REQUEST_FETCH_USERS";
@@ -250,9 +272,5 @@ export const INIT_FILE_TOTAL = "INIT_FILE_TOTAL";
 export const TRIGGER_SNACK = "TRIGGER_SNACK";
 export const CLOSE_SNACK = "CLOSE_SNACK";
 
-// ???
-export const REQUEST_VERIFY_TOKEN = "REQUEST_VERIFY_TOKEN";
-export const EDIT_FILE_BY_VIEW = "EDIT_FILE_BY_VIEW";
-export const EDIT_FILE_BY_INDEX = "EDIT_FILE_BY_INDEX";
 
 

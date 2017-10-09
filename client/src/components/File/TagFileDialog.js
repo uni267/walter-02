@@ -31,7 +31,7 @@ class TagFileDialog extends Component {
       <FlatButton
         label="close"
         primary={true}
-        onTouchTap={this.props.handleClose}
+        onTouchTap={this.props.toggleFileTagDialog}
         />
     );
 

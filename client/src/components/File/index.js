@@ -102,7 +102,7 @@ class File extends Component {
     );
 
     const handleClick = () => {
-      this.props.history.push(`/file-detail/${this.props.file._id}`);
+      this.props.history.push(`/files/${this.props.file._id}`);
     };
 
     const fileView = (
@@ -208,10 +208,10 @@ class File extends Component {
             <MenuItem
               primaryText="移動"
               leftIcon={<ContentForward />}
-              onTouchTap={() => this.props.handleMoveFile(file)} />
+              onTouchTap={() => this.props.toggleMoveFileDialog(file)} />
 
             <MenuItem
-              onTouchTap={() => this.props.handleCopyFile(file)}
+              onTouchTap={() => this.props.toggleCopyFileDialog(file)}
               leftIcon={<ContentContentCopy />}
               primaryText="コピー" />
 
@@ -228,17 +228,17 @@ class File extends Component {
             <MenuItem
               primaryText="タグを編集"
               leftIcon={<ActionLabel />}
-              onTouchTap={() => this.props.handleTagFile(file)} />
+              onTouchTap={() => this.props.toggleFileTagDialog(file)} />
 
             <MenuItem
               primaryText="メタ情報を編集"
               leftIcon={<ActionDescription />}
-              onTouchTap={() => this.props.toggleMetaInfoDialog(file)} />
+              onTouchTap={() => this.props.toggleFileMetaInfoDialog(file)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
               leftIcon={<ActionHistory />}
-              onTouchTap={() => this.props.handleHistoryFile(file)} />
+              onTouchTap={() => this.props.toggleHistoryFileDialog(file)} />
 
             <MenuItem
               primaryText="タイムスタンプ発行"
