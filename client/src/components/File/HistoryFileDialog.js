@@ -16,7 +16,7 @@ const HistoryFileDialog = ({
   const actions = (
     <FlatButton
       label="close"
-      primary={false}
+      primary={true}
       onTouchTap={() => handleClose()}
       />
   );
