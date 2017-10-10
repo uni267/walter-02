@@ -85,6 +85,10 @@ export class API {
     return this.client.post(`/api/v1/files`, form);
   };
 
+  filesUploadBlob = (dir_id, files) => {
+    return this.client.post("/api/v1/files", { dir_id, files });
+  };
+
   deleteFile = (file, trashDirId) => {
     const body = { dir_id: trashDirId };
 
