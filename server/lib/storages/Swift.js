@@ -1,5 +1,6 @@
 import fs from "fs";
 import pkgcloud from "pkgcloud";
+import stream from "stream";
 
 import { STORAGE_CONF } from "../../configs/server";
 
@@ -76,7 +77,9 @@ class Swift {
   upload(srcFilePath, dstFileName) {
 
     return new Promise( (resolve, reject) => {
-      const readStream = fs.createReadStream(srcFilePath);
+      
+      const readStream = new stream.PassThrough();
+      readStream.end(srcFilePath);
 
       const writeStream = this.client.upload({
         container: "walter",

@@ -368,8 +368,8 @@ export const move = (req, res, next) => {
 
 export const upload = (req, res, next) => {
   co(function* () {
-    try {
-      const myFiles = req.files["myFile[]"];
+    try {      
+      const myFiles  = req.body.files;
       let dir_id = req.body.dir_id;
 
       if (myFiles === null ||
@@ -398,8 +398,7 @@ export const upload = (req, res, next) => {
 
       const createFiles = myFiles.map( _file => {
         const file = new File();
-        file.name = _file.originalname;
-        file.blob_path = _file.path;
+        file.name = _file.name;
         file.mime_type = _file.mimetype;
         file.size = _file.size;
         file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -426,10 +425,14 @@ export const upload = (req, res, next) => {
 
         file.histories = file.histories.concat(history);
 
+        const regex = /;base64,(.*)$/;
+        const matches = _file.base64.match(regex);
+        const data = matches[1];
+
         // ここからswiftへのput
         const swift = new Swift();
-        swift.upload(path.resolve(_file.path), file._id.toString());
-
+        swift.upload( new Buffer(data, 'base64'), file._id.toString());
+        
         return file;
       });
 
