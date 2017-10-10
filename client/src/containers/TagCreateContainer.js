@@ -73,10 +73,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
   changeTagLabel: (value) => dispatch(actions.changeTagLabel(value)),
   changeTagColor: (value) => dispatch(actions.changeTagColor(value)),
-  changeTagDescription: (value) => dispatch(actions.changeTagDescription(value)),
   saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
   saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
-  saveTagDescription: (tag) => dispatch(actions.saveTagDescription(tag)),
   createTag: (tag) => dispatch(actions.createTag(tag, ownProps.history)),
   initTag: (tag) => dispatch(actions.initTag(tag))
 });

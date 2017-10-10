@@ -52,7 +52,6 @@ class TagContainer extends Component {
     const headers = [
       { name: "タグ名" },
       { name: "色" },
-      { name: "備考" },
       { name: "編集" }
     ];
 

@@ -69,10 +69,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchTag: (tag_id) => dispatch(actions.requestFetchTag(tag_id)),
   changeTagLabel: (value) => dispatch(actions.changeTagLabel(value)),
   changeTagColor: (value) => dispatch(actions.changeTagColor(value)),
-  changeTagDescription: (value) => dispatch(actions.changeTagDescription(value)),
   saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
   saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
-  saveTagDescription: (tag) => dispatch(actions.saveTagDescription(tag)),
   deleteTag: (tag_id) => dispatch(actions.deleteTag(tag_id, ownProps.history)),
   initTag: () => dispatch(actions.initTag())
 });

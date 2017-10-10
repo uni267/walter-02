@@ -476,20 +476,12 @@ export const changeTagColor = (value) => ({
   type: actionTypes.CHANGE_TAG_COLOR, value
 });
 
-export const changeTagDescription = (value) => ({
-  type: actionTypes.CHANGE_TAG_DESCRIPTION, value
-});
-
 export const saveTagLabel = (tag) => ({
   type: actionTypes.SAVE_TAG_LABEL, tag
 });
 
 export const saveTagColor = (tag) => ({
   type: actionTypes.SAVE_TAG_COLOR, tag
-});
-
-export const saveTagDescription = (tag) => ({
-  type: actionTypes.SAVE_TAG_DESCRIPTION, tag
 });
 
 export const saveTagValidationError = (errors) => ({

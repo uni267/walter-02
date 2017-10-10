@@ -51,7 +51,6 @@ import watchSearchFileDetail from "./watchSearchFileDetail";
 import watchFetchTag from "./watchFetchTag";
 import watchSaveTagLabel from "./watchSaveTagLabel";
 import watchSaveTagColor from "./watchSaveTagColor";
-import watchSaveTagDescription from "./watchSaveTagDescription";
 import watchCreateTag from "./watchCreateTag";
 import watchDeleteTag from "./watchDeleteTag";
 import watchDeleteFiles from "./watchDeleteFiles";
@@ -122,7 +121,6 @@ function* Saga() {
   yield fork(watchFetchTag);
   yield fork(watchSaveTagLabel);
   yield fork(watchSaveTagColor);
-  yield fork(watchSaveTagDescription);
   yield fork(watchCreateTag);
   yield fork(watchDeleteTag);
   yield fork(watchDeleteFiles);

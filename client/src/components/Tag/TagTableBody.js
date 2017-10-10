@@ -15,7 +15,6 @@ const TagTableBody = ({ tag }) => {
     <TableRow>
       <TableRowColumn>{tag.label}</TableRowColumn>
       <TableRowColumn>{tag.color}</TableRowColumn>
-      <TableRowColumn>{tag.description}</TableRowColumn>
       <TableRowColumn>
         <IconButton containerElement={<Link to={`/tags/${tag._id}`} />}>
           <ImageEdit />

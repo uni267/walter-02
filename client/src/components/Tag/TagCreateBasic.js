@@ -7,8 +7,7 @@ const TagCreateBasic = ({
   changedTag,
   validationErrors,
   changeTagLabel,
-  changeTagColor,
-  changeTagDescription
+  changeTagColor
 }) => {
   return (
     <div>
@@ -26,13 +25,6 @@ const TagCreateBasic = ({
           floatingLabelText="色"
           />
 
-        <TextField
-          value={changedTag.description}
-          onChange={(e, value) => changeTagDescription(value)}
-          errorText={validationErrors.description}
-          floatingLabelText="備考"
-          />
-
     </div>
   );
 };
@@ -41,8 +33,7 @@ TagCreateBasic.propTypes = {
   changedTag: PropTypes.object.isRequired,
   validationErrors: PropTypes.object.isRequired,
   changeTagLabel: PropTypes.func.isRequired,
-  changeTagColor: PropTypes.func.isRequired,
-  changeTagDescription: PropTypes.func.isRequired
+  changeTagColor: PropTypes.func.isRequired
 };
 
 export default TagCreateBasic;

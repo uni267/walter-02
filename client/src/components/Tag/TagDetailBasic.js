@@ -9,7 +9,6 @@ const TagDetailBasic = ({
   validationErrors,
   changeTagLabel,
   changeTagColor,
-  changeTagDescription,
   saveTagLabel,
   saveTagColor,
   saveTagDescription
@@ -40,19 +39,6 @@ const TagDetailBasic = ({
           label="保存"
           primary={true}
           onClick={() => saveTagColor(changedTag)}
-          />
-
-        <TextField
-          value={changedTag.description}
-          onChange={(e, value) => changeTagDescription(value)}
-          errorText={validationErrors.description}
-          floatingLabelText="備考"
-          />
-
-        <FlatButton
-          label="保存"
-          primary={true}
-          onClick={() => saveTagDescription(changedTag)}
           />
 
     </div>

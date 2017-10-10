@@ -32,14 +32,6 @@ const tagReducer = (state = initialState, action) => {
         color: action.value
       }
     };
-  case actionTypes.CHANGE_TAG_DESCRIPTION:
-    return {
-      ...state,
-      changedTag: {
-        ...state.changedTag,
-        description: action.value
-      }
-    };
   case actionTypes.SAVE_TAG_VALIDATION_ERROR:
     return {
       ...state,
