@@ -176,7 +176,7 @@ class FileDetailContainer extends Component {
         modal={false}
         open={this.props.metaInfo.dialog_open}
         autoScrollBodyContent={true}
-        onRequestClose={this.props.toggleMetaInfoDialog} >
+        onRequestClose={this.props.toggleFileMetaInfoDialog} >
 
         <MetaInfo
           file={this.props.file}
@@ -270,7 +270,7 @@ class FileDetailContainer extends Component {
                 <CardActions>
                   <RaisedButton
                     label="編集"
-                    onTouchTap={() => this.props.toggleMetaInfoDialog(this.props.file)}
+                    onTouchTap={() => this.props.toggleFileMetaInfoDialog(this.props.file)}
                     />
                 </CardActions>
               </Card>
