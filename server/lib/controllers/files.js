@@ -399,7 +399,7 @@ export const upload = (req, res, next) => {
       const createFiles = myFiles.map( _file => {
         const file = new File();
         file.name = _file.name;
-        file.mime_type = _file.mimetype;
+        file.mime_type = _file.mime_type;
         file.size = _file.size;
         file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
         file.is_dir = false;
