@@ -80,19 +80,55 @@ class File extends Component {
       </div>
     );
 
-    const handleClick = () => {
+    let fileView;
+
+    const style = {
+      display: "flex",
+      alignItems: "center",
+      paddingLeft: 24,
+      paddingRight: 24,
+      textAlign: "left",
+      fontFamily: "Roboto sans-serif",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      backgroundColor: "inherit",
+      height: 70,
+      fontSize: 13,
+      width: this.props.headers[1].width,
+      color
+    };
+
+    const linkToFileDetail = () => {
       this.props.history.push(`/files/${this.props.file._id}`);
     };
 
-    const fileView = (
-      <div
-        onClick={handleClick}
-        style={{...this.props.cellStyle, width: this.props.headers[1].width, color}}>
-        
-        {this.props.file.name}
+    const linkToDir = () => {
+      this.props.history.push(`/home/${this.props.file.dir_id}`);
+    };
 
-      </div>
-    );
+    if (this.props.file.dir_route) {
+      fileView = (
+        <div style={style}>
+          <div>
+            <div onClick={linkToFileDetail}>
+              {this.props.file.name}
+            </div>
+            <div style={{ fontSize: 12, color: "#aaa"}} onClick={linkToDir}>
+              場所: {this.props.file.dir_route}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    else {
+      fileView = (
+        <div
+          style={{...this.props.cellStyle, width: this.props.headers[1].width, color}}
+          onClick={linkToFileDetail}>
+          {this.props.file.name}
+        </div>
+      );
+    }
 
     return this.state.editFile.open ? fileInput : fileView;
   };
@@ -143,12 +179,12 @@ class File extends Component {
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
-        style={{...rowStyle, opacity, backgroundColor}}>
+        style={{ ...rowStyle, opacity, backgroundColor }}>
 
-        <div style={{...cellStyle, width: headers[0].width}}>
+        <div style={{ ...cellStyle, width: headers[0].width }}>
           <Checkbox
             checked={file.checked}
-            style={{...style.checkbox, opacity: checkOpacity}}
+            style={{ ...style.checkbox, opacity: checkOpacity }}
             onCheck={() => this.props.toggleFileCheck(file)} />
 
           <Checkbox
@@ -161,15 +197,15 @@ class File extends Component {
 
         {this.renderFileName()}
 
-        <div style={{...cellStyle, width: headers[2].width}}>
+        <div style={{ ...cellStyle, width: headers[2].width }}>
           {moment(file.modified).format("YYYY-MM-DD hh:mm:ss")}
         </div>
 
-        <div style={{...cellStyle, width: headers[3].width}}>
+        <div style={{ ...cellStyle, width: headers[3].width }}>
           {this.renderMember()}
         </div>
 
-        <div style={{...cellStyle, width: headers[4].width}}>
+        <div style={{ ...cellStyle, width: headers[4].width }}>
           <IconMenu
             iconButtonElement={action_menu_icon()}
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}>

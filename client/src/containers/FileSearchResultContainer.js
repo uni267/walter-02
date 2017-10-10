@@ -80,9 +80,9 @@ const styles = {
 
 const headers = [
   {key: "checkbox", width: "5%", label: ""},
-  {key: "name", width: "50%", label: "名前"},
+  {key: "name", width: "50%", label: "名前/場所"},
   {key: "modified", width: "20%", label: "最終更新"},
-  {key: "dir", width: "15%", label: "場所"},
+  {key: "dir", width: "15%", label: "メンバー"},
   {key: false, width: "5%", label: "Action"}
 ];
 
@@ -193,7 +193,8 @@ class FileSearchResultContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    files: state.files,
+    // @todo server api実装まち
+    files: state.files.map( f => ({ ...f, dir_route: "/path/to/obj" }) ),
     tenant: state.tenant
   };
 };
