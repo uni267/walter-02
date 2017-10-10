@@ -36,8 +36,8 @@ class MetaInfo extends Component {
   }
 
   renderMetaInfo = (meta, idx) => {
-    const deleteMetaInfo = (file, metaInfo) => {
-      this.props.deleteMetaInfo(file, metaInfo);
+    const deleteMetaInfoToFile = (file, metaInfo) => {
+      this.props.deleteMetaInfoToFile(file, metaInfo);
       this.props.triggerSnackbar("メタ情報を削除しました");
     };
 
@@ -48,15 +48,15 @@ class MetaInfo extends Component {
         <div style={{...styles.cell, width: "10%"}}>
           <RaisedButton
             label="削除"
-            onTouchTap={() => deleteMetaInfo(this.props.file, meta) } />
+            onTouchTap={() => deleteMetaInfoToFile(this.props.file, meta) } />
         </div>
       </div>
     );
   };
 
   newMetaTable = () => {
-    const addMetaInfo = (file) => {
-      this.props.addMetaInfo(
+    const addMetaInfoToFile = (file) => {
+      this.props.addMetaInfoToFile(
         file,
         this.state.metaInfo,
         this.refs.metaValue.getValue()
@@ -105,7 +105,7 @@ class MetaInfo extends Component {
         <div style={{...styles.cell, width: "10%"}}>
           <RaisedButton
             label="作成"
-            onTouchTap={() => addMetaInfo(this.props.file, {}) } />
+            onTouchTap={() => addMetaInfoToFile(this.props.file, {}) } />
         </div>
       </div>
     );

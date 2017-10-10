@@ -10,19 +10,19 @@ import Authority from "../Authority";
 
 const AuthorityFileDialog = ({
   open,
-  handleClose,
   file,
   users,
   roles,
   addAuthorityToFile,
   deleteAuthorityToFile,
-  triggerSnackbar
+  triggerSnackbar,
+  toggleAuthorityFileDialog
 }) => {
   const actions = (
     <FlatButton
       label="閉じる"
       primary={true}
-      onTouchTap={handleClose}
+      onTouchTap={toggleAuthorityFileDialog}
       />
   );
   
@@ -32,7 +32,7 @@ const AuthorityFileDialog = ({
       modal={false}
       actions={actions}
       open={open}
-      onRequestClose={handleClose} >
+      onRequestClose={toggleAuthorityFileDialog} >
 
       <Authority
         file={file}

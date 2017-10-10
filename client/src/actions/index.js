@@ -96,12 +96,12 @@ export const copyFile = (dir_id, file) => ({
   type: actionTypes.COPY_FILE, dir_id, file
 });
 
-export const addMetaInfo = (file, metaInfo, value) => ({
-  type: actionTypes.ADD_META_INFO, file, metaInfo, value
+export const addMetaInfoToFile = (file, metaInfo, value) => ({
+  type: actionTypes.ADD_META_INFO_TO_FILE, file, metaInfo, value
 });
 
-export const deleteMetaInfo = (file, metaInfo) => ({
-  type: actionTypes.DELETE_META_INFO, file, metaInfo
+export const deleteMetaInfoToFile = (file, metaInfo) => ({
+  type: actionTypes.DELETE_META_INFO_TO_FILE, file, metaInfo
 });
 
 export const requestLogin = (account_name, password) => ({

@@ -62,7 +62,7 @@ class Dir extends Component {
       return;
     }
 
-    this.props.editDir({...this.props.dir, name: dirName});
+    this.props.editFileByIndex({...this.props.dir, name: dirName});
     this.setState({ editDir: { open: false } });
     this.props.triggerSnackbar("フォルダ名を変更しました");
 
@@ -188,22 +188,22 @@ class Dir extends Component {
             <MenuItem
               primaryText="コピー"
               leftIcon={<ContentContentCopy />}
-              onTouchTap={this.props.handleCopyDir} />
+              onTouchTap={this.props.toggleCopyDirDialog} />
 
             <MenuItem
               primaryText="削除" 
               leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.handleDeleteDir(dir)} />
+              onTouchTap={() => this.props.toggleDeleteDirDialog(dir)} />
 
             <MenuItem
               primaryText="権限を変更"
               leftIcon={<ActionVerifiedUser />}
-              onTouchTap={() => this.props.handleAuthorityDir(dir)} />
+              onTouchTap={() => this.props.toggleAuthorityDirDialog(dir)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
               leftIcon={<ActionHistory />}
-              onTouchTap={() => this.props.handleHistoryDir(dir)} />
+              onTouchTap={() => this.props.toggleHistoryDirDialog(dir)} />
 
           </IconMenu>
         </div>

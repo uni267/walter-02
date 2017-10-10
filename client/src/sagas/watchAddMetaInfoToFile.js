@@ -6,16 +6,17 @@ import { API } from "../apis";
 
 // actions
 import * as actions from "../actions";
+import * as actionTypes from "../actionTypes";
 
-function* watchAddMetaInfo() {
+function* watchAddMetaInfoToFile() {
   while (true) {
-    const { file, metaInfo, value } = yield take(actions.addMetaInfo().type);
+    const { file, metaInfo, value } = yield take(actionTypes.ADD_META_INFO_TO_FILE);
     const api = new API();
     yield put(actions.loadingStart());
 
     try {
       yield call(delay, 1000);
-      yield call(api.addMetaInfo, file, metaInfo, value);
+      yield call(api.addMetaInfoToFile, file, metaInfo, value);
       const filePayload = yield call(api.fetchFile, file._id);
       yield put(actions.initFile(filePayload.data.body));
       yield put(actions.updateMetaInfoTarget(filePayload.data.body));
@@ -34,4 +35,4 @@ function* watchAddMetaInfo() {
   }
 }
 
-export default watchAddMetaInfo;
+export default watchAddMetaInfoToFile;

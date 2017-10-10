@@ -13,7 +13,7 @@ const MoveFileDialog = ({
   file,
   dir,
   moveFile,
-  handleClose
+  toggleMoveFileDialog
 }) => {
   const actions = [
     (
@@ -26,7 +26,7 @@ const MoveFileDialog = ({
     (
       <FlatButton
         label="close"
-        onTouchTap={handleClose}
+        onTouchTap={toggleMoveFileDialog}
         />
     )
   ];

@@ -16,12 +16,12 @@ const AuthorityDirDialog = ({
   addAuthorityToFile,
   deleteAuthorityToFile,
   triggerSnackbar,
-  handleClose
+  toggleAuthorityDirDialog
 }) => {
   const actions = (
     <FlatButton
       label="close"
-      onTouchTap={handleClose}
+      onTouchTap={toggleAuthorityDirDialog}
       />
   );
   
@@ -31,7 +31,7 @@ const AuthorityDirDialog = ({
       modal={false}
       actions={actions}
       open={open}
-      onRequestClose={handleClose} >
+      onRequestClose={toggleAuthorityDirDialog} >
 
       <Authority
         file={dir}

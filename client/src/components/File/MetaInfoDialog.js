@@ -10,20 +10,19 @@ import MetaInfo from "../MetaInfo";
 
 const MetaInfoDialog = ({
   open,
-  handleClose,
+  toggleFileMetaInfoDialog,
   file,
   metaInfo,
-  addMetaInfo,
-  deleteMetaInfo
+  addMetaInfoToFile,
+  deleteMetaInfoToFile
 }) => {
   const actions = (
     <FlatButton
       label="閉じる"
       primary={true}
-      onTouchTap={handleClose}
+      onTouchTap={toggleFileMetaInfoDialog}
       />
   );
-
   return (
     <Dialog
       title="メタ情報を編集"
@@ -31,13 +30,13 @@ const MetaInfoDialog = ({
       modal={false}
       open={open}
       autoScrollBodyContent={true}
-      onRequestClose={handleClose} >
+      onRequestClose={toggleFileMetaInfoDialog} >
 
       <MetaInfo
         file={file}
         metaInfo={metaInfo}
-        addMetaInfo={addMetaInfo}
-        deleteMetaInfo={deleteMetaInfo} />
+        addMetaInfoToFile={addMetaInfoToFile}
+        deleteMetaInfoToFile={deleteMetaInfoToFile} />
 
     </Dialog>
   );

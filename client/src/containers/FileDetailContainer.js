@@ -181,7 +181,7 @@ class FileDetailContainer extends Component {
         <MetaInfo
           file={this.props.file}
           metaInfo={this.props.metaInfo.meta_infos}
-          addMetaInfo={this.props.addMetaInfo}
+          addMetaInfoToFile={this.props.addMetaInfoToFile}
           deleteMetaInfo={this.props.deleteMetaInfo}
           triggerSnackbar={this.props.triggerSnackbar} />
 
@@ -321,10 +321,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   editFileByView: (file) => dispatch(actions.editFileByView(file)),
   triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
-  addMetaInfo: (file, metaInfo, value) => {
-    dispatch(actions.addMetaInfo(file, metaInfo, value));
+  addMetaInfoToFile: (file, metaInfo, value) => {
+    dispatch(actions.addMetaInfoToFile(file, metaInfo, value));
   },
-  deleteMetaInfo: (file, metaInfo) => dispatch(actions.deleteMetaInfo(file, metaInfo)),
+  deleteMetaInfoToFile: (file, metaInfo) => {
+    dispatch(actions.deleteMetaInfoToFile(file, metaInfo));
+  },
   requestFetchFile: (file_id) => dispatch(actions.requestFetchFile(file_id)),
   requestFetchTags: () => dispatch(actions.requestFetchTags()),
   requestAddTag: (file, tag) => dispatch(actions.requestAddTag(file, tag)),

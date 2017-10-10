@@ -7,9 +7,9 @@ import Dialog from "material-ui/Dialog";
 
 const DeleteFileDialog = ({
   open,
-  handleClose,
   deleteFile,
-  file
+  file,
+  toggleDeleteFileDialog
 }) => {
   const actions = [
     (
@@ -22,7 +22,7 @@ const DeleteFileDialog = ({
       <FlatButton
         label="close"
         primary={false}
-        onTouchTap={handleClose}
+        onTouchTap={toggleDeleteFileDialog}
         />
     )
   ];
@@ -33,7 +33,7 @@ const DeleteFileDialog = ({
       modal={false}
       actions={actions}
       open={open}
-      onRequestClose={handleClose}
+      onRequestClose={toggleDeleteFileDialog}
       >
     </Dialog>
   );

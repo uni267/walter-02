@@ -10,14 +10,14 @@ import History from "../History";
 
 const HistoryFileDialog = ({
   open,
-  handleClose,
+  toggleHistoryFileDialog,
   file
 }) => {
   const actions = (
     <FlatButton
       label="close"
       primary={true}
-      onTouchTap={() => handleClose()}
+      onTouchTap={toggleHistoryFileDialog}
       />
   );
 

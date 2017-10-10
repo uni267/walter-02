@@ -32,61 +32,52 @@ class FileOperationDialogContainer extends Component {
       <div>
         <MoveDirDialog />
         <CopyDirDialog 
+          { ...this.props }
           open={this.props.copyDirState.open}
           handleClose={this.props.toggleCopyDirDialog} />
         <DeleteDirDialog
+          { ...this.props }
           open={this.props.deleteDirState.open}
-          handleClose={this.props.toggleDeleteDirDialog}
-          deleteDir={this.props.deleteDir}
           dir={this.props.deleteDirState.dir} />
         <AuthorityDirDialog
+          { ...this.props }
           open={this.props.authorityDirState.open}
           roles={this.props.roles}
           users={this.props.users}
-          dir={this.props.authorityDirState.dir}
-          addAuthorityToFile={this.props.addAuthorityToFile}
-          deleteAuthorityToFile={this.props.deleteAuthorityToFile}
-          handleClose={this.props.toggleAuthorityDirDialog} />
+          dir={this.props.authorityDirState.dir} />
         <AuthorityFileDialog
+          { ...this.props }
           open={this.props.authorityFileState.open}
           file={this.props.authorityFileState.file}
-          handleClose={this.props.toggleAuthorityFileDialog}
           users={this.props.users}
-          roles={this.props.roles}
-          addAuthorityToFile={this.props.addAuthorityToFile}
-          deleteAuthorityToFile={this.props.deleteAuthorityToFile} />
+          roles={this.props.roles} />
         <DeleteFileDialog
+          { ...this.props }
           open={this.props.deleteFileState.open}
-          handleClose={this.props.toggleDeleteFileDialog}
-          deleteFile={this.props.deleteFile}
           file={this.props.deleteFileState.file} />
         <MoveFileDialog
+          { ...this.props }
           open={this.props.moveFileState.open}
           file={this.props.moveFileState.file}
-          dir={this.props.selectedDir}
-          moveFile={this.props.moveFile}
-          handleClose={this.props.toggleMoveFileDialog} />
+          dir={this.props.selectedDir} />
         <CopyFileDialog
+          { ...this.props }
           open={this.props.copyFileState.open}
           file={this.props.copyFileState.file}
-          dir_id={this.props.selectedDir._id}
-          handleClose={this.props.toggleCopyFileDialog}
-          copyFile={this.props.copyFile} />
+          dir_id={this.props.selectedDir._id} />
         <HistoryFileDialog
+          { ...this.props }
           open={this.props.fileHistoryState.open}
-          handleClose={this.props.toggleHistoryFileDialog}
           file={this.props.fileHistoryState.file} />
         <TagFileDialog
+          { ...this.props }
           open={this.props.fileTagState.open}
-          toggleFileTagDialog={this.props.toggleFileTagDialog}
           file={this.props.fileTagState.file} />
         <MetaInfoDialog 
+          { ...this.props }
           open={this.props.fileMetaInfoState.open}
-          handleClose={this.props.toggleFileMetaInfoDialog}
           file={this.props.fileMetaInfoState.file}
-          metaInfo={this.props.metaInfos}
-          addMetaInfo={this.props.addMetaInfo}
-          deleteMetaInfo={this.props.deleteMetaInfo} />
+          metaInfo={this.props.metaInfos} />
       </div>
     );
   }
@@ -137,8 +128,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleHistoryFileDialog: () => dispatch(actions.toggleHistoryFileDialog()),
   toggleFileTagDialog: () => dispatch(actions.toggleFileTagDialog()),
   toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file)),
-  addMetaInfo: (file, metaInfo, value) => dispatch(actions.addMetaInfo(file, metaInfo, value)),
-  deleteMetaInfo: (file, metaInfo) => dispatch(actions.deleteMetaInfo(file, metaInfo))
+  addMetaInfoToFile: (file, metaInfo, value) => {
+    dispatch(actions.addMetaInfoToFile(file, metaInfo, value));
+  },
+  deleteMetaInfoToFile: (file, metaInfo) => {
+    dispatch(actions.deleteMetaInfoToFile(file, metaInfo));
+  }
 });
 
 FileOperationDialogContainer = connect(

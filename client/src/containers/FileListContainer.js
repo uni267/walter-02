@@ -166,11 +166,6 @@ class FileListContainer extends Component {
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
         headers={headers}
-        handleCopyDir={this.props.toggleCopyDirDialog}
-        handleDeleteDir={this.props.toggleDeleteDirDialog}
-        handleAuthorityDir={this.props.toggleAuthorityDirDialog}
-        handleHistoryDir={this.toggleHistoryDirDialog}
-        editDir={this.props.editFileByIndex}
         />
     );
 
@@ -187,9 +182,6 @@ class FileListContainer extends Component {
         cellStyle={styles.tableRow}
         headers={headers}
         file={file}
-        handleMoveFile={this.toggleMoveFileDialog}
-        handleHistoryFile={this.toggleHistoryFileDialog}
-        handleTagFile={this.toggleTagFileDialog}
         />
     );
 
@@ -289,11 +281,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchMetaInfos: (tenant_id) => {
     dispatch(actions.requestFetchMetaInfos(tenant_id));
   },
-  addMetaInfo: (file, metaInfo, value) => {
-    dispatch(actions.addMetaInfo(file, metaInfo, value));
+  addMetaInfoToFile: (file, metaInfo, value) => {
+    dispatch(actions.addMetaInfoToFile(file, metaInfo, value));
   },
-  deleteMetaInfo: (file, metaInfo) => { 
-    dispatch(actions.deleteMetaInfo(file, metaInfo));
+  deleteMetaInfoToFile: (file, metaInfo) => { 
+    dispatch(actions.deleteMetaInfoToFile(file, metaInfo));
   },
   toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file)),
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),

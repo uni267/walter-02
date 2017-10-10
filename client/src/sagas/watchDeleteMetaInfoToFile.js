@@ -6,16 +6,17 @@ import { API } from "../apis";
 
 // actions
 import * as actions from "../actions";
+import * as actionTypes from "../actionTypes";
 
-function* watchDeleteMetaInfo() {
+function* watchDeleteMetaInfoToFile() {
   while (true) {
-    const { file, metaInfo } = yield take(actions.deleteMetaInfo().type);
+    const { file, metaInfo } = yield take(actionTypes.DELETE_META_INFO_TO_FILE);
     const api = new API();
     yield put(actions.loadingStart());
 
     try {
       yield call(delay, 1000);
-      yield call(api.deleteMetaInfo, file, metaInfo);
+      yield call(api.deleteMetaInfoToFile, file, metaInfo);
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initFile(payload.data.body));
       yield put(actions.triggerSnackbar("メタ情報を削除しました"));
@@ -32,4 +33,4 @@ function* watchDeleteMetaInfo() {
   }
 }
 
-export default watchDeleteMetaInfo;
+export default watchDeleteMetaInfoToFile;

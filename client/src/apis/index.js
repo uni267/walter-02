@@ -124,13 +124,13 @@ export class API {
     return this.client.get(`/api/v1/meta_infos/${metainfo_id}`);
   };
 
-  addMetaInfo = (file, meta, value) => {
+  addMetaInfoToFile = (file, meta, value) => {
     const body = { meta, value };
 
     return this.client.post(`/api/v1/files/${file._id}/meta`, body);
   };
 
-  deleteMetaInfo = (file, meta) => {
+  deleteMetaInfoToFile = (file, meta) => {
     return this.client.delete(
       `/api/v1/files/${file._id}/meta/${meta.meta_info_id}`);
   }

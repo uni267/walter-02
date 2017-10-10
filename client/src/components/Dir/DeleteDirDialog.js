@@ -9,8 +9,8 @@ const DeleteDirDialog = ({
   dir,
   open,
   deleteDir,
-  handleClose,
-  triggerSnackbar
+  triggerSnackbar,
+  toggleDeleteDirDialog
 }) => {
   const actions = [
     (
@@ -24,7 +24,7 @@ const DeleteDirDialog = ({
       <FlatButton
         label="close"
         primary={false}
-        onTouchTap={handleClose}
+        onTouchTap={toggleDeleteDirDialog}
         />
     )
   ];
@@ -35,7 +35,7 @@ const DeleteDirDialog = ({
       modal={false}
       actions={actions}
       open={open}
-      onRequestClose={handleClose}
+      onRequestClose={toggleDeleteDirDialog}
       >
     </Dialog>
   );

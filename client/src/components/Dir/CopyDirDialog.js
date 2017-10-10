@@ -10,7 +10,7 @@ import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const CopyDirDialog = ({
   open,
-  handleClose
+  toggleCopyDirDialog
 }) => {
   const actions = [
     (
@@ -22,7 +22,7 @@ const CopyDirDialog = ({
     (
       <FlatButton
         label="close"
-        onTouchTap={handleClose}
+        onTouchTap={toggleCopyDirDialog}
         />
     )
   ];
