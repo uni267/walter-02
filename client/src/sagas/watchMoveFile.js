@@ -20,6 +20,7 @@ function* watchMoveFile() {
       yield put(actions.triggerSnackbar(`${file.name}を${dir.name}に移動しました`));
       yield call(delay, 3000);
       yield put(actions.closeSnackbar());
+      yield put(actions.toggleMoveFileDialog());
     }
     catch (e) {
       console.log(e);
