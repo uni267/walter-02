@@ -3,6 +3,7 @@ import { call, put, take } from "redux-saga/effects";
 
 // api
 import { API } from "../apis";
+import * as actions from "../actions";
 
 function* watchEditFileByIndex() {
   while (true) {
@@ -15,6 +16,7 @@ function* watchEditFileByIndex() {
       yield call(api.editFile, file);
       const payload = yield call(api.fetchFiles, file.dir_id);
       yield put({ type: "INIT_FILES", files: payload.data.body });
+      yield put(actions.triggerSnackbar("ファイル名を変更しました"));
     }
     catch (e) {
       console.log(e);

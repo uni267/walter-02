@@ -66,7 +66,6 @@ class File extends Component {
 
       this.props.editFileByIndex({ ...this.props.file, name: fileName });
       this.setState({ editFile: { open: false } });
-      this.props.triggerSnackbar("ファイル名を変更しました");
     };
 
     const fileInput = (

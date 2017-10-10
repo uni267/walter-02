@@ -10,6 +10,7 @@ const snackbarReducer = (state = initial_snackbar, action) => {
   switch (action.type) {
   case actionTypes.TRIGGER_SNACK:
     return {
+      ...state,
       open: true,
       message: action.message
     };
