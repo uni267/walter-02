@@ -77,6 +77,14 @@ const styles = {
   }
 };
 
+const headers = [
+  {key: "checkbox", width: "5%", label: ""},
+  {key: "name", width: "50%", label: "名前"},
+  {key: "modified", width: "20%", label: "最終更新"},
+  {key: "dir", width: "15%", label: "場所"},
+  {key: false, width: "5%", label: "Action"}
+];
+
 class FileSearchResultContainer extends Component {
   componentWillMount() {
     const params = new URLSearchParams(this.props.location.search);
@@ -93,13 +101,6 @@ class FileSearchResultContainer extends Component {
   }
 
   renderHeaders = () => {
-    const headers = [
-      {key: "checkbox", width: "5%", label: ""},
-      {key: "name", width: "50%", label: "名前"},
-      {key: "dir", width: "35%", label: "場所"},
-      {key: false, width: "10%", label: "Action"},
-    ];
-
     return headers.map( (header, idx) => (
       <FileListHeader key={idx} header={header} style={styles.table_header} />
     ));
@@ -119,11 +120,27 @@ class FileSearchResultContainer extends Component {
 
   renderFile = (file, idx) => {
     const dirComponent = (
-      <Dir dir={file} />
+      <Dir
+        dir={file} 
+        rowStyle={styles.table_row}
+        cellStyle={styles.table_cell}
+        headers={headers}
+        handleCopyDir={true}
+        handleDeleteDir={true}
+        handleAuthorityDir={true}
+        handleHistoryDir={true}
+        editDir={true} />
     );
 
     const fileComponent = (
-      <File file={file} />
+      <File
+        file={file}
+        rowStyle={styles.table_row}
+        cellStyle={styles.table_cell}
+        headers={headers}
+        handleMoveFile={true}
+        handleHistoryFile={true}
+        handleTagFile={true} />
     );
     return file.is_dir ? dirComponent : fileComponent;
   };
