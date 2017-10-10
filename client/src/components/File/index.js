@@ -140,7 +140,7 @@ class File extends Component {
       <ActionFavoriteBorder />
     );
 
-    return connectDragSource(
+    const elements = (
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
@@ -230,6 +230,10 @@ class File extends Component {
 
       </div>
     );
+
+    return isDragging && connectDragSource
+      ? connectDragSource(elements)
+      : elements;
   }
 }
 

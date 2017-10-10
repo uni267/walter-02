@@ -141,7 +141,7 @@ class Dir extends Component {
 
     const checkOpacity = this.state.hover || dir.checked ? 1 : 0.1;
 
-    return connectDropTarget(
+    const elements = (
       <div
         onMouseEnter={this.toggleHover}
         onMouseLeave={this.toggleHover}
@@ -210,6 +210,10 @@ class Dir extends Component {
 
       </div>
     );
+
+    return canDrop && connectDropTarget
+      ? connectDropTarget(elements)
+      : elements;
   }
 }
 
