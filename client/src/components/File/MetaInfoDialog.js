@@ -10,11 +10,11 @@ import MetaInfo from "../MetaInfo";
 
 const MetaInfoDialog = ({
   open,
-  toggleFileMetaInfoDialog,
   file,
   metaInfo,
   addMetaInfoToFile,
-  deleteMetaInfoToFile
+  deleteMetaInfoToFile,
+  toggleFileMetaInfoDialog
 }) => {
   const actions = (
     <FlatButton

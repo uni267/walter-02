@@ -38,7 +38,6 @@ class MetaInfo extends Component {
   renderMetaInfo = (meta, idx) => {
     const deleteMetaInfoToFile = (file, metaInfo) => {
       this.props.deleteMetaInfoToFile(file, metaInfo);
-      this.props.triggerSnackbar("メタ情報を削除しました");
     };
 
     return (

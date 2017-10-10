@@ -18,7 +18,7 @@ function* watchAddMetaInfoToFile() {
       yield call(delay, 1000);
       yield call(api.addMetaInfoToFile, file, metaInfo, value);
       const filePayload = yield call(api.fetchFile, file._id);
-      yield put(actions.initFile(filePayload.data.body));
+      yield put(actions.initFileMetaInfo(filePayload.data.body));
       yield put(actions.updateMetaInfoTarget(filePayload.data.body));
 
       const filesPayload = yield call(api.fetchFiles, file.dir_id);

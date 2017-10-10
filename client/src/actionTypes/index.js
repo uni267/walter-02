@@ -65,6 +65,7 @@ export const TOGGLE_FILE_TAG_DIALOG = "TOGGLE_FILE_TAG_DIALOG";
 
 // ファイルのメタ情報
 export const TOGGLE_FILE_META_INFO_DIALOG = "TOGGLE_FILE_META_INFO_DIALOG";
+export const INIT_FILE_META_INFO = "INIT_FILE_META_INFO";
 
 // お気に入りファイル
 export const TOGGLE_STAR = "TOGGLE_STAR";

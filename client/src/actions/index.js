@@ -627,3 +627,7 @@ export const toggleFileTagDialog = (file) => ({
 export const toggleFileMetaInfoDialog = (file) => ({
   type: actionTypes.TOGGLE_FILE_META_INFO_DIALOG, file
 });
+
+export const initFileMetaInfo = (file) => ({
+  type: actionTypes.INIT_FILE_META_INFO, file
+});
