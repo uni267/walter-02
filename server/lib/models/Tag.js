@@ -5,7 +5,6 @@ mongoose.Promise = global.Promise;
 const TagSchema = Schema({
   color: String,
   label: String,
-  description: String,
   tenant_id: Schema.Types.ObjectId
 });
 

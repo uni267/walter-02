@@ -96,7 +96,6 @@ export const create = (req, res, next) => {
       const newTag = new Tag();
       newTag.label = tag.label;
       newTag.color = tag.color;
-      newTag.description = tag.color;
       newTag.tenant_id = ObjectId(res.user.tenant_id);
 
       const createdTag = yield newTag.save();
@@ -212,43 +211,6 @@ export const changeColor = (req, res, next) => {
       tag.color = color;
       const changedTag = yield tag.save();
       
-      res.json({
-        status: { success: true },
-        body: changedTag
-      });
-    }
-    catch (e) {
-      let errors = {};
-
-      switch (e) {
-      case "tag is empty":
-        errors.tag = e;
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
-};
-
-export const changeDescription = (req, res, next) => {
-  co(function* () {
-    try {
-      const { tag_id } = req.params;
-      const { description } = req.body;
-
-      const tag = yield Tag.findById(tag_id);
-
-      if (tag === null) throw "tag is empty";
-
-      tag.description = description;
-      const changedTag = yield tag.save();
-
       res.json({
         status: { success: true },
         body: changedTag

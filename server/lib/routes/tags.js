@@ -21,8 +21,4 @@ router.route("/:tag_id/label")
 router.route("/:tag_id/color")
   .patch(controller.changeColor);
 
-// description変更
-router.route("/:tag_id/description")
-  .patch(controller.changeDescription);
-
 export default router;

@@ -118,13 +118,11 @@ var tags = [
   {
     color: "#000",
     label: "重要",
-    description: "重要な資料",
     tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1} )._id
   },
   {
     color: "#111",
     label: "業務",
-    description: "業務で利用する資料",
     tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1} )._id
   }
 ];
