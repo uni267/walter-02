@@ -13,6 +13,7 @@ import FileActionContainer from "./FileActionContainer";
 import FileListHeader from "../components/FileListHeader";
 import Dir from "../components/Dir";
 import File from "../components/File";
+import FileOperationDialogContainer from "./FileOperationDialogContainer";
 
 // actions
 import * as actions from "../actions";
@@ -102,7 +103,11 @@ class FileSearchResultContainer extends Component {
 
   renderHeaders = () => {
     return headers.map( (header, idx) => (
-      <FileListHeader key={idx} header={header} style={styles.table_header} />
+      <FileListHeader
+        { ...this.props }
+        key={idx}
+        header={header}
+        style={styles.table_header} />
     ));
   };
 
@@ -121,26 +126,22 @@ class FileSearchResultContainer extends Component {
   renderFile = (file, idx) => {
     const dirComponent = (
       <Dir
+        { ...this.props }
+        key={idx}
         dir={file} 
         rowStyle={styles.table_row}
         cellStyle={styles.table_cell}
-        headers={headers}
-        handleCopyDir={true}
-        handleDeleteDir={true}
-        handleAuthorityDir={true}
-        handleHistoryDir={true}
-        editDir={true} />
+        headers={headers} />
     );
 
     const fileComponent = (
       <File
+        { ...this.props }
+        key={idx}
         file={file}
         rowStyle={styles.table_row}
         cellStyle={styles.table_cell}
-        headers={headers}
-        handleMoveFile={true}
-        handleHistoryFile={true}
-        handleTagFile={true} />
+        headers={headers} />
     );
     return file.is_dir ? dirComponent : fileComponent;
   };
@@ -184,6 +185,7 @@ class FileSearchResultContainer extends Component {
           </div>
 
         </Card>
+        <FileOperationDialogContainer />
       </div>
     );
   }
@@ -202,7 +204,33 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   fetchSearchFileSimple: (value) => {
     dispatch(actions.fetchSearchFileSimple(value));
-  }
+  },
+  toggleCopyDirDialog: () => dispatch(actions.toggleCopyDirDialog()),
+  toggleDeleteDirDialog: (dir) => dispatch(actions.toggleDeleteDirDialog(dir)),
+  toggleDeleteFileDialog: (file) => {
+    dispatch(actions.toggleDeleteFileDialog(file));
+  },
+  toggleAuthorityDirDialog: (dir) => {
+    dispatch(actions.toggleAuthorityDirDialog(dir));
+  },
+  toggleAuthorityFileDialog: (file) => {
+    dispatch(actions.toggleAuthorityFileDialog(file));
+  },
+  toggleHistoryFileDialog: (file) => {
+    dispatch(actions.toggleHistoryFileDialog(file));
+  },
+  editFileByIndex: (file) => {
+    dispatch(actions.editFileByIndex(file));
+  },
+  toggleMoveFileDialog: (file) => dispatch(actions.toggleMoveFileDialog(file)),
+  toggleHistoryFileDialog: (file) => {
+    dispatch(actions.toggleHistoryFileDialog(file));
+  },
+  triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
+  toggleCopyFileDialog: (file) => dispatch(actions.toggleCopyFileDialog(file)),
+  toggleFileTagDialog: (file) => dispatch(actions.toggleFileTagDialog(file)),
+  toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
+  toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value))
 });
 
 FileSearchResultContainer = connect(
