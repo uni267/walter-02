@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-// DnD
-import { DragSource } from "react-dnd";
-
 // material
 import Checkbox from 'material-ui/Checkbox';
 import IconMenu from "material-ui/IconMenu";
@@ -37,23 +34,6 @@ const style = {
   fileDetail: {
     textDecoration: "none",
     color: "#111"
-  }
-};
-
-const fileSource = {
-  beginDrag(props) {
-    return {
-      file: props.file
-    };
-  },
-
-  endDrag(props, monitor) {
-    const item = monitor.getItem();
-    const dropResult = monitor.getDropResult();
-
-    if (dropResult) {
-      props.moveFile(dropResult.dir, item.file);
-    }
   }
 };
 
@@ -274,7 +254,4 @@ File.propTypes = {
   handleTagFile: PropTypes.func.isRequired
 };
 
-export default DragSource("file", fileSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging()
-}))(File);
+export default File;

@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import TableBodyWrapper from "../components/FileListBody/TableBodyWrapper";
 import withDragDropContext from "../components/FileListBody/withDragDropContext";
 import { NativeTypes } from "react-dnd-html5-backend";
+import { DragSource, DropTarget } from "react-dnd";
 
 // components
 import FileListHeader from "../components/FileListHeader";
@@ -83,6 +84,31 @@ const headers = [
   {key: false, width: "10%", label: "Action"},
 ];
 
+const fileSource = {
+  beginDrag(props) {
+    return {
+      file: props.file
+    };
+  },
+
+  endDrag(props, monitor) {
+    const item = monitor.getItem();
+    const dropResult = monitor.getDropResult();
+
+    if (dropResult) {
+      props.moveFile(dropResult.dir, item.file);
+    }
+  }
+};
+
+const fileTarget = {
+  drop(props) {
+    return {
+      dir: props.dir
+    };
+  }
+};
+
 const fileType = {
   histories: [],
   tags: []
@@ -126,8 +152,14 @@ class FileListContainer extends Component {
   }
 
   renderRow = (file, idx) => {
+    const DirDroppable = DropTarget("file", fileTarget, (con, mon) => ({
+      connectDropTarget: con.dropTarget(),
+      isOver: mon.isOver(),
+      canDrop: mon.canDrop()
+    }))(Dir);
+
     const dirComponent = (
-      <Dir 
+      <DirDroppable
         { ...this.props }
         key={idx} 
         dir={file}
@@ -142,8 +174,13 @@ class FileListContainer extends Component {
         />
     );
 
+    const FileDraggable = DragSource("file", fileSource, (con, mon) => ({
+      connectDragSource: con.dragSource(),
+      isDragging: mon.isDragging()
+    }))(File);
+
     const fileComponent = (
-      <File
+      <FileDraggable
         { ...this.props }
         key={idx}
         rowStyle={styles.row}

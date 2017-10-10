@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-// DnD
-import { DropTarget } from 'react-dnd';
-
 // router
 import { Link } from "react-router-dom";
 
@@ -40,14 +37,6 @@ const style = {
     display: "flex",
     margin: 0,
     padding: 0
-  }
-};
-
-const fileTarget = {
-  drop(props) {
-    return {
-      dir: props.dir
-    };
   }
 };
 
@@ -239,8 +228,4 @@ Dir.propTypes = {
   handleHistoryDir: PropTypes.func.isRequired
 };
 
-export default DropTarget("file", fileTarget, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
-  isOver: monitor.isOver(),
-  canDrop: monitor.canDrop()
-}))(Dir);
+export default Dir;
