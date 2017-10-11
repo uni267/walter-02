@@ -137,8 +137,12 @@ export const search = (req, res, next) => {
   co(function* () {
     try {
       const { q, _page } = req.query;
+      const { tenant_id } = res.user.tenant_id;
+
+      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
       const conditions = {
+        dir_id: { $ne: trash_dir_id },
         $or: [
           { name: { $regex: q } },
           { "meta_infos.value": { $regex: q } }
@@ -169,7 +173,7 @@ export const search = (req, res, next) => {
         });
         files.dir_route = route.reverse().join('/');
       });
-      
+
       const options = {
         path: 'files.dirs',
         model: File
@@ -269,7 +273,7 @@ export const searchDetail = (req, res, next) => {
       const base_items = queries.filter( q => q.key_type !== "meta" );
       const meta_items = queries.filter( q => q.key_type === "meta" );
 
-      const base_queries = base_items[0] === undefined 
+      const base_queries = base_items[0] === undefined
             ? {}
             : Object.assign(...base_items.map(buildQuery));
 
@@ -556,7 +560,7 @@ export const addTag = (req, res, next) => {
 export const removeTag = (req, res, next) => {
   co(function* () {
     try {
-      const { file_id, tag_id } = req.params;    
+      const { file_id, tag_id } = req.params;
 
       if (file_id === undefined ||
           file_id === null ||
@@ -799,7 +803,7 @@ export const addAuthority = (req, res, next) => {
       const _role = yield Role.findById(role._id);
       if (_role === null) throw "role is empty";
 
-      file.authorities = [ 
+      file.authorities = [
         ...file.authorities,
         {
           role: _role,
