@@ -7,17 +7,13 @@ import FlatButton from "material-ui/FlatButton";
 const TagDetailBasic = ({
   changedTag,
   validationErrors,
-  changeTagLabel,
-  changeTagColor,
-  saveTagLabel,
-  saveTagColor,
-  saveTagDescription
+  actions
 }) => {
   return (
     <div>
       <TextField 
         value={changedTag.label}
-        onChange={(e, value) => changeTagLabel(value)}
+        onChange={(e, value) => actions.changeTagLabel(value)}
         errorText={validationErrors.label}
         floatingLabelText="タグ名"
         />
@@ -25,12 +21,12 @@ const TagDetailBasic = ({
         <FlatButton
           label="保存"
           primary={true}
-          onClick={() => saveTagLabel(changedTag)}
+          onClick={() => actions.saveTagLabel(changedTag)}
           />
 
         <TextField
           value={changedTag.color}
-          onChange={(e, value) => changeTagColor(value)}
+          onChange={(e, value) => actions.changeTagColor(value)}
           errorText={validationErrors.color}
           floatingLabelText="色"
           />
@@ -38,7 +34,7 @@ const TagDetailBasic = ({
         <FlatButton
           label="保存"
           primary={true}
-          onClick={() => saveTagColor(changedTag)}
+          onClick={() => actions.saveTagColor(changedTag)}
           />
 
     </div>
@@ -46,7 +42,8 @@ const TagDetailBasic = ({
 };
 
 TagDetailBasic.propTypes = {
-  tag: PropTypes.object.isRequired
+  changedTag: PropTypes.object.isRequired,
+  validationErrors: PropTypes.object.isRequired
 };
 
 export default TagDetailBasic;

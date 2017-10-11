@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material
@@ -13,15 +14,15 @@ import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 import TagDetailBasic from "../components/Tag/TagDetailBasic";
 
 // actions
-import * as actions from "../actions";
+import * as TagActions from "../actions/tags";
 
 class TagDetailContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchTag(this.props.match.params.id);
+    this.props.actions.requestFetchTag(this.props.match.params.id);
   }
 
   componentWillUnmount() {
-    this.props.initTag();
+    this.props.actions.initTag();
   }
 
   render() {
@@ -48,7 +49,12 @@ class TagDetailContainer extends Component {
           <FlatButton
             label="削除"
             secondary={true}
-            onTouchTap={() => this.props.deleteTag(this.props.tag._id)}
+            onTouchTap={() => (
+              this.props.actions.deleteTag(
+                this.props.tag._id,
+                this.props.history
+              )
+            )}
             />
         </CardActions>
       </Card>
@@ -66,13 +72,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchTag: (tag_id) => dispatch(actions.requestFetchTag(tag_id)),
-  changeTagLabel: (value) => dispatch(actions.changeTagLabel(value)),
-  changeTagColor: (value) => dispatch(actions.changeTagColor(value)),
-  saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
-  saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
-  deleteTag: (tag_id) => dispatch(actions.deleteTag(tag_id, ownProps.history)),
-  initTag: () => dispatch(actions.initTag())
+  actions: bindActionCreators(TagActions, dispatch)
 });
 
 TagDetailContainer = connect(mapStateToProps, mapDispatchToProps)(TagDetailContainer);
