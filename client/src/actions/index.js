@@ -132,10 +132,6 @@ export const requestFetchFile = (file_id) => ({
   type: actionTypes.REQUEST_FETCH_FILE, file_id
 });
 
-export const requestFetchTags = () => ({
-  type: actionTypes.REQUEST_FETCH_TAGS
-});
-
 export const requestAddTag = (file, tag) => ({
   type: actionTypes.REQUEST_ADD_TAG, file, tag
 });
@@ -456,46 +452,6 @@ export const searchFileDetail = () => ({
   type: actionTypes.SEARCH_FILE_DETAIL
 });
 
-export const initTags = (tags) => ({
-  type: actionTypes.INIT_TAGS, tags
-});
-
-export const initTag = (tag) => ({
-  type: actionTypes.INIT_TAG, tag
-});
-
-export const requestFetchTag = (tag_id) => ({
-  type: actionTypes.REQUEST_FETCH_TAG, tag_id
-});
-
-export const changeTagLabel = (value) => ({
-  type: actionTypes.CHANGE_TAG_LABEL, value
-});
-
-export const changeTagColor = (value) => ({
-  type: actionTypes.CHANGE_TAG_COLOR, value
-});
-
-export const saveTagLabel = (tag) => ({
-  type: actionTypes.SAVE_TAG_LABEL, tag
-});
-
-export const saveTagColor = (tag) => ({
-  type: actionTypes.SAVE_TAG_COLOR, tag
-});
-
-export const saveTagValidationError = (errors) => ({
-  type: actionTypes.SAVE_TAG_VALIDATION_ERROR, errors
-});
-
-export const createTag = (tag, history) => ({
-  type: actionTypes.CREATE_TAG, tag, history
-});
-
-export const deleteTag = (tag_id, history) => ({
-  type: actionTypes.DELETE_TAG, tag_id, history
-});
-
 export const toggleFileCheck = (file) => ({
   type: actionTypes.TOGGLE_FILE_CHECK, file
 });
@@ -560,10 +516,6 @@ export const requestVerifyToken = (token) => ({
   type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });
 
-export const searchTagSimple = (keyword) => ({
-  type: actionTypes.SEARCH_TAG_SIMPLE, keyword
-});
-
 export const searchGroupSimple = (keyword) => ({
   type: actionTypes.SEARCH_GROUP_SIMPLE, keyword
 });
@@ -622,4 +574,8 @@ export const toggleFileMetaInfoDialog = (file) => ({
 
 export const initFileMetaInfo = (file) => ({
   type: actionTypes.INIT_FILE_META_INFO, file
+});
+
+export const requestFetchTags = () => ({
+  type: actionTypes.REQUEST_FETCH_TAGS
 });
