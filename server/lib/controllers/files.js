@@ -9,6 +9,7 @@ import morgan from "morgan";
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
+import * as constants from "../../configs/constants";
 
 // models
 import File from "../models/File";
@@ -34,7 +35,7 @@ export const index = (req, res, next) => {
 
       // pagination
       if (page === undefined || page === null || page === "") page = 0;
-      const limit = 30; // @todo 件数はconfigなどに持たせる？
+      const limit = constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
 
       const total = yield File.find(conditions).count();
@@ -134,21 +135,31 @@ export const download = (req, res, next) => {
 export const search = (req, res, next) => {
   co(function* () {
     try {
+      const { q, _page } = req.query;
+
       const conditions = {
         $or: [
-          { name: { $regex: req.query.q } },
-          { "meta_infos.value": { $regex: req.query.q } }
+          { name: { $regex: q } },
+          { "meta_infos.value": { $regex: q } }
         ],
         is_display: true
       };
 
+      const page = _page === undefined || _page === null || _page === ""
+            ? 0 : _page;
+
+      const limit = constants.FILE_LIMITS_PER_PAGE;
+      const offset = page * limit;
+
       const files = yield File.aggregate([
         { $match: conditions },
         { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
-      ]);
+      ]).skip(offset).limit(limit);
+
+      const total = yield File.find(conditions).count();
 
       res.json({
-        status: { success: true },
+        status: { success: true, total },
         body: files
       });
     }
