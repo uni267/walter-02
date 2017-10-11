@@ -37,24 +37,8 @@ export const initTag = (tag) => ({
   type: actionTypes.INIT_TAG, tag
 });
 
-export const loadingStart = () => ({
-  type: actionTypes.LOADING_START
-});
-
-export const loadingEnd = () => ({
-  type: actionTypes.LOADING_END
-});
-
 export const initTags = (tags) => ({
   type: actionTypes.INIT_TAGS, tags
-});
-
-export const triggerSnackbar = (message) => ({
-  type: actionTypes.TRIGGER_SNACK, message
-});
-
-export const closeSnackbar = () => ({
-  type: actionTypes.CLOSE_SNACK
 });
 
 export const saveTagValidationError = (errors) => ({
