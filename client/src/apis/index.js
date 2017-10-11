@@ -102,11 +102,9 @@ export class API {
     return this.client.patch(`/api/v1/dirs/${movingDir._id}/move`, body);
   };
 
-  searchFiles = (value) => {
+  searchFiles = (value, page) => {
     const config = {
-      params: {
-        q: value
-      }
+      params: { q: value, page }
     };
 
     return this.client.get(`/api/v1/files/search`, config);

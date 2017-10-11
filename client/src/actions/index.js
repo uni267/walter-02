@@ -32,8 +32,8 @@ export const searchFileSimple = (value, history) => ({
   type: actionTypes.SEARCH_FILE_SIMPLE, value, history
 });
 
-export const fetchSearchFileSimple = (value) => ({
-  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value
+export const fetchSearchFileSimple = (value, page) => ({
+  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value, page
 });
 
 export const setSortTarget = (sorted) => ({

@@ -9,8 +9,8 @@ const filePaginationReducer = (state = initialState, action) => {
   switch (action.type) {
   case actionTypes.INIT_FILE_TOTAL:
     return {
-      total: action.total,
-      page: 0
+      ...state,
+      total: action.total
     };
   case actionTypes.FILE_NEXT_PAGE:
     return {
