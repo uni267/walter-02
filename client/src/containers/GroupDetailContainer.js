@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // material
 import FlatButton from 'material-ui/FlatButton';
@@ -23,17 +24,7 @@ import GroupDetailBasic from "../components/Group/GroupDetailBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import {
-  requestFetchGroup,
-  requestFetchUsers,
-  addGroupOfUser,
-  deleteGroupOfUser,
-  changeGroupName,
-  changeGroupDescription,
-  saveGroupName,
-  saveGroupDescription,
-  deleteGroup
-} from "../actions";
+import * as UserActions from "../actions/users";
 
 class GroupDetailContainer extends Component {
   constructor(props) {
@@ -148,15 +139,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchGroup: (group_id) => dispatch(requestFetchGroup(group_id)),
-  requestFetchUsers: (tenant_id) => dispatch(requestFetchUsers(tenant_id)),
-  addGroupOfUser: (user_id, group_id) => dispatch(addGroupOfUser(user_id, group_id)),
-  deleteGroupOfUser: (user_id, group_id) => dispatch(deleteGroupOfUser(user_id, group_id)),
-  changeGroupName: (name) => dispatch(changeGroupName(name)),
-  changeGroupDescription: (description) => dispatch(changeGroupDescription(description)),
-  saveGroupName: (group) => dispatch(saveGroupName(group)),
-  saveGroupDescription: (group) => dispatch(saveGroupDescription(group)),
-  deleteGroup: (group_id) => dispatch(deleteGroup(group_id, ownProps.history))
+  actions: bindActionCreators(UserActions, dispatch)
 });
 
 GroupDetailContainer = connect(

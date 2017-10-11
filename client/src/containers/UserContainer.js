@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // route
 import { withRouter } from "react-router-dom";
@@ -30,11 +31,11 @@ import UserTableHeader from "../components/User/UserTableHeader";
 import UserTableBody from "../components/User/UserTableBody";
 
 // actions
-import * as actions from "../actions";
+import * as UserActions from "../actions/users";
 
 class UserContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchUsers(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchUsers();
   }
 
   render() {
@@ -62,7 +63,7 @@ class UserContainer extends Component {
                 <div style={{display: "flex", flexDirection: "row-reverse"}}>
                   <SimpleSearch
                     searchFileSimple={(keyword) => {
-                      this.props.searchUsersSimple(
+                      this.props.actions.searchUsersSimple(
                         this.props.tenant.tenant_id,
                         keyword
                       );
@@ -110,10 +111,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchUsers: (tenant_id) => dispatch(actions.requestFetchUsers(tenant_id)),
-  searchUsersSimple: (tenant_id, keyword) => {
-    dispatch(actions.searchUsersSimple(tenant_id, keyword));
-  }
+  actions: bindActionCreators(UserActions, dispatch)
 });
 
 UserContainer = connect(mapStateToProps, mapDispatchToProps)(UserContainer);

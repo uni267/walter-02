@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // material
 import FlatButton from 'material-ui/FlatButton';
@@ -14,7 +15,7 @@ import {
 } from 'material-ui/Card';
 
 // actions
-import * as actions from "../actions";
+import * as UserActions from "../actions/users";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -33,14 +34,14 @@ class UserDetailContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.requestFetchUser(
+    this.props.actions.requestFetchUser(
       this.props.match.params.id, this.props.tenant.tenant_id
     );
   }
 
   componentWillUnmount() {
-    this.props.initNewUserTemplate();
-    this.props.clearUserValidationError();
+    this.props.actions.initNewUserTemplate();
+    this.props.actions.clearUserValidationError();
   }
 
   render() {
@@ -99,32 +100,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchUser: (user_id, tenant_id) => { 
-    dispatch(actions.requestFetchUser(user_id, tenant_id));
-  },
-  deleteGroupOfUser: (user_id, group_id) => {
-    dispatch(actions.deleteGroupOfUser(user_id, group_id));
-  },
-  addGroupOfUser: (user_id, group_id) => {
-    dispatch(actions.addGroupOfUser(user_id, group_id));
-  },
-  toggleUser: (user_id) => {
-    dispatch(actions.toggleUser(user_id));
-  },
-  changeUserName: (name) => dispatch(actions.changeUserName(name)),
-  changeUserAccountName: (account_name) => {
-    dispatch(actions.changeUserAccountName(account_name));
-  },
-  changeUserEmail: (email) => dispatch(actions.changeUserEmail(email)),
-  changeUserPassword: (password) => dispatch(actions.changeUserPassword(password)),
-  saveUserName: (user) => dispatch(actions.saveUserName(user)),
-  saveUserAccountName: (user) => {
-    dispatch(actions.saveUserAccountName(user));
-  },
-  saveUserEmail: (user) => dispatch(actions.saveUserEmail(user)),
-  saveUserPasswordForce: (user) => dispatch(actions.saveUserPasswordForce(user)),
-  initNewUserTemplate: () => dispatch(actions.initNewUserTemplate()),
-  clearUserValidationError: () => dispatch(actions.clearUserValidationError())
+  actions: bindActionCreators(UserActions, dispatch)
 });
 
 UserDetailContainer = connect(

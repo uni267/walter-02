@@ -5,6 +5,7 @@ import { withRouter } from "react-router-dom";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // material
 import { 
@@ -22,11 +23,11 @@ import UserDetailBasic from "../components/User/UserDetailBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import * as actions from "../actions";
+import * as UserActions from "../actions/users";
 
 class UserCreateContainer extends Component {
   componentWillMount() {
-    this.props.initNewUserTemplate();
+    this.props.actions.initNewUserTemplate();
   }
 
   render() {
@@ -52,7 +53,10 @@ class UserCreateContainer extends Component {
             <FlatButton
               label="保存"
               onTouchTap={() => {
-                this.props.createUser(this.props.user.changed, this.props.history);
+                this.props.actions.createUser(
+                  this.props.user.changed,
+                  this.props.history
+                );
               }}
               primary={true} />
 
@@ -75,14 +79,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  initNewUserTemplate: () => dispatch(actions.initNewUserTemplate()),
-  changeUserName: (name) => dispatch(actions.changeUserName(name)),
-  changeUserAccountName: (account_name) => {
-    dispatch(actions.changeUserAccountName(account_name));
-  },
-  changeUserEmail: (email) => dispatch(actions.changeUserEmail(email)),
-  changeUserPassword: (password) => dispatch(actions.changeUserPassword(password)),
-  createUser: (user, history) => dispatch(actions.createUser(user, history))
+  actions: bindActionCreators(UserActions, dispatch)
 });
 
 UserCreateContainer = connect(
