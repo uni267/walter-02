@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material
@@ -30,11 +31,11 @@ import TagTableBody from "../components/Tag/TagTableBody";
 import SimpleSearch from "../components/FileSearch/SimpleSearch";
 
 // actions
-import * as actions from "../actions";
+import * as TagActions from "../actions/tags";
 
 class TagContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchTags();
+    this.props.actions.requestFetchTags();
   }
 
   renderTags = (tags) => {
@@ -69,7 +70,7 @@ class TagContainer extends Component {
                 <div style={{ display: "flex", flexDirection: "row-reverse" }}>
                   <SimpleSearch
                     searchFileSimple={ keyword => {
-                      this.props.searchTagSimple(keyword);
+                      this.props.actions.searchTagSimple(keyword);
                     }}
                     hintText="タグ名を入力"
                   />
@@ -116,8 +117,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchTags: () => dispatch(actions.requestFetchTags()),
-  searchTagSimple: (keyword) => dispatch(actions.searchTagSimple(keyword))
+  actions: bindActionCreators(TagActions, dispatch)
 });
 
 TagContainer = connect(mapStateToProps, mapDispatchToProps)(TagContainer);

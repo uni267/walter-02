@@ -3,7 +3,7 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/tags";
 
 function* watchSearchTagSimple() {
   while (true) {
