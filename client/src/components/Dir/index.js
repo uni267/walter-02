@@ -87,8 +87,12 @@ class Dir extends Component {
   renderDirName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
-    const handleClick = () => {
+    const linkToDir = () => {
       this.props.history.push(`/home/${this.props.dir._id}`);
+    };
+
+    const linkToDirRoute = () => {
+      this.props.history.push(`/home/${this.props.dir.dir_route}`);
     };
 
     const editable = (
@@ -98,17 +102,49 @@ class Dir extends Component {
         onKeyDown={e => e.key === "Enter" ? this.changeDirName() : null } />
     );
 
-    const view = (
-      <div style={{...this.props.cellStyle, width: this.props.headers[1].width}}
-           onClick={handleClick} >
-        <FileFolderOpen style={style.dir_icon} />
-        {this.props.dir.name}
-        <Link
-          to={`/home/?dir_id=${this.props.dir._id}`}
-          style={{...style.dir, color}} >
-        </Link>
-      </div>
-    );
+    const style = {
+      ...this.props.cellStyle,
+      width: this.props.headers[1].width
+    };
+
+    let view;
+
+    if (this.props.dir.dir_route) {
+      view = (
+        <div style={style}>
+          <div>
+            <div
+              onClick={linkToDir}
+              style={{ display: "flex", alignItems: "center" }}>
+              <div>
+                <FileFolderOpen style={style.dir_icon} />
+              </div>
+              <div style={{ marginLeft: 10 }}>
+                {this.props.dir.name}
+              </div>
+            </div>
+            <div 
+              onClick={linkToDirRoute}
+              style={{ fontSize: 12, color: "#aaa" }}>
+              場所: {this.props.dir.dir_route}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    else {
+      view = (
+        <div style={style}
+             onClick={linkToDir} >
+          <div>
+            <FileFolderOpen style={style.dir_icon} />
+          </div>
+          <div style={{ marginLeft: 10 }}>
+            {this.props.dir.name}
+          </div>
+        </div>
+      );
+    }
 
     return this.state.editDir.open ? editable : view;
   };
