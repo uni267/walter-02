@@ -111,7 +111,7 @@ class Dir extends Component {
 
     if (this.props.dir.dir_route) {
       view = (
-        <div style={style}>
+        <div style={{ ...style, color }}>
           <div>
             <div
               onClick={linkToDir}
@@ -134,7 +134,7 @@ class Dir extends Component {
     }
     else {
       view = (
-        <div style={style}
+        <div style={{ ...style, color }}
              onClick={linkToDir} >
           <div>
             <FileFolderOpen style={style.dir_icon} />
