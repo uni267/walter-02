@@ -171,7 +171,7 @@ export const add = (req, res, next) => {
         errors.name = "表示名が空です";
         break;
       case "account_name is empty":
-          errors.name = "アカウント名が空です";
+          errors.account_name = "アカウント名が空です";
           break;
       case "account_name is duplicate":
         errors.account_name = "既に同アカウント名のユーザが存在しています";
