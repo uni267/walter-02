@@ -5,29 +5,25 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import {
-  loadingStart,
-  loadingEnd,
-  searchUsersSimple,
-  initUsers
-} from "../actions";
+import * as actions from "../actions/users";
+import * as commonActions from "../actions/commons";
 
 function* watchSearchUsersSimple() {
   while (true) {
-    const task = yield take(searchUsersSimple().type);
+    const task = yield take(actions.searchUsersSimple().type);
     const api = new API();
-    yield put(loadingStart());
+    yield put(commonActions.loadingStart());
 
     try {
       yield call(delay, 1000);
       const payload = yield call(api.searchUsersSimple, task.tenant_id, task.keyword);
-      yield put(initUsers(payload.data.body));
+      yield put(actions.initUsers(payload.data.body));
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put(loadingEnd());
+      yield put(commonActions.loadingEnd());
     }
   }
 }

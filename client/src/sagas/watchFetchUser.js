@@ -3,19 +3,14 @@ import { all, call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import {
-  requestFetchUser,
-  initUser,
-  initGroups,
-  loadingStart,
-  loadingEnd
-} from "../actions";
+import * as actions from "../actions/users";
+import * as commonActions from "../actions/commons";
 
 function* watchFetchUser() {
   while (true) {
-    const task = yield take(requestFetchUser().type);
+    const task = yield take(actions.requestFetchUser().type);
     const api = new API();
-    yield put(loadingStart());
+    yield put(commonActions.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -24,17 +19,14 @@ function* watchFetchUser() {
         call(api.fetchGroup, task.tenant_id)
       ]);
 
-      yield put(initUser(user.data.body));
-      console.log("init user done");
-      yield put(initGroups(group.data.body));
-      console.log("init group done");
+      yield put(actions.initUser(user.data.body));
+      yield put(actions.initGroups(group.data.body));
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      console.log("watch user end");
-      yield put(loadingEnd());
+      yield put(commonActions.loadingEnd());
     }
 
   }

@@ -4,12 +4,13 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 import * as actions from "../actions/tags";
+import * as commonActions from "../actions/commons";
 
 function* watchSearchTagSimple() {
   while (true) {
     const { keyword } = yield take(actions.searchTagSimple().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commonActions.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -20,7 +21,7 @@ function* watchSearchTagSimple() {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commonActions.loadingEnd());
     }
   }
 }

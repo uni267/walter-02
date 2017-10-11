@@ -5,7 +5,8 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import * as actions from "../actions";
+import * as actions from "../actions/users";
+import * as commonActions from "../actions/commons";
 
 function* watchToggleUser() {
   while (true) {
@@ -13,7 +14,7 @@ function* watchToggleUser() {
     const api = new API();
 
     try {
-      yield put(actions.loadingStart());
+      yield put(commonActions.loadingStart());
       yield call(delay, 1000);
       yield call(api.toggleUser, task.user_id);
       const payload = yield call(api.fetchUser, task.user_id);
@@ -22,15 +23,15 @@ function* watchToggleUser() {
       const message = user.enabled === true
             ? "ユーザを有効に変更しました"
             : "ユーザを無効に変更しました";
-      yield put(actions.triggerSnackbar(message));
+      yield put(commonActions.triggerSnackbar(message));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
 
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commonActions.loadingEnd());
     }
   }
 }

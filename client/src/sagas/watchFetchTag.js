@@ -4,12 +4,13 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 import * as actions from "../actions/tags";
+import * as commonActions from "../actions/commons";
 
 function* watchFetchTag() {
   while (true) {
     const task = yield take(actions.requestFetchTag().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commonActions.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -19,7 +20,7 @@ function* watchFetchTag() {
     catch (e) {
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commonActions.loadingEnd());
     }
   }
 }

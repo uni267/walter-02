@@ -5,7 +5,8 @@ import { call, put, take, all } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import * as actions from "../actions";
+import * as actions from "../actions/users";
+import * as commonActions from "../actions/commons";
 
 function* watchDeleteGroupOfUser() {
   while (true) {
@@ -13,7 +14,7 @@ function* watchDeleteGroupOfUser() {
     const api = new API();
 
     try {
-      yield put(actions.loadingStart());
+      yield put(commonActions.loadingStart());
       yield call(delay, 1000);
       yield call(api.deleteGroupOfUser, task.user_id, task.group_id);
 
@@ -30,13 +31,13 @@ function* watchDeleteGroupOfUser() {
       ];
 
       yield all(putJobs);
-      yield put(actions.loadingEnd());
-      yield put(actions.triggerSnackbar("ユーザをグループから削除しました"));
+      yield put(commonActions.loadingEnd());
+      yield put(commonActions.triggerSnackbar("ユーザをグループから削除しました"));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
-      yield put(actions.loadingEnd());
+      yield put(commonActions.loadingEnd());
     }
   }
 }
