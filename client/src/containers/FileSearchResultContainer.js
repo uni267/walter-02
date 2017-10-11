@@ -93,13 +93,31 @@ class FileSearchResultContainer extends Component {
     this.props.fetchSearchFileSimple(q);
   }
 
+  componentDidMount() {
+    window.addEventListener("scroll", this.onScroll);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.location.search !== nextProps.location.search) {
       const params = new URLSearchParams(nextProps.location.search);
       const q = params.get("q");
       this.props.fetchSearchFileSimple(q);
     }
+
+    if (this.props.page < nextProps.page) {
+      const params = new URLSearchParams(nextProps.location.search);
+      const q = params.get("q");
+      this.props.fetchSearchFileSimple(q, nextProps.page);
+    }
   }
+
+  onScroll = (e) => {
+    const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
+
+    if (window.pageYOffset > nextPageThreshold) {
+      this.props.fileNextPage();
+    }
+  };
 
   renderHeaders = () => {
     return headers.map( (header, idx) => (
@@ -195,7 +213,9 @@ const mapStateToProps = (state, ownProps) => {
   return {
     // @todo server api実装まち
     files: state.files.map( f => ({ ...f, dir_route: "/path/to/obj" }) ),
-    tenant: state.tenant
+    tenant: state.tenant,
+    total: state.filePagination.total,
+    page: state.filePagination.page
   };
 };
 
@@ -203,8 +223,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFileSimple: (value) => {
     dispatch(actions.searchFileSimple(value, ownProps.history));
   },
-  fetchSearchFileSimple: (value) => {
-    dispatch(actions.fetchSearchFileSimple(value));
+  fetchSearchFileSimple: (value, page) => {
+    dispatch(actions.fetchSearchFileSimple(value, page));
   },
   toggleCopyDirDialog: () => dispatch(actions.toggleCopyDirDialog()),
   toggleDeleteDirDialog: (dir) => dispatch(actions.toggleDeleteDirDialog(dir)),
@@ -231,7 +251,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleCopyFileDialog: (file) => dispatch(actions.toggleCopyFileDialog(file)),
   toggleFileTagDialog: (file) => dispatch(actions.toggleFileTagDialog(file)),
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
-  toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value))
+  toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
+  fileNextPage: () => dispatch(actions.fileNextPage())
 });
 
 FileSearchResultContainer = connect(
