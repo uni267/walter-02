@@ -9,7 +9,7 @@ function* watchUploadFiles() {
     const { dir_id, files } = yield take(actions.uploadFiles().type);
     const api = new API();
     yield put(actions.loadingStart());
-    yield call(delay, files.length * 1000);
+    yield call(delay, 1000);
 
     try {
       const uploadPayload = yield call(api.filesUpload, dir_id, files);
