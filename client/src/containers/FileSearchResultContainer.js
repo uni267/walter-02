@@ -212,7 +212,7 @@ class FileSearchResultContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     // @todo server api実装まち
-    files: state.files.map( f => ({ ...f, dir_route: "/path/to/obj" }) ),
+    files: state.files,
     tenant: state.tenant,
     total: state.filePagination.total,
     page: state.filePagination.page
