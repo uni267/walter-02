@@ -80,24 +80,6 @@ class File extends Component {
       </div>
     );
 
-    let fileView;
-
-    const style = {
-      display: "flex",
-      alignItems: "center",
-      paddingLeft: 24,
-      paddingRight: 24,
-      textAlign: "left",
-      fontFamily: "Roboto sans-serif",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      backgroundColor: "inherit",
-      height: 70,
-      fontSize: 13,
-      width: this.props.headers[1].width,
-      color
-    };
-
     const linkToFileDetail = () => {
       this.props.history.push(`/files/${this.props.file._id}`);
     };
@@ -105,6 +87,13 @@ class File extends Component {
     const linkToDir = () => {
       this.props.history.push(`/home/${this.props.file.dir_id}`);
     };
+
+    const style = {
+      ...this.props.cellStyle,
+      width: this.props.headers[1].width, color
+    };
+
+    let fileView;
 
     if (this.props.file.dir_route) {
       fileView = (
@@ -123,7 +112,7 @@ class File extends Component {
     else {
       fileView = (
         <div
-          style={{...this.props.cellStyle, width: this.props.headers[1].width, color}}
+          style={style}
           onClick={linkToFileDetail}>
           {this.props.file.name}
         </div>
