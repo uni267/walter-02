@@ -5,7 +5,7 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import * as actions from "../actions";
+import * as actions from "../actions/tags";
 
 function* watchCreateTag() {
   while (true) {

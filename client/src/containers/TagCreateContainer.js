@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material ui
@@ -18,15 +19,15 @@ import TagCreateBasic from "../components/Tag/TagCreateBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import * as actions from "../actions";
+import * as TagActions from "../actions/tags";
 
 class TagCreateContainer extends Component {
   componentWillMount() {
-    this.props.initTag();
+    this.props.actions.initTag();
   }
 
   componentWillUnmount() {
-    this.props.initTag();
+    this.props.actions.initTag();
   }
 
   render() {
@@ -49,7 +50,12 @@ class TagCreateContainer extends Component {
             <FlatButton 
               label="保存"
               primary={true}
-              onTouchTap={() => this.props.createTag(this.props.changedTag)}
+              onTouchTap={() => (
+                this.props.actions.createTag(
+                  this.props.changedTag,
+                  this.props.history
+                )
+              )}
               />
 
               <FlatButton
@@ -71,12 +77,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  changeTagLabel: (value) => dispatch(actions.changeTagLabel(value)),
-  changeTagColor: (value) => dispatch(actions.changeTagColor(value)),
-  saveTagLabel: (tag) => dispatch(actions.saveTagLabel(tag)),
-  saveTagColor: (tag) => dispatch(actions.saveTagColor(tag)),
-  createTag: (tag) => dispatch(actions.createTag(tag, ownProps.history)),
-  initTag: (tag) => dispatch(actions.initTag(tag))
+  actions: bindActionCreators(TagActions, dispatch)
 });
 
 TagCreateContainer = connect(mapStateToProps, mapDispatchToProps)(TagCreateContainer);

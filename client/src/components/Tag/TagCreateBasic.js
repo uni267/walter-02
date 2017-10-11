@@ -6,21 +6,20 @@ import TextField from "material-ui/TextField";
 const TagCreateBasic = ({
   changedTag,
   validationErrors,
-  changeTagLabel,
-  changeTagColor
+  actions
 }) => {
   return (
     <div>
       <TextField
         value={changedTag.label}
-        onChange={(e, value) => changeTagLabel(value)}
+        onChange={(e, value) => actions.changeTagLabel(value)}
         errorText={validationErrors.label}
         floatingLabelText="タグ名"
         />
 
         <TextField
           value={changedTag.color}
-          onChange={(e, value) => changeTagColor(value)}
+          onChange={(e, value) => actions.changeTagColor(value)}
           errorText={validationErrors.color}
           floatingLabelText="色"
           />
@@ -32,8 +31,7 @@ const TagCreateBasic = ({
 TagCreateBasic.propTypes = {
   changedTag: PropTypes.object.isRequired,
   validationErrors: PropTypes.object.isRequired,
-  changeTagLabel: PropTypes.func.isRequired,
-  changeTagColor: PropTypes.func.isRequired
+  actions: PropTypes.object.isRequired
 };
 
 export default TagCreateBasic;
