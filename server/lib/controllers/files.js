@@ -12,6 +12,7 @@ import { SECURITY_CONF } from "../../configs/server";
 import * as constants from "../../configs/constants";
 
 // models
+import Dir from "../models/Dir";
 import File from "../models/File";
 import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
@@ -150,13 +151,29 @@ export const search = (req, res, next) => {
 
       const limit = constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
+      const total = yield File.find(conditions).count();
 
-      const files = yield File.aggregate([
+      let files = yield File.aggregate([
         { $match: conditions },
-        { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } }
+        { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } },
+        { $lookup: { from: "dirs", localField: "dir_id", foreignField: "descendant", as: "dirs" } }
       ]).skip(offset).limit(limit);
 
-      const total = yield File.find(conditions).count();
+      files = yield File.populate(files,'dirs.ancestor');
+
+      files.map((files)=>{
+        const route = files.dirs.map((dir)=>{
+          if(dir.ancestor.is_display){
+            return dir.ancestor.name;
+          }
+        });
+        files.dir_route = route.reverse().join('/');
+      });
+      
+      const options = {
+        path: 'files.dirs',
+        model: File
+      } ;
 
       res.json({
         status: { success: true, total },
