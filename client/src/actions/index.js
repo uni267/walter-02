@@ -240,22 +240,6 @@ export const addGroupOfUser = (user_id, group_id) => ({
   type: actionTypes.ADD_GROUP_OF_USER, user_id, group_id
 });
 
-export const changeUserName = (name) => ({
-  type: actionTypes.CHANGE_USER_NAME, name
-});
-
-export const changeUserAccountName = (account_name) => ({
-  type: actionTypes.CHANGE_USER_ACCOUNT_NAME, account_name
-});
-
-export const changeUserEmail = (email) => ({
-  type: actionTypes.CHANGE_USER_EMAIL, email
-});
-
-export const changeUserPassword = (password) => ({
-  type: actionTypes.CHANGE_USER_PASSWORD, password
-});
-
 export const saveUserPassword = (user) => ({
   type: actionTypes.SAVE_USER_PASSWORD, user
 });
@@ -294,10 +278,6 @@ export const saveGroupValidationError = (errors) => ({
 
 export const clearGroupValidationError = () => ({
   type: actionTypes.CLEAR_GROUP_VALIDATION_ERROR
-});
-
-export const initNewUserTemplate = () => ({
-  type: actionTypes.INIT_NEW_USER_TEMPLATE
 });
 
 export const createGroup = (group, history) => ({

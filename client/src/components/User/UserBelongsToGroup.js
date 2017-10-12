@@ -11,16 +11,16 @@ const UserBelongsToGroup = ({
   user,
   groups,
   group,
-  clearGroupText,
-  deleteGroupOfUser,
-  addGroupOfUser
+  actions
 }) => {
   const renderGroup = (group, key) => {
     return (
       <Chip
         key={key}
         style={{ marginRight: 10 }}
-        onRequestDelete={() => deleteGroupOfUser(user.data._id, group._id)}
+        onRequestDelete={() => {
+          actions.deleteGroupOfUser(user.data._id, group._id);
+        }}
         >
 
         {group.name}
@@ -57,9 +57,9 @@ const UserBelongsToGroup = ({
           hintText="所属グループを追加"
           floatingLabelText="グループ名を入力"
           searchText={group.text}
-          onTouchTap={clearGroupText}
+          onTouchTap={actions.clearGroupText}
           onNewRequest={(group) => {
-            addGroupOfUser(user.data._id, group._id);
+            actions.addGroupOfUser(user.data._id, group._id);
           }}
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}
@@ -72,9 +72,9 @@ const UserBelongsToGroup = ({
 
 UserBelongsToGroup.propTypes = {
   user: PropTypes.object.isRequired,
+  group: PropTypes.object.isRequired,
   groups: PropTypes.array.isRequired,
-  deleteGroupOfUser: PropTypes.func.isRequired,
-  addGroupOfUser: PropTypes.func.isRequired
+  actions: PropTypes.object.isRequired
 };
 
 export default UserBelongsToGroup;

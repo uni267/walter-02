@@ -67,3 +67,23 @@ export const saveUserPasswordForce = (user) => ({
 export const saveUserAccountName = (user) => ({
   type: actionTypes.SAVE_USER_ACCOUNT_NAME, user
 });
+
+export const initNewUserTemplate = () => ({
+  type: actionTypes.INIT_NEW_USER_TEMPLATE
+});
+
+export const changeUserPassword = (password) => ({
+  type: actionTypes.CHANGE_USER_PASSWORD, password
+});
+
+export const changeUserAccountName = (account_name) => ({
+  type: actionTypes.CHANGE_USER_ACCOUNT_NAME, account_name
+});
+
+export const changeUserName = (name) => ({
+  type: actionTypes.CHANGE_USER_NAME, name
+});
+
+export const changeUserEmail = (email) => ({
+  type: actionTypes.CHANGE_USER_EMAIL, email
+});

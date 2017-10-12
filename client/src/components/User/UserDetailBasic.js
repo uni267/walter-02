@@ -8,15 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 
 const UserDetailBasic = ({
   user,
-  toggleUser,
-  changeUserName,
-  changeUserAccountName,
-  changeUserEmail,
-  changeUserPassword,
-  saveUserName,
-  saveUserAccountName,
-  saveUserEmail,
-  saveUserPasswordForce,
+  actions,
   displaySaveButton = true
 }) => {
   return (
@@ -24,7 +16,7 @@ const UserDetailBasic = ({
       {displaySaveButton ?
         (
           <Toggle
-            onToggle={() => toggleUser(user.data._id)}
+            onToggle={() => actions.toggleUser(user.data._id)}
             thumbStyle={{ backgroundColor: "#ffcccc" }}
             trackStyle={{ backgroundColor: "#ff9d9d" }}
             style={{ maxWidth: 200 }}
@@ -35,7 +27,7 @@ const UserDetailBasic = ({
 
       <TextField
         value={user.changed.account_name}
-        onChange={(e, value) => changeUserAccountName(value)}
+        onChange={(e, value) => actions.changeUserAccountName(value)}
         errorText={user.errors.account_name}
         floatingLabelText="アカウント名"
       />
@@ -45,13 +37,14 @@ const UserDetailBasic = ({
          <FlatButton
            label="保存"
            primary={true}
-           onClick={() => saveUserAccountName(user.changed)} style={{ marginLeft: 10 }}
+           onClick={() => actions.saveUserAccountName(user.changed)}
+           style={{ marginLeft: 10 }}
            />
        ) : null}
 
       <TextField
         value={user.changed.name}
-        onChange={(e, value) => changeUserName(value)}
+        onChange={(e, value) => actions.changeUserName(value)}
         errorText={user.errors.name}
         floatingLabelText="表示名"
       />
@@ -61,13 +54,14 @@ const UserDetailBasic = ({
          <FlatButton 
            label="保存" 
            primary={true} 
-           onClick={() => saveUserName(user.changed)} style={{ marginLeft: 10 }}
+           onClick={() => actions.saveUserName(user.changed)}
+           style={{ marginLeft: 10 }}
            />
        ) : null}
 
       <TextField 
         value={user.changed.email}
-        onChange={(e, value) => changeUserEmail(value)}
+        onChange={(e, value) => actions.changeUserEmail(value)}
         errorText={user.errors.email}
         floatingLabelText="メールアドレス"
       />
@@ -77,14 +71,14 @@ const UserDetailBasic = ({
          <FlatButton
            label="保存"
            primary={true}
-           onClick={() => saveUserEmail(user.changed)}
+           onClick={() => actions.saveUserEmail(user.changed)}
            style={{ marginLeft: 10 }}
            />
        ) : null}
 
       <TextField
         value={user.changed.password}
-        onChange={(e, value) => changeUserPassword(value)}
+        onChange={(e, value) => actions.changeUserPassword(value)}
         errorText={user.errors.password}
         type="password"
         floatingLabelText="パスワード"
@@ -95,7 +89,7 @@ const UserDetailBasic = ({
          <FlatButton
            label="保存"
            primary={true}
-           onClick={() => saveUserPasswordForce(user.changed)}
+           onClick={() => actions.saveUserPasswordForce(user.changed)}
            style={{ marginLeft: 10 }} />
        ) : null}
 
@@ -105,13 +99,8 @@ const UserDetailBasic = ({
 
 UserDetailBasic.propTypes = {
   user: PropTypes.object.isRequired,
-  toggleUser: PropTypes.func.isRequired,
-  changeUserName: PropTypes.func.isRequired,
-  changeUserAccountName: PropTypes.func.isRequired,
-  changeUserEmail: PropTypes.func.isRequired,
-  changeUserPassword: PropTypes.func.isRequired,
-  saveUserName: PropTypes.func.isRequired,
-  saveUserEmail: PropTypes.func.isRequired
+  actions: PropTypes.object.isRequired,
+  displaySaveButton: PropTypes.bool
 };
 
 export default UserDetailBasic;
