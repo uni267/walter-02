@@ -3,29 +3,25 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import {
-  requestFetchRoles,
-  initRoles,
-  loadingStart,
-  loadingEnd,
-} from "../actions";
+import * as actions from "../actions/roles";
+import * as commons from "../actions/commons";
 
 function* watchFetchRoles() {
   while (true) {
-    const task = yield take(requestFetchRoles().type);
+    const task = yield take(actions.requestFetchRoles().type);
     const api = new API();
-    yield put(loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 1000);
       const payload = yield call(api.fetchRoles);
-      yield put(initRoles(payload.data.body));
+      yield put(actions.initRoles(payload.data.body));
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put(loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }
