@@ -179,8 +179,4 @@ FileActionContainer = connect(
   mapDispatchToProps
 )(FileActionContainer);
 
-FileActionContainer.propTypes = {
-  dir_id: PropTypes.string.isRequired
-};
-
 export default withRouter(FileActionContainer);

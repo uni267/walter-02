@@ -44,9 +44,7 @@ const DeleteDirDialog = ({
 DeleteDirDialog.propTypes = {
   dir: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
-  deleteDir: PropTypes.func.isRequired,
-  handleClose: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired
+  deleteDir: PropTypes.func.isRequired
 };
 
 export default DeleteDirDialog;

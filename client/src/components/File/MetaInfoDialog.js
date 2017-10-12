@@ -44,11 +44,8 @@ const MetaInfoDialog = ({
 
 MetaInfoDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
   file: PropTypes.object.isRequired,
-  metaInfo: PropTypes.array.isRequired,
-  addMetaInfo: PropTypes.func.isRequired,
-  deleteMetaInfo: PropTypes.func.isRequired
+  metaInfo: PropTypes.array.isRequired
 };
 
 export default MetaInfoDialog;

@@ -51,9 +51,7 @@ AuthorityDirDialog.propTypes = {
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
   addAuthorityToFile: PropTypes.func.isRequired,
-  deleteAuthorityToFile: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired,
-  handleClose: PropTypes.func.isRequired
+  deleteAuthorityToFile: PropTypes.func.isRequired
 };
 
 export default AuthorityDirDialog;

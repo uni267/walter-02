@@ -44,7 +44,6 @@ const HistoryFileDialog = ({
 
 HistoryFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
   file: PropTypes.object
 };
 

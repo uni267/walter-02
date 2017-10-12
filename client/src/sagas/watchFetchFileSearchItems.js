@@ -12,7 +12,7 @@ import {
 
 function* watchFetchFileSearchItems() {
   while (true) {
-    const task = yield take(requestFetchFileSearchItems().type);
+    yield take(requestFetchFileSearchItems().type);
     const api = new API();
     yield put(loadingStart());
 

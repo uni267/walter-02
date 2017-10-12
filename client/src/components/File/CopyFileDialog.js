@@ -46,7 +46,6 @@ const CopyFileDialog = ({
 
 CopyFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
   copyFile: PropTypes.func.isRequired,
   file: PropTypes.object
 };

@@ -8,7 +8,7 @@ import * as commonActions from "../actions/commons";
 
 function* watchFetchUsers() {
   while (true) {
-    const task = yield take(actions.requestFetchUsers().type);
+    yield take(actions.requestFetchUsers().type);
     const api = new API();
     yield put(commonActions.loadingStart());
 

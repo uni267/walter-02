@@ -41,7 +41,6 @@ const DeleteFileDialog = ({
 
 DeleteFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
   deleteFile: PropTypes.func.isRequired,
   file: PropTypes.object
 };

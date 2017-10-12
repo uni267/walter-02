@@ -7,7 +7,7 @@ import { API } from "../apis";
 
 function* watchFetchMetaInfos() {
   while (true) {
-    const task = yield take(actions.requestFetchMetaInfos().type);
+    yield take(actions.requestFetchMetaInfos().type);
     const api = new API();
 
     yield put(actions.loadingStart());

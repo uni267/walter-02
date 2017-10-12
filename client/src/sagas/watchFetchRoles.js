@@ -8,7 +8,7 @@ import * as commons from "../actions/commons";
 
 function* watchFetchRoles() {
   while (true) {
-    const task = yield take(actions.requestFetchRoles().type);
+    yield take(actions.requestFetchRoles().type);
     const api = new API();
     yield put(commons.loadingStart());
 

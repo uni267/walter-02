@@ -54,11 +54,7 @@ const FileListHeader = ({
 
 FileListHeader.propTypes = {
   header: PropTypes.object.isRequired,
-  style: PropTypes.object.isRequired,
-  setSortTarget: PropTypes.func.isRequired,
-  toggleSortTarget: PropTypes.func.isRequired,
-  fileSortTarget: PropTypes.object.isRequired,
-  sortFile: PropTypes.func.isRequired
+  style: PropTypes.object.isRequired
 };
 
 export default FileListHeader;

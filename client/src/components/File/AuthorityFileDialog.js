@@ -48,13 +48,11 @@ const AuthorityFileDialog = ({
 
 AuthorityFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
   file: PropTypes.object,
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
   addAuthorityToFile: PropTypes.func.isRequired,
-  deleteAuthorityToFile: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired
+  deleteAuthorityToFile: PropTypes.func.isRequired
 };
 
 export default AuthorityFileDialog;

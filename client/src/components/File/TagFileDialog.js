@@ -71,7 +71,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
 TagFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
   file: PropTypes.object
 };
 

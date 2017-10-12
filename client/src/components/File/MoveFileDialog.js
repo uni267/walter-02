@@ -46,10 +46,8 @@ const MoveFileDialog = ({
 
 MoveFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  file: PropTypes.object,
   dir: PropTypes.object,
-  moveFile: PropTypes.func.isRequired,
-  handleClose: PropTypes.func.isRequired
+  moveFile: PropTypes.func.isRequired
 };
 
 export default MoveFileDialog;
