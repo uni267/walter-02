@@ -103,7 +103,9 @@ class GroupDetailContainer extends Component {
                     searchText={this.state.user.text}
                     onTouchTap={() => this.setState({ user: { text: "" }})}
                     onNewRequest={(user) => {
-                      this.props.actions.addGroupOfUser(user._id, this.props.group._id);
+                      this.props.actions.addGroupOfUser(
+                        user._id, this.props.group._id
+                      );
                       this.setState({ user: { text: "" }});
                     }}
                     openOnFocus={true}
