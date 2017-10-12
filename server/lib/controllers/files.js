@@ -165,13 +165,15 @@ export const search = (req, res, next) => {
 
       files = yield File.populate(files,'dirs.ancestor');
 
-      files.map((files)=>{
-        const route = files.dirs.map((dir)=>{
-          if(dir.ancestor.is_display){
-            return dir.ancestor.name;
-          }
-        });
-        files.dir_route = route.reverse().join('/');
+      files = files.map( file => {
+        const route = file.dirs
+              .filter( dir => dir.ancestor.is_display )
+              .map( dir => dir.ancestor.name );
+
+        file.dir_route = route.length > 0
+          ? route.reverse().join("/")
+          : "Top";
+        return file;
       });
 
       const options = {
