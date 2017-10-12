@@ -918,6 +918,57 @@ export const deleteFile = (req, res, next) => {
   });
 }
 
+export const restore = (req, res, next) => {
+  co(function* () {
+    try {
+      const file_id = req.params.file_id;
+
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
+
+      const user = yield User.findById(res.user._id);
+      const file = yield File.findById(file_id);
+      const { dir_id } = file.histories[file.histories.length - 1].body;
+
+      if (file === null) throw "file is empty";
+      if (user === null) throw "user is empty";
+      if (dir_id === null || dir_id === undefined || dir_id === "" ) throw "dir_id is empty";
+
+      file.dir_id = dir_id;
+
+      const changedFile = yield file.save();
+
+      res.json({
+        status: { success: true },
+        body: changedFile
+      });
+
+    } catch (e) {
+      const errors = {};
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = "対象のファイルが見つかりません";
+        break;
+      case "file is empty":
+        errors.file = "対象のファイルが見つかりません";
+        break;
+      case "user is empty":
+        errors.user = "実行ユーザーが見つかりません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  });
+}
+
 export const removeAuthority = (req, res, next) => {
 };
 

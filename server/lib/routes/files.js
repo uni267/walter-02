@@ -25,10 +25,12 @@ router.route("/search_detail").get(controller.searchDetail);
 // ファイルアップロード
 router.post("/", fields, controller.upload);
 
-// ファイル詳細
 router.route("/:file_id")
-  .get(controller.view)
-  .delete(controller.deleteFile);
+  .get(controller.view) // ファイル詳細
+  .delete(controller.deleteFile);　// ゴミ箱へ移動
+
+// ゴミ箱から戻す
+router.route("/:file_id/restore").patch(controller.restore);
 
 // ファイル名変更
 router.route("/:file_id/rename").patch(controller.rename);
