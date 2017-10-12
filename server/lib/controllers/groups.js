@@ -85,6 +85,7 @@ export const create = (req, res, next) => {
       const _group = yield Group.findOne({ name: group.name });
       if ( _group !== null ) throw "name is duplicate";
 
+      group.tenant_id = res.user.tenant_id;
       const createdGroup = yield group.save();
 
       res.json({
