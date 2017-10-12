@@ -48,6 +48,11 @@ const groupReducer = (state = initialState, action) => {
       ...state,
       errors: {}
     };
+  case actionTypes.INIT_CREATE_GROUP:
+    return {
+      ...state,
+      changed: initialState.changed
+    };
   default:
     return state;
   }
