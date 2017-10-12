@@ -141,8 +141,8 @@ export class API {
     return this.client.get(`/api/v1/users/${user_id}`);
   };
 
-  fetchGroup = (tenant_id) => {
-    return this.client.get(`/api/v1/groups/?tenant_id=${tenant_id}`);
+  fetchGroup = () => {
+    return this.client.get(`/api/v1/groups`);
   };
 
   deleteGroupOfUser = (user_id, group_id) => {
