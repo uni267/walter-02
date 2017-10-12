@@ -9,19 +9,20 @@ import MenuItem from "material-ui/MenuItem";
 const RoleOfAction = ({
   role,
   actions,
-  deleteRoleOfAction,
-  addRoleOfAction,
   searchAction,
-  clearSearchActionText
+  clearSearchActionText,
+  roleActions
 }) => {
+  console.log(actions);
   const renderActions = (actions) => {
     return actions.map( (action, idx) => {
       return (
         <Chip 
           key={idx}
           style={{ marginRight: 10 }}
-          onRequestDelete={() => deleteRoleOfAction(role._id, action._id)}
-          >
+          onRequestDelete={() => (
+            roleActions.deleteRoleOfAction(role._id, action._id)
+          )} >
           
           {action.label}
         </Chip>
@@ -52,7 +53,7 @@ const RoleOfAction = ({
           searchText={searchAction.text}
           onTouchTap={clearSearchActionText}
           onNewRequest={(action) => {
-            addRoleOfAction(role._id, action._id);
+            roleActions.addRoleOfAction(role._id, action._id);
           }}
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}

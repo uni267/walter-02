@@ -2,15 +2,10 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // material
-import { 
-  Card, 
-  CardTitle, 
-  CardText, 
-  CardActions
-} from 'material-ui/Card';
-
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import FlatButton from "material-ui/FlatButton";
 
 // components
@@ -20,18 +15,7 @@ import RoleDetailBasic from "../components/Role/RoleDetailBasic";
 import RoleOfAction from "../components/Role/RoleOfAction";
 
 // actions
-import {
-  requestFetchRole,
-  requestFetchActions,
-  changeRoleName,
-  changeRoleDescription,
-  saveRoleName,
-  saveRoleDescription,
-  clearRoleValidationError,
-  deleteRoleOfAction,
-  addRoleOfAction,
-  deleteRole
-} from "../actions";
+import * as RoleActions from "../actions/roles";
 
 class RoleDetailContainer extends Component {
   constructor(props) {
@@ -44,9 +28,9 @@ class RoleDetailContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.requestFetchRole(this.props.match.params.id);
-    this.props.requestFetchActions(this.props.tenant.tenant_id);
-    this.props.clearRoleValidationError();
+    this.props.roleActions.requestFetchRole(this.props.match.params.id);
+    this.props.roleActions.requestFetchActions();
+    this.props.roleActions.clearRoleValidationError();
   }
 
   render() {
@@ -92,7 +76,12 @@ class RoleDetailContainer extends Component {
             <FlatButton
               label="削除"
               secondary={true}
-              onTouchTap={() => this.props.deleteRole(this.props.role)}
+              onTouchTap={() => (
+                this.props.roleActions.deleteRole(
+                  this.props.role,
+                  this.props.history
+                )
+              )}
               />
           </CardActions>
         </Card>
@@ -112,19 +101,11 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchRole: (role_id) => dispatch(requestFetchRole(role_id)),
-  requestFetchActions: () => dispatch(requestFetchActions()),
-  changeRoleName: (name) => dispatch(changeRoleName(name)),
-  changeRoleDescription: (description) => dispatch(changeRoleDescription(description)),
-  saveRoleName: (role) => dispatch(saveRoleName(role)),
-  saveRoleDescription: (role) => dispatch(saveRoleDescription(role)),
-  clearRoleValidationError: () => dispatch(clearRoleValidationError()),
-  deleteRoleOfAction: (role_id, action_id) => {
-    dispatch(deleteRoleOfAction(role_id, action_id));
-  },
-  addRoleOfAction: (role_id, action_id) => dispatch(addRoleOfAction(role_id, action_id)),
-  deleteRole: (role) => dispatch(deleteRole(role, ownProps.history))
+  roleActions: bindActionCreators(RoleActions, dispatch)
 });
 
-RoleDetailContainer = connect(mapStateToProps, mapDispatchToProps)(RoleDetailContainer);
+RoleDetailContainer = connect(
+  mapStateToProps, mapDispatchToProps
+)(RoleDetailContainer);
+
 export default RoleDetailContainer;

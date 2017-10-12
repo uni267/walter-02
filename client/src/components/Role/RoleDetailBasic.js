@@ -9,17 +9,14 @@ const RoleDetailBasic = ({
   role,
   changedRole,
   validationErrors,
-  changeRoleName,
-  changeRoleDescription,
-  saveRoleName,
-  saveRoleDescription
+  roleActions
 }) => {
 
   return (
     <div>
       <TextField
         value={changedRole.name}
-        onChange={(e, value) => changeRoleName(value)}
+        onChange={(e, value) => roleActions.changeRoleName(value)}
         errorText={validationErrors.name}
         floatingLabelText="ロール名"
         />
@@ -27,12 +24,12 @@ const RoleDetailBasic = ({
       <FlatButton
         label="保存"
         primary={true}
-        onClick={() => saveRoleName(changedRole)}
+        onClick={() => roleActions.saveRoleName(changedRole)}
         />
 
       <TextField
         value={changedRole.description}
-        onChange={(e, value) => changeRoleDescription(value)}
+        onChange={(e, value) => roleActions.changeRoleDescription(value)}
         errorText={validationErrors.description}
         floatingLabelText="備考"
         />
@@ -40,7 +37,7 @@ const RoleDetailBasic = ({
       <FlatButton
         label="保存"
         primary={true}
-        onClick={() => saveRoleDescription(changedRole)}
+        onClick={() => roleActions.saveRoleDescription(changedRole)}
         />
 
     </div>
@@ -51,10 +48,7 @@ RoleDetailBasic.propTypes = {
   role: PropTypes.object.isRequired,
   changedRole: PropTypes.object.isRequired,
   validationErrors: PropTypes.object.isRequired,
-  changeRoleName: PropTypes.func.isRequired,
-  changeRoleDescription: PropTypes.func.isRequired,
-  saveRoleName: PropTypes.func,
-  saveRoleDescription: PropTypes.func
+  roleActions: PropTypes.object.isRequired
 };
 
 export default RoleDetailBasic;

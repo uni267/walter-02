@@ -2,13 +2,10 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // material ui
-import { 
-  Card, 
-  CardTitle, 
-  CardText, 
-} from 'material-ui/Card';
+import { Card, CardTitle, CardText } from 'material-ui/Card';
 import { Table, TableBody, TableHeader } from 'material-ui/Table';
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
@@ -23,13 +20,11 @@ import RoleTableHeader from "../components/Role/RoleTableHeader";
 import RoleTableBody from "../components/Role/RoleTableBody";
 
 // actions
-import {
-  requestFetchRoles
-} from "../actions";
+import * as RoleActions from "../actions/roles";
 
 class RoleContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchRoles(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchRoles();
   }
 
   render() {
@@ -92,7 +87,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchRoles: (tenant_id) => dispatch(requestFetchRoles(tenant_id))
+  actions: bindActionCreators(RoleActions, dispatch)
 });
 
 RoleContainer = connect(mapStateToProps, mapDispatchToProps)(RoleContainer);
