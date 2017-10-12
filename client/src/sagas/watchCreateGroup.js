@@ -17,7 +17,7 @@ function* watchCreateGroup() {
       yield put(actions.loadingStart());
       yield call(delay, 1000);
       yield call(api.createGroup, task.group);
-      const payload = yield call(api.fetchGroup, localStorage.getItem("tenantId"));
+      const payload = yield call(api.fetchGroup);
       yield put(actions.initGroups(payload.data.body));
       yield put(actions.loadingEnd());
       yield task.history.push("/groups");

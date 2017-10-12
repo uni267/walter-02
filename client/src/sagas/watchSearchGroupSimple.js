@@ -3,13 +3,14 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/groups";
+import * as commons from "../actions/commons";
 
 function* watchSearchGroupSimple() {
   while (true) {
     const { keyword } = yield take(actions.searchGroupSimple().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -20,7 +21,7 @@ function* watchSearchGroupSimple() {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }
