@@ -212,6 +212,7 @@ export const INIT_GROUP = "INIT_GROUP";
 
 // グループ作成
 export const CREATE_GROUP = "CREATE_GROUP";
+export const INIT_CREATE_GROUP = "INIT_CREATE_GROUP";
 
 // グループ変更
 export const CHANGE_GROUP_NAME = "CHANGE_GROUP_NAME";

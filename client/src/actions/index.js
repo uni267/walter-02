@@ -224,68 +224,12 @@ export const updateMetaInfoTarget = (target_file) => ({
   type: actionTypes.UPDATE_META_INFO_TARGET, target_file
 });
 
-export const initGroups = (groups) => ({
-  type: actionTypes.INIT_GROUPS, groups
-});
-
-export const initGroup = (group) => ({
-  type: actionTypes.INIT_GROUP, group
-});
-
-export const deleteGroupOfUser = (user_id, group_id) => ({
-  type: actionTypes.DELETE_GROUP_OF_USER, user_id, group_id
-});
-
-export const addGroupOfUser = (user_id, group_id) => ({
-  type: actionTypes.ADD_GROUP_OF_USER, user_id, group_id
-});
-
 export const saveUserPassword = (user) => ({
   type: actionTypes.SAVE_USER_PASSWORD, user
 });
 
 export const requestFetchUsers = () => ({
   type: actionTypes.REQUEST_FETCH_USERS
-});
-
-export const requestFetchGroups = (tenant_id) => ({
-  type: actionTypes.REQUEST_FETCH_GROUPS, tenant_id
-});
-
-export const requestFetchGroup = (group_id) => ({
-  type: actionTypes.REQUEST_FETCH_GROUP, group_id
-});
-
-export const changeGroupName = (name) => ({
-  type: actionTypes.CHANGE_GROUP_NAME, name
-});
-
-export const changeGroupDescription = (description) => ({
-  type: actionTypes.CHANGE_GROUP_DESCRIPTION, description
-});
-
-export const saveGroupName = (group) => ({
-  type: actionTypes.SAVE_GROUP_NAME, group
-});
-
-export const saveGroupDescription = (group) => ({
-  type: actionTypes.SAVE_GROUP_DESCRIPTION, group
-});
-
-export const saveGroupValidationError = (errors) => ({
-  type: actionTypes.SAVE_GROUP_VALIDATION_ERROR, errors
-});
-
-export const clearGroupValidationError = () => ({
-  type: actionTypes.CLEAR_GROUP_VALIDATION_ERROR
-});
-
-export const createGroup = (group, history) => ({
-  type: actionTypes.CREATE_GROUP, group, history
-});
-
-export const deleteGroup = (group_id, history) => ({
-  type: actionTypes.DELETE_GROUP, group_id, history
 });
 
 export const requestFetchRoles = () => ({
@@ -448,10 +392,6 @@ export const requestVerifyToken = (token) => ({
   type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });
 
-export const searchGroupSimple = (keyword) => ({
-  type: actionTypes.SEARCH_GROUP_SIMPLE, keyword
-});
-
 export const changeMetaInfoKey = (key) => ({
   type: actionTypes.CHANGE_META_INFO_KEY, key
 });
@@ -510,4 +450,45 @@ export const initFileMetaInfo = (file) => ({
 
 export const requestFetchTags = () => ({
   type: actionTypes.REQUEST_FETCH_TAGS
+});
+
+// ======================== tmp
+export const requestFetchGroups = (tenant_id) => ({
+  type: actionTypes.REQUEST_FETCH_GROUPS, tenant_id
+});
+
+export const requestFetchGroup = (group_id) => ({
+  type: actionTypes.REQUEST_FETCH_GROUP, group_id
+});
+
+export const initGroup = (group) => ({
+  type: actionTypes.INIT_GROUP, group
+});
+
+export const saveGroupName = (group) => ({
+  type: actionTypes.SAVE_GROUP_NAME, group
+});
+
+export const clearGroupValidationError = () => ({
+  type: actionTypes.CLEAR_GROUP_VALIDATION_ERROR
+});
+
+export const saveGroupValidationError = (errors) => ({
+  type: actionTypes.SAVE_GROUP_VALIDATION_ERROR, errors
+});
+
+export const createGroup = (group, history) => ({
+  type: actionTypes.CREATE_GROUP, group, history
+});
+
+export const deleteGroup = (group_id, history) => ({
+  type: actionTypes.DELETE_GROUP, group_id, history
+});
+
+export const searchGroupSimple = (keyword) => ({
+  type: actionTypes.SEARCH_GROUP_SIMPLE, keyword
+});
+
+export const initGroups = (groups) => ({
+  type: actionTypes.INIT_GROUPS, groups
 });
