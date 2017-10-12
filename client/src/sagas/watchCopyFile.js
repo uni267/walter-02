@@ -1,13 +1,14 @@
 import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
-import { API } from "../apis";
+// import { API } from "../apis";
 import * as actions from "../actions";
 import * as actionTypes from "../actionTypes";
 
 function* watchCopyFile() {
   while (true) {
-    const { dir_id, file } = yield take(actionTypes.COPY_FILE);
+    // const { dir_id, file } = yield take(actionTypes.COPY_FILE);
+    yield take(actionTypes.COPY_FILE);
     yield put(actions.loadingStart());
 
     try {

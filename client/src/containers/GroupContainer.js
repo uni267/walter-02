@@ -22,7 +22,6 @@ import {
 import SocialGroupAdd from "material-ui/svg-icons/social/group-add";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
-import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";

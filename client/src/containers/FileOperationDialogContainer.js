@@ -11,7 +11,6 @@ import MoveDirDialog from "../components/Dir/MoveDirDialog";
 import CopyDirDialog from "../components/Dir/CopyDirDialog";
 import DeleteDirDialog from "../components/Dir/DeleteDirDialog";
 import AuthorityDirDialog from "../components/Dir/AuthorityDirDialog";
-import HistoryDirDialog from "../components/Dir/HistoryDirDialog";
 import AuthorityFileDialog from "../components/File/AuthorityFileDialog";
 import DeleteFileDialog from "../components/File/DeleteFileDialog";
 import MoveFileDialog from "../components/File/MoveFileDialog";

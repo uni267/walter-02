@@ -12,10 +12,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Line,
   PieChart,
   Pie,
-  Sector,
   Cell
 } from "recharts";
 

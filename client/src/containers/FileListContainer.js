@@ -109,11 +109,6 @@ const fileTarget = {
   }
 };
 
-const fileType = {
-  histories: [],
-  tags: []
-};
-
 class FileListContainer extends Component {
   componentWillMount() {
     this.props.requestFetchFiles(this.props.match.params.id, this.props.page);
@@ -202,9 +197,6 @@ class FileListContainer extends Component {
 
   render() {
     const { FILE } = NativeTypes;
-
-    const filterHistoryDir = (file) => 
-          file.id === this.state.historyDirDialog.dir._id;
 
     return (
       <div>

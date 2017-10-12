@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 // material ui
 import { TableRow, TableRowColumn } from "material-ui/Table";
-import Chip from "material-ui/Chip";
 import IconButton from "material-ui/IconButton";
 import ImageEdit from "material-ui/svg-icons/image/edit";
 

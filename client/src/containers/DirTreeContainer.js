@@ -9,7 +9,7 @@ import DirTree from "../components/DirTree";
 // material
 import FileFolderOpen from "material-ui/svg-icons/file/folder-open";
 import HardwareKeyboardArrowDown from "material-ui/svg-icons/hardware/keyboard-arrow-down";
-import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
+import { Card, CardText } from 'material-ui/Card';
 
 // actions
 import { requestFetchDirTree, selectDirTree } from "../actions";

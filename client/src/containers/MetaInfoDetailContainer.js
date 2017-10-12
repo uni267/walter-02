@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 
 // material ui
 import FlatButton from "material-ui/FlatButton";
-import AutoComplete from "material-ui/AutoComplete";
-import MenuItem from "material-ui/MenuItem";
 import { Card, CardTitle, CardText, CardActions } from "material-ui/Card";
 
 // components

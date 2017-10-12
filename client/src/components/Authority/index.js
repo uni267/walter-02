@@ -8,7 +8,6 @@ import Dialog from "material-ui/Dialog";
 
 // icons
 import SocialPerson from "material-ui/svg-icons/social/person";
-import SocialGroup from "material-ui/svg-icons/social/group";
 import HardwareSecurity from "material-ui/svg-icons/hardware/security";
 
 const style = {
@@ -65,9 +64,6 @@ class Authority extends Component {
 
   renderAuthorities = (file) => {
     return file.authorities.map( (auth, idx) => {
-
-      // @fixme 所有者かどうかはroleにもたせるべき
-      const deleteDisabled = auth.user.is_owner;
 
       return (
         <div key={idx} style={style.row}>

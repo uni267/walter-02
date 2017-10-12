@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-// router
-import { Link } from "react-router-dom";
-
 // material
 import Checkbox from 'material-ui/Checkbox';
 import MenuItem from "material-ui/MenuItem";
