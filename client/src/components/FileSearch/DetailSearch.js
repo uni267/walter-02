@@ -17,9 +17,13 @@ const DetailSearch = ({
   searchValues
 }) => {
   const textField = (item) => {
+    let valueItem = searchValues.filter( search => search._id === item._id)[0];
+    const value = valueItem === undefined ? "" : valueItem.value;
+
     return (
       <TextField
         onChange={(e, value) => searchValueChange(item, value) }
+        value={value}
         onKeyPress={ e => {
           if (e.key === "Enter") searchFileDetail();
         }}
