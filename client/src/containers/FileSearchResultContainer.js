@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import YouAreI from  "youarei";
 
 // store
 import { connect } from "react-redux";
@@ -88,9 +89,7 @@ const headers = [
 
 class FileSearchResultContainer extends Component {
   componentWillMount() {
-    const params = new URLSearchParams(this.props.location.search);
-    const q = params.get("q");
-    this.props.fetchSearchFileSimple(q);
+    this.fetchSearch(this.props.location.search);
   }
 
   componentDidMount() {
@@ -98,18 +97,26 @@ class FileSearchResultContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.location.search !== nextProps.location.search) {
-      const params = new URLSearchParams(nextProps.location.search);
-      const q = params.get("q");
-      this.props.fetchSearchFileSimple(q);
-    }
-
     if (this.props.page < nextProps.page) {
-      const params = new URLSearchParams(nextProps.location.search);
-      const q = params.get("q");
-      this.props.fetchSearchFileSimple(q, nextProps.page);
+      this.fetchSearch(nextProps);
+    }
+    else {
+      this.fetchSearch(nextProps);
     }
   }
+
+  fetchSearch = (props) => {
+    const page = props.page;
+    const params = new URLSearchParams(this.props.location.search);
+
+    if ( params.get("q") ) {
+      this.props.fetchSearchFileSimple( params.get("q"), page );
+    }
+    else {
+      const paramsObject = new YouAreI(this.props.location.search);
+      this.props.fetchSearchFileDetail(paramsObject.query_get(), page);
+    }
+  };
 
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
@@ -252,7 +259,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleFileTagDialog: (file) => dispatch(actions.toggleFileTagDialog(file)),
   toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
   toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
-  fileNextPage: () => dispatch(actions.fileNextPage())
+  fileNextPage: () => dispatch(actions.fileNextPage()),
+  fetchSearchFileDetail: (params, page) => (
+    dispatch(actions.fetchSearchFileDetail(params, page))
+  )
 });
 
 FileSearchResultContainer = connect(
