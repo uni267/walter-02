@@ -265,11 +265,9 @@ export class API {
     return this.client.get(`/api/v1/files/search_items`);
   };
 
-  searchFilesDetail = (values) => {
-    const config = {
-      params: values
-    };
-
+  searchFilesDetail = (params, page) => {
+    const config = { params };
+    config.params.page = page;
     return this.client.get("/api/v1/files/search_detail", config);
   };
 

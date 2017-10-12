@@ -267,8 +267,16 @@ export const searchDetail = (req, res, next) => {
 
   co(function* () {
     try {
-      const queries = Object.keys(req.query)
-            .map( k => JSON.parse(req.query[k]) );
+      const params = req.query;
+
+      const param_ids = Object.keys(params).filter( p => p !== "page" );
+      const metainfos = yield MetaInfo.find({ _id: param_ids });
+
+      const queries = metainfos.map( meta => {
+        const _meta = meta.toObject();
+        _meta.value = params[meta._id];
+        return _meta;
+      });
 
       const base_items = queries.filter( q => q.key_type !== "meta" );
       const meta_items = queries.filter( q => q.key_type === "meta" );
@@ -281,11 +289,18 @@ export const searchDetail = (req, res, next) => {
             ? {}
             : Object.assign(...meta_items.map(buildQuery));
 
-      console.log({ ...base_queries, ...meta_queries });
-      const files = yield File.find({ ...base_queries, ...meta_queries });
+      const limit = constants.FILE_LIMITS_PER_PAGE;
+      let { page } = req.query;
+      if (!page) page = 0;
+      const offset = page * limit;
+
+      const query = { ...base_queries, ...meta_queries };
+
+      const total = yield File.find(query).count();
+      const files = yield File.find(query).skip(offset).limit(limit);
 
       res.json({
-        status: { success: true },
+        status: { success: true, total },
         body: files
       });
     }
