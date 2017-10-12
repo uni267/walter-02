@@ -7,18 +7,15 @@ import FlatButton from 'material-ui/FlatButton';
 
 const GroupDetailBasic = ({
   changedGroup,
-  changeGroupName,
-  changeGroupDescription,
-  saveGroupName,  
-  saveGroupDescription,
   validationErrors,
+  actions,
   displaySaveButton = true
 }) => {
   return (
     <div>
       <TextField
         value={changedGroup.name}
-        onChange={(e, value) => changeGroupName(value)}
+        onChange={(e, value) => actions.changeGroupName(value)}
         errorText={validationErrors.name}
         floatingLabelText="グループ名"
         />
@@ -28,14 +25,14 @@ const GroupDetailBasic = ({
             <FlatButton 
               label="保存"
               onClick={() => {
-                saveGroupName(changedGroup);
+                actions.saveGroupName(changedGroup);
               }}
               primary={true} />
           ) : null}
 
       <TextField
         value={changedGroup.description}
-        onChange={(e, value) => changeGroupDescription(value)}
+        onChange={(e, value) => actions.changeGroupDescription(value)}
         floatingLabelText="備考"
         />
 
@@ -44,7 +41,7 @@ const GroupDetailBasic = ({
         <FlatButton
           label="保存"
           onClick={() => {
-            saveGroupDescription(changedGroup);
+            actions.saveGroupDescription(changedGroup);
           }}
           primary={true} />
       ) : null}
@@ -55,11 +52,9 @@ const GroupDetailBasic = ({
 
 GroupDetailBasic.propTypes = {
   changedGroup: PropTypes.object.isRequired,
-  changeGroupName: PropTypes.func.isRequired,
-  changeGroupDescription: PropTypes.func.isRequired,
-  // new, edit両方からコールされるので必須ではない
-  saveGroupName: PropTypes.func,
-  saveGroupDescription: PropTypes.func
+  validationErrors: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  displaySaveButton: PropTypes.bool
 };
 
 export default GroupDetailBasic;

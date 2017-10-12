@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material
@@ -30,11 +31,11 @@ import GroupTableBody from "../components/Group/GroupTableBody";
 import SimpleSearch from "../components/FileSearch/SimpleSearch";
 
 // actions
-import * as actions from "../actions";
+import * as GroupActions from "../actions/groups";
 
 class GroupContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchGroups(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchGroups(this.props.tenant.tenant_id);
   }
 
   renderGroups = (groups) => {
@@ -71,7 +72,7 @@ class GroupContainer extends Component {
                 <div style={{ display: "flex", flexDirection: "row-reverse" }}>
                   <SimpleSearch
                     searchFileSimple={ keyword => (
-                      this.props.searchGroupSimple(keyword)
+                      this.props.actions.searchGroupSimple(keyword)
                     )}
                     hintText="グループ名を入力"
                   />
@@ -116,8 +117,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchGroups: (tenant_id) => dispatch(actions.requestFetchGroups(tenant_id)),
-  searchGroupSimple: (keyword) => dispatch(actions.searchGroupSimple(keyword))
+  actions: bindActionCreators(GroupActions, dispatch)
 });
 
 GroupContainer = connect(mapStateToProps, mapDispatchToProps)(GroupContainer);

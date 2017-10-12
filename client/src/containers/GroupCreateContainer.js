@@ -2,14 +2,10 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 // material
-import { 
-  Card, 
-  CardTitle, 
-  CardText, 
-  CardActions
-} from 'material-ui/Card';
+import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
 import FlatButton from "material-ui/FlatButton";
 
 // components
@@ -18,13 +14,13 @@ import GroupDetailBasic from "../components/Group/GroupDetailBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import {
-  changeGroupName,
-  changeGroupDescription,
-  createGroup
-} from "../actions";
+import * as GroupActions from "../actions/groups";
 
 class GroupCreateContainer extends Component {
+  componentWillMount() {
+    this.props.actions.initCreateGroup();
+  }
+
   render() {
     return (
       <div>
@@ -48,9 +44,12 @@ class GroupCreateContainer extends Component {
             <FlatButton
               label="保存"
               primary={true}
-              onTouchTap={() => {
-                this.props.createGroup(this.props.changedGroup, this.props.history);
-              }}
+              onTouchTap={() => (
+                this.props.actions.createGroup(
+                  this.props.changedGroup,
+                  this.props.history
+                )
+              )}
             />
             <FlatButton label="閉じる" href="/groups" />
           </CardActions>
@@ -71,9 +70,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  changeGroupName: (name) => dispatch(changeGroupName(name)),  
-  changeGroupDescription: (description) => dispatch(changeGroupDescription(description)),
-  createGroup: (group, history) => dispatch(createGroup(group, history))
+  actions: bindActionCreators(GroupActions, dispatch)
 });
 
 GroupCreateContainer = connect(

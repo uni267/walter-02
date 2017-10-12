@@ -24,7 +24,7 @@ import GroupDetailBasic from "../components/Group/GroupDetailBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import * as UserActions from "../actions/users";
+import * as GroupActions from "../actions/groups";
 
 class GroupDetailContainer extends Component {
   constructor(props) {
@@ -37,8 +37,8 @@ class GroupDetailContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.requestFetchGroup(this.props.match.params.id);
-    this.props.requestFetchUsers(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchGroup(this.props.match.params.id);
+    this.props.actions.requestFetchUsers(this.props.tenant.tenant_id);
   }
 
   renderBelongsToUsers = () => {
@@ -48,7 +48,7 @@ class GroupDetailContainer extends Component {
           key={idx}
           style={{ marginRight: 10 }}
           onRequestDelete={() => {
-            this.props.deleteGroupOfUser(user._id, this.props.group._id);
+            this.props.actions.deleteGroupOfUser(user._id, this.props.group._id);
           }} >
           {user.name}
         </Chip>
@@ -103,7 +103,7 @@ class GroupDetailContainer extends Component {
                     searchText={this.state.user.text}
                     onTouchTap={() => this.setState({ user: { text: "" }})}
                     onNewRequest={(user) => {
-                      this.props.addGroupOfUser(user._id, this.props.group._id);
+                      this.props.actions.addGroupOfUser(user._id, this.props.group._id);
                       this.setState({ user: { text: "" }});
                     }}
                     openOnFocus={true}
@@ -120,7 +120,12 @@ class GroupDetailContainer extends Component {
             <FlatButton
               label="削除"
               secondary={true}
-              onTouchTap={() => this.props.deleteGroup(this.props.group._id)} />
+              onTouchTap={() => (
+                this.props.actions.deleteGroup(
+                  this.props.group._id,
+                  this.props.history
+                )
+              )} />
           </CardActions>
         </Card>
       </div>
@@ -139,7 +144,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  actions: bindActionCreators(UserActions, dispatch)
+  actions: bindActionCreators(GroupActions, dispatch)
 });
 
 GroupDetailContainer = connect(
