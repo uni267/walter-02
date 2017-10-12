@@ -11,6 +11,7 @@ import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-cir
 const DetailSearch = ({
   item,
   tags,
+  history,
   searchItemNotPick,
   searchValueChange,
   searchFileDetail,
@@ -25,7 +26,7 @@ const DetailSearch = ({
         onChange={(e, value) => searchValueChange(item, value) }
         value={value}
         onKeyPress={ e => {
-          if (e.key === "Enter") searchFileDetail();
+          if (e.key === "Enter") searchFileDetail(history);
         }}
         floatingLabelText={item.key}
         hintText={item.key}
@@ -43,7 +44,7 @@ const DetailSearch = ({
       <DatePicker
         onChange={(e, value) => {
           searchValueChange(item, value);
-          searchFileDetail();
+          searchFileDetail(history);
         }}
         value={value}
         floatingLabelText={item.key}
@@ -65,7 +66,7 @@ const DetailSearch = ({
         value={value}
         onChange={(e, idx, value) => {
           searchValueChange(item, value);
-          searchFileDetail();
+          searchFileDetail(history);
         }}
         >
 
@@ -79,7 +80,7 @@ const DetailSearch = ({
   const tagField = (item) => {
     const handleChange = (event, index, value) => {
       searchValueChange(item, value);
-      searchFileDetail();
+      searchFileDetail(history);
     };
 
     const selectValue = searchValues.filter( value => value._id === item._id );

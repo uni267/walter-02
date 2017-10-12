@@ -14,17 +14,6 @@ import DetailSearch from "../components/FileSearch/DetailSearch";
 // actions
 import * as actions from "../actions";
 
-import {
-  searchFileSimple,
-  searchFileDetail,
-  requestFetchFileSearchItems,
-  toggleFileDetailSearchPopover,
-  fileDetailSearchAnchorElement,
-  searchItemPick,
-  searchItemNotPick,
-  searchValueChange
-} from "../actions";
-
 const styles = {
   buttonContainer: {
     display: "flex",
@@ -66,6 +55,7 @@ class FileSearchContainer extends Component {
               <DetailSearch
                   item={item}
                   key={idx}
+                  history={this.props.history}
                   {...this.props} />
                 : null
           )}
@@ -92,7 +82,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   searchFileSimple: (value) => {
     dispatch(actions.searchFileSimple(value, ownProps.history));
   },
-  searchFileDetail: () => dispatch(actions.searchFileDetail()),
+  searchFileDetail: (history) => dispatch(actions.searchFileDetail(history)),
   requestFetchFileSearchItems: (tenant_id) => {
     dispatch(actions.requestFetchFileSearchItems(tenant_id));
   },
@@ -108,6 +98,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchTags: () => dispatch(actions.requestFetchTags())
 });
 
-FileSearchContainer = connect(mapStateToProps, mapDispatchToProps)(FileSearchContainer);
+FileSearchContainer = connect(
+  mapStateToProps, mapDispatchToProps
+)(FileSearchContainer);
 
 export default withRouter(FileSearchContainer);
