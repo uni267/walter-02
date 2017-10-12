@@ -158,7 +158,7 @@ export const search = (req, res, next) => {
       const offset = page * limit;
       const total = yield File.find(conditions).count();
 
-      sort = createSortOption(_sort, _order);
+      const sort = createSortOption(_sort, _order);
 
       let files = yield File.aggregate([
         { $match: conditions },
@@ -348,6 +348,7 @@ export const move = (req, res, next) => {
     try {
       const file_id = req.params.file_id;
       const dir_id = req.body.dir_id;
+      const user = yield User.findById(res.user._id);
 
       if (file_id === undefined ||
           file_id === null ||
@@ -357,13 +358,14 @@ export const move = (req, res, next) => {
           dir_id === null ||
           file_id === "") throw "dir_id is empty";
 
+      if (user === null) throw "user is empty";
+
       const [ file, dir ] = yield [ File.findById(file_id), File.findById(dir_id) ];
 
       if (file === null) throw "file is empty";
       if (dir === null) throw "dir is empty";
 
-      file.dir_id = dir._id;
-      const changedFile = yield file.save();
+      const changedFile = yield moveFile(file, dir._id, user, "移動");
 
       res.json({
         status: { success: true },
@@ -862,32 +864,7 @@ export const deleteFile = (req, res, next) => {
       if (file === null) throw "file is empty";
       if (user === null) throw "user is empty";
 
-      const history = {
-        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
-        user: user,
-        action: "削除",
-        body: {
-          _id: file._id,
-          is_star: file.is_star,
-          is_display: file.is_display,
-          dir_id: file.dir_id,
-          is_dir: file.is_dir,
-          size: file.size,
-          mime_type: file.mime_type,
-          blob_path: file.blob_path,
-          name: file.name,
-          meta_infos: file.meta_infos,
-          tags: file.tags,
-          is_deleted: file.is_deleted,
-          modified: file.modified,
-          __v: file.__v
-        }
-      };
-
-      file.histories = file.histories.concat(history);
-      file.dir_id = trash_dir_id;
-
-      const changedFile = yield file.save();
+      const changedFile = yield moveFile(file, trash_dir_id, user, "削除");
 
       res.json({
         status: { success: true },
@@ -935,9 +912,7 @@ export const restore = (req, res, next) => {
       if (user === null) throw "user is empty";
       if (dir_id === null || dir_id === undefined || dir_id === "" ) throw "dir_id is empty";
 
-      file.dir_id = dir_id;
-
-      const changedFile = yield file.save();
+      const changedFile = yield moveFile(file, dir_id, user, "復元");
 
       res.json({
         status: { success: true },
@@ -971,6 +946,39 @@ export const restore = (req, res, next) => {
 
 export const removeAuthority = (req, res, next) => {
 };
+
+const moveFile = (file, dir_id, user, action) => {
+    const history = {
+      modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+      user: user,
+      action: action,
+      body: {
+        _id: file._id,
+        is_star: file.is_star,
+        is_display: file.is_display,
+        dir_id: file.dir_id,
+        is_dir: file.is_dir,
+        size: file.size,
+        mime_type: file.mime_type,
+        blob_path: file.blob_path,
+        name: file.name,
+        meta_infos: file.meta_infos,
+        tags: file.tags,
+        is_deleted: file.is_deleted,
+        modified: file.modified,
+        __v: file.__v
+      }
+    };
+
+    file.histories = file.histories.concat(history);
+
+    file.dir_id = dir_id;
+
+    const changedFile = file.save();
+
+    return changedFile;
+
+}
 
 const createSortOption = (_sort=null, _order=null) => {
   const sort = {};
