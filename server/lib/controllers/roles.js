@@ -44,19 +44,23 @@ export const index = (req, res, next) => {
 export const create = (req, res, next) => {
   co(function* () {
     try {
-      const { role, tenant_id } = req.body;
+      const { role } = req.body;
 
       if (role.name === undefined ||
           role.name === null ||
           role.name === "") throw "name is empty";
 
-      const _role = yield Role.findOne({ name: role.name });
+      const _role = yield Role.findOne({
+        name: role.name,
+        tenant_id: res.user.tenant_id
+      });
+
       if ( _role !== null ) throw "name is duplicate";
 
       const newRole = new Role();
       newRole.name = role.name;
       newRole.description = role.description;
-      newRole.tenant_id = mongoose.Types.ObjectId(tenant_id);
+      newRole.tenant_id = res.user.tenant_id;
 
       const createdRole = yield newRole.save();
 
