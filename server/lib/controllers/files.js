@@ -24,7 +24,7 @@ import { Swift } from "../storages/Swift";
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      let { dir_id, page } = req.query;
+      let { dir_id, page ,sort ,order} = req.query;
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
         dir_id = res.user.tenant.home_dir_id;
@@ -33,6 +33,7 @@ export const index = (req, res, next) => {
       const conditions = {
         dir_id: mongoose.Types.ObjectId(dir_id)
       };
+      const sortOption = createSortOption(sort, order);
 
       // pagination
       if (page === undefined || page === null || page === "") page = 0;
@@ -49,7 +50,7 @@ export const index = (req, res, next) => {
           foreignField: "_id",
           as: "tags"
         } }
-      ]).skip(offset).limit(limit);
+      ]).skip(offset).limit(limit).sort(sortOption);
 
       res.json({
         status: { success: true, total },
@@ -157,13 +158,7 @@ export const search = (req, res, next) => {
       const offset = page * limit;
       const total = yield File.find(conditions).count();
 
-      const sort = {};
-      const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
-      if( _sort === undefined || _sort === null || _sort === "" ){
-        sort["id"] = order;
-      }else{
-        sort[_sort] = order;
-      }
+      sort = createSortOption(_sort, _order);
 
       let files = yield File.aggregate([
         { $match: conditions },
@@ -852,3 +847,14 @@ export const addAuthority = (req, res, next) => {
 
 export const removeAuthority = (req, res, next) => {
 };
+
+const createSortOption = (_sort=null, _order=null) => {
+  const sort = {};
+  const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
+  if( _sort === undefined || _sort === null || _sort === "" ){
+    sort["id"] = order;
+  }else{
+    sort[_sort] = order;
+  }
+  return sort;
+}
