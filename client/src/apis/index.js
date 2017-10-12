@@ -86,10 +86,7 @@ export class API {
   };
 
   deleteFile = (file, trashDirId) => {
-    const body = { dir_id: trashDirId };
-
-    // ファイル削除はごみ箱への移動なのでapi的にはmoveとする
-    return this.client.patch(`/api/v1/files/${file._id}/move`, body);
+    return this.client.delete(`/api/v1/files/${file._id}`);
   };
 
   moveFile = (dir, file) => {

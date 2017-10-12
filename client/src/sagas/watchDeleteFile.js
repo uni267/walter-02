@@ -13,8 +13,7 @@ function* watchDeleteFile() {
     yield call(delay, 1000);
 
     try {
-      const trashDirId = yield select( state => state.tenant.trashDirId );
-      yield call(api.deleteFile, file, trashDirId);
+      yield call(api.deleteFile, file);
       const payload = yield call(api.fetchFiles, file.dir_id);
       yield put(actions.initFileTotal(payload.data.status.total));
       yield put(actions.initFiles(payload.data.body));
