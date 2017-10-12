@@ -136,7 +136,7 @@ export const download = (req, res, next) => {
 export const search = (req, res, next) => {
   co(function* () {
     try {
-      const { q, _page } = req.query;
+      const { q, _page, _sort, _order } = req.query;
       const { tenant_id } = res.user.tenant_id;
 
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
@@ -157,11 +157,19 @@ export const search = (req, res, next) => {
       const offset = page * limit;
       const total = yield File.find(conditions).count();
 
+      const sort = {};
+      const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
+      if( _sort === undefined || _sort === null || _sort === "" ){
+        sort["id"] = order;
+      }else{
+        sort[_sort] = order;
+      }
+
       let files = yield File.aggregate([
         { $match: conditions },
         { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } },
         { $lookup: { from: "dirs", localField: "dir_id", foreignField: "descendant", as: "dirs" } }
-      ]).skip(offset).limit(limit);
+      ]).skip(offset).limit(limit).sort(sort);
 
       files = yield File.populate(files,'dirs.ancestor');
 
@@ -175,11 +183,6 @@ export const search = (req, res, next) => {
           : "Top";
         return file;
       });
-
-      const options = {
-        path: 'files.dirs',
-        model: File
-      } ;
 
       res.json({
         status: { success: true, total },
