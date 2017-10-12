@@ -12,6 +12,7 @@ const FileSchema = Schema({
   dir_id: Schema.Types.ObjectId,
   is_display: Boolean,
   is_star: Boolean,
+  is_deleted: {type:Boolean, default: false}, // 完全削除フラグ。ゴミ箱移動時はfalseのまま
   tags: Array,
   histories: Array,
   authorities: Array,

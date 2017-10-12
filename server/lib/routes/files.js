@@ -26,7 +26,9 @@ router.route("/search_detail").get(controller.searchDetail);
 router.post("/", fields, controller.upload);
 
 // ファイル詳細
-router.route("/:file_id").get(controller.view);
+router.route("/:file_id")
+  .get(controller.view)
+  .delete(controller.deleteFile);
 
 // ファイル名変更
 router.route("/:file_id/rename").patch(controller.rename);

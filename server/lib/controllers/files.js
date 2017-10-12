@@ -821,7 +821,6 @@ export const addAuthority = (req, res, next) => {
 
     }
     catch (e) {
-      console.log(e);
       const errors = {};
       switch (e) {
       case "file is empty":
@@ -844,6 +843,80 @@ export const addAuthority = (req, res, next) => {
     }
   });
 };
+
+export const deleteFile = (req, res, next) => {
+  co(function* () {
+    try {
+      const file_id = req.params.file_id;
+
+      const { tenant_id } = res.user.tenant_id;
+      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
+
+      if (file_id === undefined ||
+          file_id === null ||
+          file_id === "") throw "file_id is empty";
+
+      const user = yield User.findById(res.user._id);
+      const file = yield File.findById(file_id);
+
+      if (file === null) throw "file is empty";
+      if (user === null) throw "user is empty";
+
+      const history = {
+        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+        user: user,
+        action: "削除",
+        body: {
+          _id: file._id,
+          is_star: file.is_star,
+          is_display: file.is_display,
+          dir_id: file.dir_id,
+          is_dir: file.is_dir,
+          size: file.size,
+          mime_type: file.mime_type,
+          blob_path: file.blob_path,
+          name: file.name,
+          meta_infos: file.meta_infos,
+          tags: file.tags,
+          is_deleted: file.is_deleted,
+          modified: file.modified,
+          __v: file.__v
+        }
+      };
+
+      file.histories = file.histories.concat(history);
+      file.dir_id = trash_dir_id;
+
+      const changedFile = yield file.save();
+
+      res.json({
+        status: { success: true },
+        body: changedFile
+      });
+    } catch (e) {
+      const errors = {};
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = "削除対象のファイルが見つかりません";
+        break;
+      case "file is empty":
+        errors.file = "削除対象のファイルが見つかりません";
+        break;
+      case "user is empty":
+        errors.user = "実行ユーザーが見つかりません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  });
+}
 
 export const removeAuthority = (req, res, next) => {
 };
