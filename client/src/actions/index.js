@@ -260,8 +260,8 @@ export const searchValueChange = (item, value) => ({
   type: actionTypes.SEARCH_VALUE_CHANGE, item, value
 });
 
-export const searchFileDetail = () => ({
-  type: actionTypes.SEARCH_FILE_DETAIL
+export const searchFileDetail = (history) => ({
+  type: actionTypes.SEARCH_FILE_DETAIL, history
 });
 
 export const toggleFileCheck = (file) => ({
@@ -491,4 +491,8 @@ export const addRoleOfAction = (role_id, action_id) => ({
 
 export const deleteRole = (role, history) => ({
   type: actionTypes.DELETE_ROLE, role, history
+});
+
+export const fetchSearchFileDetail = (params, page) => ({
+  type: actionTypes.FETCH_SEARCH_FILE_DETAIL, params, page
 });
