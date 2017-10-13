@@ -8,6 +8,7 @@
 /server/uploads
 /server/lib/public/*
 /server/configs/server.js
+/server/logs
 
 # testing
 /client/coverage

@@ -3,9 +3,11 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import path from "path";
+import log4js from "log4js";
 
 import { SERVER_CONF } from "../configs/server"; // mongoのipなど
 import router from "./routes";
+import * as constants from "../configs/constants";
 
 const app = express();
 
@@ -54,17 +56,21 @@ default:
   break;
 }
 
+log4js.configure(constants.LOGGER_CONFIG);
+export const logger = log4js.getLogger(mode);
+
 mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
 
   const server = app.listen(port, () => {
     console.log(`start server port: ${port}`);
+    logger.info(`start server port: ${port}`);
   });
 
   app.use("/", router);
 
 }).catch(err => {
 
-  console.log(err);
+  logger.info(err);
   throw new Error(err);
 
 });

@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import multer from "multer";
 import moment from "moment";
 import morgan from "morgan";
+import { logger } from "../index"
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -24,6 +25,7 @@ import { Swift } from "../storages/Swift";
 export const index = (req, res, next) => {
   co(function* () {
     try {
+logger.info("loggerのテスト");
       let { dir_id, page ,sort ,order} = req.query;
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
@@ -67,7 +69,7 @@ export const index = (req, res, next) => {
       default:
         errors.unknown = e;
       }
-
+      logger.error(errors);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -493,6 +495,9 @@ export const upload = (req, res, next) => {
 
       const changedFiles = yield createFiles.map( file => file.save() );
 
+      logger.info('file uploaded');
+      logger.info(changedFiles);
+
       res.json({
         status: { success: true },
         body: changedFiles
@@ -519,7 +524,7 @@ export const upload = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-
+      logger.error(errors);
       res.status(400).json({
         status: { success: false, errors }
       });
