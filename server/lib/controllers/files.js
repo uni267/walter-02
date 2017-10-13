@@ -31,7 +31,8 @@ export const index = (req, res, next) => {
       }
 
       const conditions = {
-        dir_id: mongoose.Types.ObjectId(dir_id)
+        dir_id: mongoose.Types.ObjectId(dir_id),
+        is_deleted: false
       };
       const sortOption = createSortOption(sort, order);
 
@@ -85,6 +86,9 @@ export const view = (req, res, next) => {
           file_id === "") throw "file_id is empty";
 
       const file = yield File.findById(file_id);
+
+      if (file.is_deleted) throw "file is deleted";
+
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
       res.json({
@@ -98,7 +102,10 @@ export const view = (req, res, next) => {
 
       switch (e) {
       case "file_id is empty":
-        errors.file_id = "file_id is empty";
+        errors.file_id = "ファイルが見つかりません";
+        break;
+      case "file is deleted":
+        errors.file = "ファイルは削除されています";
         break;
       default:
         errors.unknown = e;
@@ -122,6 +129,7 @@ export const download = (req, res, next) => {
 
       const fileRecord = yield File.findById(file_id);
       if (fileRecord === null) throw "file not found";
+      if (fileRecord.is_deleted) throw "file is deleted";
 
       // @fixme tenant_name=container_nameにする
       const readStream = yield swift.downloadFile("walter", fileRecord);
@@ -148,7 +156,8 @@ export const search = (req, res, next) => {
           { name: { $regex: q } },
           { "meta_infos.value": { $regex: q } }
         ],
-        is_display: true
+        is_display: true,
+        is_deleted: false
       };
 
       const page = _page === undefined || _page === null || _page === ""
@@ -861,7 +870,7 @@ export const addAuthority = (req, res, next) => {
   });
 };
 
-export const deleteFile = (req, res, next) => {
+export const moveTrash = (req, res, next) => {
   co(function* () {
     try {
       const file_id = req.params.file_id;
@@ -955,6 +964,110 @@ export const restore = (req, res, next) => {
         status: { success: false, errors }
       });
 
+    }
+  });
+}
+
+export const deleteFileLogical = (req,res,next) => {
+  co(function* (){
+    try {
+      const file_id = req.params.file_id;
+
+      if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
+
+      const user = yield User.findById(res.user._id);
+      const file = yield File.findById(file_id);
+
+      const history = {
+        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+        user: user,
+        action: "完全削除",
+        body: {
+          _id: file._id,
+          is_star: file.is_star,
+          is_display: file.is_display,
+          dir_id: file.dir_id,
+          is_dir: file.is_dir,
+          size: file.size,
+          mime_type: file.mime_type,
+          blob_path: file.blob_path,
+          name: file.name,
+          meta_infos: file.meta_infos,
+          tags: file.tags,
+          is_deleted: file.is_deleted,
+          modified: file.modified,
+          __v: file.__v
+        }
+      };
+      file.histories = file.histories.concat(history);
+
+      file.is_deleted = true;
+      const deletedFile = yield file.save();
+
+      res.json({
+        status: { success: true },
+        body: deletedFile
+      });
+
+    } catch (e) {
+      const errors = {};
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = "対象のファイルが見つかりません";
+        break;
+      case "file is empty":
+        errors.file = "対象のファイルが見つかりません";
+        break;
+      case "user is empty":
+        errors.user = "実行ユーザーが見つかりません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  });
+
+
+}
+
+export const deleteFilePhysical = (req,res,next) => {
+  co(function* (){
+    try {
+      // is_delete === true のみ対象ファイル
+      // swiftコンテナから削除
+      // mongoから削除
+      const swift = new Swift();
+
+      const file_id = req.params.file_id;
+      const tenant_name = res.user.tenant.name;
+
+      const fileRecord = yield File.findById(file_id);
+      if (fileRecord === null) throw "file not found";
+      if (fileRecord.is_deleted !== true) throw "file is not deleted";
+
+      const readStream = yield swift.remove("walter", fileRecord);
+
+      const deletedFile = yield fileRecord.remove();
+
+      res.json({
+        status:{ success: true },
+        body: deletedFile
+      })
+
+    } catch (e) {
+      const errors = {};
+      errors.unknown = e;
+      res.status(400).json({
+        status: { success: false, errors }
+      });
     }
   });
 }

@@ -7,7 +7,7 @@ class Swift {
   constructor(params) {
     // const { tenant_name } = params;
 
-    // if (tenant_name === undefined || 
+    // if (tenant_name === undefined ||
     //     tenant_name === null ||
     //     tenant_name === "") throw "params.tenant_name not defined";
 
@@ -21,7 +21,7 @@ class Swift {
       config = STORAGE_CONF.development;
       break;
     }
-    
+
     if (config === undefined || config === null) {
       throw "NODE_ENV in 'development' or 'integration' or 'production'??";
     }
@@ -90,6 +90,17 @@ class Swift {
     });
   }
 
+  remove(container_name, file){
+    return new Promise( (resolve, reject) => {
+      this.client.removeFile(
+        container_name,
+        file._id.toString(),
+        (err, result) => {
+          if (err) reject(err);
+          resolve(result);
+      });
+    });
+  }
 
 }
 

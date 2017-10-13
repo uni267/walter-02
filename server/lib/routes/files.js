@@ -27,10 +27,17 @@ router.post("/", fields, controller.upload);
 
 router.route("/:file_id")
   .get(controller.view) // ファイル詳細
-  .delete(controller.deleteFile);　// ゴミ箱へ移動
+  .delete(controller.moveTrash);　// ゴミ箱へ移動
 
 // ゴミ箱から戻す
 router.route("/:file_id/restore").patch(controller.restore);
+
+// ゴミ箱から削除
+router.route("/:file_id/delete").delete(controller.deleteFileLogical);
+
+// 完全削除。
+// router.route("/:file_id/deletePhysical").delete(controller.deleteFilePhysical);
+
 
 // ファイル名変更
 router.route("/:file_id/rename").patch(controller.rename);
