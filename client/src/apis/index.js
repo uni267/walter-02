@@ -19,9 +19,11 @@ export class API {
     this.client.get(`/api/v1/users/${user_id}`);
   };
 
-  fetchFiles = (dir_id, page = 0) => {
+  fetchFiles = (dir_id, page = 0, sorted = null, desc = null) => {
+    const order = desc ? "desc" : "asc";
+
     const config = {
-      params: { dir_id, page }
+      params: { dir_id, page, sort: sorted, order }
     };
 
     return this.client.get("/api/v1/files", config);

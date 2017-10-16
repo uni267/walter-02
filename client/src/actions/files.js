@@ -44,8 +44,8 @@ export const toggleSortTarget = () => ({
   type: actionTypes.TOGGLE_SORT_TARGET
 });
 
-export const sortFile = (sorted, desc) => ({
-  type: actionTypes.SORT_FILE, sorted, desc
+export const sortFile = (dir_id) => ({
+  type: actionTypes.SORT_FILE, dir_id
 });
 
 export const requestFetchFiles = (dir_id, page) => ({
@@ -142,5 +142,13 @@ export const toggleFileTagDialog = (file) => ({
 
 export const triggerSnackbar = (message) => ({
   type: actionTypes.TRIGGER_SNACK, message
+});
+
+export const initFileTotal = (total) => ({
+  type: actionTypes.INIT_FILE_TOTAL, total
+});
+
+export const initFiles = (files) => ({
+  type: actionTypes.INIT_FILES, files
 });
 

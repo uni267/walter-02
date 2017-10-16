@@ -1,7 +1,12 @@
 import * as actionTypes from "../actionTypes";
 
-const fileSortTargetReducer = (state = { sorted: null, desc: false }, action) => {
-  switch (action.type) {
+const initialState = {
+  sorted: null,
+  desc: false
+};
+
+const fileSortTargetReducer = (state = initialState, action) => {
+  switch ( action.type ) {
   case actionTypes.SET_SORT_TARGET:
     return {
       sorted: action.sorted,
