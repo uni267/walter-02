@@ -255,58 +255,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   actions: bindActionCreators(FileActions, dispatch)
-  // moveFile: (dir, file) => dispatch(actions.moveFile(dir, file)),
-  // moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
-  // copyFile: (dir_id, file) => dispatch(actions.copyFile(dir_id, file)),
-  // deleteFile: (file) => dispatch(actions.deleteFile(file)),
-  // deleteDirTree: (dir) => dispatch(actions.deleteDirTree(dir)),
-  // editFileByIndex: (file) => dispatch(actions.editFileByIndex(file)),
-  // triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
-  // toggleStar: (file) => dispatch(actions.toggleStar(file)),
-  // addAuthorityToFile: (file, user, role) => {
-  //   dispatch(actions.addAuthorityToFile(file, user, role));
-  // },
-  // deleteAuthorityToFile: (file_id, authority_id) => {
-  //   dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
-  // },
-  // setSortTarget: (target) => dispatch(actions.setSortTarget(target)),
-  // toggleSortTarget: () => dispatch(actions.toggleSortTarget()),
-  // sortFile: (sorted, desc) => dispatch(actions.sortFile(sorted, desc)),
-  // requestFetchFiles: (dir_id, page) => {
-  //   dispatch(actions.requestFetchFiles(dir_id, page));
-  // },
-  // requestFetchNextFiles: (dir_id, page) => {
-  //   dispatch(actions.requestFetchNextFiles(dir_id, page));
-  // },
-  // uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
-  // toggleDeleteFileDialog: (file) => dispatch(actions.toggleDeleteFileDialog(file)),
-  // toggleMoveDirDialog: (dir) => dispatch(actions.toggleMoveDirDialog(dir)),
-  // requestFetchMetaInfos: (tenant_id) => {
-  //   dispatch(actions.requestFetchMetaInfos(tenant_id));
-  // },
-  // addMetaInfoToFile: (file, metaInfo, value) => {
-  //   dispatch(actions.addMetaInfoToFile(file, metaInfo, value));
-  // },
-  // deleteMetaInfoToFile: (file, metaInfo) => { 
-  //   dispatch(actions.deleteMetaInfoToFile(file, metaInfo));
-  // },
-  // toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file)),
-  // toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
-  // toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
-  // fileNextPage: () => dispatch(actions.fileNextPage()),
-  // downloadFile: (file) => dispatch(actions.downloadFile(file)),
-  // requestFetchRoles: (tenant_id) => dispatch(actions.requestFetchRoles(tenant_id)),
-  // requestFetchUsers: (tenant_id) => dispatch(actions.requestFetchUsers(tenant_id)),
-  // toggleAuthorityFileDialog: (file) => {
-  //   dispatch(actions.toggleAuthorityFileDialog(file));
-  // },
-  // toggleCopyDirDialog: () => dispatch(actions.toggleCopyDirDialog()),
-  // toggleDeleteDirDialog: (dir) => dispatch(actions.toggleDeleteDirDialog(dir)),
-  // toggleAuthorityDirDialog: (dir) => dispatch(actions.toggleAuthorityDirDialog(dir)),
-  // toggleMoveFileDialog: (file) => dispatch(actions.toggleMoveFileDialog(file)),
-  // toggleCopyFileDialog: (file) => dispatch(actions.toggleCopyFileDialog(file)),
-  // toggleHistoryFileDialog: (file) => dispatch(actions.toggleHistoryFileDialog(file)),
-  // toggleFileTagDialog: (file) => dispatch(actions.toggleFileTagDialog(file))
 });
 
 FileListContainer = connect(
