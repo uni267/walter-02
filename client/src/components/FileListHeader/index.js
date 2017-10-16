@@ -15,9 +15,8 @@ const FileListHeader = ({
   actions
 }) => {
   const onSortClick = (headerKey) => {
-    // const target = e.target.dataset.sortKey;
     const target = headerKey;
-    if (target === undefined) return;
+    if (target === false) return;
 
     if (fileSortTarget.sorted !== target) {
       actions.setSortTarget(target);
