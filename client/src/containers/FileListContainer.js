@@ -48,7 +48,7 @@ const styles = {
   tableHeader: {
     display: "flex",
     alignItems: "center",
-    paddingLeft: 24,
+    paddingLeft: 10,
     paddingRight: 24,
     textAlign: "left",
     fontFamily: "Roboto sans-serif",
@@ -79,10 +79,10 @@ const styles = {
 
 const headers = [
   {key: "checkbox", width: "5%", label: ""},
-  {key: "name", width: "50%", label: "名前"},
+  {key: "name",     width: "50%", label: "名前", defaultSorted: true},
   {key: "modified", width: "20%", label: "最終更新"},
-  {key: "owner", width: "15%", label: "メンバー"},
-  {key: false, width: "10%", label: "Action"},
+  {key: "owner",    width: "15%", label: "メンバー"},
+  {key: false,      width: "10%", label: "操作"},
 ];
 
 const fileSource = {

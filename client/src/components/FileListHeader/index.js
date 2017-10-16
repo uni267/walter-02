@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 
 // material
 import Checkbox from 'material-ui/Checkbox';
+import FlatButton from "material-ui/FlatButton";
+import ContentSort from "material-ui/svg-icons/content/sort";
 
 const FileListHeader = ({
   idx,
@@ -12,8 +14,9 @@ const FileListHeader = ({
   match,
   actions
 }) => {
-  const onSortClick = (e) => {
-    const target = e.target.dataset.sortKey;
+  const onSortClick = (headerKey) => {
+    // const target = e.target.dataset.sortKey;
+    const target = headerKey;
     if (target === undefined) return;
 
     if (fileSortTarget.sorted !== target) {
@@ -27,8 +30,14 @@ const FileListHeader = ({
   };
 
   if ( header.key === "checkbox" ) {
+    const checkboxStyle = {
+      ...style,
+      paddingLeft: style.paddingLeft + 14,
+      width: header.width
+    };
+
     return (
-      <div key={idx} style={{ ...style, width: header.width }}>
+      <div key={idx} style={checkboxStyle}>
         <Checkbox
           onCheck={(e, value) => actions.toggleFileCheckAll(value) }
           style={{ opacity: 0.7 }}
@@ -37,12 +46,27 @@ const FileListHeader = ({
     );
   }
   else {
+    let sortIcon;
+
+    if ( header.key === fileSortTarget.sorted ) {
+      if (fileSortTarget.desc) {
+        sortIcon = <ContentSort />;
+      }
+      else {
+        sortIcon = <ContentSort style={{ transform: "rotate(180deg)" }} />;
+      }
+    }
+
     return (
-      <div key={idx}
-           onClick={onSortClick}
-           data-sort-key={header.key}
-           style={{...style, width: header.width}}>
-        {header.label}
+      <div key={idx} style={{...style, width: header.width}}>
+        <FlatButton
+          onClick={() => onSortClick(header.key)}
+          label={header.label}
+          icon={sortIcon}
+          labelPosition="before"
+          labelStyle={{ color: "rgb(158, 158, 158)", fontSize: 12 }}
+          style={{ textAlign: "left" }}
+          />
       </div>
     );
   }
