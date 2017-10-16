@@ -79,7 +79,7 @@ const styles = {
 
 const headers = [
   {key: "checkbox", width: "5%", label: ""},
-  {key: "name",     width: "50%", label: "名前", defaultSorted: true},
+  {key: "name",     width: "50%", label: "名前"},
   {key: "modified", width: "20%", label: "最終更新"},
   {key: "owner",    width: "15%", label: "メンバー"},
   {key: false,      width: "10%", label: "操作"},

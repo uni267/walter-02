@@ -152,3 +152,7 @@ export const initFiles = (files) => ({
   type: actionTypes.INIT_FILES, files
 });
 
+export const fetchSearchFileSimple = (value, page) => ({
+  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value, page
+});
+

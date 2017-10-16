@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import YouAreI from  "youarei";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material ui
@@ -17,7 +18,7 @@ import File from "../components/File";
 import FileOperationDialogContainer from "./FileOperationDialogContainer";
 
 // actions
-import * as actions from "../actions";
+import * as FileActions from "../actions/files";
 
 const styles = {
   title: {
@@ -43,7 +44,7 @@ const styles = {
   table_header: {
     display: "flex",
     alignItems: "center",
-    paddingLeft: 24,
+    paddingLeft: 10,
     paddingRight: 24,
     textAlign: "left",
     fontFamily: "Roboto sans-serif",
@@ -110,11 +111,11 @@ class FileSearchResultContainer extends Component {
     const params = new URLSearchParams(this.props.location.search);
 
     if ( params.get("q") ) {
-      this.props.fetchSearchFileSimple( params.get("q"), page );
+      this.props.actions.fetchSearchFileSimple( params.get("q"), page );
     }
     else {
       const paramsObject = new YouAreI(this.props.location.search);
-      this.props.fetchSearchFileDetail(paramsObject.query_get(), page);
+      this.props.actions.fetchSearchFileDetail(paramsObject.query_get(), page);
     }
   };
 
@@ -122,7 +123,7 @@ class FileSearchResultContainer extends Component {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
 
     if (window.pageYOffset > nextPageThreshold) {
-      this.props.fileNextPage();
+      this.props.actions.fileNextPage();
     }
   };
 
@@ -218,51 +219,16 @@ class FileSearchResultContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    // @todo server api実装まち
     files: state.files,
     tenant: state.tenant,
     total: state.filePagination.total,
-    page: state.filePagination.page
+    page: state.filePagination.page,
+    fileSortTarget: state.fileSortTarget
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFileSimple: (value) => {
-    dispatch(actions.searchFileSimple(value, ownProps.history));
-  },
-  fetchSearchFileSimple: (value, page) => {
-    dispatch(actions.fetchSearchFileSimple(value, page));
-  },
-  toggleCopyDirDialog: () => dispatch(actions.toggleCopyDirDialog()),
-  toggleDeleteDirDialog: (dir) => dispatch(actions.toggleDeleteDirDialog(dir)),
-  toggleDeleteFileDialog: (file) => {
-    dispatch(actions.toggleDeleteFileDialog(file));
-  },
-  toggleAuthorityDirDialog: (dir) => {
-    dispatch(actions.toggleAuthorityDirDialog(dir));
-  },
-  toggleAuthorityFileDialog: (file) => {
-    dispatch(actions.toggleAuthorityFileDialog(file));
-  },
-  toggleHistoryFileDialog: (file) => {
-    dispatch(actions.toggleHistoryFileDialog(file));
-  },
-  editFileByIndex: (file) => {
-    dispatch(actions.editFileByIndex(file));
-  },
-  toggleMoveFileDialog: (file) => dispatch(actions.toggleMoveFileDialog(file)),
-  toggleHistoryFileDialog: (file) => {
-    dispatch(actions.toggleHistoryFileDialog(file));
-  },
-  triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
-  toggleCopyFileDialog: (file) => dispatch(actions.toggleCopyFileDialog(file)),
-  toggleFileTagDialog: (file) => dispatch(actions.toggleFileTagDialog(file)),
-  toggleFileCheck: (file) => dispatch(actions.toggleFileCheck(file)),
-  toggleFileCheckAll: (value) => dispatch(actions.toggleFileCheckAll(value)),
-  fileNextPage: () => dispatch(actions.fileNextPage()),
-  fetchSearchFileDetail: (params, page) => (
-    dispatch(actions.fetchSearchFileDetail(params, page))
-  )
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 FileSearchResultContainer = connect(
