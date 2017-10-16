@@ -59,9 +59,9 @@ class Dir extends Component {
       return;
     }
 
-    this.props.editFileByIndex({...this.props.dir, name: dirName});
+    this.props.actions.editFileByIndex({...this.props.dir, name: dirName});
     this.setState({ editDir: { open: false } });
-    this.props.triggerSnackbar("フォルダ名を変更しました");
+    this.props.actions.triggerSnackbar("フォルダ名を変更しました");
 
   };
 
@@ -184,7 +184,7 @@ class Dir extends Component {
           <Checkbox
             checked={dir.checked}
             style={{...style.checkbox, opacity: checkOpacity}}
-            onCheck={() => this.props.toggleFileCheck(dir)} />
+            onCheck={() => this.props.actions.toggleFileCheck(dir)} />
 
           <Checkbox
             disabled={true}
@@ -216,27 +216,29 @@ class Dir extends Component {
             <MenuItem
               primaryText="移動"
               leftIcon={<ContentForward />}
-              onTouchTap={() => this.props.toggleMoveDirDialog(this.props.dir)} />
+              onTouchTap={() => (
+                this.props.actions.toggleMoveDirDialog(this.props.dir)
+              )} />
 
             <MenuItem
               primaryText="コピー"
               leftIcon={<ContentContentCopy />}
-              onTouchTap={this.props.toggleCopyDirDialog} />
+              onTouchTap={this.props.actions.toggleCopyDirDialog} />
 
             <MenuItem
               primaryText="削除" 
               leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.toggleDeleteDirDialog(dir)} />
+              onTouchTap={() => this.props.actions.toggleDeleteDirDialog(dir)} />
 
             <MenuItem
               primaryText="権限を変更"
               leftIcon={<ActionVerifiedUser />}
-              onTouchTap={() => this.props.toggleAuthorityDirDialog(dir)} />
+              onTouchTap={() => this.props.actions.toggleAuthorityDirDialog(dir)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
               leftIcon={<ActionHistory />}
-              onTouchTap={() => this.props.toggleHistoryDirDialog(dir)} />
+              onTouchTap={() => this.props.actions.toggleHistoryDirDialog(dir)} />
 
           </IconMenu>
         </div>

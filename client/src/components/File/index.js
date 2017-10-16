@@ -64,7 +64,7 @@ class File extends Component {
         return;
       }
 
-      this.props.editFileByIndex({ ...this.props.file, name: fileName });
+      this.props.actions.editFileByIndex({ ...this.props.file, name: fileName });
       this.setState({ editFile: { open: false } });
     };
 
@@ -174,14 +174,14 @@ class File extends Component {
           <Checkbox
             checked={file.checked}
             style={{ ...style.checkbox, opacity: checkOpacity }}
-            onCheck={() => this.props.toggleFileCheck(file)} />
+            onCheck={() => this.props.actions.toggleFileCheck(file)} />
 
           <Checkbox
             style={style.checkbox}
             checkedIcon={favorite_icon}
             uncheckedIcon={favorite_icon_border}
             checked={file.is_star}
-            onCheck={() => this.props.toggleStar(file)} />
+            onCheck={() => this.props.actions.toggleStar(file)} />
         </div>
 
         {this.renderFileName()}
@@ -202,7 +202,7 @@ class File extends Component {
             <MenuItem
               primaryText="ダウンロード"
               leftIcon={<FileFileDownload />}
-              onTouchTap={() => this.props.downloadFile(file)}
+              onTouchTap={() => this.props.actions.downloadFile(file)}
               />
             <MenuItem
               primaryText="ファイル名変更"
@@ -212,37 +212,37 @@ class File extends Component {
             <MenuItem
               primaryText="移動"
               leftIcon={<ContentForward />}
-              onTouchTap={() => this.props.toggleMoveFileDialog(file)} />
+              onTouchTap={() => this.props.actions.toggleMoveFileDialog(file)} />
 
             <MenuItem
-              onTouchTap={() => this.props.toggleCopyFileDialog(file)}
+              onTouchTap={() => this.props.actions.toggleCopyFileDialog(file)}
               leftIcon={<ContentContentCopy />}
               primaryText="コピー" />
 
             <MenuItem
               primaryText="削除"
               leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.toggleDeleteFileDialog(file)} />
+              onTouchTap={() => this.props.actions.toggleDeleteFileDialog(file)} />
 
             <MenuItem
               primaryText="権限を変更"
               leftIcon={<ActionVerifiedUser />}
-              onTouchTap={() => this.props.toggleAuthorityFileDialog(file)} />
+              onTouchTap={() => this.props.actions.toggleAuthorityFileDialog(file)} />
 
             <MenuItem
               primaryText="タグを編集"
               leftIcon={<ActionLabel />}
-              onTouchTap={() => this.props.toggleFileTagDialog(file)} />
+              onTouchTap={() => this.props.actions.toggleFileTagDialog(file)} />
 
             <MenuItem
               primaryText="メタ情報を編集"
               leftIcon={<ActionDescription />}
-              onTouchTap={() => this.props.toggleFileMetaInfoDialog(file)} />
+              onTouchTap={() => this.props.actions.toggleFileMetaInfoDialog(file)} />
 
             <MenuItem
               primaryText="履歴を閲覧"
               leftIcon={<ActionHistory />}
-              onTouchTap={() => this.props.toggleHistoryFileDialog(file)} />
+              onTouchTap={() => this.props.actions.toggleHistoryFileDialog(file)} />
 
             <MenuItem
               primaryText="タイムスタンプ発行"
