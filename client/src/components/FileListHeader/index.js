@@ -8,33 +8,29 @@ const FileListHeader = ({
   idx,
   header,
   style,
-  setSortTarget,
-  toggleSortTarget,
   fileSortTarget,
-  sortFile,
-  toggleFileCheckAll
+  match,
+  actions
 }) => {
   const onSortClick = (e) => {
     const target = e.target.dataset.sortKey;
     if (target === undefined) return;
 
     if (fileSortTarget.sorted !== target) {
-      setSortTarget(target);
+      actions.setSortTarget(target);
     } else {
-      toggleSortTarget();
+      actions.toggleSortTarget();
     }
 
-    sortFile(
-      fileSortTarget.sorted, 
-      fileSortTarget.desc
-    );
+    const dir_id = match.params.id;
+    actions.sortFile(dir_id);
   };
 
   if ( header.key === "checkbox" ) {
     return (
       <div key={idx} style={{ ...style, width: header.width }}>
         <Checkbox
-          onCheck={(e, value) => toggleFileCheckAll(value) }
+          onCheck={(e, value) => actions.toggleFileCheckAll(value) }
           style={{ opacity: 0.7 }}
           />
       </div>
