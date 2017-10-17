@@ -112,11 +112,8 @@ const fileTarget = {
 
 class FileListContainer extends Component {
   componentWillMount() {
-    this.props.actions.requestFetchFiles(
-      this.props.match.params.id, this.props.page
-    );
-
-    this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchFiles(this.props.match.params.id);
+    this.props.actions.requestFetchMetaInfos();
   }
 
   componentDidMount() {
@@ -125,13 +122,11 @@ class FileListContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
-      this.props.actions.requestFetchFiles(
-        nextProps.match.params.id, this.props.page
-      );
+      this.props.actions.requestFetchFiles(nextProps.match.params.id);
     }
 
     if (this.props.page < nextProps.page) {
-      this.props.actions.requestFetchNextFiles(
+      this.props.actions.requestFetchFiles(
         this.props.match.params.id, nextProps.page
       );
     }

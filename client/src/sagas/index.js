@@ -3,7 +3,6 @@ import { fork } from "redux-saga/effects";
 import watchLogin from "./watchLogin";
 import watchLogout from "./watchLogout";
 import watchFetchFiles from "./watchFetchFiles";
-import watchFetchNextFiles from "./watchFetchNextFiles";
 import watchFetchFile from "./watchFetchFile";
 import watchFetchTags from "./watchFetchTags";
 import watchAddTag from "./watchAddTag";
@@ -75,7 +74,6 @@ function* Saga() {
   yield fork(watchLogin);
   yield fork(watchLogout);
   yield fork(watchFetchFiles);
-  yield fork(watchFetchNextFiles);
   yield fork(watchFetchFile);
   yield fork(watchFetchTags);
   yield fork(watchAddTag);

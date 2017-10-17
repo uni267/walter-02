@@ -21,9 +21,14 @@ function* watchFetchFiles() {
         call(api.fetchDirs, dir_id)
       ]);
 
-      yield put(actions.initFileTotal(files.data.status.total));
-      yield put(actions.initFiles(files.data.body));
-      yield put(actions.initDir(dirs.data.body));
+      if (page === 0) {
+        yield put(actions.initFileTotal(files.data.status.total));
+        yield put(actions.initFiles(files.data.body));
+        yield put(actions.initDir(dirs.data.body));
+      }
+      else {
+        yield put(actions.initNextFiles(files.data.body));
+      }
     }
     catch (e) {
       console.log(e);
