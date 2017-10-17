@@ -21,7 +21,6 @@ import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 
 // components
-import FileSnackbar from "../components/FileSnackbar";
 import Authority from "../components/Authority";
 import History from "../components/History";
 import Tag from "../components/Tag";
