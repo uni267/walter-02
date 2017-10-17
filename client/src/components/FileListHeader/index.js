@@ -23,9 +23,6 @@ const FileListHeader = ({
     } else {
       actions.toggleSortTarget();
     }
-
-    const dir_id = match.params.id;
-    actions.sortFile(dir_id);
   };
 
   if ( header.key === "checkbox" ) {

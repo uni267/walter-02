@@ -6,19 +6,23 @@ import { API } from "../apis";
 
 // actions
 import * as actions from "../actions";
+import * as actionTypes from "../actionTypes";
 
 function* watchFetchFiles() {
   while (true) {
-    const { dir_id, page } = yield take(actions.requestFetchFiles().type);
+    const { dir_id, page, sorted, desc } = yield take(
+      actionTypes.REQUEST_FETCH_FILES
+    );
+
     const api = new API();
     yield put(actions.loadingStart());
 
     try {
       yield call(delay, 500);
 
-      if (page === 0) {
+      if (page === 0 || page === null) {
         const [ files, dirs ] = yield all([
-          call(api.fetchFiles, dir_id, page),
+          call(api.fetchFiles, dir_id, page, sorted, desc),
           call(api.fetchDirs, dir_id)
         ]);
 
@@ -27,7 +31,7 @@ function* watchFetchFiles() {
         yield put(actions.initDir(dirs.data.body));
       }
       else {
-        const files = yield call(api.fetchFiles, dir_id, page);
+        const files = yield call(api.fetchFiles, dir_id, page, sorted, desc);
         yield put(actions.initNextFiles(files.data.body));
       }
     }
