@@ -11,8 +11,6 @@ function* watchLogout() {
 
     yield put(actions.logout());
     yield put(actions.triggerSnackbar("ログアウトしました"));
-    yield call(delay, 3000);
-    yield put(actions.closeSnackbar());
   }
 }
 

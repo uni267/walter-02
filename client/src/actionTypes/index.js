@@ -275,6 +275,6 @@ export const INIT_FILE_TOTAL = "INIT_FILE_TOTAL";
 // snackbar
 export const TRIGGER_SNACK = "TRIGGER_SNACK";
 export const CLOSE_SNACK = "CLOSE_SNACK";
-
+export const INIT_SNACK = "INIT_SNACK";
 
 

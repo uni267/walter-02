@@ -23,8 +23,6 @@ function* watchCreateTag() {
       yield put(actions.initTag());
       yield task.history.push("/tags");
       yield put(commonActions.triggerSnackbar("タグを作成しました"));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

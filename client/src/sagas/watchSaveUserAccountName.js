@@ -20,8 +20,6 @@ function* watchSaveUserAccountName() {
       yield put(actions.initUser(payload.data.body));
       yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("アカウント名を変更しました"));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

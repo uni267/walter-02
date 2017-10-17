@@ -21,8 +21,6 @@ function* watchToggleStar() {
             ? "お気に入りに設定しました"
             : "お気に入りを解除しました";
       yield put(commons.triggerSnackbar(message));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       console.log(e);

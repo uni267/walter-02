@@ -20,8 +20,6 @@ function* watchSaveUserEmail() {
       yield put(actions.initUser(payload.data.body));
       yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("メールアドレスを変更しました"));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

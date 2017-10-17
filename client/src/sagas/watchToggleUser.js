@@ -24,8 +24,6 @@ function* watchToggleUser() {
             ? "ユーザを有効に変更しました"
             : "ユーザを無効に変更しました";
       yield put(commonActions.triggerSnackbar(message));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
 

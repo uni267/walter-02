@@ -33,8 +33,6 @@ function* watchUploadFiles() {
 
       yield all(toggleCheckTasks);
       yield put(commons.triggerSnackbar("ファイルをアップロードしました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       console.log(e);

@@ -22,8 +22,6 @@ function* watchAddAuthorityToFile() {
       yield put(actions.initAuthorityFileDialog(payload.data.body));
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("権限を追加しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       console.log(e);

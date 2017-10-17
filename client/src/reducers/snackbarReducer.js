@@ -1,23 +1,23 @@
 import * as actionTypes from "../actionTypes";
 
-const initial_snackbar = {
+const initialState = {
   open: false,
-  message: "initialize",
+  message: "",
   duration: 3000
 };
 
-const snackbarReducer = (state = initial_snackbar, action) => {
+const snackbarReducer = (state = initialState, action) => {
   switch (action.type) {
-  case actionTypes.TRIGGER_SNACK:
+  case actionTypes.CLOSE_SNACK:
+    return {
+      ...state,
+      open: false
+    };
+  case actionTypes.INIT_SNACK:
     return {
       ...state,
       open: true,
       message: action.message
-    };
-  case actionTypes.CLOSE_SNACK:
-    return {
-      open: false,
-      message: "closed"
     };
   default:
   return state;

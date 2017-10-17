@@ -19,8 +19,6 @@ function* watchSaveTagLabel() {
       yield put(actions.initTag(payload.data.body));
       yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("タグ名を保存しました"));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

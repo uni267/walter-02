@@ -21,8 +21,6 @@ function* watchCreateMetaInfo() {
       yield history.push("/meta_infos");
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("メタ情報を作成しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

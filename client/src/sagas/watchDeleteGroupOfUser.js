@@ -33,8 +33,6 @@ function* watchDeleteGroupOfUser() {
       yield all(putJobs);
       yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("ユーザをグループから削除しました"));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
       yield put(commonActions.loadingEnd());

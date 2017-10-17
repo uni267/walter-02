@@ -20,8 +20,6 @@ function* watchSaveRoleName() {
       yield put(actions.initRole(payload.data.body));
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("ロール名を変更しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

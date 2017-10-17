@@ -20,8 +20,6 @@ function* watchSaveGroupName() {
       yield put(actions.initGroup(payload.data.body));
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("グループ名を変更しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

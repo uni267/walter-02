@@ -23,8 +23,6 @@ function* watchCreateGroup() {
       yield put(commons.loadingEnd());
       yield task.history.push("/groups");
       yield put(commons.triggerSnackbar("グループを作成しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

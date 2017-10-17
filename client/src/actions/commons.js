@@ -15,3 +15,7 @@ export const triggerSnackbar = (message) => ({
 export const closeSnackbar = () => ({
   type: actionTypes.CLOSE_SNACK
 });
+
+export const initSnackbar = (message) => ({
+  type: actionTypes.INIT_SNACK, message
+});

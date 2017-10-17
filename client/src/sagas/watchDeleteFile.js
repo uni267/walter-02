@@ -31,8 +31,6 @@ function* watchDeleteFile() {
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.toggleDeleteFileDialog(file));
       yield put(commons.triggerSnackbar(message));
-      yield call(delay, 1000);
-      yield put(commons.closeSnackbar());
 
     }
     catch (e) {

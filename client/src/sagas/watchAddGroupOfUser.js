@@ -33,8 +33,6 @@ function* watchAddGroupOfUser() {
       yield all(putJobs);
       yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("ユーザをグループに追加しました"));
-      yield call(delay, 3000);
-      yield put(commonActions.closeSnackbar());
     }
     catch (e) {
       yield put(commonActions.loadingEnd());

@@ -24,8 +24,6 @@ function* watchCreateRole() {
       yield put(commons.loadingEnd());
       yield task.history.push("/roles");
       yield put(commons.triggerSnackbar("ロールを作成しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;

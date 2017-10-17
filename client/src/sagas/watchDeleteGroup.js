@@ -22,8 +22,6 @@ function* watchDeleteGroup() {
       yield task.history.push("/groups");
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("グループを削除しました"));
-      yield call(delay, 3000);
-      yield put(commons.closeSnackbar());
     }
     catch (e) {
       yield put(commons.loadingEnd());
