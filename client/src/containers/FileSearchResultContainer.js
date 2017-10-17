@@ -105,6 +105,10 @@ class FileSearchResultContainer extends Component {
     if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
       this.fetchSearch(nextProps);
     }
+
+    if (this.props.location.search !== nextProps.location.search) {
+      this.fetchSearch(nextProps);
+    }
   }
 
   fetchSearch = (props) => {
