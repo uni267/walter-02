@@ -85,7 +85,7 @@ const headers = [
   {key: "name", width: "50%", label: "名前/場所"},
   {key: "modified", width: "20%", label: "最終更新"},
   {key: "dir", width: "15%", label: "メンバー"},
-  {key: false, width: "5%", label: "Action"}
+  {key: false, width: "5%", label: "操作"}
 ];
 
 class FileSearchResultContainer extends Component {
