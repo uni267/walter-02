@@ -149,7 +149,10 @@ class FileListContainer extends Component {
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
 
-    if (window.pageYOffset > nextPageThreshold) {
+    if (
+      window.pageYOffset > nextPageThreshold
+      && this.props.files.length < this.props.total
+    ) {
       this.props.actions.fileNextPage();
     }
   };

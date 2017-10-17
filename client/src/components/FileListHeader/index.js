@@ -15,6 +15,9 @@ const FileListHeader = ({
   actions
 }) => {
   const onSortClick = (headerKey) => {
+
+    actions.initFilePagination();
+
     const target = headerKey;
     if (target === false) return;
 

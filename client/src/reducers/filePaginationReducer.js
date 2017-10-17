@@ -17,6 +17,8 @@ const filePaginationReducer = (state = initialState, action) => {
       ...state,
       page: state.page + 1
     };
+  case actionTypes.INIT_FILE_PAGINATION:
+    return initialState;
   default:
     return state;
   }

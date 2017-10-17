@@ -156,3 +156,6 @@ export const fetchSearchFileSimple = (
   type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value, page, sorted, desc
 });
 
+export const initFilePagination = () => ({
+  type: actionTypes.INIT_FILE_PAGINATION
+});
