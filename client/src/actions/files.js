@@ -228,3 +228,31 @@ export const initAuthorityFileDialog = (file) => ({
 export const saveMetaInfoValidationErrors = (errors) => ({
   type: actionTypes.SAVE_META_INFO_VALIDATION_ERRORS, errors
 });
+
+export const clearFilesBuffer = () => ({
+  type: actionTypes.CLEAR_FILES_BUFFER
+});
+
+export const toggleCreateDir = () => ({
+  type: actionTypes.TOGGLE_CREATE_DIR
+});
+
+export const createDir = (dir_id, dir_name) => ({
+  type: actionTypes.CREATE_DIR, dir_id, dir_name
+});
+
+export const requestFetchFile = (file_id) => ({
+  type: actionTypes.REQUEST_FETCH_FILE, file_id
+});
+
+export const requestAddTag = (file, tag) => ({
+  type: actionTypes.REQUEST_ADD_TAG, file, tag
+});
+
+export const requestDelTag = (file, tag) => ({
+  type: actionTypes.REQUEST_DEL_TAG, file, tag
+});
+
+export const editFileByView = (file) => ({
+  type: actionTypes.EDIT_FILE_BY_VIEW, file
+});

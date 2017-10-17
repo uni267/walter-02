@@ -175,7 +175,7 @@ class FileDetailContainer extends Component {
         title="メタ情報を編集"
         actions={actions}
         modal={false}
-        open={this.props.metaInfo.dialog_open}
+        open={this.props.fileMetaInfo.open}
         autoScrollBodyContent={true}
         onRequestClose={this.props.actions.toggleFileMetaInfoDialog} >
 
@@ -254,9 +254,7 @@ class FileDetailContainer extends Component {
                 <CardText>
 
                   <Tag
-                    requestDelTag={this.props.requestDelTag}
-                    triggerSnackbar={this.props.actions.triggerSnackbar}
-                    requestAddTag={this.props.actions.requestAddTag}
+                    { ...this.props }
                     tags={this.props.tags}
                     file={this.props.file} />
 
@@ -271,7 +269,9 @@ class FileDetailContainer extends Component {
                 <CardActions>
                   <RaisedButton
                     label="編集"
-                    onTouchTap={() => this.props.toggleFileMetaInfoDialog(this.props.file)}
+                    onTouchTap={() => (
+                      this.props.actions.toggleFileMetaInfoDialog(this.props.file)
+                    )}
                     />
                 </CardActions>
               </Card>
@@ -305,7 +305,8 @@ const mapStateToProps = (state, ownProps) => {
     tags: state.tags,
     loading: state.loading,
     metaInfo: state.metaInfo,
-    tenant: state.tenant
+    tenant: state.tenant,
+    fileMetaInfo: state.fileMetaInfo
   };
 };
 

@@ -66,10 +66,9 @@ const AddFileDialog = ({
   dir_id,
   open,
   uploadFiles,
-  closeDialog,
-  clearFilesBuffer,
   filesBuffer,
-  deleteFileBuffer
+  closeDialog,
+  actions
 }) => {
   const renderFilesBuffer = (file, idx) => {
     return (
@@ -87,20 +86,20 @@ const AddFileDialog = ({
         </div>
         <div style={{...styles.bufferCol, width: "5%" }}>
           <IconButton>
-            <ActionDelete onClick={() => deleteFileBuffer(file)} />
+            <ActionDelete onClick={() => actions.deleteFileBuffer(file)} />
           </IconButton>
         </div>
       </div>
     );
   };
 
-  const actions = [
+  const dialogActions = [
     (
       <FlatButton
         label="Close"
         primary={true}
         onTouchTap={() => {
-          clearFilesBuffer();
+          actions.clearFilesBuffer();
           closeDialog();
         }} />
     )
@@ -110,7 +109,7 @@ const AddFileDialog = ({
     <div>
       <Dialog
         title="ファイルをアップロード"
-        actions={actions}
+        actions={dialogActions}
         modal={true}
         open={open}
         onRequestClose={closeDialog}
@@ -120,7 +119,9 @@ const AddFileDialog = ({
 
         <div>
           <Dropzone
-            onDrop={(files) => uploadFiles(dir_id, files)} style={styles.dropzone}>
+            onDrop={(files) => actions.uploadFiles(dir_id, files)}
+            style={styles.dropzone}>
+
             <FileCloudUpload style={styles.cloudIcon} /><br />
             <div>
               ファイルをドロップまたは<br /><br />
@@ -139,10 +140,12 @@ const AddFileDialog = ({
 };
 
 AddFileDialog.propTypes = {
+  dir_id: PropTypes.number.isRequired,
+  open: PropTypes.bool.isRequired,
+  uploadFiles: PropTypes.array.isRequired,
   filesBuffer: PropTypes.array.isRequired,
-  pushFileToBuffer: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired,
-  clearFilesBuffer: PropTypes.func.isRequired
+  closeDialog: PropTypes.bool.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 export default AddFileDialog;

@@ -4,10 +4,6 @@ export const toggleAddDir = () => ({
   type: actionTypes.TOGGLE_ADD_DIR
 });
 
-export const createDir = (dir_id, dir_name) => ({
-  type: actionTypes.CREATE_DIR, dir_id, dir_name
-});
-
 export const closeSnackbar = () => ({
   type: actionTypes.CLOSE_SNACK
 });
@@ -16,16 +12,8 @@ export const toggleAddFile = () => ({
   type: actionTypes.TOGGLE_ADD_FILE
 });
 
-export const clearFilesBuffer = () => ({
-  type: actionTypes.CLEAR_FILES_BUFFER
-});
-
 export const searchFileSimple = (value, history) => ({
   type: actionTypes.SEARCH_FILE_SIMPLE, value, history
-});
-
-export const editFileByView = (file) => ({
-  type: actionTypes.EDIT_FILE_BY_VIEW, file
 });
 
 export const notifications = () => ({
@@ -60,18 +48,6 @@ export const requestFetchNextFiles = (dir_id, page) => ({
   type: actionTypes.REQUEST_FETCH_NEXT_FILES, dir_id, page
 });
 
-export const requestFetchFile = (file_id) => ({
-  type: actionTypes.REQUEST_FETCH_FILE, file_id
-});
-
-export const requestAddTag = (file, tag) => ({
-  type: actionTypes.REQUEST_ADD_TAG, file, tag
-});
-
-export const requestDelTag = (file, tag) => ({
-  type: actionTypes.REQUEST_DEL_TAG, file, tag
-});
-
 export const requestChangePassword = (current_password, new_password) => ({
   type: actionTypes.REQUEST_CHANGE_PASSWORD, current_password, new_password
 });
@@ -90,10 +66,6 @@ export const toggleChangePasswordDialog = () => ({
 
 export const logout = () => ({
   type: actionTypes.LOGOUT
-});
-
-export const toggleCreateDir = () => ({
-  type: actionTypes.TOGGLE_CREATE_DIR
 });
 
 export const fileUpload = (dir_id, file) => ({

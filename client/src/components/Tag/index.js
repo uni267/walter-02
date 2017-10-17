@@ -20,19 +20,17 @@ const styles = {
 const Tag = ({
   file,
   tags,
-  requestDelTag,
-  requestAddTag,
-  triggerSnackbar
+  actions
 }) => {
 
   const handleDelete = (file_id, tag) => {
-    requestDelTag(file, tag);
-    triggerSnackbar("タグを削除しました");
+    actions.requestDelTag(file, tag);
+    actions.triggerSnackbar("タグを削除しました");
   };
 
   const handleChange = (event, index, value) => {
-    requestAddTag(file, value);
-    triggerSnackbar("タグを追加しました");
+    actions.requestAddTag(file, value);
+    actions.triggerSnackbar("タグを追加しました");
   };
 
   const renderTag = (tag, idx) => {

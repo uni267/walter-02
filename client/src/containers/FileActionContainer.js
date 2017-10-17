@@ -38,7 +38,7 @@ class FileActionContainer extends Component {
   }
 
   moveFiles = (files) => {
-    this.props.moveFiles(this.props.selectedDir, files);
+    this.props.actions.moveFiles(this.props.selectedDir, files);
   };
 
   render() {
@@ -60,7 +60,7 @@ class FileActionContainer extends Component {
               <MenuItem
                 primaryText="新しいフォルダ"
                 leftIcon={<FileCreateNewFolder />}
-                onTouchTap={this.props.toggleCreateDir}
+                onTouchTap={() => this.props.actions.toggleCreateDir() }
                 />
             ),
             (
@@ -82,7 +82,7 @@ class FileActionContainer extends Component {
           (
             <MenuItem
               primaryText="移動"
-              onTouchTap={this.props.toggleMoveFilesDialog}
+              onTouchTap={() => this.props.actions.toggleMoveFileDialog() }
               leftIcon={<ContentContentCut />}
               />
           ),
@@ -96,7 +96,7 @@ class FileActionContainer extends Component {
             <MenuItem
               primaryText="削除"
               leftIcon={<ActionDelete />}
-              onTouchTap={this.props.toggleDeleteFilesDialog}
+              onTouchTap={() => this.props.actions.toggleDeleteFilesDialog() }
               />
           )
         ]
@@ -120,16 +120,10 @@ class FileActionContainer extends Component {
             { ...this.props }
             />
 
-          <MoveFileDialog
-            open={this.props.moveFilesState.open}
-            handleClose={this.props.toggleMoveFilesDialog}
-            moveFile={this.moveFiles}
-            file={this.props.checkedFiles} />
-
           <DeleteAllFilesDialog
             open={this.props.deleteFilesDialog.open}
-            handleClose={this.props.toggleDeleteFilesDialog}
-            deleteFiles={this.props.deleteFiles}
+            handleClose={this.props.actions.toggleDeleteFilesDialog}
+            deleteFiles={this.props.actions.deleteFiles}
             files={this.props.checkedFiles}
             />
       </div>

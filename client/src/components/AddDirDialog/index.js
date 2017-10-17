@@ -19,7 +19,7 @@ class AddDirDialog extends Component {
 
   handleCreate = (e) => {
     const dir_name = this.refs.dirName.getValue();
-    this.props.createDir(dir_name);
+    this.props.actions.createDir(this.props.dir_id, dir_name);
   };
 
   renderCreateDirDialog = () => {
@@ -27,7 +27,7 @@ class AddDirDialog extends Component {
       (
         <FlatButton
           label="Cancel"
-          onTouchTap={this.props.toggleCreateDir}
+          onTouchTap={() => this.props.actions.toggleCreateDir()}
           />
       ),
       (

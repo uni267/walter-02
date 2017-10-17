@@ -15,8 +15,8 @@ import * as FileActions from "../../actions/files";
 class TagFileDialog extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.open && !this.props.open) {
-      this.props.requestFetchFile(nextProps.file._id);
-      this.props.requestFetchTags();
+      this.props.actions.requestFetchFile(nextProps.file._id);
+      this.props.actions.requestFetchTags();
     }
   }
 
@@ -25,7 +25,7 @@ class TagFileDialog extends Component {
       <FlatButton
         label="close"
         primary={true}
-        onTouchTap={this.props.toggleFileTagDialog}
+        onTouchTap={this.props.actions.toggleFileTagDialog}
         />
     );
 
@@ -37,11 +37,10 @@ class TagFileDialog extends Component {
         actions={actions} >
 
         <Tag 
+          { ...this.props }
           file={this.props.fetchedFile}
           tags={this.props.tags}
-          requestDelTag={this.props.requestDelTag}
-          requestAddTag={this.props.requestAddTag}
-          triggerSnackbar={this.props.triggerSnackbar} />
+          />
 
       </Dialog>
     );
