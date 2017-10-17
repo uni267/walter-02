@@ -3,13 +3,14 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 function* watchToggleStar() {
   while (true) {
     const task = yield take(actions.toggleStar().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 500);
@@ -19,15 +20,15 @@ function* watchToggleStar() {
       const message = yield task.file.is_star === false
             ? "お気に入りに設定しました"
             : "お気に入りを解除しました";
-      yield put(actions.triggerSnackbar(message));
+      yield put(commons.triggerSnackbar(message));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commons.closeSnackbar());
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

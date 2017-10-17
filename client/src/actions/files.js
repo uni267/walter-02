@@ -62,6 +62,11 @@ export const toggleDeleteFileDialog = (file) => ({
   type: actionTypes.TOGGLE_DELETE_FILE_DIALOG, file
 });
 
+export const toggleDeleteFilesDialog = () => ({
+  type: actionTypes.TOGGLE_DELETE_FILES_DIALOG
+});
+
+
 export const toggleMoveDirDialog = (dir) => ({
   type: actionTypes.TOGGLE_MOVE_DIR_DIALOG, dir
 });
@@ -170,4 +175,56 @@ export const requestFetchFileSearchItems = (tenant_id) => ({
 
 export const requestFetchTags = () => ({
   type: actionTypes.REQUEST_FETCH_TAGS
+});
+
+export const initDir = (dirs) => ({
+  type: actionTypes.INIT_DIR, dirs
+});
+
+export const initNextFiles = (files) => ({
+  type: actionTypes.INIT_NEXT_FILES, files
+});
+
+export const pushFileToBuffer = (file) => ({
+  type: actionTypes.PUSH_FILE_TO_BUFFER, file
+});
+
+export const initMetaInfos = (meta_infos) => ({
+  type: actionTypes.INIT_META_INFOS, meta_infos
+});
+
+export const initFileMetaInfo = (file) => ({
+  type: actionTypes.INIT_FILE_META_INFO, file
+});
+
+export const updateMetaInfoTarget = (target_file) => ({
+  type: actionTypes.UPDATE_META_INFO_TARGET, target_file
+});
+
+export const initFileDetailSearchItems = (items) => ({
+  type: actionTypes.INIT_FILE_DETAIL_SEARCH_ITEMS, items
+});
+
+export const deleteFiles = (files) => ({
+  type: actionTypes.DELETE_FILES, files
+});
+
+export const toggleMoveFilesDialog = () => ({
+  type: actionTypes.TOGGLE_MOVE_FILES_DIALOG
+});
+
+export const deleteFileBuffer = (file) => ({
+  type: actionTypes.DELETE_FILE_BUFFER, file
+});
+
+export const popFileToBuffer = (file) => ({
+  type: actionTypes.POP_FILE_TO_BUFFER, file
+});
+
+export const initAuthorityFileDialog = (file) => ({
+  type: actionTypes.INIT_AUTHORITY_FILE_DIALOG, file
+});
+
+export const saveMetaInfoValidationErrors = (errors) => ({
+  type: actionTypes.SAVE_META_INFO_VALIDATION_ERRORS, errors
 });

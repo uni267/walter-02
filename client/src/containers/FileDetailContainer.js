@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // containers
@@ -29,7 +30,7 @@ import FileBasic from "../components/FileBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import * as actions from "../actions";
+import * as FileActions from "../actions/files";
 
 const styles = {
   fileImageWrapper: {
@@ -68,16 +69,16 @@ class FileDetailContainer extends Component {
   }
 
   componentDidMount() {
-    this.props.requestFetchFile(this.props.match.params.id);
-    this.props.requestFetchTags();
-    this.props.requestFetchMetaInfos(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchFile(this.props.match.params.id);
+    this.props.actions.requestFetchTags();
+    this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
-      this.props.requestFetchFile(nextProps.match.params.id);
-      this.props.requestFetchTags();
-      this.props.requestFetchMetaInfos(this.props.tenant.tenant_id);
+      this.props.actions.requestFetchFile(nextProps.match.params.id);
+      this.props.actions.requestFetchTags();
+      this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
     }
   }
 
@@ -89,10 +90,10 @@ class FileDetailContainer extends Component {
       return;
     }
 
-    this.props.editFileByView({ ...this.props.file, name: fileName });
-    this.props.requestFetchFile(this.props.file._id);
+    this.props.actions.editFileByView({ ...this.props.file, name: fileName });
+    this.props.actions.requestFetchFile(this.props.file._id);
     this.setState({ editBasic: { open: false } });
-    this.props.triggerSnackbar("ファイル名を変更しました");
+    this.props.actions.triggerSnackbar("ファイル名を変更しました");
   }
 
   renderAuthorities = (file) => {
@@ -139,8 +140,8 @@ class FileDetailContainer extends Component {
           users={this.props.users}
           roles={this.props.roles}
           addAuthority={this.props.addAuthority}
-          deleteAuthority={this.props.deleteAuthority}
-          triggerSnackbar={this.props.triggerSnackbar} />
+          deleteAuthority={this.props.actions.deleteAuthority}
+          triggerSnackbar={this.props.actions.triggerSnackbar} />
 
       </Dialog>
     );
@@ -165,7 +166,7 @@ class FileDetailContainer extends Component {
       <FlatButton
         label="閉じる"
         primary={true}
-        onTouchTap={this.props.toggleFileMetaInfoDialog}
+        onTouchTap={this.props.actions.toggleFileMetaInfoDialog}
         />
     );
 
@@ -176,14 +177,14 @@ class FileDetailContainer extends Component {
         modal={false}
         open={this.props.metaInfo.dialog_open}
         autoScrollBodyContent={true}
-        onRequestClose={this.props.toggleFileMetaInfoDialog} >
+        onRequestClose={this.props.actions.toggleFileMetaInfoDialog} >
 
         <MetaInfo
           file={this.props.file}
           metaInfo={this.props.metaInfo.meta_infos}
-          addMetaInfoToFile={this.props.addMetaInfoToFile}
-          deleteMetaInfo={this.props.deleteMetaInfo}
-          triggerSnackbar={this.props.triggerSnackbar} />
+          addMetaInfoToFile={this.props.actions.addMetaInfoToFile}
+          deleteMetaInfo={this.props.actions.deleteMetaInfo}
+          triggerSnackbar={this.props.actions.triggerSnackbar} />
 
       </Dialog>
     );
@@ -254,8 +255,8 @@ class FileDetailContainer extends Component {
 
                   <Tag
                     requestDelTag={this.props.requestDelTag}
-                    triggerSnackbar={this.props.triggerSnackbar}
-                    requestAddTag={this.props.requestAddTag}
+                    triggerSnackbar={this.props.actions.triggerSnackbar}
+                    requestAddTag={this.props.actions.requestAddTag}
                     tags={this.props.tags}
                     file={this.props.file} />
 
@@ -290,10 +291,6 @@ class FileDetailContainer extends Component {
           {this.renderMetaInfoDialog()}
 
         </Card>
-
-        <FileSnackbar
-          closeSnackbar={this.props.closeSnackbar}
-          snackbar={this.props.snackbar} />
       </div>
     );
   }
@@ -313,28 +310,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  addAuthorityToFile: (file_id, user, role) => {
-    dispatch(actions.addAuthorityToFile(file_id, user, role));
-  },
-  deleteAuthorityToFile: (file_id, authority_id) => {
-    dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
-  },
-  editFileByView: (file) => dispatch(actions.editFileByView(file)),
-  triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
-  addMetaInfoToFile: (file, metaInfo, value) => {
-    dispatch(actions.addMetaInfoToFile(file, metaInfo, value));
-  },
-  deleteMetaInfoToFile: (file, metaInfo) => {
-    dispatch(actions.deleteMetaInfoToFile(file, metaInfo));
-  },
-  requestFetchFile: (file_id) => dispatch(actions.requestFetchFile(file_id)),
-  requestFetchTags: () => dispatch(actions.requestFetchTags()),
-  requestAddTag: (file, tag) => dispatch(actions.requestAddTag(file, tag)),
-  requestDelTag: (file, tag) => dispatch(actions.requestDelTag(file, tag)),
-  requestFetchMetaInfos: (tenant_id) => {
-    dispatch(actions.requestFetchMetaInfos(tenant_id));
-  },
-  toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file))
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 FileDetailContainer = connect(

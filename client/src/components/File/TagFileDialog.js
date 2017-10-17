@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material ui
@@ -9,14 +10,7 @@ import FlatButton from "material-ui/FlatButton";
 import Dialog from "material-ui/Dialog";
 import Tag from "../Tag";
 
-import {
-  requestFetchFile,
-  triggerSnackbar,
-  requestAddTag,
-  requestDelTag,
-  requestFetchTags
-} 
-from "../../actions";
+import * as FileActions from "../../actions/files";
 
 class TagFileDialog extends Component {
   componentWillReceiveProps(nextProps) {
@@ -62,11 +56,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchFile: (file_id) => { dispatch(requestFetchFile(file_id)); },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  requestDelTag: (file, tag) => { dispatch(requestDelTag(file, tag)); },
-  requestAddTag: (file, value) => { dispatch(requestAddTag(file, value)); },
-  requestFetchTags: () => { dispatch(requestFetchTags()); }
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 TagFileDialog.propTypes = {

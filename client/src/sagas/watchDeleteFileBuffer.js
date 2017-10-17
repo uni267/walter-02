@@ -3,13 +3,14 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 function* watchDeleteFileBuffer() {
   while (true) {
     const { file } = yield take(actions.deleteFileBuffer().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -24,7 +25,7 @@ function* watchDeleteFileBuffer() {
 
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

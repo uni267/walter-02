@@ -5,7 +5,8 @@ import { call, put, take, all } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
 
 function* watchFetchFiles() {
@@ -15,7 +16,7 @@ function* watchFetchFiles() {
     );
 
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 500);
@@ -39,7 +40,7 @@ function* watchFetchFiles() {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
 
   }

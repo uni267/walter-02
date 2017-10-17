@@ -3,7 +3,8 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 function* watchAddAuthorityToFile() {
   while (true) {
@@ -12,21 +13,21 @@ function* watchAddAuthorityToFile() {
     );
 
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 1000);
       yield call(api.addAuthorityToFile, file, user, role);
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initAuthorityFileDialog(payload.data.body));
-      yield put(actions.loadingEnd());
-      yield put(actions.triggerSnackbar("権限を追加しました"));
+      yield put(commons.loadingEnd());
+      yield put(commons.triggerSnackbar("権限を追加しました"));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commons.closeSnackbar());
     }
     catch (e) {
       console.log(e);
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

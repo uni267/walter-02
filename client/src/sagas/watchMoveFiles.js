@@ -3,13 +3,14 @@ import { call, put, take, all } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 function* watchMoveFiles() {
   while (true) {
     const task = yield take(actions.moveFiles().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -23,7 +24,7 @@ function* watchMoveFiles() {
     catch (e) {
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

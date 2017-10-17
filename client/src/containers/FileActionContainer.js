@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // router
@@ -24,7 +25,7 @@ import MoveFileDialog from "../components/File/MoveFileDialog";
 import DeleteAllFilesDialog from "../components/File/DeleteAllFilesDialog";
 
 // actions
-import * as actions from "../actions";
+import * as FileActions from "../actions/files";
 
 class FileActionContainer extends Component {
   constructor(props) {
@@ -151,26 +152,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  createDir: (dir_name) => dispatch(actions.createDir(ownProps.dir_id, dir_name)),
-  triggerSnackbar: (message) => dispatch(actions.triggerSnackbar(message)),
-  pushFileToBuffer: (dir_id, file_name) => { 
-    dispatch(actions.pushFileToBuffer(dir_id, file_name));
-  },
-  clearFilesBuffer: () => dispatch(actions.clearFilesBuffer()),
-  deleteFileBuffer: (file) => dispatch(actions.deleteFileBuffer(file)),
-  addAuthorityToFile: (file_id, user, role) => {
-    dispatch(actions.addAuthorityToFile(file_id, user, role));
-  },
-  deleteAuthorityToFile: (file_id, authority_id) => {
-    dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
-  },
-  toggleCreateDir: () => dispatch(actions.toggleCreateDir()),
-  uploadFiles: (dir_id, files) => dispatch(actions.uploadFiles(dir_id, files)),
-  deleteFiles: (files) => dispatch(actions.deleteFiles(files)),
-  moveFiles: (dir, files) => dispatch(actions.moveFiles(dir, files)),
-  toggleMoveFilesDialog: () => dispatch(actions.toggleMoveFilesDialog()),
-  toggleDeleteFilesDialog: () => dispatch(actions.toggleDeleteFilesDialog()),
-  deleteFile: (file) => dispatch(actions.deleteFile(file))
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 FileActionContainer = connect(

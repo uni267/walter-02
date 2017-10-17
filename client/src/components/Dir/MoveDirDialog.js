@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material ui
@@ -11,7 +12,7 @@ import FlatButton from "material-ui/FlatButton";
 import DirTreeContainer from "../../containers/DirTreeContainer";
 
 // actions
-import { moveDir, toggleMoveDirDialog } from "../../actions";
+import * as FileActions from "../../actions/files";
 
 class MoveDirDialog extends Component {
   render() {
@@ -58,10 +59,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  moveDir: (destinationDir, movingDir) => {
-    dispatch(moveDir(destinationDir, movingDir));
-  },
-  toggleMoveDirDialog: (dir) => { dispatch(toggleMoveDirDialog(dir)); }
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 MoveDirDialog = connect(mapStateToProps, mapDispatchToProps)(MoveDirDialog);

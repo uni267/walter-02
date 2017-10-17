@@ -1,14 +1,16 @@
 import { delay } from "redux-saga";
 import { call, put, take, all } from "redux-saga/effects";
 
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
+
 import { API } from "../apis";
-import * as actions from "../actions";
 
 function* watchUploadFiles() {
   while (true) {
     const { dir_id, files } = yield take(actions.uploadFiles().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
     yield call(delay, 1000);
 
     try {
@@ -30,15 +32,15 @@ function* watchUploadFiles() {
       )).map( file => put(actions.toggleFileCheck(file)) );
 
       yield all(toggleCheckTasks);
-      yield put(actions.triggerSnackbar("ファイルをアップロードしました"));
+      yield put(commons.triggerSnackbar("ファイルをアップロードしました"));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commons.closeSnackbar());
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
 
   }

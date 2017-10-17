@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material ui
@@ -14,12 +15,7 @@ import DirBoxContainer from "./DirBoxContainer";
 import FileListContainer from "./FileListContainer";
 
 // actions
-import {
-  triggerSnackbar,
-  closeSnackbar,
-  requestFetchFiles
-}
-from "../actions";
+import * as FileActions from "../actions/files";
 
 class HomeContainer extends Component {
   render() {
@@ -71,9 +67,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  closeSnackbar: () => { dispatch(closeSnackbar()); },
-  requestFetchFiles: (dir_id) => { dispatch(requestFetchFiles(dir_id)); }
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 HomeContainer = connect(mapStateToProps, mapDispatchToProps)(HomeContainer);

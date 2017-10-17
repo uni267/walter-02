@@ -2,7 +2,8 @@ import { delay } from "redux-saga";
 import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
 
 function* watchFetchSearchFileSimple() {
@@ -13,7 +14,7 @@ function* watchFetchSearchFileSimple() {
 
     const api = new API();
 
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
     yield call(delay, 1000);
 
     try {
@@ -31,7 +32,7 @@ function* watchFetchSearchFileSimple() {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

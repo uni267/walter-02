@@ -2,14 +2,15 @@ import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // import { API } from "../apis";
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
 
 function* watchCopyFile() {
   while (true) {
     // const { dir_id, file } = yield take(actionTypes.COPY_FILE);
     yield take(actionTypes.COPY_FILE);
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
 
     try {
       yield call(delay, 1000);
@@ -18,7 +19,7 @@ function* watchCopyFile() {
     catch (e) {
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

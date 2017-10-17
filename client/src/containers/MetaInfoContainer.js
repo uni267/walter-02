@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+// store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material ui
@@ -22,11 +24,11 @@ import MetaInfoTableHeader from "../components/MetaInfo/MetaInfoTableHeader";
 import MetaInfoTableBody from "../components/MetaInfo/MetaInfoTableBody";
 
 // actions
-import * as actions from "../actions";  
+import * as FileActions from "../actions/files";
 
 class MetaInfoContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchMetaInfos();
+    this.props.actions.requestFetchMetaInfos();
   }
 
   renderMetaInfos = (metaInfos) => {
@@ -111,7 +113,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchMetaInfos: () => dispatch(actions.requestFetchMetaInfos())
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 MetaInfoContainer = connect(mapStateToProps, mapDispatchToProps)(MetaInfoContainer);

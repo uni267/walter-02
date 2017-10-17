@@ -3,7 +3,8 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 import { saveAs } from "file-saver";
 
@@ -14,7 +15,7 @@ function* watchDownloadFile() {
 
     try {
       yield call(delay, 1000);
-      yield put(actions.loadingStart());
+      yield put(commons.loadingStart());
       const payload = yield call(api.downloadFile, file);
 
       const download = new Blob(
@@ -26,7 +27,7 @@ function* watchDownloadFile() {
       console.log(e);
     }
     finally {
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }
