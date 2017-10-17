@@ -257,10 +257,10 @@ export const editFileByView = (file) => ({
   type: actionTypes.EDIT_FILE_BY_VIEW, file
 });
 
-export const toggleRestoreFilesDialog = () => ({
-  type: actionTypes.TOGGLE_RESTORE_FILES_DIALOG
+export const toggleRestoreFileDialog = () => ({
+  type: actionTypes.TOGGLE_RESTORE_FILE_DIALOG
 });
 
-export const restoreFiles = (files) => ({
-  type: actionTypes.RESTORE_FILES, files
+export const restoreFile = (file) => ({
+  type: actionTypes.RESTORE_FILE, file
 });

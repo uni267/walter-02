@@ -43,7 +43,7 @@ import copyFile from "./copyFileReducer";
 import fileHistory from "./fileHistoryReducer";
 import fileTag from "./fileTagReducer";
 import fileMetaInfo from "./fileMetaInfoReducer";
-import restoreFiles from "./restoreFilesReducer";
+import restoreFile from "./restoreFileReducer";
 
 const fileApp = combineReducers({
   files,
@@ -88,7 +88,7 @@ const fileApp = combineReducers({
   fileHistory,
   fileTag,
   fileMetaInfo,
-  restoreFiles
+  restoreFile
 });
 
 export default fileApp;

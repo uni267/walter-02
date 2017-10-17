@@ -7,20 +7,20 @@ import FlatButton from "material-ui/FlatButton";
 
 const RestoreFileDialog = ({
   open,
-  files,
+  file,
   actions
 }) => {
   const dialogActions = [
     (
       <FlatButton
         label="復元"
-        onTouchTap={() => actions.restoreFiles(files)}
+        onTouchTap={() => actions.restoreFile(file)}
         primary={true} />
     ),
     (
       <FlatButton
         label="閉じる"
-        onTouchTap={() => actions.toggleRestoreFilesDialog() } />
+        onTouchTap={() => actions.toggleRestoreFileDialog() } />
     )
   ];
 
