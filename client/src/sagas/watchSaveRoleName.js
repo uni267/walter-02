@@ -3,13 +3,14 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
-import * as actions from "../actions";
+import * as actions from "../actions/roles";
+import * as commons from "../actions/commons";
 
 function* watchSaveRoleName() {
   while (true) {
     const task = yield take(actions.saveRoleName().type);
     const api = new API();
-    yield put(actions.loadingStart());
+    yield put(commons.loadingStart());
     yield put(actions.clearRoleValidationError());
     
     try {
@@ -17,15 +18,15 @@ function* watchSaveRoleName() {
       yield call(api.saveRoleName, task.role);
       const payload = yield call(api.fetchRole, task.role._id);
       yield put(actions.initRole(payload.data.body));
-      yield put(actions.loadingEnd());
-      yield put(actions.triggerSnackbar("ロール名を変更しました"));
+      yield put(commons.loadingEnd());
+      yield put(commons.triggerSnackbar("ロール名を変更しました"));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;
       yield put(actions.saveRoleValidationError(errors));
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

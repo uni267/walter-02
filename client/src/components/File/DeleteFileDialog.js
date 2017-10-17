@@ -7,22 +7,21 @@ import Dialog from "material-ui/Dialog";
 
 const DeleteFileDialog = ({
   open,
-  deleteFile,
   file,
-  toggleDeleteFileDialog
+  actions
 }) => {
-  const actions = [
+  const dialogActions = [
     (
       <FlatButton
         label="Delete"
         primary={true}
-        onTouchTap={(e) => deleteFile(file)} />
+        onTouchTap={(e) => actions.deleteFile(file)} />
     ),
     (
       <FlatButton
         label="close"
         primary={false}
-        onTouchTap={toggleDeleteFileDialog}
+        onTouchTap={actions.toggleDeleteFileDialog}
         />
     )
   ];
@@ -31,9 +30,9 @@ const DeleteFileDialog = ({
     <Dialog
       title={`${file.name}を削除しますか？`}
       modal={false}
-      actions={actions}
+      actions={dialogActions}
       open={open}
-      onRequestClose={toggleDeleteFileDialog}
+      onRequestClose={actions.toggleDeleteFileDialog}
       >
     </Dialog>
   );
@@ -41,8 +40,8 @@ const DeleteFileDialog = ({
 
 DeleteFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  deleteFile: PropTypes.func.isRequired,
-  file: PropTypes.object
+  file: PropTypes.object,
+  actions: PropTypes.object
 };
 
 export default DeleteFileDialog;

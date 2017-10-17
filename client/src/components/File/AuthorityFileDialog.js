@@ -13,16 +13,13 @@ const AuthorityFileDialog = ({
   file,
   users,
   roles,
-  addAuthorityToFile,
-  deleteAuthorityToFile,
-  triggerSnackbar,
-  toggleAuthorityFileDialog
+  actions
 }) => {
-  const actions = (
+  const dialogActions = (
     <FlatButton
       label="閉じる"
       primary={true}
-      onTouchTap={toggleAuthorityFileDialog}
+      onTouchTap={actions.toggleAuthorityFileDialog}
       />
   );
   
@@ -30,17 +27,17 @@ const AuthorityFileDialog = ({
     <Dialog
       title="権限を変更"
       modal={false}
-      actions={actions}
+      actions={dialogActions}
       open={open}
-      onRequestClose={toggleAuthorityFileDialog} >
+      onRequestClose={actions.toggleAuthorityFileDialog} >
 
       <Authority
         file={file}
         users={users}
         roles={roles}
-        addAuthorityToFile={addAuthorityToFile}
-        deleteAuthorityToFile={deleteAuthorityToFile}
-        triggerSnackbar={triggerSnackbar} />
+        addAuthorityToFile={actions.addAuthorityToFile}
+        deleteAuthorityToFile={actions.deleteAuthorityToFile}
+        triggerSnackbar={actions.triggerSnackbar} />
 
     </Dialog>
   );
@@ -51,8 +48,7 @@ AuthorityFileDialog.propTypes = {
   file: PropTypes.object,
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
-  addAuthorityToFile: PropTypes.func.isRequired,
-  deleteAuthorityToFile: PropTypes.func.isRequired
+  actions: PropTypes.object
 };
 
 export default AuthorityFileDialog;

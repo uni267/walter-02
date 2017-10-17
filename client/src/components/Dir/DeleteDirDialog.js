@@ -8,23 +8,21 @@ import FlatButton from "material-ui/FlatButton";
 const DeleteDirDialog = ({
   dir,
   open,
-  deleteDir,
-  triggerSnackbar,
-  toggleDeleteDirDialog
+  actions
 }) => {
-  const actions = [
+  const dialogActions = [
     (
       <FlatButton
         label="Delete"
         primary={true}
-        onTouchTap={() => deleteDir(dir)}
+        onTouchTap={() => actions.deleteDir(dir)}
         />
     ),
     (
       <FlatButton
         label="close"
         primary={false}
-        onTouchTap={toggleDeleteDirDialog}
+        onTouchTap={actions.toggleDeleteDirDialog}
         />
     )
   ];
@@ -33,9 +31,9 @@ const DeleteDirDialog = ({
     <Dialog
       title={`${dir.name}を削除しますか？`}
       modal={false}
-      actions={actions}
+      actions={dialogActions}
       open={open}
-      onRequestClose={toggleDeleteDirDialog}
+      onRequestClose={actions.toggleDeleteDirDialog}
       >
     </Dialog>
   );
@@ -44,7 +42,7 @@ const DeleteDirDialog = ({
 DeleteDirDialog.propTypes = {
   dir: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
-  deleteDir: PropTypes.func.isRequired
+  actions: PropTypes.object
 };
 
 export default DeleteDirDialog;

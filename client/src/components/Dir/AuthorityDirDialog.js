@@ -13,15 +13,12 @@ const AuthorityDirDialog = ({
   dir,
   users,
   roles,
-  addAuthorityToFile,
-  deleteAuthorityToFile,
-  triggerSnackbar,
-  toggleAuthorityDirDialog
+  actions
 }) => {
-  const actions = (
+  const dialogActions = (
     <FlatButton
       label="close"
-      onTouchTap={toggleAuthorityDirDialog}
+      onTouchTap={actions.toggleAuthorityDirDialog}
       />
   );
   
@@ -29,17 +26,17 @@ const AuthorityDirDialog = ({
     <Dialog
       title="権限を変更"
       modal={false}
-      actions={actions}
+      actions={dialogActions}
       open={open}
-      onRequestClose={toggleAuthorityDirDialog} >
+      onRequestClose={actions.toggleAuthorityDirDialog} >
 
       <Authority
         file={dir}
         users={users}
         roles={roles}
-        addAuthorityToFile={addAuthorityToFile}
-        deleteAuthorityToFile={deleteAuthorityToFile}
-        triggerSnackbar={triggerSnackbar} />
+        addAuthorityToFile={actions.addAuthorityToFile}
+        deleteAuthorityToFile={actions.deleteAuthorityToFile}
+        triggerSnackbar={actions.triggerSnackbar} />
 
     </Dialog>
   );
@@ -50,8 +47,7 @@ AuthorityDirDialog.propTypes = {
   dir: PropTypes.object,
   users: PropTypes.array.isRequired,
   roles: PropTypes.array.isRequired,
-  addAuthorityToFile: PropTypes.func.isRequired,
-  deleteAuthorityToFile: PropTypes.func.isRequired
+  actions: PropTypes.object
 };
 
 export default AuthorityDirDialog;

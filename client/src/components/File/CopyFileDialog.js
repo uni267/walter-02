@@ -10,23 +10,22 @@ import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const CopyFileDialog = ({
   open,
-  toggleCopyFileDialog,
-  copyFile,
   file,
-  dir_id
+  dir_id,
+  actions
 }) => {
-  const actions = [
+  const dialogActions = [
     (
       <FlatButton
         label="コピー"
-        onTouchTap={() => copyFile(dir_id, file)}
+        onTouchTap={() => actions.copyFile(dir_id, file)}
         primary={true}
         />
     ),
     (
       <FlatButton
         label="close"
-        onTouchTap={toggleCopyFileDialog}
+        onTouchTap={() => actions.toggleCopyFileDialog() }
         />
     )
   ];
@@ -36,7 +35,7 @@ const CopyFileDialog = ({
       title="ファイルをコピー"
       open={open}
       modal={false}
-      actions={actions} >
+      actions={dialogActions} >
 
       <DirTreeContainer />
 
@@ -46,8 +45,9 @@ const CopyFileDialog = ({
 
 CopyFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  copyFile: PropTypes.func.isRequired,
-  file: PropTypes.object
+  file: PropTypes.object,
+  dir_id: PropTypes.number,
+  actions: PropTypes.object
 };
 
 export default CopyFileDialog;

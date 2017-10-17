@@ -10,9 +10,9 @@ import DirTreeContainer from "../../containers/DirTreeContainer";
 
 const CopyDirDialog = ({
   open,
-  toggleCopyDirDialog
+  actions
 }) => {
-  const actions = [
+  const dialogActions = [
     (
       <FlatButton
         label="コピー"
@@ -22,7 +22,7 @@ const CopyDirDialog = ({
     (
       <FlatButton
         label="close"
-        onTouchTap={toggleCopyDirDialog}
+        onTouchTap={actions.toggleCopyDirDialog}
         />
     )
   ];
@@ -32,7 +32,7 @@ const CopyDirDialog = ({
       title="フォルダをコピー"
       open={open}
       modal={false}
-      actions={actions} >
+      actions={dialogActions} >
 
       <DirTreeContainer />
 

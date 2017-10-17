@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // actions
-import * as actions from "../actions";
+import * as FileActions from "../actions/files";
 
 // components
 import MoveDirDialog from "../components/Dir/MoveDirDialog";
@@ -21,9 +22,9 @@ import MetaInfoDialog from "../components/File/MetaInfoDialog";
 
 class FileOperationDialogContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchRoles();
-    this.props.requestFetchUsers();
-    this.props.requestFetchMetaInfos();
+    this.props.actions.requestFetchRoles();
+    this.props.actions.requestFetchUsers();
+    this.props.actions.requestFetchMetaInfos();
   }
 
   render() {
@@ -33,7 +34,7 @@ class FileOperationDialogContainer extends Component {
         <CopyDirDialog 
           { ...this.props }
           open={this.props.copyDirState.open}
-          handleClose={this.props.toggleCopyDirDialog} />
+          handleClose={this.props.actions.toggleCopyDirDialog} />
         <DeleteDirDialog
           { ...this.props }
           open={this.props.deleteDirState.open}
@@ -102,37 +103,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  toggleCopyDirDialog: () => dispatch(actions.toggleCopyDirDialog()),
-  toggleDeleteDirDialog: () => dispatch(actions.toggleDeleteDirDialog()),
-  deleteDir: (dir) => dispatch(actions.deleteFile(dir)),
-  toggleAuthorityDirDialog: () => dispatch(actions.toggleAuthorityDirDialog()),
-  requestFetchRoles: () => dispatch(actions.requestFetchRoles()),
-  requestFetchUsers: () => dispatch(actions.requestFetchUsers()),
-  requestFetchMetaInfos: () => dispatch(actions.requestFetchMetaInfos()),
-  addAuthorityToFile: (file, user, role) => {
-    dispatch(actions.addAuthorityToFile(file, user, role));
-  },
-  deleteAuthorityToFile: (file_id, authority_id) => {
-    dispatch(actions.deleteAuthorityToFile(file_id, authority_id));
-  },
-  toggleAuthorityFileDialog: (file) => {
-    dispatch(actions.toggleAuthorityFileDialog(file));
-  },
-  deleteFile: (file) => dispatch(actions.deleteFile(file)),
-  toggleDeleteFileDialog: (file) => dispatch(actions.toggleDeleteFileDialog(file)),
-  moveFile: (dir, file) => dispatch(actions.moveFile(dir, file)),
-  toggleMoveFileDialog: () => dispatch(actions.toggleMoveFileDialog()),
-  toggleCopyFileDialog: () => dispatch(actions.toggleCopyFileDialog()),
-  copyFile: (dir_id, file) => dispatch(actions.copyFile(dir_id, file)),
-  toggleHistoryFileDialog: () => dispatch(actions.toggleHistoryFileDialog()),
-  toggleFileTagDialog: () => dispatch(actions.toggleFileTagDialog()),
-  toggleFileMetaInfoDialog: (file) => dispatch(actions.toggleFileMetaInfoDialog(file)),
-  addMetaInfoToFile: (file, metaInfo, value) => {
-    dispatch(actions.addMetaInfoToFile(file, metaInfo, value));
-  },
-  deleteMetaInfoToFile: (file, metaInfo) => {
-    dispatch(actions.deleteMetaInfoToFile(file, metaInfo));
-  }
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 FileOperationDialogContainer = connect(

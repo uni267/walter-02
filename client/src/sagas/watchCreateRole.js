@@ -5,7 +5,9 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 // actions
-import * as actions from "../actions";
+import * as actions from "../actions/roles";
+import * as commons from "../actions/commons";
+
 
 function* watchCreateRole() {
   while (true) {
@@ -14,21 +16,21 @@ function* watchCreateRole() {
     yield put(actions.clearRoleValidationError());
 
     try {
-      yield put(actions.loadingStart());
+      yield put(commons.loadingStart());
       yield call(delay, 1000);
       yield call(api.createRole, task.role);
-      const payload = yield call(api.fetchRoles, localStorage.getItem("tenantId"));
+      const payload = yield call(api.fetchRoles);
       yield put(actions.initRoles(payload.data.body));
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
       yield task.history.push("/roles");
-      yield put(actions.triggerSnackbar("ロールを作成しました"));
+      yield put(commons.triggerSnackbar("ロールを作成しました"));
       yield call(delay, 3000);
-      yield put(actions.closeSnackbar());
+      yield put(commons.closeSnackbar());
     }
     catch (e) {
       const { errors } = e.response.data.status;
       yield put(actions.saveRoleValidationError(errors));
-      yield put(actions.loadingEnd());
+      yield put(commons.loadingEnd());
     }
   }
 }

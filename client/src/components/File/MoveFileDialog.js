@@ -12,21 +12,20 @@ const MoveFileDialog = ({
   open,
   file,
   dir,
-  moveFile,
-  toggleMoveFileDialog
+  actions
 }) => {
-  const actions = [
+  const dialogActions = [
     (
       <FlatButton
         label="移動"
-        onTouchTap={() => moveFile(dir, file)}
+        onTouchTap={() => actions.moveFile(dir, file)}
         primary={true}
         />
     ),
     (
       <FlatButton
         label="close"
-        onTouchTap={toggleMoveFileDialog}
+        onTouchTap={() => actions.toggleMoveFileDialog()}
         />
     )
   ];
@@ -36,7 +35,7 @@ const MoveFileDialog = ({
       title="ファイルを移動"
       open={open}
       modal={false}
-      actions={actions} >
+      actions={dialogActions} >
 
       <DirTreeContainer />
 
@@ -46,8 +45,9 @@ const MoveFileDialog = ({
 
 MoveFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
+  file: PropTypes.object,
   dir: PropTypes.object,
-  moveFile: PropTypes.func.isRequired
+  actions: PropTypes.object
 };
 
 export default MoveFileDialog;

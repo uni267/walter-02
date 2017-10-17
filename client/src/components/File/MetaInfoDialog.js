@@ -12,31 +12,29 @@ const MetaInfoDialog = ({
   open,
   file,
   metaInfo,
-  addMetaInfoToFile,
-  deleteMetaInfoToFile,
-  toggleFileMetaInfoDialog
+  actions
 }) => {
-  const actions = (
+  const dialogActions = (
     <FlatButton
       label="閉じる"
       primary={true}
-      onTouchTap={toggleFileMetaInfoDialog}
+      onTouchTap={() => actions.toggleFileMetaInfoDialog() }
       />
   );
   return (
     <Dialog
       title="メタ情報を編集"
-      actions={actions}
+      actions={dialogActions}
       modal={false}
       open={open}
       autoScrollBodyContent={true}
-      onRequestClose={toggleFileMetaInfoDialog} >
+      onRequestClose={() => actions.toggleFileMetaInfoDialog() } >
 
       <MetaInfo
         file={file}
         metaInfo={metaInfo}
-        addMetaInfoToFile={addMetaInfoToFile}
-        deleteMetaInfoToFile={deleteMetaInfoToFile} />
+        addMetaInfoToFile={actions.addMetaInfoToFile}
+        deleteMetaInfoToFile={actions.deleteMetaInfoToFile} />
 
     </Dialog>
   );
@@ -45,7 +43,8 @@ const MetaInfoDialog = ({
 MetaInfoDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   file: PropTypes.object.isRequired,
-  metaInfo: PropTypes.array.isRequired
+  metaInfo: PropTypes.array.isRequired,
+  actions: PropTypes.object
 };
 
 export default MetaInfoDialog;

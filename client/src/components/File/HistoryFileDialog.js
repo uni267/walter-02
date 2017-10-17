@@ -10,14 +10,14 @@ import History from "../History";
 
 const HistoryFileDialog = ({
   open,
-  toggleHistoryFileDialog,
-  file
+  file,
+  actions
 }) => {
-  const actions = (
+  const dialogActions = (
     <FlatButton
       label="close"
       primary={true}
-      onTouchTap={toggleHistoryFileDialog}
+      onTouchTap={() => actions.toggleHistoryFileDialog() }
       />
   );
 
@@ -33,7 +33,7 @@ const HistoryFileDialog = ({
       open={open}
       modal={false}
       autoScrollBodyContent={true}
-      actions={actions} >
+      actions={dialogActions} >
 
       {file.histories.map( (history, idx) => render(history, idx))}
 
@@ -44,7 +44,8 @@ const HistoryFileDialog = ({
 
 HistoryFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  file: PropTypes.object
+  file: PropTypes.object,
+  actions: PropTypes.object
 };
 
 export default HistoryFileDialog;

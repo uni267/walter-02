@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material
@@ -18,11 +19,7 @@ import RoleCreateBasic from "../components/Role/RoleCreateBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import {
-  changeRoleName,
-  changeRoleDescription,
-  createRole
-} from "../actions";
+import * as RoleActions from "../actions/roles";
 
 class RoleCreateContainer extends Component {
   render() {
@@ -47,7 +44,9 @@ class RoleCreateContainer extends Component {
             <FlatButton
               label="保存"
               primary={true}
-              onTouchTap={() => this.props.createRole(this.props.changedRole)}
+              onTouchTap={() => (
+                this.props.actions.createRole(this.props.changedRole)
+              )}
               />
 
               <FlatButton label="閉じる" href="/roles" />
@@ -67,9 +66,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  changeRoleName: (name) => dispatch(changeRoleName(name)),
-  changeRoleDescription: (description) => dispatch(changeRoleDescription(description)),
-  createRole: (role) => dispatch(createRole(role, ownProps.history))
+  actions: bindActionCreators(RoleActions, dispatch)
 });
 
 RoleCreateContainer = connect(
