@@ -16,17 +16,18 @@ function* watchFetchFiles() {
     try {
       yield call(delay, 500);
 
-      const [ files, dirs ] = yield all([
-        call(api.fetchFiles, dir_id, page),
-        call(api.fetchDirs, dir_id)
-      ]);
-
       if (page === 0) {
+        const [ files, dirs ] = yield all([
+          call(api.fetchFiles, dir_id, page),
+          call(api.fetchDirs, dir_id)
+        ]);
+
         yield put(actions.initFileTotal(files.data.status.total));
         yield put(actions.initFiles(files.data.body));
         yield put(actions.initDir(dirs.data.body));
       }
       else {
+        const files = yield call(api.fetchFiles, dir_id, page);
         yield put(actions.initNextFiles(files.data.body));
       }
     }
