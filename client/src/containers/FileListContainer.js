@@ -127,7 +127,10 @@ class FileListContainer extends Component {
 
     if (this.props.page < nextProps.page) {
       this.props.actions.requestFetchFiles(
-        nextProps.match.params.id, nextProps.page
+        nextProps.match.params.id,
+        nextProps.page,
+        nextProps.fileSortTarget.sorted,
+        nextProps.fileSortTarget.desc
       );
     }
 
