@@ -371,5 +371,8 @@ export class API {
     return this.client.post("/api/v1/meta_infos", { metainfo });
   };
 
+  restoreFile = (file) => {
+    return this.client.patch(`/api/v1/files/${file._id}/restore`);
+  };
 }
 

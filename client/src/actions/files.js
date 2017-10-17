@@ -256,3 +256,11 @@ export const requestDelTag = (file, tag) => ({
 export const editFileByView = (file) => ({
   type: actionTypes.EDIT_FILE_BY_VIEW, file
 });
+
+export const toggleRestoreFilesDialog = () => ({
+  type: actionTypes.TOGGLE_RESTORE_FILES_DIALOG
+});
+
+export const restoreFiles = (files) => ({
+  type: actionTypes.RESTORE_FILES, files
+});
