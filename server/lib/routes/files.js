@@ -29,6 +29,10 @@ router.route("/:file_id")
   .get(controller.view) // ファイル詳細
   .delete(controller.moveTrash); // ゴミ箱へ移動
 
+
+// ファイルプレビュー取得
+router.route("/:file_id/preview_exists").get(controller.previewExists)
+
 // ゴミ箱から戻す
 router.route("/:file_id/restore").patch(controller.restore);
 

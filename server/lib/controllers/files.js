@@ -7,6 +7,7 @@ import multer from "multer";
 import moment from "moment";
 import morgan from "morgan";
 import { logger } from "../index"
+import { exec } from "child_process"
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -15,6 +16,7 @@ import * as constants from "../../configs/constants";
 // models
 import Dir from "../models/Dir";
 import File from "../models/File";
+import Preview from "../models/Preview";
 import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
@@ -25,7 +27,6 @@ import { Swift } from "../storages/Swift";
 export const index = (req, res, next) => {
   co(function* () {
     try {
-logger.info("loggerのテスト");
       let { dir_id, page ,sort ,order} = req.query;
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
@@ -1096,8 +1097,124 @@ export const deleteFilePhysical = (req,res,next) => {
   });
 }
 
+export const previewExists = (req, res, next) => {
+  co(function* (){
+    try {
+      // プレビュー画像の存在チェック
+      const { file_id } = req.params;
+
+      if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
+
+      const file = yield File.findById(file_id);
+
+      let { preview_id } = file;
+
+      if(preview_id === null || preview_id === undefined || preview_id === "" ){
+
+        const tmpDirPath = path.join(__dirname,'../../tmp');
+        const tmpFileName = path.join(tmpDirPath,file.name);
+
+        fs.mkdir(tmpDirPath, (err)=>{
+          if(err && err.code !== "EEXIST") logger.info(err)
+        });
+
+        const swift = new Swift();
+        const downloadFile = yield swift.exportFile("walter", file, tmpFileName);
+
+        let command = '';
+
+        switch(file.mime_type){
+          case "text/csv":
+          case "text/plain":
+            // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
+            command = `cd ${tmpDirPath} && nkf -w ${file.name} > buf.txt && /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf ${file.name}.png && rm ${file.name} buf.*`;
+            break;
+          case "application/msword":
+          case "application/vnd.ms-excel":
+          case "application/vnd.ms-powerpoint":
+          case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+          case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+          case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
+          case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
+          case "application/vnd.openxmlformats-officedocument.presentationml.template":
+            const pdfFileName = file.name.replace(path.extname(file.name),".pdf" );
+            command = `cd ${tmpDirPath} && /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
+          break;
+          case "application/pdf":
+            command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}" "${file.name}.png" && rm "${file.name}"`;
+            break;
+          default:
+            throw "this mime_type is not supported yet";
+            break;
+        }
+
+        if(command !== ""){
+          const preview = new Preview();
+          // 大きいファイルの場合、タイムアウトするので一度idだけ登録してコマンドの再実行を防止する
+          yield preview.save();
+          file.preview_id = preview._id;
+          const changedFile = yield file.save();
+
+          const execResult = yield _exec(command);
+
+          preview.image = fs.readFileSync(`${tmpFileName}.png`);
+
+          const previewImage = yield preview.save();
+
+
+          preview_id = file.preview_id
+          fs.unlink(path.join(`${tmpFileName}.png`));
+        }
+      }else{
+        const preview = yield Preview.findById(preview_id);
+        if(preview.image === undefined) throw "preview is being generated";
+      }
+
+
+      res.json({
+        status:{ success: true },
+        body: {
+          preview_id: preview_id
+        }
+      })
+
+
+    } catch (e) {
+      logger.error(e);
+      const errors = {};
+      switch(e){
+        case "preview is being generated":
+          errors.preview = "プレビュー画像は生成中です";
+          break;
+        case "this mime_type is not supported yet":
+          errors.mime_type = "このファイルはプレビュー画像を表示できません";
+          break;
+        default:
+          errors.unknown = e;
+          break;
+      }
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+const _exec = command => {
+  return new Promise((resolve, reject)=>{
+    exec(command, (err,stdout,stderr) => {
+      if(err) return reject({ err, stderr });
+      return resolve(true);
+    });
+  });
+};
+
 export const removeAuthority = (req, res, next) => {
 };
+
 
 const moveFile = (file, dir_id, user, action) => {
     const history = {

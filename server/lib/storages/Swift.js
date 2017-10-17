@@ -102,6 +102,20 @@ class Swift {
     });
   }
 
+  exportFile(container_name, file , exportDir){
+    return new Promise( (resolve, reject) => {
+      const stream = fs.createWriteStream(exportDir);
+      let downloadFile = {};
+      this.client.download({
+        container: container_name,
+        remote: file._id.toString()
+      }, (err, result) => {
+        if (err) reject(err);
+        downloadFile = result;
+      }).pipe(stream).on("finish", () => resolve(downloadFile) );
+    });
+  }
+
 }
 
 export { Swift };
