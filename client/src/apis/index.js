@@ -87,7 +87,7 @@ export class API {
     return this.client.post(`/api/v1/files`, form);
   };
 
-  deleteFile = (file, trashDirId) => {
+  deleteFile = (file) => {
     return this.client.delete(`/api/v1/files/${file._id}`);
   };
 
