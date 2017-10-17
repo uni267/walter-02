@@ -87,8 +87,12 @@ export class API {
     return this.client.post(`/api/v1/files`, form);
   };
 
-  deleteFile = (file) => {
+  moveFileTrash = (file) => {
     return this.client.delete(`/api/v1/files/${file._id}`);
+  };
+
+  deleteFile = (file) => {
+    return this.client.delete(`/api/v1/files/${file._id}/delete`);
   };
 
   moveFile = (dir, file) => {
