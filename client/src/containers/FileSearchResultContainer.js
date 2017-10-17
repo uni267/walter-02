@@ -90,7 +90,7 @@ const headers = [
 
 class FileSearchResultContainer extends Component {
   componentWillMount() {
-    this.fetchSearch(this.props.location.search);
+    this.fetchSearch(this.props);
   }
 
   componentDidMount() {
@@ -101,28 +101,28 @@ class FileSearchResultContainer extends Component {
     if (this.props.page < nextProps.page) {
       this.fetchSearch(nextProps);
     }
-    else {
-      this.fetchSearch(nextProps);
-    }
   }
 
   fetchSearch = (props) => {
-    const page = props.page;
-    const params = new URLSearchParams(this.props.location.search);
+    const params = new URLSearchParams(props.location.search);
+    const query = params.get("q");
 
-    if ( params.get("q") ) {
-      this.props.actions.fetchSearchFileSimple( params.get("q"), page );
+    if (query) {
+      this.props.actions.fetchSearchFileSimple(query, props.page);
     }
     else {
-      const paramsObject = new YouAreI(this.props.location.search);
-      this.props.actions.fetchSearchFileDetail(paramsObject.query_get(), page);
+      const paramsObject = new YouAreI(props.location.search).query_get();
+      this.props.actions.fetchSearchFileDetail(paramsObject, props.page);
     }
   };
 
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
 
-    if (window.pageYOffset > nextPageThreshold) {
+    if (
+      window.pageYOffset > nextPageThreshold
+      && this.props.files.length < this.props.total
+    ) {
       this.props.actions.fileNextPage();
     }
   };

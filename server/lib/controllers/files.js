@@ -147,7 +147,7 @@ export const download = (req, res, next) => {
 export const search = (req, res, next) => {
   co(function* () {
     try {
-      const { q, _page, _sort, _order } = req.query;
+      const { q, page, sort, order } = req.query;
       const { tenant_id } = res.user.tenant_id;
 
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
@@ -162,20 +162,30 @@ export const search = (req, res, next) => {
         is_deleted: false
       };
 
-      const page = _page === undefined || _page === null || _page === ""
-            ? 0 : _page;
+      const _page = page === undefined || page === null || page === ""
+            ? 0 : page;
 
       const limit = constants.FILE_LIMITS_PER_PAGE;
-      const offset = page * limit;
+      const offset = _page * limit;
       const total = yield File.find(conditions).count();
 
-      const sort = createSortOption(_sort, _order);
+      const _sort = createSortOption(sort, order);
 
       let files = yield File.aggregate([
         { $match: conditions },
-        { $lookup: { from: "tags", localField: "tags", foreignField: "_id", as: "tags" } },
-        { $lookup: { from: "dirs", localField: "dir_id", foreignField: "descendant", as: "dirs" } }
-      ]).skip(offset).limit(limit).sort(sort);
+        { $lookup: {
+          from: "tags",
+          localField: "tags",
+          foreignField: "_id",
+          as: "tags"
+        }},
+        { $lookup: { 
+          from: "dirs", 
+          localField: "dir_id",
+          foreignField: "descendant",
+          as: "dirs"
+        }}
+      ]).skip(offset).limit(limit).sort(_sort);
 
       files = yield File.populate(files,'dirs.ancestor');
 

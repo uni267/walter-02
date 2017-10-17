@@ -48,10 +48,11 @@ export const sortFile = (dir_id) => ({
   type: actionTypes.SORT_FILE, dir_id
 });
 
-export const requestFetchFiles = 
-  (dir_id, page = 0, sorted = null, desc = null) => ({
-    type: actionTypes.REQUEST_FETCH_FILES, dir_id, page, sorted, desc
-  });
+export const requestFetchFiles = (
+  dir_id, page = 0, sorted = null, desc = null
+) => ({
+  type: actionTypes.REQUEST_FETCH_FILES, dir_id, page, sorted, desc
+});
 
 export const uploadFiles = (dir_id, files) => ({
   type: actionTypes.UPLOAD_FILES, dir_id, files
@@ -149,7 +150,9 @@ export const initFiles = (files) => ({
   type: actionTypes.INIT_FILES, files
 });
 
-export const fetchSearchFileSimple = (value, page) => ({
-  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value, page
+export const fetchSearchFileSimple = (
+  value, page = 0, sorted = null, desc = null
+) => ({
+  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value, page, sorted, desc
 });
 
