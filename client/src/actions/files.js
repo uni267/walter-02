@@ -163,3 +163,11 @@ export const initFilePagination = () => ({
 export const fetchSearchFileDetail = (params, page, sorted, desc) => ({
   type: actionTypes.FETCH_SEARCH_FILE_DETAIL, params, page, sorted, desc
 });
+
+export const requestFetchFileSearchItems = (tenant_id) => ({
+  type: actionTypes.REQUEST_FETCH_FILE_SEARCH_ITEMS, tenant_id
+});
+
+export const requestFetchTags = () => ({
+  type: actionTypes.REQUEST_FETCH_TAGS
+});

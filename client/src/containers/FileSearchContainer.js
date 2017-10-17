@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 
 // store
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // components
@@ -12,7 +13,7 @@ import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
 
 // actions
-import * as actions from "../actions";
+import * as FileActions from "../actions/files";
 
 const styles = {
   buttonContainer: {
@@ -28,8 +29,8 @@ const styles = {
 
 class FileSearchContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchFileSearchItems(this.props.tenant.tenant_id);
-    this.props.requestFetchTags();
+    this.props.actions.requestFetchFileSearchItems(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchTags();
   }
 
   render() {
@@ -79,23 +80,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  searchFileSimple: (value) => {
-    dispatch(actions.searchFileSimple(value, ownProps.history));
-  },
-  searchFileDetail: (history) => dispatch(actions.searchFileDetail(history)),
-  requestFetchFileSearchItems: (tenant_id) => {
-    dispatch(actions.requestFetchFileSearchItems(tenant_id));
-  },
-  toggleFileDetailSearchPopover: () => {
-    dispatch(actions.toggleFileDetailSearchPopover());
-  },
-  fileDetailSearchAnchorElement: (event) => {
-    dispatch(actions.fileDetailSearchAnchorElement(event));
-  },
-  searchItemPick: (item) => dispatch(actions.searchItemPick(item)),
-  searchItemNotPick: (item) => dispatch(actions.searchItemNotPick(item)),
-  searchValueChange: (item, value) => dispatch(actions.searchValueChange(item, value)),
-  requestFetchTags: () => dispatch(actions.requestFetchTags())
+  actions: bindActionCreators(FileActions, dispatch)
 });
 
 FileSearchContainer = connect(
