@@ -101,6 +101,10 @@ class FileSearchResultContainer extends Component {
     if (this.props.page < nextProps.page) {
       this.fetchSearch(nextProps);
     }
+
+    if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
+      this.fetchSearch(nextProps);
+    }
   }
 
   fetchSearch = (props) => {
@@ -108,7 +112,9 @@ class FileSearchResultContainer extends Component {
     const query = params.get("q");
 
     if (query) {
-      this.props.actions.fetchSearchFileSimple(query, props.page);
+      this.props.actions.fetchSearchFileSimple(
+        query, props.page, props.fileSortTarget.sorted, props.fileSortTarget.desc
+      );
     }
     else {
       const paramsObject = new YouAreI(props.location.search).query_get();
