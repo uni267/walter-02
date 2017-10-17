@@ -269,9 +269,13 @@ export class API {
     return this.client.get(`/api/v1/files/search_items`);
   };
 
-  searchFilesDetail = (params, page) => {
-    const config = { params };
-    config.params.page = page;
+  searchFilesDetail = (params, page, sorted, desc) => {
+    const order = desc ? "desc" : "asc";
+
+    const config = {
+      params: { ...params, page, sort: sorted, order }
+    };
+
     return this.client.get("/api/v1/files/search_detail", config);
   };
 

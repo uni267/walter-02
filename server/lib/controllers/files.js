@@ -290,7 +290,9 @@ export const searchDetail = (req, res, next) => {
     try {
       const params = req.query;
 
-      const param_ids = Object.keys(params).filter( p => p !== "page" );
+      const param_ids = Object.keys(params)
+            .filter( p => !["page", "order", "sort"].includes(p) );
+
       const metainfos = yield MetaInfo.find({ _id: param_ids });
 
       const queries = metainfos.map( meta => {
@@ -318,7 +320,14 @@ export const searchDetail = (req, res, next) => {
       const query = { ...base_queries, ...meta_queries };
 
       const total = yield File.find(query).count();
-      const files = yield File.find(query).skip(offset).limit(limit);
+
+      const { sort, order } = params;
+      const _sort = createSortOption(sort, order);
+
+      const files = yield File.find(query)
+            .skip(offset)
+            .limit(limit)
+            .sort(_sort);
 
       res.json({
         status: { success: true, total },

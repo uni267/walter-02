@@ -114,15 +114,16 @@ class FileSearchResultContainer extends Component {
   fetchSearch = (props) => {
     const params = new URLSearchParams(props.location.search);
     const query = params.get("q");
+    const { sorted, desc } = props.fileSortTarget;
 
     if (query) {
-      this.props.actions.fetchSearchFileSimple(
-        query, props.page, props.fileSortTarget.sorted, props.fileSortTarget.desc
-      );
+      this.props.actions.fetchSearchFileSimple(query, props.page, sorted, desc);
     }
     else {
       const paramsObject = new YouAreI(props.location.search).query_get();
-      this.props.actions.fetchSearchFileDetail(paramsObject, props.page);
+      this.props.actions.fetchSearchFileDetail(
+        paramsObject, props.page, sorted, desc
+      );
     }
   };
 
