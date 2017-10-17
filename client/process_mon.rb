@@ -1,19 +1,31 @@
-require "pp"
 require "open3"
+require "logger"
 
-cmd = [
-  "ps aux",
-  "grep react-scripts",
-  "grep start",
-  "grep -v grep"
-]
+logger = Logger.new("process_mon.log")
 
-out, err, status = Open3.capture3 cmd.join("|")
+logger.info "monitor start"
 
-rows = out.split("\n").map {|row| row.split(" ").last }
+def get_processes
+  cmd = [
+    "ps aux",
+    "grep react-scripts",
+    "grep start",
+    "grep -v grep"
+  ]
 
-if rows.size === 0
-  pkg_json = File.expand_path "../", __FILE__
-  Open3.capture3 "cd #{pkg_json} && npm start"
+  out, err, status = Open3.capture3 cmd.join("|")
+  out.split("\n")
 end
 
+processes = get_processes()
+
+if processes.size === 0
+  logger.error "process is dead. restart"
+  logger.error processes
+
+  root_path = File.expand_path "../", __FILE__
+  Open3.capture3 "cd #{root_path} && npm start &"
+else
+  logger.info "process is alive"
+  logger.info processes.map{|r| r.split(" ")[-2..-1].join(" ") }
+end

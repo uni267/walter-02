@@ -2,6 +2,7 @@
 
 # dependencies
 /client/node_modules
+/client/process_mon.log
 /server/node_modules
 /server/dist
 /server/dump
