@@ -10,6 +10,7 @@ db.tags.drop();
 db.meta_infos.drop();
 db.actions.drop();
 db.roles.drop();
+db.previews.drop();
 
 // ===============================
 //  files collection
@@ -243,3 +244,9 @@ var roles = [
 ];
 
 db.roles.insert(roles);
+
+var preview = {
+  image: null
+};
+
+db.previews.insert(preview);
