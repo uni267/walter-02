@@ -50,6 +50,14 @@ $ npm install
 $ npm start
 #+end_src
 
+- libreofficeをインストール
+  guiのインストーラなので手順は割愛
+
+- プレビュー画像作成用(imagemagick, ghostscript)
+#+begin_src shell
+$ brew install imagemagick ghostscript
+#+end_src
+
 ** フロントエンド
 
 - npm
