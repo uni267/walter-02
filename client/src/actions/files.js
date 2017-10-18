@@ -308,3 +308,7 @@ export const toggleLoadingFilePreview = () => ({
 export const initFilePreviewBody = (body) => ({
   type: actionTypes.INIT_FILE_PREVIEW_BODY, body
 });
+
+export const filePreviewError = (errors) => ({
+  type: actionTypes.FILE_PREVIEW_ERROR, errors
+});

@@ -203,22 +203,29 @@ class FileDetailContainer extends Component {
   render() {
     if (! this.props.file._id) return null;
 
-    const previewImg = this.props.filePreviewState.loading
-          ? (
-            <div>
-              <CircularProgress
-                size={100} thickness={7} style={styles.circular} />
-              <img
-                src="/images/loading.png"
-                alt="loading..."
-                />
-            </div>
-          ) : (
-            <img
-              src={`data:image/jpeg;base64,${this.props.filePreviewState.body}`}
-              alt="convert failed"
-              />
-          );
+    let previewImg;
+
+    if (this.props.filePreviewState.loading) {
+      previewImg = (
+        <div>
+          <CircularProgress
+            size={100} thickness={7} style={styles.circular} />
+          <img src="/images/loading.png" alt="loading..." />
+        </div>
+      );
+    }
+    else if (this.props.filePreviewState.errors) {
+      previewImg = (
+        <img src="/images/preview_error.png" alt="filepreview error" />
+      );
+    }
+    else {
+      previewImg = (
+        <img
+          src={`data:image/jpeg;base64,${this.props.filePreviewState.body}`}
+          alt="filepreview" />
+      );
+    }
 
     return (
       <div>

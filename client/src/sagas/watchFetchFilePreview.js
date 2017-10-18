@@ -20,7 +20,7 @@ function* watchFetchFilePreview() {
     const api = new API();
 
     try {
-      yield put(actions.initFilePreviewBody());
+      yield put(actions.initFilePreview());
       yield put(actions.toggleLoadingFilePreview());
       let preview_id = yield call(fetchFilePreview, file_id);
 
@@ -29,13 +29,15 @@ function* watchFetchFilePreview() {
         preview_id = yield call(fetchFilePreview, file_id);
       }
 
-      yield put(actions.initFilePreview(preview_id));
       const payload = yield call(api.fetchFilePreviewBody, preview_id);
       yield put(actions.initFilePreviewBody(payload.data.body));
       yield put(actions.toggleLoadingFilePreview());
     }
     catch (e) {
-      console.log(e.message);
+      console.log(e);
+      const { errors } = e.response.data.status;
+      yield put(actions.filePreviewError(errors));
+      yield put(actions.toggleLoadingFilePreview());
     }
   }
 }
