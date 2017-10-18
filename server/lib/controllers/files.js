@@ -1166,12 +1166,12 @@ export const previewExists = (req, res, next) => {
           const previewImage = yield preview.save();
 
 
-          preview_id = file.preview_id
+          preview_id = file.preview_id;
           fs.unlink(path.join(`${tmpFileName}.png`));
         }
       }else{
         const preview = yield Preview.findById(preview_id);
-        if(preview.image === undefined) throw "preview is being generated";
+        if(preview.image === undefined) preview_id = null;
       }
 
 
@@ -1180,16 +1180,13 @@ export const previewExists = (req, res, next) => {
         body: {
           preview_id: preview_id
         }
-      })
+      });
 
 
     } catch (e) {
       logger.error(e);
       const errors = {};
       switch(e){
-        case "preview is being generated":
-          errors.preview = "プレビュー画像は生成中です";
-          break;
         case "this mime_type is not supported yet":
           errors.mime_type = "このファイルはプレビュー画像を表示できません";
           break;
