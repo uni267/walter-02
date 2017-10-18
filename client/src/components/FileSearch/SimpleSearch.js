@@ -4,14 +4,15 @@ import PropTypes from "prop-types";
 import TextField from "material-ui/TextField";
 
 const SimpleSearch = ({
-  searchFileSimple,
-  hintText
+  hintText,
+  history,
+  actions
 }) => {
   let searchValue = "";
 
   const handleKeyDown = (event) => {
     return event.key === "Enter"
-      ? searchFileSimple(searchValue.getValue())
+      ? actions.searchFileSimple(searchValue.getValue(), history)
       : null;
   };
 

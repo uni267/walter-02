@@ -47,8 +47,13 @@ class FileSearchContainer extends Component {
         <div style={styles.formContainer}>
           {/* 簡易検索 */}
           { this.props.isSimple
-            ? <SimpleSearch {...this.props} hintText="ファイル名を入力" />
-            : null }
+            ? (
+              <SimpleSearch
+                {...this.props}
+                history={this.props.history}
+                hintText="ファイル名を入力"
+                />
+            ) : null }
             
           {/* 詳細検索 */}
           {this.props.searchItems.map(
