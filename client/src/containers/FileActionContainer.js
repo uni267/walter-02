@@ -21,7 +21,6 @@ import ContentContentCut from "material-ui/svg-icons/content/content-cut";
 // components
 import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
-import MoveFileDialog from "../components/File/MoveFileDialog";
 import DeleteAllFilesDialog from "../components/File/DeleteAllFilesDialog";
 
 // actions

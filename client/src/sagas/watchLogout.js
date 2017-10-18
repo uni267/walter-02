@@ -1,5 +1,4 @@
-import { delay } from "redux-saga";
-import { call, put, take } from "redux-saga/effects";
+import { put, take } from "redux-saga/effects";
 
 import * as actions from "../actions";
 import * as actionTypes from "../actionTypes";

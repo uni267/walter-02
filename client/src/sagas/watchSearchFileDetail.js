@@ -1,16 +1,7 @@
-import { delay } from "redux-saga";
-import { call, put, take, select } from "redux-saga/effects";
+import { take, select } from "redux-saga/effects";
 import $ from "jquery";
 
-import { API } from "../apis";
-
-import {
-  searchFileDetail,
-  initFiles,
-  initDir,
-  loadingStart,
-  loadingEnd
-} from "../actions";
+import { searchFileDetail } from "../actions";
 
 function* watchSearchFileDetail() {
   while (true) {

@@ -1,5 +1,5 @@
 import { delay } from "redux-saga";
-import { put, take, call, select } from "redux-saga/effects";
+import { put, take, call } from "redux-saga/effects";
 
 import * as commons from "../actions/commons";
 

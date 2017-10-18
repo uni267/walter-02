@@ -71,10 +71,7 @@ const Tag = ({
 
 Tag.propTypes = {
   file: PropTypes.object.isRequired,
-  tags: PropTypes.array.isRequired,
-  requestDelTag: PropTypes.func.isRequired,
-  requestAddTag: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired
+  tags: PropTypes.array.isRequired
 };
 
 export default Tag;
