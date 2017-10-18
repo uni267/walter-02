@@ -19,6 +19,7 @@ import {
 import RaisedButton from "material-ui/RaisedButton";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
+import CircularProgress from 'material-ui/CircularProgress';
 
 // components
 import Authority from "../components/Authority";
@@ -47,6 +48,15 @@ const styles = {
   metaCell: {
     marginRight: 20,
     width: "20%"
+  },
+  circular: {
+    position: "absolute",
+    paddingTop: "30%",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#ddd",
+    opacity: 0.5,
+    textAlign: "center"
   }
 };
 
@@ -71,6 +81,7 @@ class FileDetailContainer extends Component {
     this.props.actions.requestFetchFile(this.props.match.params.id);
     this.props.actions.requestFetchTags();
     this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchFilePreview(this.props.match.params.id);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -190,11 +201,24 @@ class FileDetailContainer extends Component {
   };
 
   render() {
-    const cardOverlay = (
-      <CardTitle subtitle={this.props.file.name} />
-    );
-
     if (! this.props.file._id) return null;
+
+    const previewImg = this.props.filePreviewState.loading
+          ? (
+            <div>
+              <CircularProgress
+                size={100} thickness={7} style={styles.circular} />
+              <img
+                src="/images/loading.png"
+                alt="loading..."
+                />
+            </div>
+          ) : (
+            <img
+              src={`data:image/jpeg;base64,${this.props.filePreviewState.body}`}
+              alt="convert failed"
+              />
+          );
 
     return (
       <div>
@@ -208,8 +232,8 @@ class FileDetailContainer extends Component {
             <div style={{width: "70%"}}>
 
               <Card style={styles.innerCard}>
-                <CardMedia overlay={cardOverlay}>
-                  <img src="/images/baibaikihon.png" alt="" />
+                <CardMedia overlay={<CardTitle subtitle={this.props.file.name} />}>
+                  {previewImg}
                 </CardMedia>
               </Card>
 
@@ -305,7 +329,8 @@ const mapStateToProps = (state, ownProps) => {
     loading: state.loading,
     metaInfo: state.metaInfo,
     tenant: state.tenant,
-    fileMetaInfo: state.fileMetaInfo
+    fileMetaInfo: state.fileMetaInfo,
+    filePreviewState: state.filePreview
   };
 };
 

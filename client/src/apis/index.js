@@ -374,5 +374,13 @@ export class API {
   restoreFile = (file) => {
     return this.client.patch(`/api/v1/files/${file._id}/restore`);
   };
+
+  fetchFilePreview = (file_id) => {
+    return this.client.get(`/api/v1/files/${file_id}/preview_exists`);
+  };
+
+  fetchFilePreviewBody = (preview_id) => {
+    return this.client.get(`/api/v1/previews/${preview_id}`);
+  };
 }
 

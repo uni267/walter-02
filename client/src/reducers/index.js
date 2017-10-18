@@ -44,6 +44,7 @@ import fileHistory from "./fileHistoryReducer";
 import fileTag from "./fileTagReducer";
 import fileMetaInfo from "./fileMetaInfoReducer";
 import restoreFile from "./restoreFileReducer";
+import filePreview from "./filePreviewReducer";
 
 const fileApp = combineReducers({
   files,
@@ -88,7 +89,8 @@ const fileApp = combineReducers({
   fileHistory,
   fileTag,
   fileMetaInfo,
-  restoreFile
+  restoreFile,
+  filePreview
 });
 
 export default fileApp;
