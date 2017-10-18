@@ -1,7 +1,9 @@
 require "open3"
 require "logger"
 
-logger = Logger.new("process_mon.log")
+logger = Logger.new(
+  File.expand_path("../process_mon.log", __FILE__)
+)
 
 logger.info "monitor start"
 
