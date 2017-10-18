@@ -19,6 +19,7 @@ import CopyFileDialog from "../components/File/CopyFileDialog";
 import HistoryFileDialog from "../components/File/HistoryFileDialog";
 import TagFileDialog from "../components/File/TagFileDialog";
 import MetaInfoDialog from "../components/File/MetaInfoDialog";
+import RestoreFileDialog from "../components/File/RestoreFileDialog";
 
 class FileOperationDialogContainer extends Component {
   componentWillMount() {
@@ -78,6 +79,11 @@ class FileOperationDialogContainer extends Component {
           open={this.props.fileMetaInfoState.open}
           file={this.props.fileMetaInfoState.file}
           metaInfo={this.props.metaInfos} />
+        <RestoreFileDialog
+          { ...this.props }
+          open={this.props.restoreFileState.open}
+          file={this.props.restoreFileState.file}
+          />
       </div>
     );
   }
@@ -98,7 +104,8 @@ const mapStateToProps = (state, ownProps) => {
     copyFileState: state.copyFile,
     fileHistoryState: state.fileHistory,
     fileTagState: state.fileTag,
-    fileMetaInfoState: state.fileMetaInfo
+    fileMetaInfoState: state.fileMetaInfo,
+    restoreFileState: state.restoreFile
   };
 };
 

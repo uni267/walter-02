@@ -8,10 +8,14 @@ const initialState = {
 const restoreFileReducer = (state = initialState, action) => {
   switch ( action.type ) {
   case actionTypes.TOGGLE_RESTORE_FILE_DIALOG:
-    return {
-      ...state,
-      open: !state.open
-    };
+    return action.file === undefined
+      ? {
+        open: !state.open,
+        file: initialState.file
+      } : {
+        open: !state.open,
+        file: action.file
+      };
   default:
     return state;
   }

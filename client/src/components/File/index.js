@@ -23,6 +23,7 @@ import ActionLabel from "material-ui/svg-icons/action/label";
 import ActionDescription from "material-ui/svg-icons/action/description";
 import ActionHistory from "material-ui/svg-icons/action/history";
 import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
+import ActionRestore from "material-ui/svg-icons/action/restore";
 
 const style = {
   checkbox: {
@@ -248,6 +249,15 @@ class File extends Component {
               primaryText="タイムスタンプ発行"
               leftIcon={<ActionFingerprint />}
               />
+
+            {this.props.tenant.trashDirId === file.dir_id ?
+              (
+                <MenuItem
+                  primaryText="ゴミ箱から戻す"
+                  leftIcon={<ActionRestore />}
+                  onTouchTap={() => this.props.actions.toggleRestoreFileDialog(file)}
+                  />
+              ) : null}
 
           </IconMenu>
         </div>

@@ -13,7 +13,7 @@ const RestoreFileDialog = ({
   const dialogActions = [
     (
       <FlatButton
-        label="復元"
+        label="戻す"
         onTouchTap={() => actions.restoreFile(file)}
         primary={true} />
     ),
@@ -26,19 +26,21 @@ const RestoreFileDialog = ({
 
   return (
     <Dialog
-      title="ファイルを復元"
+      title="確認"
       open={open}
       modal={false}
       actions={dialogActions} >
 
-      ファイルを復元しますか？
+      指定されたファイルをゴミ箱から元の場所に戻しますか？
       
     </Dialog>
   );
 };
 
 RestoreFileDialog.propTypes = {
-  
+  open: PropTypes.bool.isRequired,
+  file: PropTypes.object,
+  actions: PropTypes.object
 };
 
 export default RestoreFileDialog;
