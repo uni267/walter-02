@@ -1145,7 +1145,7 @@ export const previewExists = (req, res, next) => {
             command = `cd ${tmpDirPath} && /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
           break;
           case "application/pdf":
-            command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}" "${file.name}.png" && rm "${file.name}"`;
+            command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
             break;
           default:
             throw "this mime_type is not supported yet";
