@@ -1,7 +1,9 @@
 import fs from "fs";
 import pkgcloud from "pkgcloud";
+import crypto from "crypto";
 
 import { STORAGE_CONF } from "../../configs/server";
+import * as constants from "../../configs/constants";
 
 class Swift {
   constructor(params) {
@@ -60,12 +62,22 @@ class Swift {
     return new Promise( (resolve, reject) => {
       const stream = fs.createWriteStream("/tmp/stream.tmp");
 
-      this.client.download({
-        container: container_name,
-        remote: file._id.toString()
-      }, (err, result) => {
-        if (err) reject(err);
-      }).pipe(stream).on("finish", () => resolve(stream) );
+      if(file.is_crypted){
+        const decipher = crypto.createDecipher("aes-256-cbc", constants.CRYPTO_PASSWORD);
+        this.client.download({
+          container: container_name,
+          remote: file._id.toString()
+        }, (err, result) => {
+          if (err) reject(err);
+        }).pipe(decipher).pipe(stream).on("finish", () => resolve(stream) );
+      }else{
+        this.client.download({
+          container: container_name,
+          remote: file._id.toString()
+        }, (err, result) => {
+          if (err) reject(err);
+        }).pipe(stream).on("finish", () => resolve(stream) );
+      }
     }).then( writeStream => {
       return new Promise( (resolve, reject) => {
         resolve(fs.createReadStream(writeStream.path));
@@ -85,7 +97,13 @@ class Swift {
 
       writeStream.on("error", err => reject(err) );
       writeStream.on("success", file => resolve(file) );
-      readStream.pipe(writeStream);
+      if(constants.USE_CRYPTO){
+        const cipher = crypto.createCipher("aes-256-cbc", constants.CRYPTO_PASSWORD);
+        readStream.pipe(cipher).pipe(writeStream);
+      }else{
+        readStream.pipe(writeStream);
+      }
+
 
     });
   }
@@ -106,13 +124,27 @@ class Swift {
     return new Promise( (resolve, reject) => {
       const stream = fs.createWriteStream(exportDir);
       let downloadFile = {};
-      this.client.download({
-        container: container_name,
-        remote: file._id.toString()
-      }, (err, result) => {
-        if (err) reject(err);
-        downloadFile = result;
-      }).pipe(stream).on("finish", () => resolve(downloadFile) );
+
+      if(file.is_crypted){
+        const decipher = crypto.createDecipher("aes-256-cbc", constants.CRYPTO_PASSWORD);
+
+        this.client.download({
+          container: container_name,
+          remote: file._id.toString()
+        }, (err, result) => {
+          if (err) reject(err);
+          downloadFile = result;
+        }).pipe(decipher).pipe(stream).on("finish", () => resolve(downloadFile) );
+      }else{
+        this.client.download({
+          container: container_name,
+          remote: file._id.toString()
+        }, (err, result) => {
+          if (err) reject(err);
+          downloadFile = result;
+        }).pipe(stream).on("finish", () => resolve(downloadFile) );
+      }
+
     });
   }
 

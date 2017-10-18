@@ -134,12 +134,12 @@ export const download = (req, res, next) => {
       if (fileRecord === null) throw "file not found";
       if (fileRecord.is_deleted) throw "file is deleted";
 
-      // @fixme tenant_name=container_nameにする
-      const readStream = yield swift.downloadFile("walter", fileRecord);
+      const readStream = yield swift.downloadFile(constants.SWIFT_CONTAINER_NAME, fileRecord);
       readStream.on("data", data => res.write(data) );
       readStream.on("end", () => res.end() );
     }
     catch (e) {
+      logger.error(e);
       console.log(e);
     }
   });
@@ -180,8 +180,8 @@ export const search = (req, res, next) => {
           foreignField: "_id",
           as: "tags"
         }},
-        { $lookup: { 
-          from: "dirs", 
+        { $lookup: {
+          from: "dirs",
           localField: "dir_id",
           foreignField: "descendant",
           as: "dirs"
@@ -491,6 +491,7 @@ export const upload = (req, res, next) => {
         file.histories = [];
         file.authorities = [];
         file.meta_infos = [];
+        file.is_crypted = constants.USE_CRYPTO;
 
         if (user === null) throw "user is empty";
 
@@ -1078,7 +1079,7 @@ export const deleteFilePhysical = (req,res,next) => {
       if (fileRecord === null) throw "file not found";
       if (fileRecord.is_deleted !== true) throw "file is not deleted";
 
-      const readStream = yield swift.remove("walter", fileRecord);
+      const readStream = yield swift.remove(constants.SWIFT_CONTAINER_NAME, fileRecord);
 
       const deletedFile = yield fileRecord.remove();
 
@@ -1121,7 +1122,7 @@ export const previewExists = (req, res, next) => {
         });
 
         const swift = new Swift();
-        const downloadFile = yield swift.exportFile("walter", file, tmpFileName);
+        const downloadFile = yield swift.exportFile(constants.SWIFT_CONTAINER_NAME, file, tmpFileName);
 
         let command = '';
 
