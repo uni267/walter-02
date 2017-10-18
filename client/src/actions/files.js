@@ -292,3 +292,19 @@ export const searchValueChange = (item, value) => ({
 export const searchFileDetail = (history) => ({
   type: actionTypes.SEARCH_FILE_DETAIL, history
 });
+
+export const requestFetchFilePreview = (file_id) => ({
+  type: actionTypes.REQUEST_FETCH_FILE_PREVIEW, file_id
+});
+
+export const initFilePreview = (preview_id) => ({
+  type: actionTypes.INIT_FILE_PREVIEW, preview_id
+});
+
+export const toggleLoadingFilePreview = () => ({
+  type: actionTypes.TOGGLE_LOADING_FILE_PREVIEW
+});
+
+export const initFilePreviewBody = (body) => ({
+  type: actionTypes.INIT_FILE_PREVIEW_BODY, body
+});
