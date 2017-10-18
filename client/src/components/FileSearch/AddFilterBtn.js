@@ -10,17 +10,15 @@ import MenuItem from 'material-ui/MenuItem';
 const AddFilterBtn =({
   open,
   searchItems,
-  toggleFileDetailSearchPopover,
-  fileDetailSearchAnchorElement,
   anchorElement,
-  searchItemPick
+  actions
 }) => {
   const renderItem = (item, idx) => {
     return (
       <MenuItem
         key={idx}
         primaryText={item.key}
-        onTouchTap={() => searchItemPick(item)}
+        onTouchTap={() => actions.searchItemPick(item)}
         />
     );
   };
@@ -30,8 +28,8 @@ const AddFilterBtn =({
       <RaisedButton
         label="フィルタ追加"
         onTouchTap={(e) => {
-          fileDetailSearchAnchorElement(e);
-          toggleFileDetailSearchPopover();
+          actions.fileDetailSearchAnchorElement(e);
+          actions.toggleFileDetailSearchPopover();
         }} />
 
       <Popover 
@@ -39,7 +37,7 @@ const AddFilterBtn =({
         anchorEl={anchorElement}
         anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
         targetOrigin={{horizontal: 'left', vertical: 'top'}}
-        onRequestClose={toggleFileDetailSearchPopover}
+        onRequestClose={actions.toggleFileDetailSearchPopover}
         >
 
         <Menu>
@@ -56,10 +54,8 @@ const AddFilterBtn =({
 AddFilterBtn.propTypes = {
   open: PropTypes.bool.isRequired,
   searchItems: PropTypes.array.isRequired,
-  toggleFileDetailSearchPopover: PropTypes.func.isRequired,
-  fileDetailSearchAnchorElement: PropTypes.func.isRequired,
   anchorElement: PropTypes.object.isRequired,
-  searchItemPick: PropTypes.func.isRequired
+  actions: PropTypes.object
 };
 
 export default AddFilterBtn;

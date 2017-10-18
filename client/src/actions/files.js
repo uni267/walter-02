@@ -268,3 +268,27 @@ export const toggleRestoreFileDialog = (file) => ({
 export const restoreFile = (file) => ({
   type: actionTypes.RESTORE_FILE, file
 });
+
+export const searchItemPick = (item) => ({
+  type: actionTypes.SEARCH_ITEM_PICK, item
+});
+
+export const searchItemNotPick = (item) => ({
+  type: actionTypes.SEARCH_ITEM_NOT_PICK, item
+});
+
+export const toggleFileDetailSearchPopover = () => ({
+  type: actionTypes.TOGGLE_FILE_DETAIL_SEARCH_POPOVER
+});
+
+export const fileDetailSearchAnchorElement = (event) => ({
+  type: actionTypes.FILE_DETAIL_SEARCH_ANCHOR_ELEMENT, event
+});
+
+export const searchValueChange = (item, value) => ({
+  type: actionTypes.SEARCH_VALUE_CHANGE, item, value
+});
+
+export const searchFileDetail = (history) => ({
+  type: actionTypes.SEARCH_FILE_DETAIL, history
+});

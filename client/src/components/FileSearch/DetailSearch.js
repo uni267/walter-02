@@ -10,12 +10,10 @@ import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-cir
 
 const DetailSearch = ({
   item,
-  tags,
   history,
-  searchItemNotPick,
-  searchValueChange,
-  searchFileDetail,
-  searchValues
+  tags,
+  searchValues,
+  actions
 }) => {
   const textField = (item) => {
     let valueItem = searchValues.filter( search => search._id === item._id)[0];
@@ -23,10 +21,10 @@ const DetailSearch = ({
 
     return (
       <TextField
-        onChange={(e, value) => searchValueChange(item, value) }
+        onChange={(e, value) => actions.searchValueChange(item, value) }
         value={value}
         onKeyPress={ e => {
-          if (e.key === "Enter") searchFileDetail(history);
+          if (e.key === "Enter") actions.searchFileDetail(history);
         }}
         floatingLabelText={item.key}
         hintText={item.key}
@@ -43,8 +41,8 @@ const DetailSearch = ({
     return (
       <DatePicker
         onChange={(e, value) => {
-          searchValueChange(item, value);
-          searchFileDetail(history);
+          actions.searchValueChange(item, value);
+          actions.searchFileDetail(history);
         }}
         value={value}
         floatingLabelText={item.key}
@@ -65,8 +63,8 @@ const DetailSearch = ({
         floatingLabelText={item.key}
         value={value}
         onChange={(e, idx, value) => {
-          searchValueChange(item, value);
-          searchFileDetail(history);
+          actions.searchValueChange(item, value);
+          actions.searchFileDetail(history);
         }}
         >
 
@@ -79,8 +77,8 @@ const DetailSearch = ({
 
   const tagField = (item) => {
     const handleChange = (event, index, value) => {
-      searchValueChange(item, value);
-      searchFileDetail(history);
+      actions.searchValueChange(item, value);
+      actions.searchFileDetail(history);
     };
 
     const selectValue = searchValues.filter( value => value._id === item._id );
@@ -125,7 +123,7 @@ const DetailSearch = ({
 
       <IconButton
         style={{marginTop: 23}}
-        onClick={() => searchItemNotPick(item) } >
+        onClick={() => actions.searchItemNotPick(item) } >
         <ContentRemoveCircleOutline />
       </IconButton>
 
