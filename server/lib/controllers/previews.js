@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import co from "co";
-import { logger } from "../index"
+import { logger } from "../index";
 
 // models
 import Preview from "../models/Preview";
@@ -12,8 +12,10 @@ export const image = (req, res, next) => {
 
       const preview = yield Preview.findById(preview_id);
 
-      res.setHeader("Content-Type","image/png");
-      res.send(preview.image.buffer);
+      res.json({
+        status: { success: true },
+        body: preview.image.buffer.toString("base64")
+      });
 
     } catch (e) {
       logger.error(e);
