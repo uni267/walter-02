@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -15,7 +14,6 @@ function* watchCreateUser() {
 
     try {
       yield put(commonActions.loadingStart());
-      yield call(delay, 1000);
       yield call(api.createUser, task.user);
       const payload = yield call(api.fetchUsers, localStorage.getItem("tenantId"));
       yield put(actions.initUsers(payload.data.body));

@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -14,7 +13,6 @@ function* watchDownloadFile() {
     const api = new API();
 
     try {
-      yield call(delay, 1000);
       yield put(commons.loadingStart());
       const payload = yield call(api.downloadFile, file);
 

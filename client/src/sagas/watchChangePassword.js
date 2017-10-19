@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -12,7 +11,6 @@ function* watchChangePassword() {
 
     try {
       yield put({ type: "LOADING_START" });
-      yield call(delay, 1000);
 
       yield call(api.changePassword, current_password, new_password);
       yield put({ type: "CHANGE_PASSWORD_SUCCESS" });

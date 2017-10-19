@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -10,7 +9,6 @@ function* watchCreateDir() {
     yield put({ type: "LOADING_START" });
 
     try {
-      yield call(delay, 1000);
       yield call(api.createDir, dir_id, dir_name);
       const payload = yield call(api.fetchFiles, dir_id);
       yield put({ type: "INIT_FILES", files: payload.data.body });

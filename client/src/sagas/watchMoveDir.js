@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -9,7 +8,6 @@ function* watchMoveDir() {
     const { destinationDir, movingDir } = yield take("MOVE_DIR");
     const api = new API();
     yield put({ type: "LOADING_START" });
-    yield call(delay, 1000);
 
     try {
       yield call(api.moveDir, destinationDir, movingDir);

@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -17,7 +16,6 @@ function* watchCreateRole() {
 
     try {
       yield put(commons.loadingStart());
-      yield call(delay, 1000);
       yield call(api.createRole, task.role);
       const payload = yield call(api.fetchRoles);
       yield put(actions.initRoles(payload.data.body));

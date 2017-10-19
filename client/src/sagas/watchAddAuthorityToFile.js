@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -16,7 +15,6 @@ function* watchAddAuthorityToFile() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(delay, 1000);
       yield call(api.addAuthorityToFile, file, user, role);
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initAuthorityFileDialog(payload.data.body));

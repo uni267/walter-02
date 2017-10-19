@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -15,7 +14,6 @@ function* watchDeleteGroup() {
 
     try {
       yield put(commons.loadingStart());
-      yield call(delay, 1000);
       yield call(api.deleteGroup, task.group_id);
       const payload = yield call(api.fetchGroup);
       yield put(actions.initGroups(payload.data.body));

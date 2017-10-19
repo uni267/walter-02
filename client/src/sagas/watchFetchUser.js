@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { all, call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -13,7 +12,6 @@ function* watchFetchUser() {
     yield put(commonActions.loadingStart());
 
     try {
-      yield call(delay, 1000);
       const [user, group] = yield all([
         call(api.fetchUser, task.user_id),
         call(api.fetchGroup, task.tenant_id)

@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take, all } from "redux-saga/effects";
 
 import * as actions from "../actions/files";
@@ -11,7 +10,6 @@ function* watchUploadFiles() {
     const { dir_id, files } = yield take(actions.uploadFiles().type);
     const api = new API();
     yield put(commons.loadingStart());
-    yield call(delay, 1000);
 
     try {
       const uploadPayload = yield call(api.filesUpload, dir_id, files);

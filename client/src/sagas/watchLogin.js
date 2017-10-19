@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -15,7 +14,6 @@ function* watchLogin() {
     yield put(actions.loadingStart());
 
     try {
-      yield call(delay, 500);
       const payload = yield call(api.login, account_name, password);
       const { user, token } = payload.data.body;
       localStorage.setItem("token", token);

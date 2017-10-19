@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take, all } from "redux-saga/effects";
 
 // api
@@ -15,7 +14,6 @@ function* watchAddGroupOfUser() {
 
     try {
       yield put(commonActions.loadingStart());
-      yield call(delay, 1000);
       yield call(api.addGroupOfUser, task.user_id, task.group_id);
 
       const fetchJobs = [

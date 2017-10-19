@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take, all } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -13,7 +12,6 @@ function* watchMoveFiles() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(delay, 1000);
       const { dir, files } = task;
       const jobs = files.map( file => call(api.moveFile, dir, file) );
       yield all(jobs);

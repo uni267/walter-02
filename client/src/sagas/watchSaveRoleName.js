@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -14,7 +13,6 @@ function* watchSaveRoleName() {
     yield put(actions.clearRoleValidationError());
     
     try {
-      yield call(delay, 1000);
       yield call(api.saveRoleName, task.role);
       const payload = yield call(api.fetchRole, task.role._id);
       yield put(actions.initRole(payload.data.body));

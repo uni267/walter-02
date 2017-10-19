@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -11,7 +10,6 @@ function* watchDeleteFile() {
     const { file } = yield take(actions.deleteFile().type);
     const api = new API();
     yield put(commons.loadingStart());
-    yield call(delay, 1000);
 
     try {
       const tenant = yield select(state => state.tenant);

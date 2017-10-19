@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -14,7 +13,6 @@ function* watchSaveUserAccountName() {
 
     try {
       yield put(commonActions.loadingStart());
-      yield call(delay, 1000);
       yield call(api.saveUserAccountName, user);
       const payload = yield call(api.fetchUser, user._id);
       yield put(actions.initUser(payload.data.body));

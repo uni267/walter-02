@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import * as actions from "../actions";
@@ -10,7 +9,6 @@ function* watchFetchMetaInfo() {
     const api = new API();
 
     yield put(actions.loadingStart());
-    yield call(delay, 1000);
 
     try {
       const payload = yield call(api.fetchMetaInfo, meta_id);

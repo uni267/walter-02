@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -15,7 +14,6 @@ function* watchToggleUser() {
 
     try {
       yield put(commonActions.loadingStart());
-      yield call(delay, 1000);
       yield call(api.toggleUser, task.user_id);
       const payload = yield call(api.fetchUser, task.user_id);
       const user = payload.data.body;

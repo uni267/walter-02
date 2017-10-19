@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take, select } from "redux-saga/effects";
 
 import * as actions from "../actions/files";
@@ -12,7 +11,6 @@ function* watchSortFile() {
     const api = new API();
 
     yield put(commons.loadingStart());
-    yield call(delay, 1000);
 
     try {
       const fileSortTarget = yield select( state => state.fileSortTarget );

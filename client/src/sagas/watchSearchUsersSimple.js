@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -15,7 +14,6 @@ function* watchSearchUsersSimple() {
     yield put(commonActions.loadingStart());
 
     try {
-      yield call(delay, 1000);
       const payload = yield call(api.searchUsersSimple, task.tenant_id, task.keyword);
       yield put(actions.initUsers(payload.data.body));
     }

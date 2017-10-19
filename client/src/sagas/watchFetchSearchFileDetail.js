@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -14,7 +13,6 @@ function* watchFetchSearchFileDetail() {
     const api = new API();
 
     yield put(commons.loadingStart());
-    yield call(delay, 1000);
 
     try {
       const payload = yield call(api.searchFilesDetail, params, page, sorted, desc);

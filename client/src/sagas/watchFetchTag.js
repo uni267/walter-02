@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -13,7 +12,6 @@ function* watchFetchTag() {
     yield put(commonActions.loadingStart());
 
     try {
-      yield call(delay, 1000);
       const payload = yield call(api.fetchTag, task.tag_id);
       yield put(actions.initTag(payload.data.body));
     }

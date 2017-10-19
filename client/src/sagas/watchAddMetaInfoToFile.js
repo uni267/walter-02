@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 // api
@@ -16,7 +15,6 @@ function* watchAddMetaInfoToFile() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(delay, 1000);
       yield call(api.addMetaInfoToFile, file, metaInfo, value);
       const filePayload = yield call(api.fetchFile, file._id);
       yield put(actions.initFileMetaInfo(filePayload.data.body));

@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take, all } from "redux-saga/effects";
 
 // api
@@ -19,8 +18,6 @@ function* watchFetchFiles() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(delay, 500);
-
       if (page === 0 || page === null) {
         const [ files, dirs ] = yield all([
           call(api.fetchFiles, dir_id, page, sorted, desc),

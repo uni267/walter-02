@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -13,7 +12,6 @@ function* watchFetchGroups() {
 
     try {
       yield put(commons.loadingStart());
-      yield call(delay, 1000);
       const payload = yield call(api.fetchGroup, task.tenant_id);
       yield put(actions.initGroups(payload.data.body));
     }

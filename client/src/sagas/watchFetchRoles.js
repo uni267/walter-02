@@ -1,4 +1,3 @@
-import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
@@ -13,7 +12,6 @@ function* watchFetchRoles() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(delay, 1000);
       const payload = yield call(api.fetchRoles);
       yield put(actions.initRoles(payload.data.body));
     }
