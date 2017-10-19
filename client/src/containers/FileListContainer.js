@@ -111,6 +111,14 @@ const fileTarget = {
 };
 
 class FileListContainer extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      yOffset: 0
+    };
+  }
+
   componentWillMount() {
     this.props.actions.requestFetchFiles(this.props.match.params.id);
     this.props.actions.requestFetchMetaInfos();
@@ -142,6 +150,10 @@ class FileListContainer extends Component {
         nextProps.fileSortTarget.desc
       );
     }
+  }
+
+  componentDidUpdate() {
+    window.setTimeout(() => window.scrollTo(0, this.state.yOffset), 0);
   }
 
   // onScroll pagination
@@ -197,6 +209,7 @@ class FileListContainer extends Component {
         cellStyle={styles.tableRow}
         headers={headers}
         file={file}
+        setYOffset={(y) => this.setState({ yOffset: y })}
         />
     );
 
