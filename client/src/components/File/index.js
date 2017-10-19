@@ -49,10 +49,6 @@ class File extends Component {
     };
   }
 
-  toggleHover = () => {
-    this.setState({ hover: !this.state.hover });
-  };
-
   renderFileName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
@@ -167,8 +163,8 @@ class File extends Component {
 
     const elements = (
       <div
-        onMouseEnter={this.toggleHover}
-        onMouseLeave={this.toggleHover}
+        onMouseEnter={() => this.setState({ hover: true })}
+        onMouseLeave={() => this.setState({ hover: false })}
         style={{ ...rowStyle, opacity, backgroundColor }}>
 
         <div style={{ ...cellStyle, width: headers[0].width }}>
