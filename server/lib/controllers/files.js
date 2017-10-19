@@ -208,7 +208,7 @@ export const search = (req, res, next) => {
 
         file.dir_route = route.length > 0
           ? route.reverse().join("/")
-          : "Top";
+          : "";
         return file;
       });
 
