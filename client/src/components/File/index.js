@@ -25,6 +25,8 @@ import ActionHistory from "material-ui/svg-icons/action/history";
 import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
 import ActionRestore from "material-ui/svg-icons/action/restore";
 
+import * as constants from "../../constants";
+
 const style = {
   checkbox: {
     display: "flex",
@@ -92,7 +94,10 @@ class File extends Component {
 
     let fileView;
 
-    if (this.props.file.dir_route) {
+    if (this.props.file.dir_route !== undefined) {
+      const dir_route = this.props.file.dir_route === ""
+            ? constants.TOP_DIR_NAME : this.props.file.dir_route;
+
       fileView = (
         <div style={style}>
           <div>
@@ -100,7 +105,7 @@ class File extends Component {
               {this.props.file.name}
             </div>
             <div style={{ fontSize: 12, color: "#aaa"}} onClick={linkToDir}>
-              場所: {this.props.file.dir_route}
+              場所: {dir_route}
             </div>
           </div>
         </div>
