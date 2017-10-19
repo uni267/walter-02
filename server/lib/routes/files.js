@@ -1,11 +1,8 @@
 import { Router } from "express";
-import multer from "multer";
 import * as controller from "../controllers/files";
 
 const router = Router();
 
-const upload_path = multer({ dest: "uploads/" });
-const fields = upload_path.fields([ { name: "myFile[]" } ]);
 
 // ファイル一覧
 router.get("/", controller.index);
@@ -23,7 +20,7 @@ router.route("/search_items").get(controller.searchItems);
 router.route("/search_detail").get(controller.searchDetail);
 
 // ファイルアップロード
-router.post("/", fields, controller.upload);
+router.post("/", controller.upload);
 
 router.route("/:file_id")
   .get(controller.view) // ファイル詳細

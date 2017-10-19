@@ -12,7 +12,28 @@ function* watchUploadFiles() {
     yield put(commons.loadingStart());
 
     try {
-      const uploadPayload = yield call(api.filesUpload, dir_id, files);
+      // const uploadPayload = yield call(api.filesUpload, dir_id, files);
+
+      // fileのパース yieldでコールするのでpromiseでラップしておく
+      const readFile = file => {
+        return new Promise( (resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+
+          reader.onload = e => {
+            resolve({
+              name: file.name,
+              size: file.size,
+              mime_type: file.type,
+              modified: file.lastModified,
+              base64: reader.result 
+            });
+          };
+        });
+      };
+
+      const _files = yield all(files.map( f => readFile(f) ));
+      const uploadPayload = yield call(api.filesUploadBlob, dir_id, _files);
 
       const buffers = uploadPayload.data.body.map( body => (
         put(actions.pushFileToBuffer(body))

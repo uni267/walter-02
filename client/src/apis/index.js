@@ -91,6 +91,10 @@ export class API {
     return this.client.delete(`/api/v1/files/${file._id}`);
   };
 
+  filesUploadBlob = (dir_id, files) => {
+    return this.client.post("/api/v1/files", { dir_id, files });
+  };
+
   deleteFile = (file) => {
     return this.client.delete(`/api/v1/files/${file._id}/delete`);
   };
