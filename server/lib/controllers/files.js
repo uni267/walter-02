@@ -22,6 +22,7 @@ import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
 import Role from "../models/Role";
+import Authority from "../models/Authority";
 import { Swift } from "../storages/Swift";
 
 export const index = (req, res, next) => {
@@ -43,25 +44,35 @@ export const index = (req, res, next) => {
       if (page === undefined || page === null || page === "") page = 0;
       const limit = constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
-
+mongoose.set("debug",true);
       const total = yield File.find(conditions).count();
 
-      const files = yield File.aggregate([
+      let files = yield File.aggregate([
         { $match: conditions },
         { $lookup: {
           from: "tags",
           localField: "tags",
           foreignField: "_id",
           as: "tags"
-        } }
+        }},
+        { $lookup:{
+          from: "authorities",
+          localField: "authorities",
+          foreignField: "_id",
+          as: "authorities"
+        }}
       ]).skip(offset).limit(limit).sort(sortOption);
 
+      files = yield File.populate(files,{ path:'authorities.users', model: User } );
+
+mongoose.set("debug",false);
       res.json({
         status: { success: true, total },
         body: files
       });
     }
     catch (e) {
+console.log(e);
       let errors = {};
       switch (e) {
       case "dir_id is empty":
@@ -185,7 +196,7 @@ export const search = (req, res, next) => {
           localField: "dir_id",
           foreignField: "descendant",
           as: "dirs"
-        }}
+        }},
       ]).skip(offset).limit(limit).sort(_sort);
 
       files = yield File.populate(files,'dirs.ancestor');
@@ -496,7 +507,10 @@ export const upload = (req, res, next) => {
         if (user === null) throw "user is empty";
 
         // アップロードしたユーザが所有者となる
-        file.authorities = file.authorities.concat({ user: user, group: null, role });
+        // file.authorities = file.authorities.concat({ user: user, group: null, role });
+        const authority = new Authority();
+        authority.users = user;
+        file.authorities = authority;
 
         const history = {
           modified: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -511,10 +525,15 @@ export const upload = (req, res, next) => {
         const swift = new Swift();
         swift.upload(path.resolve(_file.path), file._id.toString());
 
-        return file;
+        return { createFiles:file, createAuthorities:authority };
       });
 
-      const changedFiles = yield createFiles.map( file => file.save() );
+      // 参考: 並列にyeildしてくれる
+      // const [user, group] = yield [User.findById(""), Group.findById("")]
+      const changedFiles = yield createFiles.map( file => {
+        file.createAuthorities.save() ;
+        return file.createFiles.save() ;
+      });
 
       logger.info('file uploaded');
       logger.info(changedFiles);

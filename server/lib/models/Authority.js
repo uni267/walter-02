@@ -1,9 +1,14 @@
-import User from "./User";
-import Role from "./Role";
+import mongoose, { Schema } from "mongoose";
 
-const Authority = {
-  role: Role,
-  user: User
-};
+mongoose.Promise = global.Promise;
+
+const AuthoritySchema = Schema({
+  // files : [{ type:Schema.Types.ObjectId, ref:'files'}],
+  roles : [{ type:Schema.Types.ObjectId, ref:'roles'}],
+  users : [{ type:Schema.Types.ObjectId, ref:'users'}],
+  groups : [{ type:Schema.Types.ObjectId, ref:'groups'}]
+});
+
+const Authority = mongoose.model("authorities", AuthoritySchema, "authorities");
 
 export default Authority;

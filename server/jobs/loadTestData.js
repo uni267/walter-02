@@ -11,6 +11,7 @@ db.meta_infos.drop();
 db.actions.drop();
 db.roles.drop();
 db.previews.drop();
+db.authorities.drop();
 
 // ===============================
 //  files collection
@@ -82,7 +83,7 @@ db.groups.insert(groups);
 
 // ===============================
 //  users collection
-// =============================== 
+// ===============================
 
 var pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff";
 
@@ -139,7 +140,7 @@ var tenant = db.tenants.findOne({ name: "test" });
 var meta_infos = [
   {
     tenant_id: tenant._id,
-    key: "ファイル名", 
+    key: "ファイル名",
     key_type: "name",
     value_type: "String"
   },
@@ -155,15 +156,15 @@ var meta_infos = [
     key_type: "tags",
     value_type: "Tag"
   },
-  { 
+  {
     tenant_id: tenant._id,
-    key: "更新日時(より小さい)", 
+    key: "更新日時(より小さい)",
     key_type: "modified_less",
     value_type: "Date"
   },
-  { 
+  {
     tenant_id: tenant._id,
-    key: "更新日時(より大きい)", 
+    key: "更新日時(より大きい)",
     key_type: "modified_greater",
     value_type: "Date"
   },
@@ -250,3 +251,12 @@ var preview = {
 };
 
 db.previews.insert(preview);
+
+
+var authorities = {
+  roles : null,
+  users : null,
+  groups : null
+};
+
+db.authorities.insert(authorities);
