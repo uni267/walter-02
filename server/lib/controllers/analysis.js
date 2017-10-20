@@ -6,7 +6,7 @@ export const index = (req, res, next) => {
     try {
       const data = {
         totals: [
-          { name: "used", value: 3 },
+          { name: "used", value: 30 },
           { name: "free", value: 100 }
         ],
         usages: [
@@ -33,22 +33,19 @@ export const index = (req, res, next) => {
           { name: "folderJ", value: 1 },
         ],
         users: [
-          { name: "folderA", value: 100, color: '#0088FE' },
-          { name: "folderB", value: 30, color: '#00C49F' },
-          { name: "folderC", value: 20, color: '#FFBB28' },
-          { name: "folderC", value: 10, color: '#00BB28' }
+          { name: "taro", value: 100 },
+          { name: "hanako", value: 30 }
         ],
         mimetypes: [
-          { name: "folderA", value: 100, color: '#0088FE' },
-          { name: "folderB", value: 30, color: '#00C49F' },
-          { name: "folderC", value: 20, color: '#FFBB28' },
-          { name: "folderC", value: 10, color: '#00BB28' }
+          { name: "excel", value: 100 },
+          { name: "pdf", value: 30 },
+          { name: "csv", value: 20 },
+          { name: "txt", value: 10 }
         ],
         tags: [
-          { name: "folderA", value: 100, color: '#0088FE' },
-          { name: "folderB", value: 30, color: '#00C49F' },
-          { name: "folderC", value: 20, color: '#FFBB28' },
-          { name: "folderC", value: 10, color: '#00BB28' }
+          { name: "important", value: 100 },
+          { name: "work", value: 30 },
+          { name: "etc", value: 20 }
         ],
         fileCount: [
           { name: "fileCount", value: 1000 }

@@ -3,7 +3,7 @@ import React from "react";
 // recharts
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const TotalPie = ({totals}) => {
+const TotalPie = ({totals, cardWidth}) => {
   const colors = [
     "#d2584c", // 使用中
     "#00bcd4"  // 空き
@@ -17,9 +17,19 @@ const TotalPie = ({totals}) => {
       return Math.round(usage / total * 100);
     };
 
+    const usage = renderUsagePer(totals);
+
+    const fontSize = 30;
+    const maxDigit = 4; // 100%なので4桁
+    const digit = usage.toString().length + 1; // %がつくので+1
+    const margin = (maxDigit - digit) * (fontSize * 0.35);
+    const xpos = 115; // pieのinnerRadiusに文字がかかる基準値
+    const y = xpos;
+    const x = xpos + margin;
+
     return (
       <g>
-        <text x={160} y={115} textAnchor="middle" fill="#777" fontSize="30">
+        <text x={x} y={y} textAnchor="start" fill="#777" fontSize={fontSize}>
           {renderUsagePer(totals)}%
         </text>
       </g>
@@ -30,13 +40,17 @@ const TotalPie = ({totals}) => {
     <Cell key={idx} fill={color} />
   );
 
+  const pieWidth = cardWidth - 32;  // cardTextのpaddingが16なので
+  const outerRadius = pieWidth * 0.3;
+  const innerRadius = outerRadius * 0.8;
+
   return (
     <div>
-      <PieChart width={320} height={200}>
+      <PieChart width={pieWidth} height={200}>
         <Pie
           data={totals}
-          innerRadius={80}
-          outerRadius={100}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
           paddingAngle={1}
           fill="#8884d8">
 
