@@ -2,104 +2,85 @@ import React, { Component } from "react";
 
 // store
 import { connect } from "react-redux";
-
-// recharts
-import { 
-  BarChart,
-  Bar,
-  XAxis, 
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell
-} from "recharts";
+import { bindActionCreators } from "redux";
 
 // material ui
-import { 
-  Card, 
-  CardTitle, 
-  CardText
-} from 'material-ui/Card';
+import { Card, CardTitle, CardText } from 'material-ui/Card';
 
 // components
 import NavigationContainer from "./NavigationContainer";
+import FoldersPie from "../components/Analysis/FoldersPie";
+import MimetypesPie from "../components/Analysis/MimetypesPie";
+import TagsPie from "../components/Analysis/TagsPie";
+import TotalPie from "../components/Analysis/TotalPie";
+import UsagesBar from "../components/Analysis/UsagesBar";
+import UsersPie from "../components/Analysis/UsersPie";
 
 // actions
-import * as actions from "../actions";
+import * as AnalysisActions from "../actions/analysises";
+
+const styles = {
+  pie: { width: 1024, height: 250 }
+};
 
 class MonitorContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchAnalysis(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchAnalysis(this.props.tenant.tenant_id);
   }
 
   render() {
-    const colors = [
-      "#d2584c", // 使用中
-      "#00bcd4"  // 空き
-    ];
-
     return (
       <div>
         <NavigationContainer />
-        <Card>
-          <CardTitle title="容量管理" />
-          <CardText>
-            <div>
-              <CardTitle subtitle="使用率"/>
-              <PieChart width={700} height={300}>
-                <Pie
-                  data={this.props.rate}
-                  innerRadius={30}
-                  outerRadius={150}
-                  fill="#8884d8"
-                  paddingAngle={2}
-                  label >
-                  {colors.map( (color, idx) => <Cell fill={color} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </div>
+        <div>
+          <Card>
+            <CardTitle title="容量管理" />
+            <CardText>
+              <Card style={{ width: 1100 }}>
+                <CardTitle subtitle="全体の使用率"/>
+                <CardText>
+                  <TotalPie { ...this.props } styles={styles} />
+                </CardText>
+              </Card>                                  
 
-            <div>
-              <CardTitle subtitle="使用容量推移" />
+              <Card style={{ width: 1100 }}>
+                <CardTitle subtitle="使用容量推移" />
+                <CardText>
+                  <UsagesBar { ...this.props } styles={styles} />
+                </CardText>
+              </Card>
 
-              <BarChart width={1024} height={300} data={this.props.usage}
-                        margin={{ top: 5, right: 30, left: 10, bottom: 5}} >
+              <Card style={{ width: 1100 }}>
+                <CardTitle subtitle="使用率(フォルダ毎)" />
+                <CardText>
+                  <FoldersPie { ...this.props } styles={styles} />
+                </CardText>
+              </Card>
 
-                <XAxis dataKey="name" />
-                <YAxis dataKey="threshold" />
-                <CartesianGrid strokeDasharray="1 1" />
-                <Tooltip />
-                <Legend />
+              <Card style={{ width: 1100 }}>
+                <CardTitle subtitle="使用率(ユーザ/グループ毎)" />
+                <CardText>
+                  <UsersPie { ...this.props } styles={styles} />
+                </CardText>
+              </Card>
 
-                <Bar
-                  barSize={45} dataKey="usage" fill="#8884d8" />
+              <Card style={{ width: 1100 }}>
+                <CardTitle subtitle="使用率(ファイル種別毎)" />
+                <CardText>
+                  <MimetypesPie { ...this.props } styles={styles} />
+                </CardText>
+              </Card>
 
-              </BarChart>
-            </div>
+              <Card style={{ width: 1100 }}>
+                <CardTitle subtitle="使用率(タグ毎)" />
+                <CardText>
+                  <TagsPie { ...this.props } styles={styles} />
+                </CardText>
+              </Card>
 
-            <div>
-              <CardTitle subtitle="ファイル数推移" />
-              <BarChart width={1024} height={300} data={this.props.fileCount}
-                        margin={{ top: 5, right: 30, left: 10, bottom: 5}} >
-
-                <XAxis dataKey="name" />
-                <YAxis />
-                <CartesianGrid strokeDasharray="1 1" />
-                <Tooltip />
-                <Legend />
-
-                <Bar
-                  barSize={45} dataKey="file_count" fill="#82ca9d" />
-
-              </BarChart>
-            </div>
-
-          </CardText>
-        </Card>
+            </CardText>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -107,17 +88,19 @@ class MonitorContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    rate: state.analysis.rate,
+    totals: state.analysis.totals,
     usage: state.analysis.usage,
     fileCount: state.analysis.file_count,
+    folders: state.analysis.folders,
+    users: state.analysis.users,
+    mimetypes: state.analysis.mimetypes,
+    tags: state.analysis.tags,
     tenant: state.tenant
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestFetchAnalysis: (tenant_id) => {
-    dispatch(actions.requestFetchAnalysis(tenant_id));
-  }
+  actions: bindActionCreators(AnalysisActions, dispatch)
 });
 
 MonitorContainer = connect(mapStateToProps, mapDispatchToProps)(MonitorContainer);

@@ -120,14 +120,6 @@ export const searchFileDetail = (history) => ({
   type: actionTypes.SEARCH_FILE_DETAIL, history
 });
 
-export const requestFetchAnalysis = (tenant_id) => ({
-  type: actionTypes.REQUEST_FETCH_ANALYSIS, tenant_id
-});
-
-export const initAnalysis = (analysis) => ({
-  type: actionTypes.INIT_ANALYSIS, analysis
-});
-
 export const requestVerifyToken = (token) => ({
   type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });

@@ -5,7 +5,7 @@ export const index = (req, res, next) => {
   co(function* () {
     try {
       const data = {
-        rate: [
+        totals: [
           { name: "used", value: 10 },
           { name: "free", value: 90 }
         ],
@@ -30,6 +30,30 @@ export const index = (req, res, next) => {
           { name: "2017-07", file_count: 650 },
           { name: "2017-08", file_count: 700 },
           { name: "2017-09", file_count: 750 }
+        ],
+        folders: [
+          { name: "folderA", value: 100, color: '#0088FE' },
+          { name: "folderB", value: 30, color: '#00C49F' },
+          { name: "folderC", value: 20, color: '#FFBB28' },
+          { name: "folderC", value: 10, color: '#00BB28' }
+        ],
+        users: [
+          { name: "folderA", value: 100, color: '#0088FE' },
+          { name: "folderB", value: 30, color: '#00C49F' },
+          { name: "folderC", value: 20, color: '#FFBB28' },
+          { name: "folderC", value: 10, color: '#00BB28' }
+        ],
+        mimetypes: [
+          { name: "folderA", value: 100, color: '#0088FE' },
+          { name: "folderB", value: 30, color: '#00C49F' },
+          { name: "folderC", value: 20, color: '#FFBB28' },
+          { name: "folderC", value: 10, color: '#00BB28' }
+        ],
+        tags: [
+          { name: "folderA", value: 100, color: '#0088FE' },
+          { name: "folderB", value: 30, color: '#00C49F' },
+          { name: "folderC", value: 20, color: '#FFBB28' },
+          { name: "folderC", value: 10, color: '#00BB28' }
         ]
       };
 
