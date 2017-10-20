@@ -2,9 +2,9 @@ import React from "react";
 
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const UsersPie = ({users, styles}) => {
+const UsersPie = ({users}) => {
   return (
-    <PieChart width={styles.pie.width} height={styles.pie.height}>
+    <PieChart width={300} height={200}>
       <Pie
         data={users}
         innerRadius={70}

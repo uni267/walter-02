@@ -190,7 +190,6 @@ class FileSearchResultContainer extends Component {
         <NavigationContainer />
 
         <Card>
-
           <div style={{ display: "flex" }}>
             <div style={{ width: "40%" }}>
               <div style={styles.title}>
@@ -223,8 +222,8 @@ class FileSearchResultContainer extends Component {
               <FileActionContainer isSearch={true} />
             </div>
           </div>
-
         </Card>
+
         <FileOperationDialogContainer />
       </div>
     );

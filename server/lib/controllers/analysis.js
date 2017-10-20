@@ -6,10 +6,10 @@ export const index = (req, res, next) => {
     try {
       const data = {
         totals: [
-          { name: "used", value: 10 },
-          { name: "free", value: 90 }
+          { name: "used", value: 3 },
+          { name: "free", value: 100 }
         ],
-        usage: [
+        usages: [
           { name: "2017-01", usage: 10, threshold: 100 },
           { name: "2017-02", usage: 15, threshold: 100 },
           { name: "2017-03", usage: 20, threshold: 100 },
@@ -20,22 +20,17 @@ export const index = (req, res, next) => {
           { name: "2017-08", usage: 70, threshold: 100 },
           { name: "2017-09", usage: 75, threshold: 100 }
         ],
-        file_count: [
-          { name: "2017-01", file_count: 100 },
-          { name: "2017-02", file_count: 150 },
-          { name: "2017-03", file_count: 200 },
-          { name: "2017-04", file_count: 300 },
-          { name: "2017-05", file_count: 400 },
-          { name: "2017-06", file_count: 600 },
-          { name: "2017-07", file_count: 650 },
-          { name: "2017-08", file_count: 700 },
-          { name: "2017-09", file_count: 750 }
-        ],
         folders: [
-          { name: "folderA", value: 100, color: '#0088FE' },
-          { name: "folderB", value: 30, color: '#00C49F' },
-          { name: "folderC", value: 20, color: '#FFBB28' },
-          { name: "folderC", value: 10, color: '#00BB28' }
+          { name: "folderA", value: 100 },
+          { name: "folderB", value: 80 },
+          { name: "folderC", value: 70 },
+          { name: "folderD", value: 60 },
+          { name: "folderE", value: 50 },
+          { name: "folderF", value: 40 },
+          { name: "folderG", value: 30 },
+          { name: "folderH", value: 20 },
+          { name: "folderI", value: 10 },
+          { name: "folderJ", value: 1 },
         ],
         users: [
           { name: "folderA", value: 100, color: '#0088FE' },
@@ -54,6 +49,12 @@ export const index = (req, res, next) => {
           { name: "folderB", value: 30, color: '#00C49F' },
           { name: "folderC", value: 20, color: '#FFBB28' },
           { name: "folderC", value: 10, color: '#00BB28' }
+        ],
+        fileCount: [
+          { name: "fileCount", value: 1000 }
+        ],
+        folderCount: [
+          { name: "folderCount", value: 10 }
         ]
       };
 

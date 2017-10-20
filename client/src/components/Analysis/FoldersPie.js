@@ -3,19 +3,18 @@ import React from "react";
 // recharts
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const FoldersPie = ({folders, styles}) => {
+const FoldersPie = ({folders}) => {
   const renderCell = (entry, idx) => (
     <Cell fill={entry.color} key={idx} />
   );
 
   return (
-    <PieChart width={styles.pie.width} height={styles.pie.height}>
+    <PieChart width={330} height={330}>
       <Pie
         data={folders}
-        innerRadius={70}
-        outerRadius={100}
+        innerRadius={90}
+        outerRadius={110}
         fill="#8884d8"
-        paddingAngle={1}
         label>
 
         { folders.map( (entry, idx) => renderCell(entry, idx) ) }

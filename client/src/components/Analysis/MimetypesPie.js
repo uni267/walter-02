@@ -3,7 +3,7 @@ import React from "react";
 // recharts
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const MimetypesPie = ({mimetypes, styles}) => {
+const MimetypesPie = ({mimetypes}) => {
   const colors = [
     "#d2584c", // 使用中
     "#00bcd4"  // 空き
@@ -14,7 +14,7 @@ const MimetypesPie = ({mimetypes, styles}) => {
   );
 
   return (
-    <PieChart width={styles.pie.width} height={styles.pie.height}>
+    <PieChart width={300} height={200}>
       <Pie
         data={mimetypes}
         innerRadius={10}

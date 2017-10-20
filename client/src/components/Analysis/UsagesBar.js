@@ -10,9 +10,9 @@ import {
   Bar
 } from "recharts";
 
-const UsagesBar = ({usage}) => {
+const UsagesBar = ({usages}) => {
   return (
-    <BarChart width={1024} height={250} data={usage}>
+    <BarChart width={1024} height={250} data={usages}>
       <XAxis dataKey="name" />
       <YAxis dataKey="threshold" />
       <CartesianGrid strokeDasharray="1 1" />

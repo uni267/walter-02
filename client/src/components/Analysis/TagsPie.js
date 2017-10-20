@@ -3,7 +3,7 @@ import React from "react";
 // recharts
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
-const TagsPie = ({tags, styles}) => {
+const TagsPie = ({tags}) => {
   const colors = [
     "#d2584c",
     "#00bcd4"
@@ -14,7 +14,7 @@ const TagsPie = ({tags, styles}) => {
   );
 
   return (
-    <PieChart width={styles.pie.width} height={styles.pie.height}>
+    <PieChart width={300} height={200}>
       <Pie
         data={tags}
         innerRadius={10}
