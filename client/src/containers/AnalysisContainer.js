@@ -7,6 +7,9 @@ import { bindActionCreators } from "redux";
 // material ui
 import { Card, CardTitle, CardText } from 'material-ui/Card';
 import DatePicker from 'material-ui/DatePicker';
+import Divider from "material-ui/Divider";
+import Menu from "material-ui/Menu";
+import MenuItem from "material-ui/MenuItem";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -29,95 +32,105 @@ class MonitorContainer extends Component {
     return (
       <div>
         <NavigationContainer />
-        <div>
-          <Card>
-            <CardTitle title="容量管理" />
-            <CardText>
+        <Card>
+          <CardTitle title="容量管理" />
+          <CardText>
 
-              <div style={{ marginBottom: 20, marginLeft: 20 }}>
-                <DatePicker hintText="該当日を指定" />
+            <div style={{ marginBottom: 20, marginLeft: 20 }}>
+              <DatePicker hintText="該当日を指定" />
+            </div>
+
+            <div style={{ display: "flex" }}>
+              <div>
+                <div style={{ display: "flex" }}>
+                  <Card style={{ width: rowWidth / 3}}>
+                    <CardTitle subtitle="使用率"/>
+                    <CardText>
+                      <TotalPie { ...this.props } cardWidth={ rowWidth / 3 } />
+                    </CardText>
+                  </Card>                                  
+
+                  <Card style={{ width: rowWidth / 3, marginLeft: 10 }}>
+                    <CardTitle subtitle="ファイル数" />
+                    <CardText>
+                      <ShapePie
+                        data={this.props.fileCount}
+
+                        cardWidth={ rowWidth / 3 } />
+                    </CardText>
+                  </Card>
+
+                  <Card style={{ width: rowWidth / 3, marginLeft: 10 }}>
+                    <CardTitle subtitle="フォルダ数" />
+                    <CardText>
+                      <ShapePie
+                        data={this.props.folderCount}
+                        pieColor="#00C49F"
+                        cardWidth={ rowWidth / 3 } />
+                    </CardText>
+                  </Card>
+                </div>
+
+                <div style={{ display: "flex", marginTop: 30 }}>
+                  <Card style={{ width: rowWidth / 2 }}>
+                    <CardTitle subtitle="使用率(フォルダ毎)" />
+                    <CardText>
+                      <NoShapePie
+                        data={this.props.folders} 
+                        cardWidth={ rowWidth / 2 } />
+                    </CardText>
+                  </Card>
+
+                  <Card style={{ width: rowWidth / 2, marginLeft: 20 }}>
+                    <CardTitle subtitle="使用率(ユーザ/グループ毎)" />
+                    <CardText>
+                      <NoShapePie
+                        data={this.props.users}
+                        cardWidth={ rowWidth / 2 } />
+                    </CardText>
+                  </Card>
+                </div>
+
+                <div style={{ display: "flex", marginTop: 30 }}>
+                  <Card style={{ width: rowWidth / 2 }}>
+                    <CardTitle subtitle="使用率(ファイル種別毎)" />
+                    <CardText>
+                      <NoShapePie
+                        data={this.props.mimetypes}
+                        cardWidth={ rowWidth / 2 } />
+                    </CardText>
+                  </Card>
+
+                  <Card style={{ width: rowWidth / 2, marginLeft: 20 }}>
+                    <CardTitle subtitle="使用率(タグ毎)" />
+                    <CardText>
+                      <NoShapePie
+                        data={this.props.tags}
+                        cardWidth={ rowWidth / 2 } />
+                    </CardText>
+                  </Card>
+                </div>
               </div>
 
-              <div style={{ display: "flex" }}>
-                <Card style={{ width: rowWidth / 3 }}>
-                  <CardTitle subtitle="使用率"/>
-                  <CardText>
-                    <TotalPie { ...this.props } cardWidth={ rowWidth / 3 } />
-                  </CardText>
-                </Card>                                  
-
-                <Card style={{ width: rowWidth / 3 }}>
-                  <CardTitle subtitle="ファイル数" />
-                  <CardText>
-                    <ShapePie
-                      data={this.props.fileCount}
-                      pieColor="#FFBB28"
-                      cardWidth={ rowWidth / 3 } />
-                  </CardText>
-                </Card>
-
-                <Card style={{ width: rowWidth / 3 }}>
-                  <CardTitle subtitle="フォルダ数" />
-                  <CardText>
-                    <ShapePie
-                      data={this.props.folderCount}
-                      pieColor="#00C49F"
-                      cardWidth={ rowWidth / 3 } />
-                  </CardText>
-                </Card>
+              <div style={{ marginLeft: 30, width: 180 }}>
+                <Divider />
+                <Menu>
+                  <MenuItem primaryText="サマリー"/>
+                  <MenuItem primaryText="使用容量推移"/>
+                </Menu>
               </div>
 
-              <div style={{ display: "flex", marginTop: 30 }}>
-                <Card style={{ width: rowWidth / 2 }}>
-                  <CardTitle subtitle="使用率(フォルダ毎)" />
-                  <CardText>
-                    <NoShapePie
-                      data={this.props.folders} 
-                      cardWidth={ rowWidth / 2 } />
-                  </CardText>
-                </Card>
+            </div>
 
-                <Card style={{ width: rowWidth / 2 }}>
-                  <CardTitle subtitle="使用率(ユーザ/グループ毎)" />
-                  <CardText>
-                    <NoShapePie
-                      data={this.props.users}
-                      cardWidth={ rowWidth / 2 } />
-                  </CardText>
-                </Card>
-              </div>
+            <Card style={{ width: 1050 }}>
+              <CardTitle subtitle="使用容量推移" />
+              <CardText>
+                <UsagesBar { ...this.props } />
+              </CardText>
+            </Card>
 
-              <div style={{ display: "flex", marginTop: 30 }}>
-                <Card style={{ width: rowWidth / 2 }}>
-                  <CardTitle subtitle="使用率(ファイル種別毎)" />
-                  <CardText>
-                    <NoShapePie
-                      data={this.props.mimetypes}
-                      cardWidth={ rowWidth / 2 } />
-                  </CardText>
-                </Card>
-
-                <Card style={{ width: rowWidth / 2 }}>
-                  <CardTitle subtitle="使用率(タグ毎)" />
-                  <CardText>
-                    <NoShapePie
-                      data={this.props.tags}
-                      cardWidth={ rowWidth / 2 } />
-                  </CardText>
-                </Card>
-                
-              </div>
-
-              <Card style={{ width: 1050 }}>
-                <CardTitle subtitle="使用容量推移" />
-                <CardText>
-                  <UsagesBar { ...this.props } />
-                </CardText>
-              </Card>
-
-            </CardText>
-          </Card>
-        </div>
+          </CardText>
+        </Card>
       </div>
     );
   }
