@@ -14,14 +14,13 @@ import MenuItem from "material-ui/MenuItem";
 // components
 import NavigationContainer from "./NavigationContainer";
 import TotalPie from "../components/Analysis/TotalPie";
-import UsagesBar from "../components/Analysis/UsagesBar";
 import NoShapePie from "../components/Analysis/NoShapePie";
 import ShapePie from "../components/Analysis/ShapePie";
 
 // actions
 import * as AnalysisActions from "../actions/analysises";
 
-class MonitorContainer extends Component {
+class AnalysisContainer extends Component {
   componentWillMount() {
     this.props.actions.requestFetchAnalysis();
   }
@@ -115,20 +114,14 @@ class MonitorContainer extends Component {
               <div style={{ marginLeft: 30, width: 180 }}>
                 <Divider />
                 <Menu>
-                  <MenuItem primaryText="サマリー"/>
-                  <MenuItem primaryText="使用容量推移"/>
+                  <MenuItem primaryText="サマリー" />
+                  <MenuItem primaryText="使用容量推移" 
+                            onTouchTap={() => this.props.history.push("/analysis/periods")} />
                 </Menu>
                 <Divider />
               </div>
 
             </div>
-
-            <Card style={{ width: 1050 }}>
-              <CardTitle subtitle="使用容量推移" />
-              <CardText>
-                <UsagesBar { ...this.props } />
-              </CardText>
-            </Card>
 
           </CardText>
         </Card>
@@ -154,5 +147,5 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   actions: bindActionCreators(AnalysisActions, dispatch)
 });
 
-MonitorContainer = connect(mapStateToProps, mapDispatchToProps)(MonitorContainer);
-export default MonitorContainer;
+AnalysisContainer = connect(mapStateToProps, mapDispatchToProps)(AnalysisContainer);
+export default AnalysisContainer;
