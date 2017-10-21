@@ -6,8 +6,8 @@ export const index = (req, res, next) => {
     try {
       const data = {
         totals: [
-          { name: "used", value: 30 },
-          { name: "free", value: 100 }
+          { name: "使用容量", value: 30, is_usage: true },
+          { name: "空き容量", value: 100 }
         ],
         usages: [
           { name: "2017-01", usage: 10, threshold: 100 },
@@ -43,9 +43,9 @@ export const index = (req, res, next) => {
           { name: "txt", value: 10 }
         ],
         tags: [
-          { name: "important", value: 100 },
-          { name: "work", value: 30 },
-          { name: "etc", value: 20 }
+          { name: "大事", value: 100 },
+          { name: "仕事", value: 30 },
+          { name: "それ以外", value: 20 }
         ],
         fileCount: [
           { name: "fileCount", value: 1000 }
