@@ -118,6 +118,7 @@ class MonitorContainer extends Component {
                   <MenuItem primaryText="サマリー"/>
                   <MenuItem primaryText="使用容量推移"/>
                 </Menu>
+                <Divider />
               </div>
 
             </div>
