@@ -1,7 +1,7 @@
 import React from "react";
 
 // recharts
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { schemeCategory20 } from "d3-scale";
 
 const NoShapePie = ({data, cardWidth}) => {
@@ -10,13 +10,13 @@ const NoShapePie = ({data, cardWidth}) => {
   );
 
   const pieWidth = cardWidth - 32;
+  const pieHeight = pieWidth * 0.65;
 
   return (
-    <PieChart width={pieWidth} height={330}>
+    <PieChart width={pieWidth} height={pieHeight}>
       <Pie
         data={data}
-        innerRadius={80}
-        outerRadius={120}
+        outerRadius="70%"
         fill="#8884d8"
         label>
 
@@ -24,6 +24,7 @@ const NoShapePie = ({data, cardWidth}) => {
 
       </Pie>
       <Tooltip />
+      <Legend />
     </PieChart>
   );
 };

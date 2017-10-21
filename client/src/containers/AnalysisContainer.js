@@ -55,7 +55,7 @@ class MonitorContainer extends Component {
                     <CardText>
                       <ShapePie
                         data={this.props.fileCount}
-
+                        pieColor="#ff7f0e"
                         cardWidth={ rowWidth / 3 } />
                     </CardText>
                   </Card>
@@ -65,7 +65,7 @@ class MonitorContainer extends Component {
                     <CardText>
                       <ShapePie
                         data={this.props.folderCount}
-                        pieColor="#00C49F"
+                        pieColor="#2ca02c"
                         cardWidth={ rowWidth / 3 } />
                     </CardText>
                   </Card>
