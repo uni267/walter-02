@@ -23,6 +23,7 @@ import TagContainer from "./TagContainer";
 import TagCreateContainer from "./TagCreateContainer";
 import TagDetailContainer from "./TagDetailContainer";
 import AnalysisContainer from "./AnalysisContainer";
+import AnalysisPeriodContainer from "./AnalysisPeriodContainer";
 import MetaInfoContainer from "./MetaInfoContainer";
 import MetaInfoDetailContainer from "./MetaInfoDetailContainer";
 import MetaInfoCreateContainer from "./MetaInfoCreateContainer";
@@ -54,6 +55,7 @@ class App extends Component {
                   <Route exact path="/roles/create" component={RoleCreateContainer} />
                   <Route path="/roles/:id" component={RoleDetailContainer} />
                   <Route exact path="/analysis" component={AnalysisContainer} />
+                  <Route exact path="/analysis/periods" component={AnalysisPeriodContainer} />
                   <Route exact path="/meta_infos" component={MetaInfoContainer} />
                   <Route
                     exact path="/meta_infos/create" 

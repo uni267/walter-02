@@ -10,15 +10,15 @@ export const index = (req, res, next) => {
           { name: "空き容量", value: 100 }
         ],
         usages: [
-          { name: "2017-01", usage: 10, threshold: 100 },
-          { name: "2017-02", usage: 15, threshold: 100 },
-          { name: "2017-03", usage: 20, threshold: 100 },
-          { name: "2017-04", usage: 30, threshold: 100 },
-          { name: "2017-05", usage: 40, threshold: 100 },
-          { name: "2017-06", usage: 60, threshold: 100 },
-          { name: "2017-07", usage: 65, threshold: 100 },
-          { name: "2017-08", usage: 70, threshold: 100 },
-          { name: "2017-09", usage: 75, threshold: 100 }
+          { name: "2017-01", usage: 10, free: 90 },
+          { name: "2017-02", usage: 15, free: 85 },
+          { name: "2017-03", usage: 20, free: 80 },
+          { name: "2017-04", usage: 30, free: 70 },
+          { name: "2017-05", usage: 40, free: 60 },
+          { name: "2017-06", usage: 60, free: 40 },
+          { name: "2017-07", usage: 65, free: 35 },
+          { name: "2017-08", usage: 70, free: 30 },
+          { name: "2017-09", usage: 75, free: 25 }
         ],
         folders: [
           { name: "folderA", value: 100 },
