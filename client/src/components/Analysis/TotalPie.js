@@ -1,7 +1,7 @@
 import React from "react";
 
 // recharts
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 
 const TotalPie = ({totals, cardWidth}) => {
   const colors = [
@@ -9,27 +9,23 @@ const TotalPie = ({totals, cardWidth}) => {
     "#00bcd4"  // 空き
   ];
 
-  const renderShape = (totals) => {
+  const renderShape = (totals, pieWidth, pieHeight) => {
     const renderUsagePer = (totals) => {
       if (totals.length === 0) return "N/A";
       const total = totals.reduce( (a, b) => a.value + b.value );
-      const usage = totals.filter( total => total.name === "used" )[0].value;
+      const usage = totals.filter( total => total.is_usage )[0].value;
       return Math.round(usage / total * 100);
     };
 
     const usage = renderUsagePer(totals);
 
-    const fontSize = 30;
-    const maxDigit = 4; // 100%なので4桁
-    const digit = usage.toString().length + 1; // %がつくので+1
-    const margin = (maxDigit - digit) * (fontSize * 0.35);
-    const xpos = 115; // pieのinnerRadiusに文字がかかる基準値
-    const y = xpos;
-    const x = xpos + margin;
+    const x = pieWidth / 2;
+    const y = pieHeight / 2;
 
     return (
       <g>
-        <text x={x} y={y} textAnchor="start" fill="#777" fontSize={fontSize}>
+        <text x={x} y={y} textAnchor="middle"
+              dominantBaseline="central" fill="#777" fontSize={30}>
           {renderUsagePer(totals)}%
         </text>
       </g>
@@ -41,24 +37,23 @@ const TotalPie = ({totals, cardWidth}) => {
   );
 
   const pieWidth = cardWidth - 32;  // cardTextのpaddingが16なので
-  const outerRadius = pieWidth * 0.3;
-  const innerRadius = outerRadius * 0.8;
+  const pieHeight = pieWidth * 0.65;
 
   return (
     <div>
-      <PieChart width={pieWidth} height={200}>
+      <PieChart width={pieWidth} height={pieHeight}>
         <Pie
           data={totals}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
+          innerRadius="80%"
+          outerRadius="100%"
           paddingAngle={1}
           fill="#8884d8">
 
           {colors.map( (color, idx) => renderCell(color, idx))}
 
         </Pie>
-        {renderShape(totals)}
         <Tooltip />
+        {renderShape(totals, pieWidth, pieHeight)}
       </PieChart>
     </div>
   );
