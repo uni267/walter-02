@@ -39,3 +39,9 @@ export const LOGGER_CONFIG = {
     }
   },
 };
+
+// 権限
+export const FILE_READ = "read";
+export const FILE_WRITE = "write";
+export const FILE_DELETE = "delete";
+

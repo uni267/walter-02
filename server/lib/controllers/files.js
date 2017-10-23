@@ -23,6 +23,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 import Role from "../models/Role";
 import Authority from "../models/Authority";
+import Action from "../models/Action";
 import { Swift } from "../storages/Swift";
 
 export const index = (req, res, next) => {
@@ -34,9 +35,25 @@ export const index = (req, res, next) => {
         dir_id = res.user.tenant.home_dir_id;
       }
 
+      // read を持つ role を取得する
+      const action = yield Action.findOne({ name:constants.FILE_READ });
+      const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => role._id );
+
+      // login user が "read" 権限を持つファイルIDの一覧を取得する
+      const authorities = yield Authority.find(
+        {
+          users: mongoose.Types.ObjectId(res.user._id),
+          roles: {$in: role }
+        });
+
+      const file_ids = authorities
+        .filter( authority => (authority.files[0] !== undefined))
+        .map( authority => authority.files[0] );
+
       const conditions = {
         dir_id: mongoose.Types.ObjectId(dir_id),
-        is_deleted: false
+        is_deleted: false,
+        _id: {$in : file_ids}
       };
       const sortOption = createSortOption(sort, order);
 
@@ -44,7 +61,7 @@ export const index = (req, res, next) => {
       if (page === undefined || page === null || page === "") page = 0;
       const limit = constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
-mongoose.set("debug",true);
+
       const total = yield File.find(conditions).count();
 
       let files = yield File.aggregate([
@@ -64,15 +81,16 @@ mongoose.set("debug",true);
       ]).skip(offset).limit(limit).sort(sortOption);
 
       files = yield File.populate(files,{ path:'authorities.users', model: User } );
+      files = yield File.populate(files,{ path:'authorities.roles', model: Role } );
 
-mongoose.set("debug",false);
+
       res.json({
         status: { success: true, total },
         body: files
       });
     }
     catch (e) {
-console.log(e);
+
       let errors = {};
       switch (e) {
       case "dir_id is empty":
@@ -164,6 +182,21 @@ export const search = (req, res, next) => {
 
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
+      // read を持つ role を取得する
+      const action = yield Action.findOne({ name:constants.FILE_READ });
+      const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => role._id );
+
+      // login user が "read" 権限を持つファイルIDの一覧を取得する
+      const authorities = yield Authority.find(
+        {
+          users: mongoose.Types.ObjectId(res.user._id),
+          roles: {$in: role }
+        });
+
+      const file_ids = authorities
+        .filter( authority => (authority.files[0] !== undefined))
+        .map( authority => authority.files[0] );
+
       const conditions = {
         dir_id: { $ne: trash_dir_id },
         $or: [
@@ -171,7 +204,8 @@ export const search = (req, res, next) => {
           { "meta_infos.value": { $regex: q } }
         ],
         is_display: true,
-        is_deleted: false
+        is_deleted: false,
+        _id: {$in : file_ids}
       };
 
       const _page = page === undefined || page === null || page === ""
@@ -487,7 +521,7 @@ export const upload = (req, res, next) => {
         name: "フルコントロール" // @fixme
       });
 
-      const createFiles = myFiles.map( _file => {
+      const files = myFiles.map( _file => {
         const file = new File();
         file.name = _file.name;
         file.mime_type = _file.mime_type;
@@ -509,7 +543,9 @@ export const upload = (req, res, next) => {
         // file.authorities = file.authorities.concat({ user: user, group: null, role });
         const authority = new Authority();
         authority.users = user;
-        file.authorities = authority;
+        authority.files = file;
+        authority.roles = role;
+        file.authorities = [ authority ];
 
         const history = {
           modified: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -531,19 +567,16 @@ export const upload = (req, res, next) => {
         return { createFiles:file, createAuthorities:authority };
       });
 
-      // 参考: 並列にyeildしてくれる
-      // const [user, group] = yield [User.findById(""), Group.findById("")]
-      const changedFiles = yield createFiles.map( file => {
-        file.createAuthorities.save() ;
-        return file.createFiles.save() ;
+      const changedResults = yield files.map( file => {
+        return co(function* () {
+          const [cahngedFiles ,changedAuthorities] = yield [file.createFiles.save(),file.createAuthorities.save()];
+          return cahngedFiles;
+        })
       });
-
-      logger.info('file uploaded');
-      logger.info(changedFiles);
 
       res.json({
         status: { success: true },
-        body: changedFiles
+        body: changedResults
       });
 
     }
@@ -877,16 +910,18 @@ export const addAuthority = (req, res, next) => {
       const _role = yield Role.findById(role._id);
       if (_role === null) throw "role is empty";
 
+      const authority = new Authority();
+      authority.files = file;
+      authority.users = _user;
+      authority.roles = _role;
+      const createdAuthority = yield authority.save();
+
       file.authorities = [
         ...file.authorities,
-        {
-          role: _role,
-          group: null,
-          user: _user
-        }
+        createdAuthority
       ];
 
-      const changedFile = yield file.save();
+      const changedFile = yield file.save()
 
       res.json({
         status: { success: true },
