@@ -35,20 +35,7 @@ export const index = (req, res, next) => {
         dir_id = res.user.tenant.home_dir_id;
       }
 
-      // read を持つ role を取得する
-      const action = yield Action.findOne({ name:constants.FILE_READ });
-      const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => role._id );
-
-      // login user が "read" 権限を持つファイルIDの一覧を取得する
-      const authorities = yield Authority.find(
-        {
-          users: mongoose.Types.ObjectId(res.user._id),
-          roles: {$in: role }
-        });
-
-      const file_ids = authorities
-        .filter( authority => (authority.files[0] !== undefined))
-        .map( authority => authority.files[0] );
+      const file_ids = yield getAllowedFileIds(res.user._id, constants.LIST_READ );
 
       const conditions = {
         dir_id: mongoose.Types.ObjectId(dir_id),
@@ -117,8 +104,14 @@ export const view = (req, res, next) => {
           file_id === null ||
           file_id === "") throw "file_id is empty";
 
-      const file = yield File.findById(file_id);
-
+      const file_ids = yield getAllowedFileIds(res.user._id, constants.FILE_READ );
+      const file = yield File.findOne({
+         $and:[
+           {_id: mongoose.Types.ObjectId(file_id)},
+           {_id: {$in : file_ids}}
+                ]
+        });
+      if(file === null || file === "") throw "file is empty";
       if (file.is_deleted) throw "file is deleted";
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
@@ -135,6 +128,9 @@ export const view = (req, res, next) => {
       switch (e) {
       case "file_id is empty":
         errors.file_id = "ファイルが見つかりません";
+        break;
+      case "file is empty":
+        errors.file = "ファイルが見つかりません";
         break;
       case "file is deleted":
         errors.file = "ファイルは削除されています";
@@ -182,20 +178,7 @@ export const search = (req, res, next) => {
 
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
-      // read を持つ role を取得する
-      const action = yield Action.findOne({ name:constants.FILE_READ });
-      const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => role._id );
-
-      // login user が "read" 権限を持つファイルIDの一覧を取得する
-      const authorities = yield Authority.find(
-        {
-          users: mongoose.Types.ObjectId(res.user._id),
-          roles: {$in: role }
-        });
-
-      const file_ids = authorities
-        .filter( authority => (authority.files[0] !== undefined))
-        .map( authority => authority.files[0] );
+      const file_ids = yield getAllowedFileIds(res.user._id, constants.LIST_READ );
 
       const conditions = {
         dir_id: { $ne: trash_dir_id },
@@ -1313,4 +1296,27 @@ const createSortOption = (_sort=null, _order=null) => {
     sort[_sort] = order;
   }
   return sort;
+}
+
+const getAllowedFileIds = (user_id, permission) => {
+  return co(function*(){
+    // read を持つ role を取得する
+    const action = yield Action.findOne({ name:permission });
+    const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => role._id );
+
+    // login user が "read" 権限を持つファイルIDの一覧を取得する
+    const authorities = yield Authority.find(
+      {
+        users: mongoose.Types.ObjectId(user_id),
+        roles: {$in: role }
+      });
+
+    return new Promise((resolve, reject) => {
+      resolve(
+        authorities.filter( authority => (authority.files[0] !== undefined))
+        .map( authority => authority.files[0] )
+      );
+    })
+
+  })
 }

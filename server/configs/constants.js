@@ -41,6 +41,7 @@ export const LOGGER_CONFIG = {
 };
 
 // 権限
+export const LIST_READ = "read";  // 一覧と詳細の権限を別にする場合は分ける
 export const FILE_READ = "read";
 export const FILE_WRITE = "write";
 export const FILE_DELETE = "delete";
