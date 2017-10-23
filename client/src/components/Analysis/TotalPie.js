@@ -13,7 +13,7 @@ const TotalPie = ({totals, cardWidth}) => {
     const renderUsagePer = (totals) => {
       if (totals.length === 0) return "N/A";
       const total = totals.reduce( (a, b) => a.value + b.value );
-      const usage = totals.filter( total => total.is_usage )[0].value;
+      const usage = totals.filter( total => total.name === "usage" )[0].value;
       return Math.round(usage / total * 100);
     };
 

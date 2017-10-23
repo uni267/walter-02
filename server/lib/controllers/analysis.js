@@ -6,8 +6,8 @@ export const index = (req, res, next) => {
     try {
       const data = {
         totals: [
-          { name: "使用容量", value: 30, is_usage: true },
-          { name: "空き容量", value: 100 }
+          { name: "usage", label: "使用容量", value: 30 },
+          { name: "free", label: "空き容量", value: 170 }
         ],
         usages: [
           { name: "2017-01", usage: 10, free: 90 },

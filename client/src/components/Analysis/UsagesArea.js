@@ -18,7 +18,7 @@ const UsagesArea = ({usages, cardWidth}) => {
     <AreaChart width={areaWidth} height={areaHeight} data={usages}>
       <XAxis dataKey="name" />
       <YAxis />
-      <CartesianGrid strokeDasharray="1 1" />
+      <CartesianGrid strokeDasharray="3 3" />
       <Tooltip />
       <Area type='monotone' stackId={1} dataKey='usage' fill='#ff9896' stroke="#d62728" />
       <Area type="monotone" stackId={1} dataKey="free" fill="#aec7e8" stroke="#1f77b4" />
