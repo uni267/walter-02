@@ -1302,7 +1302,8 @@ const getAllowedFileIds = (user_id, permission) => {
   return co(function*(){
 
     const action = yield Action.findOne({ name:permission });
-    const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => role._id );
+    const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+
 
     const authorities = yield Authority.find(
       {
@@ -1310,7 +1311,7 @@ const getAllowedFileIds = (user_id, permission) => {
         roles: {$in: role }
       });
 
-    const file_ids = authorities.filter( authority => (authority.files[0] !== undefined)).map( authority => authority.files[0]);
+    const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
     return new Promise((resolve, reject) => resolve(file_ids) )
 
