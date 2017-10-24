@@ -58,7 +58,12 @@ db.dirs.insert(dirs);
 // ===============================
 
 // tenants
-var tenant = { name: "test", home_dir_id: top_id, trash_dir_id: trash_id };
+var tenant = {
+  name: "test",
+  home_dir_id: top_id,
+  trash_dir_id: trash_id,
+  threshold: 1024 * 1024 * 1024 * 100
+};
 db.tenants.insert(tenant);
 
 // ===============================
