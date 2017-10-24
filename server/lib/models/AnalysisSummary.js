@@ -3,11 +3,11 @@ import mongoose, { Schema } from "mongoose";
 mongoose.Promise = global.Promise;
 
 const AnalysisSummarySchema = Schema({
+  tenant_id: Schema.Types.ObjectId,
   name: String,
-  type_name: String,
+  label: String,
   value: Number,
-  created_at: { type: Date, default: Date.now },
-  tenant_id: Schema.Types.ObjectId
+  created_at: { type: Date, default: Date.now }
 });
 
 const AnalysisSummary = mongoose.model(
