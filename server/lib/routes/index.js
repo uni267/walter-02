@@ -12,6 +12,7 @@ import ActionRouter from "./actions";
 import AnalysisRouter from "./analysis";
 import ClientRouter from "./clients";
 import PreviewRouter from "./previews";
+import AuthorityRouter from "./authorities";
 
 // debug
 import TestRouter from "./test";
@@ -32,6 +33,7 @@ router.use("/api/v1/roles", RoleRouter);
 router.use("/api/v1/actions", ActionRouter);
 router.use("/api/v1/analysis", AnalysisRouter);
 router.use("/api/v1/previews", PreviewRouter);
+router.use("/api/v1/authorities", AuthorityRouter);
 
 // debug
 router.use("/test", TestRouter);
