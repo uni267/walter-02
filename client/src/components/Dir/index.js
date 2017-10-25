@@ -66,18 +66,19 @@ class Dir extends Component {
   };
 
   renderMember = () => {
-    const { authorities } = this.props.dir;
+    return null;
+    // const { authorities } = this.props.dir;
 
-    const member = authorities.length > 1
-          ? `${authorities.length} 人のメンバー`
-          : `${authorities[0].user.name} のみ`;
+    // const member = authorities.length > 1
+    //       ? `${authorities.length} 人のメンバー`
+    //       : `${authorities[0].user.name} のみ`;
 
-    return (
-      <span
-        onClick={() => this.setState({ editAuthority: { open: true } })}>
-        {member}
-      </span>
-    );
+    // return (
+    //   <span
+    //     onClick={() => this.setState({ editAuthority: { open: true } })}>
+    //     {member}
+    //   </span>
+    // );
 
   };
 
