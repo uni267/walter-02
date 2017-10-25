@@ -5,9 +5,13 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { schemeCategory20 } from "d3-scale";
 
 const NoShapePie = ({data, cardWidth}) => {
-  const renderCell = (entry, idx) => (
-    <Cell fill={schemeCategory20[idx]} key={idx} />
-  );
+  const renderCells = (data) => {
+    if (data === undefined || data.length === 0) return "N/A";
+
+    return data.map( (entry, idx) => (
+      <Cell fill={schemeCategory20[idx]} key={idx} />
+    ));
+  };
 
   const pieWidth = cardWidth - 32;
   const pieHeight = pieWidth * 0.65;
@@ -20,7 +24,7 @@ const NoShapePie = ({data, cardWidth}) => {
         fill="#8884d8"
         label>
 
-        { data.map((entry, idx) => renderCell(entry, idx)) }
+        { renderCells(data) }
 
       </Pie>
       <Tooltip />

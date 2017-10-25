@@ -75,7 +75,7 @@ class AnalysisContainer extends Component {
                     <CardTitle subtitle="使用率(フォルダ毎)" />
                     <CardText>
                       <NoShapePie
-                        data={this.props.folders} 
+                        data={this.props.useRateFolder} 
                         cardWidth={ rowWidth / 2 } />
                     </CardText>
                   </Card>
@@ -84,7 +84,7 @@ class AnalysisContainer extends Component {
                     <CardTitle subtitle="使用率(ユーザ/グループ毎)" />
                     <CardText>
                       <NoShapePie
-                        data={this.props.users}
+                        data={this.props.useRateUser}
                         cardWidth={ rowWidth / 2 } />
                     </CardText>
                   </Card>
@@ -95,7 +95,7 @@ class AnalysisContainer extends Component {
                     <CardTitle subtitle="使用率(ファイル種別毎)" />
                     <CardText>
                       <NoShapePie
-                        data={this.props.mimetypes}
+                        data={this.props.useRateMimeType}
                         cardWidth={ rowWidth / 2 } />
                     </CardText>
                   </Card>
@@ -104,7 +104,7 @@ class AnalysisContainer extends Component {
                     <CardTitle subtitle="使用率(タグ毎)" />
                     <CardText>
                       <NoShapePie
-                        data={this.props.tags}
+                        data={this.props.useRateTag}
                         cardWidth={ rowWidth / 2 } />
                     </CardText>
                   </Card>
@@ -132,12 +132,12 @@ class AnalysisContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    totals: state.analysis.totals,
+    useRateTotal: state.analysis.useRateTotal,
     usages: state.analysis.usages,
-    folders: state.analysis.folders,
-    users: state.analysis.users,
-    mimetypes: state.analysis.mimetypes,
-    tags: state.analysis.tags,
+    useRateFolder: state.analysis.useRateFolder,
+    useRateUser: state.analysis.useRateUser,
+    useRateMimeType: state.analysis.useRateMimeType,
+    useRateTag: state.analysis.useRateTag,
     fileCount: state.analysis.fileCount,
     folderCount: state.analysis.folderCount
   };

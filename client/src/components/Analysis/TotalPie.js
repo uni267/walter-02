@@ -3,21 +3,22 @@ import React from "react";
 // recharts
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 
-const TotalPie = ({totals, cardWidth}) => {
+const TotalPie = ({useRateTotal, cardWidth}) => {
   const colors = [
     "#d2584c", // 使用中
     "#00bcd4"  // 空き
   ];
 
-  const renderShape = (totals, pieWidth, pieHeight) => {
-    const renderUsagePer = (totals) => {
-      if (totals.length === 0) return "N/A";
-      const total = totals.reduce( (a, b) => a.value + b.value );
-      const usage = totals.filter( total => total.name === "usage" )[0].value;
-      return Math.round(usage / total * 100);
+  const renderShape = (useRateTotal, pieWidth, pieHeight) => {
+
+    const renderUsagePer = (useRateTotal) => {
+      if (useRateTotal.length === 0) return "N/A";
+      const total = useRateTotal.reduce( (a, b) => a.value + b.value );
+      const usage = useRateTotal.filter( total => total.name === "usage" )[0].value;
+      return (usage / total * 100).toFixed(2);
     };
 
-    const usage = renderUsagePer(totals);
+    const usage = renderUsagePer(useRateTotal);
 
     const x = pieWidth / 2;
     const y = pieHeight / 2;
@@ -26,7 +27,7 @@ const TotalPie = ({totals, cardWidth}) => {
       <g>
         <text x={x} y={y} textAnchor="middle"
               dominantBaseline="central" fill="#777" fontSize={30}>
-          {renderUsagePer(totals)}%
+          {renderUsagePer(useRateTotal)}%
         </text>
       </g>
     );
@@ -43,7 +44,7 @@ const TotalPie = ({totals, cardWidth}) => {
     <div>
       <PieChart width={pieWidth} height={pieHeight}>
         <Pie
-          data={totals}
+          data={useRateTotal}
           innerRadius="80%"
           outerRadius="100%"
           paddingAngle={1}
@@ -53,7 +54,7 @@ const TotalPie = ({totals, cardWidth}) => {
 
         </Pie>
         <Tooltip />
-        {renderShape(totals, pieWidth, pieHeight)}
+        {renderShape(useRateTotal, pieWidth, pieHeight)}
       </PieChart>
     </div>
   );

@@ -101,7 +101,7 @@ const task = () => {
           threshold: f.threshold,
           used: f.used,
           free: f.threshold - f.used,
-          used_rate: f.used / f.threshold * 100
+          used_rate: (f.used / f.threshold * 100).toFixed(2)
         }))
       );
 
@@ -231,16 +231,20 @@ const task = () => {
         return f;
       });
 
+      // debug
+      // console.log(util.inspect(folderRatesCombined, false, null));
+      // debug      
+
       yield AnalysisUseRateFolder.insertMany(
         folderRatesCombined.map( r => ({
           reported_at: parseInt( moment().format("YYYYMMDD"), 10 ),
-          tenant_id: Types.ObjectId(r.tenantId),
+          tenant_id: Types.ObjectId(r.tenant_id),
           name: "useRateFolder",
           label: "フォルダ毎の使用率",
           dir_name: r.dir_name,
           used: r.used,
           used_total: r.usedTotal,
-          rate: r.used / r.usedTotal * 100
+          rate: (r.used / r.usedTotal * 100).toFixed(2)
         }))
       );
 
@@ -366,7 +370,7 @@ const task = () => {
           used: t.used,
           count: t.count,
           used_total: t.used_total,
-          rate: t.used / t.used_total * 100
+          rate: (t.used / t.used_total * 100).toFixed(2)
         }))
       );
 
@@ -467,7 +471,7 @@ const task = () => {
           used_total: m.used_total,
           count: m.count,
           count_total: m.count_total,
-          rate: m.used / m.used_total * 100
+          rate: (m.used / m.used_total * 100).toFixed(2)
         }))
       );
 

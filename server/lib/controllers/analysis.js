@@ -1,63 +1,83 @@
 import co from "co";
+import util from "util";
 import mongoose from "mongoose";
+import moment from "moment";
+
+import AnalysisUseRateTotal from "../models/AnalysisUseRateTotal";
+import AnalysisFileCount from "../models/AnalysisFileCount";
+import AnalysisFolderCount from "../models/AnalysisFolderCount";
+import AnalysisUseRateFolder from "../models/AnalysisUseRateFolder";
+import AnalysisUseRateTag from "../models/AnalysisUseRateTag";
+import AnalysisUseRateMimeType from "../models/AnalysisUseRateMimeType";
 
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const data = {
-        totals: [
-          { name: "usage", label: "使用容量", value: 30 },
-          { name: "free", label: "空き容量", value: 170 }
-        ],
-        usages: [
-          { name: "2017-01", usage: 10, free: 90 },
-          { name: "2017-02", usage: 15, free: 85 },
-          { name: "2017-03", usage: 20, free: 80 },
-          { name: "2017-04", usage: 30, free: 70 },
-          { name: "2017-05", usage: 40, free: 60 },
-          { name: "2017-06", usage: 60, free: 40 },
-          { name: "2017-07", usage: 65, free: 35 },
-          { name: "2017-08", usage: 70, free: 30 },
-          { name: "2017-09", usage: 75, free: 25 }
-        ],
-        folders: [
-          { name: "folderA", value: 100 },
-          { name: "folderB", value: 80 },
-          { name: "folderC", value: 70 },
-          { name: "folderD", value: 60 },
-          { name: "folderE", value: 50 },
-          { name: "folderF", value: 40 },
-          { name: "folderG", value: 30 },
-          { name: "folderH", value: 20 },
-          { name: "folderI", value: 10 },
-          { name: "folderJ", value: 1 },
-        ],
-        users: [
-          { name: "taro", value: 100 },
-          { name: "hanako", value: 30 }
-        ],
-        mimetypes: [
-          { name: "excel", value: 100 },
-          { name: "pdf", value: 30 },
-          { name: "csv", value: 20 },
-          { name: "txt", value: 10 }
-        ],
-        tags: [
-          { name: "大事", value: 100 },
-          { name: "仕事", value: 30 },
-          { name: "それ以外", value: 20 }
-        ],
-        fileCount: [
-          { name: "fileCount", value: 1000 }
-        ],
-        folderCount: [
-          { name: "folderCount", value: 10 }
-        ]
+      const { reported_at } = req.query;
+      let conditions = {
+        tenant_id: res.user.tenant_id
       };
+
+      if (reported_at === null || reported_at === undefined || reported_at === "") {
+        conditions.reported_at = moment().format("YYYYMMDD");
+      } else {
+        conditions.reported_at = reported_at;
+      }
+
+      let [
+        useRateTotal,
+        fileCount,
+        folderCount,
+        useRateFolder,
+        useRateTag,
+        useRateMimeType
+      ] = yield [
+        AnalysisUseRateTotal.find(conditions),
+        AnalysisFileCount.find(conditions),
+        AnalysisFolderCount.find(conditions),
+        AnalysisUseRateFolder.find(conditions),
+        AnalysisUseRateTag.find(conditions),
+        AnalysisUseRateMimeType.find(conditions)
+      ];
+
+      useRateTotal = [
+        { name: "usage", label: "使用容量", value: useRateTotal[0].used },
+        { name: "free", label: "空き容量", value: useRateTotal[0].free }
+      ];
+
+      fileCount = [{
+        name: "fileCount", value: fileCount[0].count
+      }];
+
+      folderCount = [{
+        name: "folderCount", value: folderCount[0].count
+      }];
+
+      useRateFolder = useRateFolder.map( f => ({
+        name: f.dir_name, value: f.rate
+      }));
+
+      useRateTag = useRateTag.map( t => {
+        if (t.tag_label === null) {
+          t.tag_label = "タグなし";
+        }
+        return { name: t.tag_label, value: t.rate };
+      });
+
+      useRateMimeType = useRateMimeType.map( m => ({
+        name: m.mime_type, value: m.rate
+      }));
 
       res.json({
         status: { success: true },
-        body: data
+        body: {
+          useRateTotal,
+          fileCount,
+          folderCount,
+          useRateFolder,
+          useRateTag,
+          useRateMimeType
+        }
       });
     }
     catch (e) {

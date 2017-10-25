@@ -1,15 +1,14 @@
 import * as actionTypes from "../actionTypes";
 
 const initialState = {
-  totals: [],
-  folders: [],
-  usages: [],
-  file_count: [],
-  users: [],
-  mimetypes: [],
-  tags: [],
+  useRateTotal: [],
   fileCount: [],
-  folderCount: []
+  folderCount: [],
+  useRateFolder: [],
+  useRateTag: [],
+  useRateMimeType: [],
+  useRateUser: [],
+  usages: []
 };
 
 const analysisReducer = (state = initialState, action) => {
