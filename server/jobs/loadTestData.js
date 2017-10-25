@@ -338,4 +338,4 @@ var authority_files = {
   groups : null
 };
 
-db.authority_files.insert(authority_file);
+db.authority_files.insert(authority_files);
