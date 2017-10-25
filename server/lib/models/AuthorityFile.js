@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+ import mongoose, { Schema } from "mongoose";
 import { logger } from "../index"
 import co from "co";
 
@@ -20,7 +20,7 @@ AuthoritySchema.statics.getActions = function(condition){
   const _this = this;
   return co(function* (){
     try {
-      const authorityActions = yield Authority.aggregate(
+      const authorityActions = yield _this.aggregate(
         { $match: condition},
         { $lookup: {
           from: "roles",
@@ -61,6 +61,6 @@ AuthoritySchema.statics.getActions = function(condition){
   })
 };
 
-const Authority = mongoose.model("authorities", AuthoritySchema, "authorities");
+const AuthorityFile = mongoose.model("authority_files", AuthoritySchema, "authority_files");
 
-export default Authority;
+export default AuthorityFile;

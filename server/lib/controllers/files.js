@@ -22,7 +22,7 @@ import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
 import Role from "../models/Role";
-import Authority from "../models/Authority";
+import AuthorityFile from "../models/AuthorityFile";
 import Action from "../models/Action";
 import { Swift } from "../storages/Swift";
 
@@ -51,25 +51,7 @@ export const index = (req, res, next) => {
 
       const total = yield File.find(conditions).count();
 
-      let files = yield File.aggregate([
-        { $match: conditions },
-        { $lookup: {
-          from: "tags",
-          localField: "tags",
-          foreignField: "_id",
-          as: "tags"
-        }},
-        { $lookup:{
-          from: "authorities",
-          localField: "authorities",
-          foreignField: "_id",
-          as: "authorities"
-        }}
-      ]).skip(offset).limit(limit).sort(sortOption);
-
-      files = yield File.populate(files,{ path:'authorities.users', model: User } );
-      files = yield File.populate(files,{ path:'authorities.roles', model: Role } );
-
+      let files = yield File.searchFiles(conditions,offset,limit,sortOption);
 
       res.json({
         status: { success: true, total },
@@ -105,20 +87,23 @@ export const view = (req, res, next) => {
           file_id === "") throw "file_id is empty";
 
       const file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_DETAIL );
-      const file = yield File.findOne({
-         $and:[
-           {_id: mongoose.Types.ObjectId(file_id)},
-           {_id: {$in : file_ids}}
+      const conditions = {
+        $and:[
+          {_id: mongoose.Types.ObjectId(file_id)},
+          {_id: {$in : file_ids}}
                 ]
-        });
-      if(file === null || file === "") throw "file is empty";
+        };
+
+      const file = yield File.searchFileOne(conditions);
+
+      if(file === null || file === "" || file === undefined) throw "file is empty";
       if (file.is_deleted) throw "file is deleted";
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
       res.json({
         status: { success: true },
-        body: { ...file.toObject(), tags }
+        body: { ...file, tags }
       });
 
     }
@@ -139,7 +124,7 @@ export const view = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-
+      logger.error(e);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -200,23 +185,7 @@ export const search = (req, res, next) => {
 
       const _sort = createSortOption(sort, order);
 
-      let files = yield File.aggregate([
-        { $match: conditions },
-        { $lookup: {
-          from: "tags",
-          localField: "tags",
-          foreignField: "_id",
-          as: "tags"
-        }},
-        { $lookup: {
-          from: "dirs",
-          localField: "dir_id",
-          foreignField: "descendant",
-          as: "dirs"
-        }},
-      ]).skip(offset).limit(limit).sort(_sort);
-
-      files = yield File.populate(files,'dirs.ancestor');
+      let files = yield File.searchFiles(conditions,offset,limit,_sort);
 
       files = files.map( file => {
         const route = file.dirs
@@ -516,7 +485,7 @@ export const upload = (req, res, next) => {
         file.is_star = false;
         file.tags = [];
         file.histories = [];
-        file.authorities = [];
+        file.authority_files = [];
         file.meta_infos = [];
         file.is_crypted = constants.USE_CRYPTO;
 
@@ -524,11 +493,11 @@ export const upload = (req, res, next) => {
 
         // アップロードしたユーザが所有者となる
         // file.authorities = file.authorities.concat({ user: user, group: null, role });
-        const authority = new Authority();
+        const authority = new AuthorityFile();
         authority.users = user;
         authority.files = file;
         authority.roles = role;
-        file.authorities = [ authority ];
+        file.authority_files = [ authority ];
 
         const history = {
           modified: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -893,14 +862,14 @@ export const addAuthority = (req, res, next) => {
       const _role = yield Role.findById(role._id);
       if (_role === null) throw "role is empty";
 
-      const authority = new Authority();
+      const authority = new AuthorityFile();
       authority.files = file;
       authority.users = _user;
       authority.roles = _role;
       const createdAuthority = yield authority.save();
 
-      file.authorities = [
-        ...file.authorities,
+      file.authority_files = [
+        ...file.authority_files,
         createdAuthority
       ];
 
@@ -928,7 +897,7 @@ export const addAuthority = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-
+      logger.error(e);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -1305,7 +1274,7 @@ const getAllowedFileIds = (user_id, permission) => {
     const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
 
 
-    const authorities = yield Authority.find(
+    const authorities = yield AuthorityFile.find(
       {
         users: mongoose.Types.ObjectId(user_id),
         roles: {$in: role }

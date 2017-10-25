@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as controller from "../controllers/authorities";
+import * as controller from "../controllers/authorityFiles";
 
 const router = Router();
 

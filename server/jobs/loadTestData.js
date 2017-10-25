@@ -11,7 +11,7 @@ db.meta_infos.drop();
 db.actions.drop();
 db.roles.drop();
 db.previews.drop();
-db.authorities.drop();
+db.authority_files.drop();
 
 // ===============================
 //  files collection
@@ -24,7 +24,7 @@ var files = [
     is_dir: true,
     dir_id: 0,
     is_display: false,
-    authorities: []
+    authority_files: []
   },
   {
     name: "Trash",
@@ -32,7 +32,7 @@ var files = [
     is_dir: true,
     dir_id: 0,
     is_display: false,
-    authorities: []
+    authority_files: []
   }
 ];
 
@@ -327,10 +327,10 @@ var preview = {
 db.previews.insert(preview);
 
 
-var authorities = {
+var authority_files = {
   roles : null,
   users : null,
   groups : null
 };
 
-db.authorities.insert(authorities);
+db.authority_files.insert(authority_file);

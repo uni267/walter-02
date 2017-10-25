@@ -5,7 +5,7 @@ import { logger } from "../index"
 
 import * as constants from "../../configs/constants";
 
-import Authority from "../models/Authority";
+import AuthorityFile from "../models/AuthorityFile";
 import Role from "../models/Role";
 import Action from "../models/Action";
 
@@ -15,7 +15,7 @@ export const index = (req, res, next) => {
       const user_id = res.user._id;
       const condition = { users: mongoose.Types.ObjectId(user_id) }
 
-      const actions = yield Authority.getActions(condition)
+      const actions = yield AuthorityFile.getActions(condition)
 
       res.json({
         status: { success: true },
@@ -55,7 +55,7 @@ export const files = (req, res, next) => {
         files: {$in: files}
       }
 
-      const actions = yield Authority.getActions(condition);
+      const actions = yield AuthorityFile.getActions(condition);
 
       res.json({
         status: { success: true },
