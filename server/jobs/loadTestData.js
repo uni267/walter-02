@@ -195,12 +195,60 @@ db.meta_infos.insert(meta_infos);
 // ===============================
 var actions = [
   {
-    name: "read",
-    label: "読み取り"
+    name: "list",
+    label: "一覧表示"
   },
   {
-    name: "write",
-    label: "書き込み"
+    name: "detail",
+    label: "詳細表示"
+  },
+  {
+    name: "history",
+    label: "履歴情報表示"
+  },
+  {
+    name: "download",
+    label: "ダウンロード"
+  },
+  {
+    name: "change-name",
+    label: "ファイル名変更"
+  },
+  {
+    name: "change-tag",
+    label: "タグ変更"
+  },
+  {
+    name: "change-meta-info",
+    label: "メタ情報変更"
+  },
+  {
+    name: "upload",
+    label: "アップロード"
+  },
+  {
+    name: "makedir",
+    label: "フォルダ作成"
+  },
+  {
+    name: "move",
+    label: "移動"
+  },
+  {
+    name: "copy",
+    label: "複製"
+  },
+  {
+    name: "restore",
+    label: "復元"
+  },
+  {
+    name: "delete",
+    label: "削除"
+  },
+  {
+    name: "revert",
+    label: "ゴミ箱から元に戻す"
   },
   {
     name: "authority",
@@ -219,7 +267,10 @@ var roles = [
     name: "読み取りのみ",
     description: "",
     actions: [
-      db.actions.findOne({ name: "read" })._id
+      db.actions.findOne({ name: "list" })._id,
+      db.actions.findOne({ name: "detail" })._id,
+      db.actions.findOne({ name: "history" })._id,
+      db.actions.findOne({ name: "download" })._id,
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
   },
@@ -227,8 +278,19 @@ var roles = [
     name: "編集可能",
     description: "読み取り + 書き込み",
     actions: [
-      db.actions.findOne({ name: "read" })._id,
-      db.actions.findOne({ name: "write" })._id
+      db.actions.findOne({ name: "list" })._id,
+      db.actions.findOne({ name: "detail" })._id,
+      db.actions.findOne({ name: "history" })._id,
+      db.actions.findOne({ name: "download" })._id,
+      db.actions.findOne({ name: "change-name" })._id,
+      db.actions.findOne({ name: "change-tag" })._id,
+      db.actions.findOne({ name: "change-meta-info" })._id,
+      db.actions.findOne({ name: "upload" })._id,
+      db.actions.findOne({ name: "makedir" })._id,
+      db.actions.findOne({ name: "copy" })._id,
+      db.actions.findOne({ name: "restore" })._id,
+      db.actions.findOne({ name: "delete" })._id,
+      db.actions.findOne({ name: "revert" })._id
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
   },
@@ -236,9 +298,21 @@ var roles = [
     name: "フルコントロール",
     description: "読み取り + 書き込み + 権限変更",
     actions: [
-      db.actions.findOne({ name: "read" })._id,
-      db.actions.findOne({ name: "write" })._id,
-      db.actions.findOne({ name: "authority" })._id
+      db.actions.findOne({ name: "list" })._id,
+      db.actions.findOne({ name: "detail" })._id,
+      db.actions.findOne({ name: "history" })._id,
+      db.actions.findOne({ name: "download" })._id,
+      db.actions.findOne({ name: "change-name" })._id,
+      db.actions.findOne({ name: "change-tag" })._id,
+      db.actions.findOne({ name: "change-meta-info" })._id,
+      db.actions.findOne({ name: "upload" })._id,
+      db.actions.findOne({ name: "makedir" })._id,
+      db.actions.findOne({ name: "copy" })._id,
+      db.actions.findOne({ name: "restore" })._id,
+      db.actions.findOne({ name: "delete" })._id,
+      db.actions.findOne({ name: "revert" })._id,
+      db.actions.findOne({ name: "authority" })._id,
+
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
   }

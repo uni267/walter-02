@@ -41,17 +41,18 @@ export const LOGGER_CONFIG = {
 };
 
 // 権限
-export const PERMISSION_VIEW_LIST = "read"; // 一覧と詳細の権限を別にする場合は分ける
-export const PERMISSION_VIEW_DETAIL = "read";
-export const PERMISSION_VIEW_HISTORY = "";
-export const PERMISSION_DOWNLOAD = "";
-export const PERMISSION_CHANGE_NAME = "";
-export const PERMISSION_CHANGE_TAG = "";
-export const PERMISSION_CHANGE_META_INFO = "";
-export const PERMISSION_UPLOAD = "";
-export const PERMISSION_MAKE_DIR = "";
-export const PERMISSION_MOVE = "";
-export const PERMISSION_COPY = "";
-export const PERMISSION_RESTORE = "";
+export const PERMISSION_VIEW_LIST = "list";
+export const PERMISSION_VIEW_DETAIL = "detail";
+export const PERMISSION_VIEW_HISTORY = "history";
+export const PERMISSION_DOWNLOAD = "download";
+export const PERMISSION_CHANGE_NAME = "change-name";
+export const PERMISSION_CHANGE_TAG = "change-tag";
+export const PERMISSION_CHANGE_META_INFO = "change-meta-info";
+export const PERMISSION_UPLOAD = "upload";
+export const PERMISSION_MAKE_DIR = "makedir";
+export const PERMISSION_MOVE = "move";
+export const PERMISSION_COPY = "copy";
+export const PERMISSION_RESTORE = "restore";
 export const PERMISSION_DELETE = "delete";
-export const PERMISSION_REVERT = "";
+export const PERMISSION_REVERT = "revert";
+export const PERMISSION_AUTHORITY = "authority";
