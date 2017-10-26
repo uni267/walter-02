@@ -6,8 +6,9 @@ import jwt from "jsonwebtoken";
 import multer from "multer";
 import moment from "moment";
 import morgan from "morgan";
-import { logger } from "../index"
-import { exec } from "child_process"
+import { logger } from "../index";
+import { exec } from "child_process";
+import * as commons from "./commons";
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -221,9 +222,22 @@ export const searchItems = (req, res, next) => {
           tenant_id === null ||
           tenant_id === "") throw "tenant_id is empty";
 
-      const meta_infos = yield MetaInfo.find({
-        tenant_id: mongoose.Types.ObjectId(tenant_id)
-      }).select({ key: 1, key_type: 1, value_type: 1 });
+      let { meta_only } = req.query;
+
+      if (meta_only === undefined ||
+          meta_only === null ||
+          meta_only === "") {
+        meta_only = false;
+      }
+
+      const conditions = {
+          tenant_id: mongoose.Types.ObjectId(tenant_id)
+      };
+
+      if (meta_only === "true") conditions.key_type = "meta";
+
+      const meta_infos = yield MetaInfo.find(conditions)
+            .select({ key: 1, key_type: 1, value_type: 1 });
 
       res.json({
         status: { success: true },
@@ -232,7 +246,7 @@ export const searchItems = (req, res, next) => {
     }
     catch (e) {
       const errors = {};
-      errors.unknown = e;
+      errors.unknown = commons.errorParser(e);
 
       res.status(400).json({
         status: { success: false, errors }
