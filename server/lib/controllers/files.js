@@ -240,7 +240,7 @@ export const searchItems = (req, res, next) => {
             .select({ key: 1, key_type: 1, value_type: 1 });
 
       res.json({
-        status: { success: true },
+        status: { success: true, message: "正常に取得が完了" },
         body: meta_infos
       });
     }
@@ -249,7 +249,7 @@ export const searchItems = (req, res, next) => {
       errors.unknown = commons.errorParser(e);
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "取得時にエラーが発生", errors }
       });
     }
   });
