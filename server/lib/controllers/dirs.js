@@ -2,11 +2,15 @@ import co from "co";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { logger } from "../index"
 
 import { SECURITY_CONF } from "../../configs/server";
 import Dir from "../models/Dir";
 import File from "../models/File";
 import Tenant from "../models/Tenant";
+import User from "../models/User";
+import RoleFile from "../models/RoleFile";
+import AuthorityFile from "../models/AuthorityFile";
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -126,52 +130,56 @@ export const tree = (req, res, next) => {
 };
 
 export const create = (req, res, next) => {
-  const { dir_id, dir_name } = req.body;
+  co(function*(){
+    try {
 
-  if (!dir_name) {
-    res.status(400).json({
-      status: {
-        success: false,
-        message: "フォルダ名が空のためエラー",
-        errors: { dirName: "フォルダ名が空のため作成に失敗しました"}
-      },
-      body: {}
-    });
-    return;
-  }
+      const { dir_name } = req.body;
+      let dir_id = req.body.dir_id;
+      if (dir_id === null ||
+        dir_id === undefined ||
+        dir_id === "" ||
+        dir_id === "undefined") {
 
-  // フォルダ情報を構築
-  const dir = new File();
-  dir.name = dir_name;
-  dir.modified = moment().format("YYYY-MM-DD HH:mm:ss");
-  dir.is_dir = true;
-  dir.dir_id = dir_id;
-  dir.is_display = true;
-  dir.is_star = false;
-  dir.tags = [];
-  dir.histories = [];
-  dir.authorities = [];
+        dir_id = res.user.tenant.home_dir_id;
+      }
 
-  // authoritiesを構築するためセッションからユーザ情報を抽出
-  const validationConditions = {
-    name: dir_name,
-    is_dir: true,
-    dir_id: mongoose.Types.ObjectId(dir_id)
-  };
+      if (!dir_name) {
+        res.status(400).json({
+          status: {
+            success: false,
+            message: "フォルダ名が空のためエラー",
+            errors: { dirName: "フォルダ名が空のため作成に失敗しました"}
+          },
+          body: {}
+        });
+        return;
+      }
 
-  File.find(validationConditions)
-    .then( files => {
-      if (files.length > 0) throw "name is duplication";
+      // フォルダ情報を構築
+      const dir = new File();
+      dir.name = dir_name;
+      dir.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+      dir.is_dir = true;
+      dir.dir_id = dir_id;
+      dir.is_display = true;
+      dir.is_star = false;
+      dir.tags = [];
+      dir.histories = [];
+      dir.authorities = [];
 
-      const user = res.user;
-      delete user.password;
+      const role = yield RoleFile.findOne({
+        tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
+        name: "フルコントロール" // @fixme
+      });
 
-      const authority = {
-        user: user,
-        role: { name: "full control", actions: [ "read", "write", "authority" ] }
-      };
+      const user = yield User.findById(res.user._id);
 
-      dir.authorities = dir.authorities.concat(authority);
+      // 作成したユーザが所有者となる
+      const authority = new AuthorityFile();
+      authority.users = user;
+      authority.files = dir;
+      authority.role_files = role;
+      dir.authority_files = [ authority ];
 
       const history = {
         modified: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -181,32 +189,32 @@ export const create = (req, res, next) => {
       };
 
       dir.histories = dir.histories.concat(history);
-      return dir.save();
-    })
-    .then( dir => {
 
-      res.dir = dir;
+      // authoritiesを構築するためセッションからユーザ情報を抽出
+      const validationConditions = {
+        name: dir_name,
+        is_dir: true,
+        dir_id: mongoose.Types.ObjectId(dir_id)
+      };
 
-      return Dir.find({ descendant: dir.dir_id })
-        .sort({ depth: 1 }).then( dirs => {
+      const _dir = yield File.find(validationConditions);
 
-          const conditions = { _id: dirs.map( dir => dir.ancestor ) };
-          const fields = { name: 1 };
+      if (_dir.length > 0) throw "name is duplication";
 
-          return File.find(conditions).select(fields).then( files => {
+      const { newDir, newAuthority} = yield { newDir: dir.save(), newAuthority: authority.save() };
 
-            const sorted = dirs.map(
-              dir => files.filter( file => file.id == dir.ancestor )
-            ).reduce( (a, b) => a.concat(b) );
+      const descendantDirs = yield Dir.find({ descendant: dir.dir_id }).sort({ depth: 1 });
 
-            return [{ _id: dir._id, name: dir.name }].concat(sorted);
-          });
+      const conditions = { _id: descendantDirs.map( dir => dir.ancestor ) };
+      const fields = { name: 1 };
 
-        });
+      const files = yield File.find(conditions).select(fields);
 
-    })
-    .then( sorted => {
-      return sorted.map( (dir, idx, all) => {
+      const sorted = descendantDirs.map( dir => files.filter( file => file.id == dir.ancestor )).reduce( (a,b) => a.concat(b));
+
+      const findedDirs = [{ _id: dir._id, name: dir.name }].concat(sorted);
+
+      const dirTree = findedDirs.map( (dir, idx, all) => {
         if (idx === 0) {
           return {
             ancestor: dir._id,
@@ -222,40 +230,31 @@ export const create = (req, res, next) => {
           };
         }
       });
-      
-    })
-    .then( dirs => {
-      return Dir.collection.insert(dirs);
-    })
-    .then( dirs => {
+      const savedDirs = yield Dir.collection.insert(dirTree);
+
       res.json({
         status: { success: true },
-        body: res.dir
+        body: savedDirs.dir
       });
-    })
-    .catch( err => {
-      console.log(err);
-      if (err === "name is duplication") {
-        res.status(400).json({
-          status: {
-            success: false,
-            message: "既に同じ名前のフォルダが存在します",
-            errors: { dirName: "既に同じ名前のフォルダが存在します" }
-          },
-          body: {}
-        });
+
+    } catch (e) {
+      let errors = {};
+
+      switch (e) {
+        case "name is duplication":
+          errors.name = "既に同じ名前のフォルダが存在します";
+          break;
+        default:
+          errors.unknown = e;
+          break;
       }
-      else {
-        res.status(500).json({
-          status: {
-            success: false,
-            message: "exception",
-            errors: err
-          },
-          body: {}
-        });
-      }
-    });
+      logger.error(errors);
+      console.log(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
 };
 
 export const move = (req, res, next) => {
