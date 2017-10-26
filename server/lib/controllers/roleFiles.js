@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import co from "co";
-import Role from "../models/Role";
+import RoleFile from "../models/RoleFile";
 import Action from "../models/Action";
 
 const { ObjectId } = mongoose.Types;
@@ -9,7 +9,7 @@ export const index = (req, res, next) => {
   co(function* () {
     try {
       const { tenant_id } = res.user;
-      const roles = yield Role.aggregate([
+      const roles = yield RoleFile.aggregate([
         {
           $match: {
             tenant_id: ObjectId(tenant_id)
@@ -50,23 +50,23 @@ export const create = (req, res, next) => {
           role.name === null ||
           role.name === "") throw "name is empty";
 
-      const _role = yield Role.findOne({
+      const _role = yield RoleFile.findOne({
         name: role.name,
         tenant_id: res.user.tenant_id
       });
 
       if ( _role !== null ) throw "name is duplicate";
 
-      const newRole = new Role();
-      newRole.name = role.name;
-      newRole.description = role.description;
-      newRole.tenant_id = res.user.tenant_id;
+      const newRoleFile = new RoleFile();
+      newRoleFile.name = role.name;
+      newRoleFile.description = role.description;
+      newRoleFile.tenant_id = res.user.tenant_id;
 
-      const createdRole = yield newRole.save();
+      const createdRoleFile = yield newRoleFile.save();
 
       res.json({
         status: { success: true },
-        body: createdRole
+        body: createdRoleFile
       });
     }
     catch (e) {
@@ -95,7 +95,7 @@ export const view = (req, res, next) => {
   co(function* () {
     try {
       const { role_id } = req.params;
-      const role = yield Role.findById(role_id);
+      const role = yield RoleFile.findById(role_id);
       if (role === null || role === undefined) throw "role is not found";
 
       const actions = yield Action.find({ _id: { $in: role.actions } });
@@ -113,7 +113,7 @@ export const view = (req, res, next) => {
         status: { success: false, errors }
       });
     }
-    
+
   });
 };
 
@@ -124,15 +124,15 @@ export const updateName = (req, res, next) => {
       const { name } = req.body;
       if (name === undefined || name === null || name === "") throw "name is empty";
 
-      const role = yield Role.findById(role_id);
+      const role = yield RoleFile.findById(role_id);
       if (role === undefined || role === null) throw "role is not found";
 
       role.name = name;
-      const changedRole = yield role.save();
+      const changedRoleFile = yield role.save();
 
       res.json({
         status: { success: true },
-        body: changedRole
+        body: changedRoleFile
       });
     }
     catch (e) {
@@ -163,15 +163,15 @@ export const updateDescription = (req, res, next) => {
       const { role_id } = req.params;
       const { description } = req.body;
 
-      const role = yield Role.findById(role_id);
+      const role = yield RoleFile.findById(role_id);
       if (role === undefined || role === null) throw "role is not found";
 
       role.description = description;
-      const changedRole = yield role.save();
+      const changedRoleFile = yield role.save();
 
       res.json({
         status: { success: true },
-        body: changedRole
+        body: changedRoleFile
       });
     }
     catch (e) {
@@ -197,15 +197,15 @@ export const remove = (req, res, next) => {
   co(function* () {
     try {
       const { role_id } = req.params;
-      const role = yield Role.findById(role_id);
+      const role = yield RoleFile.findById(role_id);
 
       if (role === null) throw "role is empty";
 
-      const deletedRole = role.remove();
+      const deletedRoleFile = role.remove();
 
       res.json({
         status: { success: true },
-        body: deletedRole
+        body: deletedRoleFile
       });
 
     }
@@ -228,12 +228,12 @@ export const remove = (req, res, next) => {
   });
 };
 
-export const removeActionOfRole = (req, res, next) => {
+export const removeActionOfRoleFile = (req, res, next) => {
   co(function* () {
     try {
       const { role_id, action_id } = req.params;
       const [ role, action ] = yield [
-        Role.findById(role_id),
+        RoleFile.findById(role_id),
         Action.findById(action_id)
       ];
 
@@ -244,11 +244,11 @@ export const removeActionOfRole = (req, res, next) => {
         return _action.toString() !== action._id.toString();
       });
 
-      const changedRole = yield role.save();
+      const changedRoleFile = yield role.save();
 
       res.json({
         status: { success: true },
-        body: changedRole
+        body: changedRoleFile
       });
 
     }
@@ -273,12 +273,12 @@ export const removeActionOfRole = (req, res, next) => {
   });
 };
 
-export const addActionToRole = (req, res, next) => {
+export const addActionToRoleFile = (req, res, next) => {
   co(function* () {
     try {
       const { role_id, action_id } = req.params;
       const [ role, action ] = yield [
-        Role.findById(role_id),
+        RoleFile.findById(role_id),
         Action.findById(action_id)
       ];
 
@@ -286,11 +286,11 @@ export const addActionToRole = (req, res, next) => {
       if (action === null) throw "action is empty";
 
       role.actions = [ ...role.actions, action._id ];
-      const changedRole = yield role.save();
+      const changedRoleFile = yield role.save();
 
       res.json({
         status: { success: true },
-        body: changedRole
+        body: changedRoleFile
       });
 
     }

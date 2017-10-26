@@ -3,7 +3,7 @@ import co from "co";
 import { logger } from "../index";
 
 import User from "./User";
-import Role from "./Role";
+import RoleFile from "./RoleFile";
 
 mongoose.Promise = global.Promise;
 
@@ -74,7 +74,7 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
 
       files = yield File.populate(files,{ path:'authorities.users', model: User } );
 
-      files = yield File.populate(files,{ path:'authorities.roles', model: Role } );
+      files = yield File.populate(files,{ path:'authorities.role_files', model: RoleFile } );
 
       return yield File.populate(files,'dirs.ancestor');
 

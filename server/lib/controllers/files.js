@@ -22,7 +22,7 @@ import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
-import Role from "../models/Role";
+import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
 import Action from "../models/Action";
 import { Swift } from "../storages/Swift";
@@ -482,7 +482,7 @@ export const upload = (req, res, next) => {
 
       const user = yield User.findById(res.user._id);
 
-      const role = yield Role.findOne({
+      const role = yield RoleFile.findOne({
         tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
         name: "フルコントロール" // @fixme
       });
@@ -506,11 +506,10 @@ export const upload = (req, res, next) => {
         if (user === null) throw "user is empty";
 
         // アップロードしたユーザが所有者となる
-        // file.authorities = file.authorities.concat({ user: user, group: null, role });
         const authority = new AuthorityFile();
         authority.users = user;
         authority.files = file;
-        authority.roles = role;
+        authority.role_files = role;
         file.authority_files = [ authority ];
 
         const history = {
@@ -873,13 +872,13 @@ export const addAuthority = (req, res, next) => {
       const _user = yield User.findById(user._id);
       if (_user === null) throw "user is empty";
 
-      const _role = yield Role.findById(role._id);
+      const _role = yield RoleFile.findById(role._id);
       if (_role === null) throw "role is empty";
 
       const authority = new AuthorityFile();
       authority.files = file;
       authority.users = _user;
-      authority.roles = _role;
+      authority.role_files = _role;
       const createdAuthority = yield authority.save();
 
       file.authority_files = [
@@ -1285,15 +1284,15 @@ const getAllowedFileIds = (user_id, permission) => {
   return co(function*(){
 
     const action = yield Action.findOne({ name:permission });
-    const role = (yield Role.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+    const role = (yield RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
 
 
     const authorities = yield AuthorityFile.find(
       {
         users: mongoose.Types.ObjectId(user_id),
-        roles: {$in: role }
+        role_files: {$in: role }
       });
-
+console.log(authorities);
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
     return new Promise((resolve, reject) => resolve(file_ids) )

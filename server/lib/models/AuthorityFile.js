@@ -6,7 +6,7 @@ mongoose.Promise = global.Promise;
 
 const AuthoritySchema = Schema({
   files : Schema.Types.ObjectId,
-  roles : { type:Schema.Types.ObjectId, ref:'roles'},
+  role_files : { type:Schema.Types.ObjectId, ref:'role_files'},
   users : { type:Schema.Types.ObjectId, ref:'users'},
   groups : { type:Schema.Types.ObjectId, ref:'groups'}
 });

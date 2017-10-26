@@ -2,13 +2,13 @@ import mongoose, { Schema } from "mongoose";
 
 mongoose.Promise = global.Promise;
 
-const RoleSchema = Schema({
+const RoleFileSchema = Schema({
   name: String,
   description: String,
   actions: Array,
   tenant_id: Schema.Types.ObjectId
 });
 
-const Role = mongoose.model("roles", RoleSchema, "roles");
+const RoleFile = mongoose.model("role_files", RoleFileSchema, "role_files");
 
-export default Role;
+export default RoleFile;

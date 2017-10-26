@@ -9,7 +9,7 @@ db.users.drop();
 db.tags.drop();
 db.meta_infos.drop();
 db.actions.drop();
-db.roles.drop();
+db.role_files.drop();
 db.previews.drop();
 db.authority_files.drop();
 
@@ -73,13 +73,13 @@ var groups = [
   {
     name: "全社",
     description: "全社員が所属するグループ",
-    roles: [],
+    role_files: [],
     tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
   },
   {
     name: "管理者",
     description: "システム管理者",
-    roles: [],
+    role_files: [],
     tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
   }
 ];
@@ -264,10 +264,10 @@ var actions = [
 db.actions.insert(actions);
 
 // ===============================
-//  roles collection
+//  role_files collection
 // ===============================
 
-var roles = [
+var role_files = [
   {
     name: "読み取りのみ",
     description: "",
@@ -323,7 +323,7 @@ var roles = [
   }
 ];
 
-db.roles.insert(roles);
+db.role_files.insert(role_files);
 
 var preview = {
   image: null
@@ -333,7 +333,7 @@ db.previews.insert(preview);
 
 
 var authority_files = {
-  roles : null,
+  role_files : null,
   users : null,
   groups : null
 };

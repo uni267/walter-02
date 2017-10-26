@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as controller from "../controllers/roles";
+import * as controller from "../controllers/roleFiles";
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.route("/:role_id/description")
 
 // action削除
 router.route("/:role_id/actions/:action_id")
-  .patch(controller.addActionToRole)
-  .delete(controller.removeActionOfRole);
+  .patch(controller.addActionToRoleFile )
+  .delete(controller.removeActionOfRoleFile );
 
 export default router;

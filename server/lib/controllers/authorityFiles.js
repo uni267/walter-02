@@ -6,7 +6,7 @@ import { logger } from "../index"
 import * as constants from "../../configs/constants";
 
 import AuthorityFile from "../models/AuthorityFile";
-import Role from "../models/Role";
+import Role from "../models/RoleFile";
 import Action from "../models/Action";
 
 export const index = (req, res, next) => {
