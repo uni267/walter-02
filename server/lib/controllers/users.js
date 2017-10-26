@@ -4,6 +4,9 @@ import crypto from "crypto";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
 import Group from "../models/Group";
+import AuthorityMenu from "../models/AuthorityMenu";
+
+const { ObjectId } = mongoose.Types;
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -124,11 +127,12 @@ export const add = (req, res, next) => {
     try {
       const user = new User(req.body.user);
       const { tenant_id } = res.user;
-      
+      const { role_id } = req.body.user;
+
       if (tenant_id === undefined ||
         tenant_id === null ||
         tenant_id === "") throw "tenant_id is empty";
-        
+
       user.tenant_id = tenant_id;
 
       if (user.account_name === undefined
@@ -147,6 +151,10 @@ export const add = (req, res, next) => {
           || user.password === null
           || user.password === "") throw "password is empty";
 
+      if (role_id === undefined
+          || role_id === null
+          || role_id === "") throw "role_id is empty";
+
       let _user = yield User.findOne({ account_name: user.account_name });
       if (_user !== null) throw "account_name is duplicate";
 
@@ -155,8 +163,13 @@ export const add = (req, res, next) => {
 
       const hash = crypto.createHash("sha512").update(user.password).digest("hex");
       user.password = hash;
-      
-      const createdUser = yield user.save();
+
+      const authority_menus = new AuthorityMenu;
+      authority_menus.role_menus = ObjectId(role_id);
+      authority_menus.users = user;
+      authority_menus.groups = null;
+
+      const {createdUser,createdAuthorityMenu} = yield { createdUser:user.save(), createdAuthorityMenu:authority_menus.save() }
 
       res.json({
         status: { success: true },
@@ -185,6 +198,9 @@ export const add = (req, res, next) => {
       case "password is empty":
         errors.password = "パスワードが空です";
         break;
+      case "role_id is empty":
+        errors.role_id = "ユーザ種類が空です";
+        break;
       default:
         errors = err;
         break;
@@ -203,7 +219,7 @@ export const updatePassword = (req, res, next) => {
       const { user_id } = req.params;
       const { current_password, new_password } = req.body;
 
-      if (current_password === null || 
+      if (current_password === null ||
           current_password === ""   ||
           current_password === undefined) throw "current password is empty";
 
@@ -215,7 +231,7 @@ export const updatePassword = (req, res, next) => {
       if (user === null || user === undefined) throw "user not found";
 
       const current_hash = crypto.createHash("sha512").update(current_password).digest("hex");
-      
+
       if (current_hash !== user.password) throw "password is not match";
 
       const new_hash = crypto.createHash("sha512").update(new_password).digest("hex");
@@ -227,7 +243,7 @@ export const updatePassword = (req, res, next) => {
         status: { success: true },
         body: changedUser
       });
-      
+
     }
     catch (e) {
       let errors = {};
@@ -290,7 +306,7 @@ export const updatePasswordForce = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-      
+
       switch (e) {
       case "user_id is empty":
         errors.user_id = e;
@@ -480,7 +496,7 @@ export const addUserToGroup = (req, res, next) => {
 export const removeUserOfGroup = (req, res, next) => {
   co(function* () {
     try {
-      const { user_id, group_id } = req.params;    
+      const { user_id, group_id } = req.params;
 
       const [ user, group ] = yield [
         User.findById(user_id),
@@ -493,7 +509,7 @@ export const removeUserOfGroup = (req, res, next) => {
       user.groups = user.groups.filter( _group => (
         _group.toString() !== group._id.toString()
       ));
-    
+
       const changedUser = yield user.save();
       res.json({
         status: { success: true },
