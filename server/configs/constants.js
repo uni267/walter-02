@@ -40,7 +40,7 @@ export const LOGGER_CONFIG = {
   },
 };
 
-// 権限
+// 権限(file)
 export const PERMISSION_VIEW_LIST = "list";
 export const PERMISSION_VIEW_DETAIL = "detail";
 export const PERMISSION_VIEW_HISTORY = "history";
@@ -56,3 +56,12 @@ export const PERMISSION_RESTORE = "restore";
 export const PERMISSION_DELETE = "delete";
 export const PERMISSION_REVERT = "revert";
 export const PERMISSION_AUTHORITY = "authority";
+
+// 権限(menu)
+export const PERMISSION_META_INFOS = "meta_infos";
+export const PERMISSION_GROUPS = "groups";
+export const PERMISSION_HOME = "home";
+export const PERMISSION_USERS = "users";
+export const PERMISSION_TAGS = "tags";
+export const PERMISSION_ROLES = "roles";
+export const PERMISSION_ANALYSIS = "analysis";

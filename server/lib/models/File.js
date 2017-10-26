@@ -65,7 +65,6 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
           tags: 1,
           is_deleted: 1,
           modified: 1,
-          __v: 1,
           preview_id: 1,
           dirs: 1,
           authorities: 1,

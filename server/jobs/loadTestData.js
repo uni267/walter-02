@@ -9,9 +9,12 @@ db.users.drop();
 db.tags.drop();
 db.meta_infos.drop();
 db.actions.drop();
+db.menus.drop();
 db.role_files.drop();
+db.role_menus.drop();
 db.previews.drop();
 db.authority_files.drop();
+db.authority_menus.drop();
 
 // ===============================
 //  files collection
@@ -324,6 +327,84 @@ var role_files = [
 ];
 
 db.role_files.insert(role_files);
+
+// ===============================
+//  menus collection
+// ===============================
+var menus = [
+  {
+    name: "home",
+    label: "ファイル一覧"
+  },
+  {
+    name: "tags",
+    label: "タグ管理"
+  },
+  {
+    name: "analysis",
+    label: "容量管理"
+  },
+  {
+    name: "users",
+    label: "ユーザ管理"
+  },
+  {
+    name: "groups",
+    label: "グループ管理"
+  },
+  {
+    name: "roles",
+    label: "ロール管理"
+  },
+  {
+    name: "meta_infos",
+    label: "メタ情報管理"
+  },
+]
+
+db.menus.insert(menus);
+
+var role_menus = [
+  {
+    name: "一般ユーザ",
+    description: "",
+    menus: [
+      db.menus.findOne({ name: "home" })._id,
+      db.menus.findOne({ name: "tags" })._id,
+    ],
+    tenant_id: db.tenants.findOne({ name: "test" })._id
+  },
+  {
+    name: "システム管理者",
+    description: "",
+    menus: [
+      db.menus.findOne({ name: "home" })._id,
+      db.menus.findOne({ name: "tags" })._id,
+      db.menus.findOne({ name: "analysis" })._id,
+      db.menus.findOne({ name: "users" })._id,
+      db.menus.findOne({ name: "groups" })._id,
+      db.menus.findOne({ name: "roles" })._id,
+      db.menus.findOne({ name: "meta_infos" })._id
+    ],
+    tenant_id: db.tenants.findOne({ name: "test" })._id
+  },
+
+]
+
+db.role_menus.insert(role_menus);
+
+var authority_menus = [{
+  role_menus : db.role_menus.findOne({ name: "一般ユーザ"})._id,
+  users : db.users.findOne({ name: "hanako"})._id,
+  groups : null
+},{
+  role_menus : db.role_menus.findOne({ name: "システム管理者"})._id,
+  users : db.users.findOne({ name: "taro"})._id,
+  groups : null
+}]
+
+db.authority_menus.insert(authority_menus);
+
 
 var preview = {
   image: null
