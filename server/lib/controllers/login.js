@@ -1,6 +1,8 @@
 import co from "co";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import util from "util";
+import * as commons from "./commons";
 import { SECURITY_CONF } from "../../configs/server";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
@@ -25,12 +27,13 @@ export const authentication = (req, res, next) => {
       const tenant = yield Tenant.findOne(user.tenant_id);
 
       const _user = { ...user.toObject(), tenant };
+      delete _user.password;
 
-      const { secretKey } = SECURITY_CONF.development;
-      const token = jwt.sign(_user, secretKey, { expiresIn: "7d" });
+      const { secretKey, expiresIn } = SECURITY_CONF.development;
+      const token = jwt.sign(_user, secretKey, { expiresIn });
 
       res.json({
-        status: { success: true },
+        status: { success: true, message: "ログインに成功しました" },
         body: { token, user: _user }
       });
     }
@@ -48,12 +51,15 @@ export const authentication = (req, res, next) => {
         errors.password = "パスワードに誤りがあります";
         break;
       default:
-        console.log(e);
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ログインに失敗しました",
+          errors
+        }
       });
     }
   });
