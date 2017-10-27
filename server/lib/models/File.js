@@ -21,7 +21,6 @@ const FileSchema = Schema({
   tags: Array,
   histories: Array,
   authority_files: [{ type:Schema.Types.ObjectId, ref:'authority_files'}],
-  meta_infos: Array,
   preview_id: Schema.Types.ObjectId,
   is_crypted: {type:Boolean, default: false}
 });
@@ -50,6 +49,46 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
           foreignField: "_id",
           as: "authorities"
         }},
+        { $lookup: {
+          from: "file_meta_infos",
+          localField: "_id",
+          foreignField: "file_id",
+          as: "meta_infos"
+        }},
+        { $unwind: "$meta_infos" },
+        { $lookup: {
+          from: "meta_infos",
+          localField: "meta_infos.meta_info_id",
+          foreignField: "_id",
+          as: "meta_info"
+        }},
+        { $unwind: "$meta_info" },
+        { $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          mime_type: { $first: "$mime_type" },
+          size: { $first: "$size" },
+          is_dir: { $first: "$is_dir" },
+          dir_id: { $first: "$dir_id" },
+          is_display: { $first: "$is_display" },
+          is_star: { $first: "$is_star" },
+          is_crypted: { $first: "$is_crypted" },
+          histories: { $first: "$histories" },
+          tags: { $first: "$tags" },
+          is_deleted: { $first: "$is_deleted" },
+          modified: { $first: "$modified" },
+          dirs: { $first: "$dirs" },
+          authorities: { $first: "$authorities" },
+          meta_infos: {
+            $push: {
+              _id: "$meta_info._id",
+              key: "$meta_info.key",
+              key_type: "$meta_info.key_type",
+              value_type: "$meta_info.value_type",
+              value: "$meta_infos.value"
+            }
+          }
+        }},
         { $project:{
           _id: 1,
           is_star: 1,
@@ -67,7 +106,7 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
           modified: 1,
           preview_id: 1,
           dirs: 1,
-          authorities: 1,
+          authorities: 1
         }},
       ]).skip(offset).limit(limit).sort(sortOption);
 

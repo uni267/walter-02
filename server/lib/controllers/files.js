@@ -6,8 +6,16 @@ import jwt from "jsonwebtoken";
 import multer from "multer";
 import moment from "moment";
 import morgan from "morgan";
-import { logger } from "../index";
 import { exec } from "child_process";
+import util from "util";
+import {
+  intersection,
+  zipWith,
+  flattenDeep
+} from "lodash";
+
+// etc
+import { logger } from "../index";
 import * as commons from "./commons";
 
 // constants
@@ -25,6 +33,7 @@ import Tenant from "../models/Tenant";
 import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
 import Action from "../models/Action";
+import FileMetaInfo from "../models/FileMetaInfo";
 import { Swift } from "../storages/Swift";
 
 export const index = (req, res, next) => {
@@ -482,66 +491,205 @@ export const upload = (req, res, next) => {
 
       const user = yield User.findById(res.user._id);
 
-      const role = yield RoleFile.findOne({
-        tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
-        name: "フルコントロール" // @fixme
-      });
+      if (user === null) throw "user is empty";
 
-      const files = myFiles.map( _file => {
-        const file = new File();
+      // ファイルの基本情報
+      // Modelで定義されていないプロパティを使いたいので
+      // オブジェクトで作成し、後でModelObjectに一括変換する
+      let files = myFiles.map( _file => {
+        const file = {
+          hasError: false,  // エラーフラグ
+          errors: {}        // エラー情報
+        };
+
+        if (_file.name === null || _file.name === undefined ||
+            _file.name === "" || _file.name === "undefined") {
+          file.hasError = true;
+          file.errors = { name: "file.name is empty" };
+        }
+
+        if (_file.mime_type === null || _file.mime_type === undefined ||
+            _file.mime_type === "" || _file.mime_type === "undefined") {
+          file.hasError = true;
+          file.errors = { mime_type: "file.mime_type is empty" };
+        }
+
+        if (_file.size === null || _file.size === undefined ||
+            _file.size === "" || _file.size === "undefined") {
+          file.hasError = true;
+          file.errors = { size: "file.size is empty" };
+        }
+
+        if (_file.base64 === null || _file.base64 === undefined ||
+            _file.base64 === "" || _file.base64 === "undefined") {
+          file.hasError = true;
+          file.errors = { base64: "file.base64 is empty" };
+        }
+
         file.name = _file.name;
         file.mime_type = _file.mime_type;
         file.size = _file.size;
-        file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+        file.modiried = moment().format("YYYY-MM-DD HH:mm:ss");
         file.is_dir = false;
         file.dir_id = dir_id;
         file.is_display = true;
         file.is_star = false;
         file.tags = [];
-        file.histories = [];
-        file.authority_files = [];
-        file.meta_infos = [];
         file.is_crypted = constants.USE_CRYPTO;
+        file.meta_infos = _file.meta_infos;
+        file.base64 = _file.base64;
 
-        if (user === null) throw "user is empty";
+        return file;
+      });
 
-        // アップロードしたユーザが所有者となる
-        const authority = new AuthorityFile();
-        authority.users = user;
-        authority.files = file;
-        authority.role_files = role;
-        file.authority_files = [ authority ];
+      // postされたメタ情報の_idがマスタに存在するかのチェック用
+      const metainfos = yield MetaInfo.find({
+        tenant_id: res.user.tenant_id,
+        key_type: "meta"
+      });
 
-        const history = {
+      // メタ情報のチェック
+      files = files.map( file => {
+        if (file.hasError) return file;
+
+        if (file.meta_infos === undefined ||
+            file.meta_infos.length === 0) return file;
+
+        const valueCheck = file.meta_infos.filter( meta => (
+          meta.value === undefined || meta.value === null ||
+          meta.value === "" || meta.value === "undefined"
+        ));
+
+        if (valueCheck.length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              meta_infos: "metainfo value is empty"
+            }
+          };
+        }
+
+        const idCheck = file.meta_infos.filter( meta => (
+          meta._id === undefined || meta.value === null ||
+          meta.value === "" || meta.value === "undefined"
+        ));
+
+        if (idCheck.length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              meta_infos: "metainfo id is empty"
+            }
+          };
+        }
+
+        // 積集合を取得したかったのでlodashからintersectionを拝借...
+        const intersec = intersection(
+          file.meta_infos.map( meta => meta._id),
+          metainfos.map( meta => meta._id.toString() )
+        );
+
+        if (file.meta_infos.length !== intersec.length) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              meta_infos: "metainfo id is invalid"
+            }
+          };
+        }
+
+        return file;
+      });
+
+      // 履歴
+      files = files.map( file => {
+        if (file.hasError) return file;
+
+        const histories = [{
           modified: moment().format("YYYY-MM-DD hh:mm:ss"),
           user: user,
           action: "新規作成",
           body: ""
-        };
+        }];
 
-        file.histories = file.histories.concat(history);
+        file.histories = histories;
+        return file;
+      });
+
+      // ファイルオブジェクト作成
+      let fileModels = files.map( file => (
+        file.hasError ? false : new File(file)
+      ));
+
+      // swift
+      zipWith(files, fileModels, (file, model) => {
+        if (file.hasError) return;
 
         const regex = /;base64,(.*)$/;
-        const matches = _file.base64.match(regex);
+        const matches = file.base64.match(regex);
         const data = matches[1];
 
-        // ここからswiftへのput
         const swift = new Swift();
-        swift.upload( new Buffer(data, 'base64'), file._id.toString());
-
-        return { createFiles:file, createAuthorities:authority };
+        swift.upload( new Buffer(data, 'base64'), model._id.toString());
       });
 
-      const changedResults = yield files.map( file => {
-        return co(function* () {
-          const [cahngedFiles ,changedAuthorities] = yield [file.createFiles.save(),file.createAuthorities.save()];
-          return cahngedFiles;
-        })
+      // 権限
+      const role = yield RoleFile.findOne({
+        tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
+        name: "フルコントロール" // @fixme
       });
+
+      const authorityFiles = zipWith(files, fileModels, (file, model) => {
+        if (file.hasError) return false;
+
+        const authorityFile = new AuthorityFile();
+        authorityFile.users = user;
+        authorityFile.files = model;
+        authorityFile.roles = role;
+
+        return authorityFile;
+      });
+
+      fileModels = zipWith(files, fileModels, authorityFiles, (file, model, authFile) => {
+        if (file.hasError) return false;
+
+        model.authority_files = [ authFile ];
+        return model;
+      });
+
+      // メタ情報
+      const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
+        if (file.hasError) return false;
+
+        return file.meta_infos.map( meta => (
+          new FileMetaInfo({
+            file_id: model._id,
+            meta_info_id: meta._id,
+            value: meta.value
+          })
+        ));
+
+      });
+
+      // authorityFilesの保存
+      yield authorityFiles.map( file => file ? file.save() : false );
+
+      // fileMetaInfoの保存
+      yield flattenDeep(fileMetaInfos).map( fileMeta => (
+        fileMeta ? fileMeta.save() : false 
+      ));
+
+      // fileの保存
+      const changedFiles = yield fileModels.map( model => (
+        model ? model.save() : false
+      ));
 
       res.json({
         status: { success: true },
-        body: changedResults
+        body: changedFiles
       });
 
     }
@@ -562,7 +710,7 @@ export const upload = (req, res, next) => {
         errors.user = e;
         break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
       logger.error(errors);
