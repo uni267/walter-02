@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import co from "co";
 import RoleFile from "../models/RoleFile";
 import Action from "../models/Action";
+import * as commons from "./commons";
 
 const { ObjectId } = mongoose.Types;
 
@@ -80,7 +81,7 @@ export const create = (req, res, next) => {
         errors.name = "同名のロールが既に存在するため作成に失敗しました";
         break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
 
@@ -146,7 +147,7 @@ export const updateName = (req, res, next) => {
         errors.role = "指定されたロールが見つからないため変更に失敗しました";
         break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
 
@@ -182,7 +183,7 @@ export const updateDescription = (req, res, next) => {
         errors.role = "指定されたロールが見つからないため変更に失敗しました";
         break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
 
@@ -217,7 +218,7 @@ export const remove = (req, res, next) => {
         errors.role = "指定されたロールが見つからないため削除に失敗しました";
         break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
 
@@ -263,7 +264,7 @@ export const removeActionOfRoleFile = (req, res, next) => {
         errors.action = "指定されたアクションが存在しないため削除に失敗しました";
         break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
       }
 
       res.status(400).json({
@@ -284,6 +285,7 @@ export const addActionToRoleFile = (req, res, next) => {
 
       if (role === null) throw "role is empty";
       if (action === null) throw "action is empty";
+      if (role.actions.indexOf(action._id) >= 0 ) throw "action is duplicate";
 
       role.actions = [ ...role.actions, action._id ];
       const changedRoleFile = yield role.save();
@@ -303,8 +305,11 @@ export const addActionToRoleFile = (req, res, next) => {
       case "action is empty":
         errors.action = "指定されたアクションが見つからないため追加に失敗しました";
         break;
+      case "action is duplicate":
+        errors.action = "指定されたアクションが既に登録されているため追加に失敗しました";
+        break;
       default:
-        errors.unknown = e;
+        errors.unknown = commons.errorParser(e);
         break;
       }
 

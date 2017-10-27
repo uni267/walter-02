@@ -21,7 +21,7 @@ router.route("/:role_id/name")
 router.route("/:role_id/description")
   .patch(controller.updateDescription);
 
-// action削除
+// action追加,削除
 router.route("/:role_id/actions/:action_id")
   .patch(controller.addActionToRoleFile )
   .delete(controller.removeActionOfRoleFile );

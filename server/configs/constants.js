@@ -63,5 +63,6 @@ export const PERMISSION_GROUPS = "groups";
 export const PERMISSION_HOME = "home";
 export const PERMISSION_USERS = "users";
 export const PERMISSION_TAGS = "tags";
-export const PERMISSION_ROLES = "roles";
+export const PERMISSION_ROLE_FILES = "role_files";
+export const PERMISSION_ROLE_MENUS = "role_menus";
 export const PERMISSION_ANALYSIS = "analysis";

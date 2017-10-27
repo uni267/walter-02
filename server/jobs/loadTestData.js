@@ -353,8 +353,12 @@ var menus = [
     label: "グループ管理"
   },
   {
-    name: "roles",
+    name: "role_files",
     label: "ロール管理"
+  },
+  {
+    name: "role_menus",
+    label: "ユーザタイプ管理"
   },
   {
     name: "meta_infos",
@@ -383,7 +387,8 @@ var role_menus = [
       db.menus.findOne({ name: "analysis" })._id,
       db.menus.findOne({ name: "users" })._id,
       db.menus.findOne({ name: "groups" })._id,
-      db.menus.findOne({ name: "roles" })._id,
+      db.menus.findOne({ name: "role_files" })._id,
+      db.menus.findOne({ name: "role_menus" })._id,
       db.menus.findOne({ name: "meta_infos" })._id
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
