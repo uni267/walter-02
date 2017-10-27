@@ -529,7 +529,7 @@ export const upload = (req, res, next) => {
         file.name = _file.name;
         file.mime_type = _file.mime_type;
         file.size = _file.size;
-        file.modiried = moment().format("YYYY-MM-DD HH:mm:ss");
+        file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
         file.is_dir = false;
         file.dir_id = dir_id;
         file.is_display = true;
@@ -648,7 +648,7 @@ export const upload = (req, res, next) => {
         const authorityFile = new AuthorityFile();
         authorityFile.users = user;
         authorityFile.files = model;
-        authorityFile.roles = role;
+        authorityFile.role_files = role;
 
         return authorityFile;
       });
