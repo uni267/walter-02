@@ -543,7 +543,7 @@ export const upload = (req, res, next) => {
         file.dir_id = dir_id;
         file.is_display = true;
         file.is_star = false;
-        file.tags = [];
+        file.tags = _file.tags;
         file.is_crypted = constants.USE_CRYPTO;
         file.meta_infos = _file.meta_infos;
         file.base64 = _file.base64;
@@ -637,6 +637,33 @@ export const upload = (req, res, next) => {
         }
 
         return file;
+      });
+
+      // タグがマスタに存在するかのチェック
+      const tags = (yield Tag.find({ tenant_id: res.user.tenant_id }))
+            .map( tag => tag._id.toString() );
+
+      files = files.map( file => {
+        if (file.hasError) return file;
+        if (file.tags === undefined || file.tags === null ||
+            file.tags === "" || file.tags.length === 0) {
+          return file;
+        }
+
+        if (file.tags.length === intersection(file.tags, tags).length) {
+          // stringからBSONに変換
+          file.tags = file.tags.map( tag => mongoose.Types.ObjectId(tag) );
+          return file;
+        } else {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              tags: "tag id is invalid"
+            }
+          };
+        }
+
       });
 
       // 履歴
