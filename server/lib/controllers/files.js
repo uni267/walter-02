@@ -8,6 +8,7 @@ import moment from "moment";
 import morgan from "morgan";
 import { exec } from "child_process";
 import util from "util";
+import crypto from "crypto";
 import {
   intersection,
   zipWith,
@@ -17,6 +18,7 @@ import {
 // etc
 import { logger } from "../index";
 import * as commons from "./commons";
+import { ValidationError, RecordNotFoundError } from "../errors/AppError";
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -475,7 +477,7 @@ export const upload = (req, res, next) => {
       if (myFiles === null ||
           myFiles === undefined ||
           myFiles === "" ||
-          myFiles.length === 0) throw "myFile is empty";
+          myFiles.length === 0) throw new ValidationError("files is empty");
 
       if (dir_id === null ||
           dir_id === undefined ||
@@ -487,11 +489,11 @@ export const upload = (req, res, next) => {
 
       const dir = yield File.findById(dir_id);
 
-      if (dir === null) throw "dir is empty";
+      if (dir === null) throw new RecordNotFoundError("dir_id is not found");
 
       const user = yield User.findById(res.user._id);
 
-      if (user === null) throw "user is empty";
+      if (user === null) throw new RecordNotFoundError("user_id is not found");
 
       // ファイルの基本情報
       // Modelで定義されていないプロパティを使いたいので
@@ -505,25 +507,31 @@ export const upload = (req, res, next) => {
         if (_file.name === null || _file.name === undefined ||
             _file.name === "" || _file.name === "undefined") {
           file.hasError = true;
-          file.errors = { name: "file.name is empty" };
+          file.errors = { name: "file name is empty" };
         }
 
         if (_file.mime_type === null || _file.mime_type === undefined ||
             _file.mime_type === "" || _file.mime_type === "undefined") {
           file.hasError = true;
-          file.errors = { mime_type: "file.mime_type is empty" };
+          file.errors = { mime_type: "mime_type is empty" };
         }
 
         if (_file.size === null || _file.size === undefined ||
             _file.size === "" || _file.size === "undefined") {
           file.hasError = true;
-          file.errors = { size: "file.size is empty" };
+          file.errors = { size: "size is empty" };
         }
 
         if (_file.base64 === null || _file.base64 === undefined ||
             _file.base64 === "" || _file.base64 === "undefined") {
           file.hasError = true;
-          file.errors = { base64: "file.base64 is empty" };
+          file.errors = { base64: "base64 is empty" };
+        }
+
+        if (_file.checksum === null || _file.checksum === undefined ||
+            _file.checksum === "" ) {
+          file.hasError = true;
+          file.errors = { checksum: "checksum is empty" };
         }
 
         file.name = _file.name;
@@ -538,8 +546,32 @@ export const upload = (req, res, next) => {
         file.is_crypted = constants.USE_CRYPTO;
         file.meta_infos = _file.meta_infos;
         file.base64 = _file.base64;
+        file.checksum = _file.checksum;
 
         return file;
+      });
+
+      // checksumを比較
+      files = files.map( file => {
+        if (file.hasError) return file;
+
+        const data = file.base64.match(/;base64,(.*)$/)[1];
+        const hexdigest = crypto.createHash("md5")
+              .update(new Buffer(data))
+              .digest("hex");
+
+        if (file.checksum === hexdigest) {
+          return file;
+        } else {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              checksum: "invalid checksum"
+            }
+          };
+        }
+
       });
 
       // postされたメタ情報の_idがマスタに存在するかのチェック用
@@ -687,6 +719,14 @@ export const upload = (req, res, next) => {
         model ? model.save() : false
       ));
 
+      // validationErrors
+      if (files.filter( f => f.hasError ).length > 0) {
+        throw new ValidationError(
+          "file is invalid",
+          files.map( f => f.hasError ? f : {} )
+        );
+      }
+
       res.json({
         status: { success: true },
         body: changedFiles
@@ -694,28 +734,10 @@ export const upload = (req, res, next) => {
 
     }
     catch (e) {
-      let errors = {};
+      logger.error(e);
 
-      switch (e) {
-      case "myFile is empty":
-        errors.myFile = e;
-        break;
-      case "dir_id is empty":
-        errors.dir_id = e;
-        break;
-      case "dir is empty":
-        errors.dir = e;
-        break;
-      case "user is empty":
-        errors.user = e;
-        break;
-      default:
-        errors.unknown = commons.errorParser(e);
-        break;
-      }
-      logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, errors: e }
       });
     }
   });
