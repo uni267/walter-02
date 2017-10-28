@@ -530,8 +530,9 @@ export const upload = (req, res, next) => {
 
         if (_file.checksum === null || _file.checksum === undefined ||
             _file.checksum === "" ) {
-          file.hasError = true;
-          file.errors = { checksum: "checksum is empty" };
+          // @todo front側実装待ち
+          // file.hasError = true;
+          // file.errors = { checksum: "checksum is empty" };
         }
 
         file.name = _file.name;
@@ -553,6 +554,8 @@ export const upload = (req, res, next) => {
 
       // checksumを比較
       files = files.map( file => {
+        // @todo front実装待ち
+        return file;
         if (file.hasError) return file;
 
         const data = file.base64.match(/;base64,(.*)$/)[1];
