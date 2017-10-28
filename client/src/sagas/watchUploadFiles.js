@@ -1,5 +1,5 @@
 import { call, put, take, all } from "redux-saga/effects";
-
+import MD5 from "crypto-js/md5";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 
@@ -26,7 +26,8 @@ function* watchUploadFiles() {
               size: file.size,
               mime_type: file.type,
               modified: file.lastModified,
-              base64: reader.result 
+              base64: reader.result,
+              checksum: MD5(reader.result).toString()
             });
           };
         });
