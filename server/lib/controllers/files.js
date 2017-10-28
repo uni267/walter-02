@@ -725,6 +725,9 @@ export const upload = (req, res, next) => {
       // メタ情報
       const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
         if (file.hasError) return false;
+        if (file.meta_infos === undefined ||
+            file.meta_infos === null ||
+            file.meta_infos.length === 0) return false;
 
         return file.meta_infos.map( meta => (
           new FileMetaInfo({
@@ -1492,7 +1495,7 @@ const getAllowedFileIds = (user_id, permission) => {
         users: mongoose.Types.ObjectId(user_id),
         role_files: {$in: role }
       });
-console.log(authorities);
+
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
     return new Promise((resolve, reject) => resolve(file_ids) )
