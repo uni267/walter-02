@@ -5,7 +5,9 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 import Group from "../models/Group";
 import AuthorityMenu from "../models/AuthorityMenu";
-import { concat } from "lodash"
+import RoleMenu from "../models/RoleMenu";
+import { concat,first } from "lodash"
+import { logger } from "../index";
 
 const { ObjectId } = mongoose.Types;
 
@@ -623,4 +625,50 @@ export const getWithGroups = (req, res, next) => {
 
     }
   });
+}
+
+export const updateRoleMenus = (req, res, next ) => {
+  co(function* () {
+    try {
+
+      const user_id = req.params.user_id;
+      const { role_menu_id } = req.body;
+
+      const [ user ,role ] = yield [User.findById(user_id), RoleMenu.findById(role_menu_id) ];
+
+      if (user === null) throw "user is empty";
+      if (role === null) throw "role is empty";
+
+      const authorityMenus = first( yield AuthorityMenu.find({users: ObjectId(user._id)}));
+
+      authorityMenus.role_menus = role;
+      const savedAuthorityMenus = yield authorityMenus.save();
+
+      res.json({
+        status: { success: true },
+        body: savedAuthorityMenus
+      });
+
+    } catch (err) {
+
+      let errors = {};
+
+      switch (err) {
+        case "user is empty":
+          errors.user = "存在しないユーザです";
+          break;
+        case "role is empty":
+          errors.role = "存在しないユーザタイプです";
+          break;
+        default:
+          errors = err;
+          break;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  })
 }

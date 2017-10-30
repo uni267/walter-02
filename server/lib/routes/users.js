@@ -46,4 +46,8 @@ router.route("/:user_id/groups")
 router.route("/:user_id/groups/:group_id")
   .delete(controllers.removeUserOfGroup);  // 所属グループの削除
 
+
+router.route("/:user_id/role_menus")
+  .patch(controllers.updateRoleMenus);  // role_menusの変更
+
 export default router;
