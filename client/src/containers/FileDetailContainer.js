@@ -111,9 +111,9 @@ class FileDetailContainer extends Component {
       return (
         <div key={idx} style={styles.metaRow}>
           <div style={{...styles.metaCell, width: "30%"}}>
-            {auth.user.name_jp}
+            {auth.users.name}
           </div>
-          <div>{auth.role.name}</div>
+          <div>{auth.role_files.name}</div>
         </div>
       );
     };
