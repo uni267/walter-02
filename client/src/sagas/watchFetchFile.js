@@ -3,23 +3,25 @@ import { call, put, take } from "redux-saga/effects";
 
 // api
 import { API } from "../apis";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 function* watchFetchFile() {
 
   while (true) {
-    const { file_id } = yield take("REQUEST_FETCH_FILE");
+    const { file_id } = yield take(actions.requestFetchFile().type);
     const api = new API();
-    yield put({ type: "LOADING_START" });
+    yield put(commons.loadingStart());
 
     try {
       const payload = yield call(api.fetchFile, file_id);
-      yield put({ type: "INIT_FILE", file: payload.data.body });
+      yield put(actions.initFile(payload.data.body));
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put({ type: "LOADING_END" });
+      yield put(commons.loadingEnd());
     }
   }
 

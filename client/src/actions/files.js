@@ -312,3 +312,7 @@ export const initFilePreviewBody = (body) => ({
 export const filePreviewError = (errors) => ({
   type: actionTypes.FILE_PREVIEW_ERROR, errors
 });
+
+export const initFile = (file) => ({
+  type: actionTypes.INIT_FILE, file
+});
