@@ -232,32 +232,32 @@ export class API {
   };
 
   fetchRoles = () => {
-    return this.client.get(`/api/v1/roles`);
+    return this.client.get(`/api/v1/role_files`);
   };
 
   fetchRole = (role_id) => {
-    return this.client.get(`/api/v1/roles/${role_id}`);
+    return this.client.get(`/api/v1/role_files/${role_id}`);
   };
 
   saveRoleName = (role) => {
     const body = { name: role.name };
-    return this.client.patch(`/api/v1/roles/${role._id}/name`, body);
+    return this.client.patch(`/api/v1/role_files/${role._id}/name`, body);
   };
 
   saveRoleDescription = (role) => {
     const body = { description: role.description };
     return this.client.patch(
-      `/api/v1/roles/${role._id}/description`, body);
+      `/api/v1/role_files/${role._id}/description`, body);
   };
 
   deleteRoleOfAction = (role_id, action_id) => {
     return this.client.delete(
-      `/api/v1/roles/${role_id}/actions/${action_id}`);
+      `/api/v1/role_files/${role_id}/actions/${action_id}`);
   };
 
   createRole = (role) => {
     const body = { role, tenant_id: localStorage.getItem("tenantId") };
-    return this.client.post(`/api/v1/roles`, body);
+    return this.client.post(`/api/v1/role_files`, body);
   };
 
   fetchActions = () => {
@@ -266,11 +266,11 @@ export class API {
 
   addRoleOfAction = (role_id, action_id) => {
     return this.client.patch(
-      `/api/v1/roles/${role_id}/actions/${action_id}`);
+      `/api/v1/role_files/${role_id}/actions/${action_id}`);
   };
 
   deleteRole = (role) => {
-    return this.client.delete(`/api/v1/roles/${role._id}`);
+    return this.client.delete(`/api/v1/role_files/${role._id}`);
   };
 
   fetchFileSearchItems = () => {
