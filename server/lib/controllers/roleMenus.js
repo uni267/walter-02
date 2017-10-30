@@ -167,7 +167,6 @@ export const updateName = (req, res, next) => {
   co(function* (){
     try {
 
-mongoose.set("debug",true)
       const { role_id } = req.params;
       const { name } = req.body;
       if (name === undefined || name === null || name === "") throw "name is empty";

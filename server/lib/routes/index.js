@@ -15,7 +15,7 @@ import ClientRouter from "./clients";
 import PreviewRouter from "./previews";
 import AuthorityFileRouter from "./authorityFiles";
 import AuthorityMenuRouter from "./authorityMenus";
-
+import MenuRouter from "./menus"
 
 // debug
 import TestRouter from "./test";
@@ -39,6 +39,7 @@ router.use("/api/v1/analysis", AnalysisRouter);
 router.use("/api/v1/previews", PreviewRouter);
 router.use("/api/v1/authority_files", AuthorityFileRouter);
 router.use("/api/v1/authority_menus", AuthorityMenuRouter);
+router.use("/api/v1/menus", MenuRouter);
 
 // debug
 router.use("/test", TestRouter);
