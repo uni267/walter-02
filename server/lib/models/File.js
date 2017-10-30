@@ -55,14 +55,20 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
           foreignField: "file_id",
           as: "meta_infos"
         }},
-        { $unwind: "$meta_infos" },
+        { $unwind: {
+          path: "$meta_infos",
+          preserveNullAndEmptyArrays: true
+        }},
         { $lookup: {
           from: "meta_infos",
           localField: "meta_infos.meta_info_id",
           foreignField: "_id",
           as: "meta_info"
         }},
-        { $unwind: "$meta_info" },
+        { $unwind: {
+          path: "$meta_info",
+          preserveNullAndEmptyArrays: true
+        }},
         { $group: {
           _id: "$_id",
           name: { $first: "$name" },
