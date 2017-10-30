@@ -76,7 +76,7 @@ class FileActionContainer extends Component {
     }
 
     if (this.props.checkedFiles.length > 0) {
-      items = [ ...items,
+      items = [
         [
           (
             <MenuItem
