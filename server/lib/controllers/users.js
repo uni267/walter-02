@@ -5,6 +5,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 import Group from "../models/Group";
 import AuthorityMenu from "../models/AuthorityMenu";
+import { concat } from "lodash"
 
 const { ObjectId } = mongoose.Types;
 
@@ -568,3 +569,58 @@ export const updateAccountName = (req, res, next) => {
     }
   });
 };
+
+export const getWithGroups = (req, res, next) => {
+  co(function* (){
+    try {
+      const { tenant_id } = res.user;
+
+      if (tenant_id === undefined ||
+        tenant_id === null ||
+        tenant_id === "") throw "tenant_id is empty";
+
+      const tenant = yield Tenant.findById(tenant_id);
+      if (tenant === null) throw "tenant is empty";
+
+      const conditions = {
+        tenant_id: mongoose.Types.ObjectId(tenant_id)
+      };
+
+      const users = yield User.aggregate([
+        { $match: conditions },
+        { $lookup:
+          { from: "groups", localField: "groups", foreignField: "_id", as: "groups" }
+        }
+      ]);
+
+      const groups = yield Group.aggregate([
+        { $match: conditions },
+      ]);
+
+      const returnGroups = groups.map( group => {
+        group.type = "group";
+        return group;
+      });
+
+      const mergedUsers = concat(users, returnGroups);
+
+      res.json({
+        status: { success: true },
+        body: mergedUsers
+      });
+    } catch (err) {
+      let errors = {};
+
+      switch (err) {
+      default:
+        errors = err;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+
+    }
+  });
+}

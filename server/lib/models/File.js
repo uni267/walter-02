@@ -3,6 +3,7 @@ import co from "co";
 import { logger } from "../index";
 
 import User from "./User";
+import Group from "./Group";
 import RoleFile from "./RoleFile";
 
 mongoose.Promise = global.Promise;
@@ -20,7 +21,6 @@ const FileSchema = Schema({
   is_deleted: {type:Boolean, default: false}, // 完全削除フラグ。ゴミ箱移動時はfalseのまま
   tags: Array,
   histories: Array,
-  authority_files: [{ type:Schema.Types.ObjectId, ref:'authority_files'}],
   preview_id: Schema.Types.ObjectId,
   is_crypted: {type:Boolean, default: false}
 });
@@ -29,6 +29,7 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
   const _this = this;
   return co(function* (){
     try {
+      console.log(sortOption);
       let files = yield _this.aggregate([
         { $match: conditions },
         { $lookup: {
@@ -45,8 +46,8 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
         }},
         { $lookup:{
           from: "authority_files",
-          localField: "authority_files",
-          foreignField: "_id",
+          localField: "_id",
+          foreignField: "files",
           as: "authorities"
         }},
         { $lookup: {
@@ -117,7 +118,7 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
       ]).skip(offset).limit(limit).sort(sortOption);
 
       files = yield File.populate(files,{ path:'authorities.users', model: User } );
-
+      files = yield File.populate(files,{ path:'authorities.groups', model: Group } );
       files = yield File.populate(files,{ path:'authorities.role_files', model: RoleFile } );
 
       return yield File.populate(files,'dirs.ancestor');

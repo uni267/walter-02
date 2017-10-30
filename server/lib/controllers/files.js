@@ -31,6 +31,7 @@ import Preview from "../models/Preview";
 import Tag from "../models/Tag";
 import MetaInfo from "../models/MetaInfo";
 import User from "../models/User";
+import Group from "../models/Group";
 import Tenant from "../models/Tenant";
 import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
@@ -715,13 +716,6 @@ export const upload = (req, res, next) => {
         return authorityFile;
       });
 
-      fileModels = zipWith(files, fileModels, authorityFiles, (file, model, authFile) => {
-        if (file.hasError) return false;
-
-        model.authority_files = [ authFile ];
-        return model;
-      });
-
       // メタ情報
       const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
         if (file.hasError) return false;
@@ -744,7 +738,7 @@ export const upload = (req, res, next) => {
 
       // fileMetaInfoの保存
       yield flattenDeep(fileMetaInfos).map( fileMeta => (
-        fileMeta ? fileMeta.save() : false 
+        fileMeta ? fileMeta.save() : false
       ));
 
       // fileの保存
@@ -1072,16 +1066,29 @@ export const addAuthority = (req, res, next) => {
       const file = yield File.findById(file_id);
       if (file === null) throw "file is empty";
 
-      const _user = yield User.findById(user._id);
-      if (_user === null) throw "user is empty";
-
       const _role = yield RoleFile.findById(role._id);
       if (_role === null) throw "role is empty";
 
+      if (user.type === undefined || user.type === null || user.type === "") throw "user.type is empty";
+
+
       const authority = new AuthorityFile();
-      authority.files = file;
-      authority.users = _user;
-      authority.role_files = _role;
+      if(user.type === 'user'){
+        const _user = yield User.findById(user._id);
+        if (_user === null) throw "user is empty";
+
+        authority.files = file;
+        authority.users = _user;
+        authority.role_files = _role;
+      }else{
+        const _group = yield Group.findById(user._id);
+        if (_group === null) throw "group is empty";
+
+        authority.files = file;
+        authority.groups = _group;
+        authority.role_files = _role;
+      }
+
       const createdAuthority = yield authority.save();
 
       file.authority_files = [
@@ -1109,6 +1116,12 @@ export const addAuthority = (req, res, next) => {
       case "role is empty":
         errors.role = "追加対象のロールが見つかりません";
         break;
+      case "user.type is empty":
+        error.user = "ユーザの種類が不明です"
+        break;
+      case "group is empty":
+          errors.group = "追加対象のユーザが見つかりません";
+          break;
       default:
         errors.unknown = e;
         break;
@@ -1489,10 +1502,13 @@ const getAllowedFileIds = (user_id, permission) => {
     const action = yield Action.findOne({ name:permission });
     const role = (yield RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
 
+    const user = yield User.findById(user_id);
 
     const authorities = yield AuthorityFile.find(
       {
-        users: mongoose.Types.ObjectId(user_id),
+        $or : [
+          { users: mongoose.Types.ObjectId(user_id) },
+          { groups: {$in: user.groups } }],
         role_files: {$in: role }
       });
 

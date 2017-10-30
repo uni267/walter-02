@@ -13,6 +13,9 @@ router.route("/")
   .get(controllers.index) // 一覧
   .post(controllers.add); // 作成
 
+router.route("/with_groups")
+  .get(controllers.getWithGroups)
+
 router.route("/:user_id")
   .get(controllers.view); // 詳細
 
