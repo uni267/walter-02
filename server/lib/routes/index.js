@@ -15,7 +15,7 @@ import ClientRouter from "./clients";
 import PreviewRouter from "./previews";
 import AuthorityFileRouter from "./authorityFiles";
 import AuthorityMenuRouter from "./authorityMenus";
-import MenuRouter from "./menus"
+import MenuRouter from "./menus";
 
 // debug
 import TestRouter from "./test";
