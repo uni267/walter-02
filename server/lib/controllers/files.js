@@ -1302,7 +1302,6 @@ export const deleteFilePhysical = (req,res,next) => {
       const swift = new Swift();
 
       const file_id = req.params.file_id;
-      const tenant_name = res.user.tenant.name;
 
       const fileRecord = yield File.findById(file_id);
       if (fileRecord === null) throw "file not found";
@@ -1311,6 +1310,8 @@ export const deleteFilePhysical = (req,res,next) => {
       const readStream = yield swift.remove(constants.SWIFT_CONTAINER_NAME, fileRecord);
 
       const deletedFile = yield fileRecord.remove();
+
+      const deletedAutholity = yield AuthorityFile.remove({files: fileRecord._id });
 
       res.json({
         status:{ success: true },
