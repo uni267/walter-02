@@ -13,5 +13,6 @@ router.route("/:group_id")
 
 router.route("/:group_id/name").patch(controller.updateName);
 router.route("/:group_id/description").patch(controller.updateDescription);
+router.route("/:group_id/role_menus").patch(controller.updateRoleMenus);
 
 export default router;

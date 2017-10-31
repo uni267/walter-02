@@ -163,7 +163,6 @@ export const download = (req, res, next) => {
     }
     catch (e) {
       logger.error(e);
-      console.log(e);
     }
   });
 };
@@ -359,7 +358,7 @@ export const searchDetail = (req, res, next) => {
       });
     }
     catch (e) {
-      console.log(e);
+      logger.error(e);
       res.json({e});
     }
   });
@@ -390,7 +389,6 @@ export const rename = (req, res, next) => {
 
     }
     catch (e) {
-      console.log(e);
       let errors = {};
 
       switch (e) {
@@ -404,7 +402,7 @@ export const rename = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-
+      logger.error(e);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -1110,7 +1108,7 @@ export const addAuthority = (req, res, next) => {
         errors.role = "追加対象のロールが見つかりません";
         break;
       case "user.type is empty":
-        error.user = "ユーザの種類が不明です"
+        errors.user = "ユーザの種類が不明です";
         break;
       case "group is empty":
           errors.group = "追加対象のユーザが見つかりません";
@@ -1174,7 +1172,7 @@ export const moveTrash = (req, res, next) => {
 
     }
   });
-}
+};
 
 export const restore = (req, res, next) => {
   co(function* () {
@@ -1223,7 +1221,7 @@ export const restore = (req, res, next) => {
 
     }
   });
-}
+};
 
 export const deleteFileLogical = (req,res,next) => {
   co(function* (){
@@ -1293,7 +1291,7 @@ export const deleteFileLogical = (req,res,next) => {
   });
 
 
-}
+};
 
 export const deleteFilePhysical = (req,res,next) => {
   co(function* (){
@@ -1317,7 +1315,7 @@ export const deleteFilePhysical = (req,res,next) => {
       res.json({
         status:{ success: true },
         body: deletedFile
-      })
+      });
 
     } catch (e) {
       const errors = {};
@@ -1327,7 +1325,7 @@ export const deleteFilePhysical = (req,res,next) => {
       });
     }
   });
-}
+};
 
 export const previewExists = (req, res, next) => {
   co(function* (){
@@ -1349,7 +1347,7 @@ export const previewExists = (req, res, next) => {
         const tmpFileName = path.join(tmpDirPath,file.name);
 
         fs.mkdir(tmpDirPath, (err)=>{
-          if(err && err.code !== "EEXIST") logger.info(err)
+          if(err && err.code !== "EEXIST") logger.info(err);
         });
 
         const swift = new Swift();
@@ -1476,7 +1474,7 @@ const moveFile = (file, dir_id, user, action) => {
 
     return changedFile;
 
-}
+};
 
 const createSortOption = (_sort=null, _order=null) => {
   const sort = {};
@@ -1487,7 +1485,7 @@ const createSortOption = (_sort=null, _order=null) => {
     sort[_sort] = order;
   }
   return sort;
-}
+};
 
 const getAllowedFileIds = (user_id, permission) => {
   return co(function*(){
@@ -1507,7 +1505,7 @@ const getAllowedFileIds = (user_id, permission) => {
 
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
-    return new Promise((resolve, reject) => resolve(file_ids) )
+    return new Promise((resolve, reject) => resolve(file_ids) );
 
-  })
-}
+  });
+};

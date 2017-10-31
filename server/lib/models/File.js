@@ -115,7 +115,6 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
           authorities: 1
         }},
       ]).skip(offset).limit(limit).sort(sortOption);
-console.log("files =>",files);
       files = yield File.populate(files,{ path:'authorities.users', model: User } );
       files = yield File.populate(files,{ path:'authorities.groups', model: Group } );
       files = yield File.populate(files,{ path:'authorities.role_files', model: RoleFile } );
@@ -123,10 +122,10 @@ console.log("files =>",files);
       return yield File.populate(files,'dirs.ancestor');
 
     } catch (error) {
-      throw error
+      throw error;
     }
-  })
-}
+  });
+};
 
 FileSchema.statics.searchFileOne = function(conditions){
   const _this = this;
@@ -139,11 +138,11 @@ FileSchema.statics.searchFileOne = function(conditions){
 
       return new Promise( (resolve,reject) => resolve(files[0]) );
     } catch (error) {
-      throw error
+      throw error;
     }
   });
 
-}
+};
 
 const File = mongoose.model("files", FileSchema, "files");
 

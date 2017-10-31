@@ -6,7 +6,7 @@ import Tenant from "../models/Tenant";
 import Group from "../models/Group";
 import AuthorityMenu from "../models/AuthorityMenu";
 import RoleMenu from "../models/RoleMenu";
-import { concat,first } from "lodash"
+import { concat,first } from "lodash";
 import { logger } from "../index";
 
 const { ObjectId } = mongoose.Types;
@@ -625,7 +625,7 @@ export const getWithGroups = (req, res, next) => {
 
     }
   });
-}
+};
 
 export const updateRoleMenus = (req, res, next ) => {
   co(function* () {
@@ -639,7 +639,11 @@ export const updateRoleMenus = (req, res, next ) => {
       if (user === null) throw "user is empty";
       if (role === null) throw "role is empty";
 
-      const authorityMenus = first( yield AuthorityMenu.find({users: ObjectId(user._id)}));
+      let authorityMenus = first( yield AuthorityMenu.find({users: ObjectId(user._id)}));
+      if(authorityMenus === undefined ){
+        authorityMenus = new AuthorityMenu();
+        authorityMenus.users = user;
+      }
 
       authorityMenus.role_menus = role;
       const savedAuthorityMenus = yield authorityMenus.save();
@@ -670,5 +674,5 @@ export const updateRoleMenus = (req, res, next ) => {
       });
 
     }
-  })
-}
+  });
+};

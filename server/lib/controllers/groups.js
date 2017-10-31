@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 import co from "co";
 import Group from "../models/Group";
 import User from "../models/User";
+import RoleMenu from "../models/RoleMenu";
+import AuthorityMenu from "../models/AuthorityMenu";
+
+// etc
+import { logger } from "../index";
+import { first } from "lodash";
+
+const { ObjectId } = mongoose.Types;
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -19,13 +27,13 @@ export const index = (req, res, next) => {
         conditions = {
           $and: [
             {name: new RegExp(q, "i")} ,
-            {tenant_id: mongoose.Types.ObjectId(tenant_id)}
+            {tenant_id: ObjectId(tenant_id)}
           ]
         };
       }else{
         conditions = {
           $and: [
-            {tenant_id: mongoose.Types.ObjectId(tenant_id)}
+            {tenant_id: ObjectId(tenant_id)}
           ]
         };
       }
@@ -147,7 +155,7 @@ export const view = (req, res, next) => {
         break;
       default:
         errors.unknown = e;
-        break;        
+        break;
       }
 
       res.status(400).json({
@@ -204,7 +212,7 @@ export const updateName = (req, res, next) => {
 
       const group = yield Group.findById(group_id);
 
-      if (group === null) throw "group is not found";    
+      if (group === null) throw "group is not found";
 
       group.name = name;
 
@@ -241,7 +249,7 @@ export const updateDescription = (req, res, next) => {
   co(function* () {
     const { description } = req.body;
     const { group_id } = req.params;
-    
+
     try {
       const group = yield Group.findById(group_id);
       if (group === null || group === undefined) throw "group is not found";
@@ -273,3 +281,48 @@ export const updateDescription = (req, res, next) => {
   });
 };
 
+export const updateRoleMenus = (req, res) => {
+  co(function* (){
+    try {
+      const group_id = req.params.group_id;
+      const { role_menu_id } = req.body;
+
+      const [ group ,role ] = yield [Group.findById(group_id), RoleMenu.findById(role_menu_id) ];
+      if (group === null) throw "group is empty";
+      if (role === null) throw "role is empty";
+
+      let authorityMenus = first( yield AuthorityMenu.find({users: ObjectId(group._id)}));
+      if(authorityMenus === undefined ){
+        authorityMenus = new AuthorityMenu();
+        authorityMenus.groups = group;
+      }
+
+      authorityMenus.role_menus = role;
+      const savedAuthorityMenus = yield authorityMenus.save();
+
+      res.json({
+        status: { success: true },
+        body: savedAuthorityMenus
+      });
+
+    } catch (e) {
+      let errors = {};
+
+      switch (e) {
+        case "group is empty":
+          errors.group = "存在しないグループです";
+          break;
+        case "role is empty":
+          errors.role_menus = "存在しないユーザタイプです";
+          break;
+        default:
+          errors.unknown = e;
+          break;
+      }
+      logger.error(e);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
