@@ -1,10 +1,13 @@
 import co from "co";
 import jwt from "jsonwebtoken";
 import * as commons from "./commons";
+import * as constants from "../../configs/constants";
+import url from "url";
 
 // models
 import User from "../models/User";
 import Tenant from "../models/Tenant";
+import AuthorityMenu from "../models/AuthorityMenu";
 
 import { SECURITY_CONF } from "../../configs/server";
 
@@ -36,11 +39,35 @@ export const verifyToken = (req, res, next) => {
       _user.tenant = yield Tenant.findById(user.tenant_id);
 
       res.user = _user;
+
+      let requestReferer = "";
+      if(req.headers.referer !== undefined) {
+        requestReferer = ((url.parse(req.headers.referer)).path.split("/"))[1];
+      }
+
+      // filesからのリクエストもhomeと同様に扱う
+      if(requestReferer === constants.PERMISSION_FILES) requestReferer = constants.PERMISSION_HOME;
+
+      const condition = {
+        $or:[
+          { users: user._id },
+          { groups: {$in: user.groups } }
+        ]
+      };
+
+      const menus = yield AuthorityMenu.getMenus(condition);
+
+      let auth = false;
+      menus.forEach( (menu) => {
+        if(menu.name === requestReferer) auth = true;
+      });
+      if(auth === false) throw "permission denied";
+
       next();
     }
     // @todo jwt.verifyのエラーを調査する
     catch (e) {
-      
+
       let errors = {};
 
       switch (e) {
@@ -49,6 +76,9 @@ export const verifyToken = (req, res, next) => {
         break;
       case "user is empty":
         errors.user = "トークンからユーザ情報を取得したが空のためエラー";
+        break;
+      case "permission denied":
+        errors.permission = "アクセス権限がありません";
         break;
       default:
         if (e.message === "jwt malformed" && e.name === "JsonWebTokenError") {

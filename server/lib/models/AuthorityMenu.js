@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { logger } from "../index"
+import { logger } from "../index";
 import co from "co";
 
 mongoose.Promise = global.Promise;
@@ -50,16 +50,16 @@ AuthorityMenuSchema.statics.getMenus = function(condition){
         { $project: {
           _id:0,
           menus: { $arrayElemAt: ["$menus", 0]  },
-        }},
+        }}
       );
 
-      const menus = authorityMenus.map(menu => menu.menus)
+      const menus = authorityMenus.map(menu => menu.menus);
 
-      return new Promise((resolve,reject) => resolve(menus) )
+      return new Promise((resolve,reject) => resolve(menus) );
     } catch (error) {
       throw error;
     }
-  })
+  });
 };
 
 const AuthorityMenu = mongoose.model("authority_menus", AuthorityMenuSchema, "authority_menus");

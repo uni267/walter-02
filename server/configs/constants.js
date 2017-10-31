@@ -61,6 +61,7 @@ export const PERMISSION_AUTHORITY = "authority";
 export const PERMISSION_META_INFOS = "meta_infos";
 export const PERMISSION_GROUPS = "groups";
 export const PERMISSION_HOME = "home";
+export const PERMISSION_FILES = "files";
 export const PERMISSION_USERS = "users";
 export const PERMISSION_TAGS = "tags";
 export const PERMISSION_ROLE_FILES = "role_files";
