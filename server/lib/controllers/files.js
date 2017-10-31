@@ -1091,7 +1091,7 @@ export const addAuthority = (req, res, next) => {
 
       res.json({
         status: { success: true },
-        body: changedFile
+        body: createdAuthority
       });
 
     }
