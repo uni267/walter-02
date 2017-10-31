@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import co from "co";
-import AuthorityMenu from "../models/AuthorityMenu"
+import AuthorityMenu from "../models/AuthorityMenu";
+import User from "../models/User";
 
 const { ObjectId } = mongoose.Types;
 
@@ -9,9 +10,14 @@ export const index = (req, res, next) => {
     try {
 
       const user_id = res.user._id;
+      const user = yield User.findById(user_id);
+
       const condition = {
-        users: ObjectId(user_id)
-      }
+        $or:[
+          { users: ObjectId(user_id) },
+          { groups: {$in: user.groups } }
+        ]
+      };
 
       const menus = yield AuthorityMenu.getMenus(condition);
 
@@ -29,5 +35,5 @@ export const index = (req, res, next) => {
       });
     }
   });
-}
+};
 
