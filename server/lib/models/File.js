@@ -29,7 +29,6 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
   const _this = this;
   return co(function* (){
     try {
-console.log(conditions,offset,limit,sortOption);
       let files = yield _this.aggregate([
         { $match: conditions },
         { $lookup: {
@@ -136,7 +135,6 @@ FileSchema.statics.searchFileOne = function(conditions){
       const offset = 0;
       const limit = 1;
       const sortOption = { _id: 1};
-console.log(conditions,offset,limit,sortOption);
       const files = yield _this.searchFiles(conditions,offset,limit,sortOption);
 
       return new Promise( (resolve,reject) => resolve(files[0]) );
