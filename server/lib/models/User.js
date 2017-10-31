@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 mongoose.Promise = global.Promise;
 
 const UserSchema = Schema({
-  type: String,
+  type: { type:String, default:"user"},
   account_name: String,
   name: String,
   email: String,

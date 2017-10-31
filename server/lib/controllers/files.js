@@ -1091,13 +1091,6 @@ export const addAuthority = (req, res, next) => {
 
       const createdAuthority = yield authority.save();
 
-      file.authority_files = [
-        ...file.authority_files,
-        createdAuthority
-      ];
-
-      const changedFile = yield file.save()
-
       res.json({
         status: { success: true },
         body: changedFile

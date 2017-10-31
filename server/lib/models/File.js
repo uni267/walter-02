@@ -29,7 +29,7 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
   const _this = this;
   return co(function* (){
     try {
-      console.log(sortOption);
+console.log(conditions,offset,limit,sortOption);
       let files = yield _this.aggregate([
         { $match: conditions },
         { $lookup: {
@@ -116,7 +116,7 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
           authorities: 1
         }},
       ]).skip(offset).limit(limit).sort(sortOption);
-
+console.log("files =>",files);
       files = yield File.populate(files,{ path:'authorities.users', model: User } );
       files = yield File.populate(files,{ path:'authorities.groups', model: Group } );
       files = yield File.populate(files,{ path:'authorities.role_files', model: RoleFile } );
@@ -136,6 +136,7 @@ FileSchema.statics.searchFileOne = function(conditions){
       const offset = 0;
       const limit = 1;
       const sortOption = { _id: 1};
+console.log(conditions,offset,limit,sortOption);
       const files = yield _this.searchFiles(conditions,offset,limit,sortOption);
 
       return new Promise( (resolve,reject) => resolve(files[0]) );
