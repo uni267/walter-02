@@ -133,8 +133,7 @@ class File extends Component {
           : `${authorities[0].users.name} のみ`;
 
     return (
-      <span
-        onClick={() => this.setState({ editAuthority: { open: true } })}>
+      <span>
         {member}
       </span>
     );
