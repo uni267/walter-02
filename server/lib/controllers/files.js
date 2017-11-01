@@ -18,7 +18,11 @@ import {
 // etc
 import { logger } from "../index";
 import * as commons from "./commons";
-import { ValidationError, RecordNotFoundException } from "../errors/AppError";
+import {
+  ValidationError,
+  RecordNotFoundException,
+  PermittionDeniedException
+} from "../errors/AppError";
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -97,23 +101,34 @@ export const view = (req, res, next) => {
 
       if (file_id === undefined ||
           file_id === null ||
-          file_id === "") throw "file_id is empty";
+          file_id === "") {
+        throw new ValidationError("file_idが空です");
+      }
 
       const file_ids = yield getAllowedFileIds(
         res.user._id, constants.PERMISSION_VIEW_DETAIL
       );
 
+      if (!file_ids.map( f => f.toString() ).includes(file_id)) {
+        throw new PermittionDeniedException("権限がありません");
+      }
+
       const conditions = {
         $and:[
           {_id: mongoose.Types.ObjectId(file_id)},
           {_id: {$in : file_ids}}
-                ]
-        };
+        ]
+      };
 
       const file = yield File.searchFileOne(conditions);
 
-      if(file === null || file === "" || file === undefined) throw "file is empty";
-      if (file.is_deleted) throw "file is deleted";
+      if (file === null || file === "" || file === undefined) {
+        throw new RecordNotFoundException("指定されたファイルが見つかりません");
+      }
+
+      if (file.is_deleted) {
+        throw new RecordNotFoundException("ファイルは既に削除されています");
+      }
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
@@ -124,25 +139,10 @@ export const view = (req, res, next) => {
 
     }
     catch (e) {
-      let errors = {};
-
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "ファイルが見つかりません";
-        break;
-      case "file is empty":
-        errors.file = "ファイルが見つかりません";
-        break;
-      case "file is deleted":
-        errors.file = "ファイルは削除されています";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
       logger.error(e);
+
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, errors: e }
       });
     }
   });
