@@ -547,19 +547,17 @@ export const upload = (req, res, next) => {
         file.meta_infos = _file.meta_infos;
         file.base64 = _file.base64;
         file.checksum = _file.checksum;
+        file.authorities = _file.authorities;
 
         return file;
       });
 
       // checksumを比較
       files = files.map( file => {
-        // @todo front実装待ち
-        return file;
         if (file.hasError) return file;
 
-        const data = file.base64.match(/;base64,(.*)$/)[1];
         const hexdigest = crypto.createHash("md5")
-              .update(new Buffer(data))
+              .update(new Buffer(file.base64))
               .digest("hex");
 
         if (file.checksum === hexdigest) {
