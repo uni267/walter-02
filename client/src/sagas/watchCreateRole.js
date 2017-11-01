@@ -7,7 +7,6 @@ import { API } from "../apis";
 import * as actions from "../actions/roles";
 import * as commons from "../actions/commons";
 
-
 function* watchCreateRole() {
   while (true) {
     const task = yield take(actions.createRole().type);

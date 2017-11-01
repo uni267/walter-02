@@ -45,7 +45,10 @@ class RoleCreateContainer extends Component {
               label="保存"
               primary={true}
               onTouchTap={() => (
-                this.props.actions.createRole(this.props.changedRole)
+                this.props.actions.createRole(
+                  this.props.changedRole,
+                  this.props.history
+                )
               )}
               />
 
