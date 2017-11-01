@@ -100,7 +100,8 @@ class NavigationContainer extends Component {
           handleAccountOpen={this.props.toggleChangePasswordDialog}
           handleLogout={this.handleLogout}
           toggleMenu={this.toggleAppMenu}
-          tenant={this.props.tenant} />
+          tenant={this.props.tenant}
+          session={this.props.session} />
 
         <AppMenu
           open={this.state.menu.open}

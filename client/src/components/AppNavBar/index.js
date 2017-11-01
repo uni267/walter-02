@@ -29,7 +29,8 @@ const AppNavBar = ({
   notifications,
   handleAccountOpen,
   handleLogout,
-  tenant
+  tenant,
+  session
 }) => {
   const renderRightElements = () => {
     const notificationIcon = (
@@ -67,7 +68,10 @@ const AppNavBar = ({
         <IconMenu
           iconButtonElement={accountIcon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-          <MenuItem primaryText="user01" leftIcon={avatarIcon} disabled={true} />
+          <MenuItem
+            primaryText={session.user_name}
+            leftIcon={avatarIcon}
+            disabled={true} />
           <Divider />
           <MenuItem
             primaryText="パスワード変更"

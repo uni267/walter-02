@@ -15,7 +15,7 @@ function* watchRequestVerifyToken() {
       const { user } = payload.data.body;
       const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
       yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
-      yield put(actions.requestLoginSuccess("success", user._id));
+      yield put(actions.requestLoginSuccess("success", user));
       yield put(actions.loadingEnd());
     }
     catch (e) {

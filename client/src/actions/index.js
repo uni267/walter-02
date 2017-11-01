@@ -32,8 +32,8 @@ export const requestLogin = (account_name, password) => ({
   type: actionTypes.REQUEST_LOGIN, account_name, password
 });
 
-export const requestLoginSuccess = (message, user_id) => ({
-  type: actionTypes.REQUEST_LOGIN_SUCCESS,  message,  user_id
+export const requestLoginSuccess = (message, user) => ({
+  type: actionTypes.REQUEST_LOGIN_SUCCESS,  message,  user
 });
 
 export const requestLoginFailed = (message, errors) => ({
