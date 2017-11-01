@@ -285,3 +285,4 @@ export const INIT_SNACK = "INIT_SNACK";
 // エラー表示
 export const OPEN_EXCEPTION = "OPEN_EXCEPTION";
 export const CLOSE_EXCEPTION = "CLOSE_EXCEPTION";
+export const INIT_EXCEPTION = "INIT_EXCEPTION";

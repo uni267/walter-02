@@ -72,6 +72,7 @@ import watchSortFile from "./watchSortFile";
 import watchRestoreFile from "./watchRestoreFile";
 import watchTriggerSnackbar from "./watchTriggerSnackbar";
 import watchFetchFilePreview from "./watchFetchFilePreview";
+import watchOpenException from "./watchOpenException";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -146,6 +147,7 @@ function* Saga() {
   yield fork(watchRestoreFile);
   yield fork(watchTriggerSnackbar);
   yield fork(watchFetchFilePreview);
+  yield fork(watchOpenException);
 }
 
 export default Saga;

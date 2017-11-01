@@ -18,7 +18,8 @@ function* watchFetchFile() {
       yield put(actions.initFile(payload.data.body));
     }
     catch (e) {
-      console.log(e);
+      const { message, name } = e.response.data.status.errors;
+      yield put(commons.openException(name, message));
     }
     finally {
       yield put(commons.loadingEnd());

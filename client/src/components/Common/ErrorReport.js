@@ -6,7 +6,8 @@ import {red900, grey50} from 'material-ui/styles/colors';
 
 const ErrorReport = ({
   open,
-  message
+  message,
+  name
 }) => {
   const transform = message
         ? "translate3d(0, 0, 0)" : "translate3d(0, -50px, 0)";
@@ -23,7 +24,7 @@ const ErrorReport = ({
   return (
     <Snackbar
       open={open}
-      message={message}
+      message={`${message} (${name})`}
       style={style}
       bodyStyle={style}
       />

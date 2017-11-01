@@ -19,3 +19,15 @@ export const closeSnackbar = () => ({
 export const initSnackbar = (message) => ({
   type: actionTypes.INIT_SNACK, message
 });
+
+export const openException = (name, message) => ({
+  type: actionTypes.OPEN_EXCEPTION, name, message
+});
+
+export const closeException = () => ({
+  type: actionTypes.CLOSE_EXCEPTION
+});
+
+export const initException = (name, message) => ({
+  type: actionTypes.INIT_EXCEPTION, name, message
+});

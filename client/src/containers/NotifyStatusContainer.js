@@ -35,7 +35,8 @@ class NotifyStatusContainer extends Component {
         <Snackbar { ...this.props } />
         <ErrorReport
           open={this.props.exception.open}
-          message={this.props.exception.message} />
+          message={this.props.exception.message}
+          name={this.props.exception.name} />
         {this.props.children}
       </div>
     );
