@@ -18,7 +18,7 @@ import {
 // etc
 import { logger } from "../index";
 import * as commons from "./commons";
-import { ValidationError, RecordNotFoundError } from "../errors/AppError";
+import { ValidationError, RecordNotFoundException } from "../errors/AppError";
 
 // constants
 import { SECURITY_CONF } from "../../configs/server";
@@ -99,7 +99,10 @@ export const view = (req, res, next) => {
           file_id === null ||
           file_id === "") throw "file_id is empty";
 
-      const file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_DETAIL );
+      const file_ids = yield getAllowedFileIds(
+        res.user._id, constants.PERMISSION_VIEW_DETAIL
+      );
+
       const conditions = {
         $and:[
           {_id: mongoose.Types.ObjectId(file_id)},
@@ -488,11 +491,11 @@ export const upload = (req, res, next) => {
 
       const dir = yield File.findById(dir_id);
 
-      if (dir === null) throw new RecordNotFoundError("dir_id is not found");
+      if (dir === null) throw new RecordNotFoundException("dir_id is not found");
 
       const user = yield User.findById(res.user._id);
 
-      if (user === null) throw new RecordNotFoundError("user_id is not found");
+      if (user === null) throw new RecordNotFoundException("user_id is not found");
 
       // ファイルの基本情報
       // Modelで定義されていないプロパティを使いたいので

@@ -20,9 +20,16 @@ export class ValidationError extends AppError {
   }
 }
 
-export class RecordNotFoundError extends AppError {
+export class RecordNotFoundException extends AppError {
   constructor(message, body) {
     super(message, body);
-    this.name = "RecordNotFoundError";
+    this.name = "RecordNotFoundException";
+  }
+}
+
+export class PermittionDeniedException extends AppError {
+  constructor(message, body) {
+    super(message, body);
+    this.name = "PermittionDeniedException";
   }
 }
