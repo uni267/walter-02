@@ -663,6 +663,49 @@ export const upload = (req, res, next) => {
 
       });
 
+      // ロール、ユーザ、グループがマスタに存在するかのチェック
+      const role_files = (yield RoleFile.find({ tenant_id: res.user.tenant_id }))
+            .map( role => role._id.toString() );
+
+      const users = (yield User.find({ tenant_id: res.user.tenant_id }))
+            .map( user => user._id.toString() );
+
+      const groups = (yield Group.find({ tenant_id: res.user.tenant_id }))
+            .map( group => group._id.toString() );
+
+      files = files.map( file => {
+        if (file.hasError) return file;
+
+        if (file.authorities === undefined || file.authorities === null ||
+            file.authorities === "" || file.authorities.length === 0) {
+          return file;
+        }
+
+        const roleIds = file.authorities.map( auth => auth.role_files._id );
+        const userIds = file.authorities.map( auth => auth.users )
+              .filter( user => user !== undefined );
+
+        const groupIds = file.authorities.map( auth => auth.groups )
+              .filter( group => group !== undefined );
+
+        if (roleIds.length === intersection(roleIds, role_files) ||
+            userIds.length === intersection(userIds, users) ||
+            groupIds.length === intersection(groupIds, groups)) {
+
+          return file;
+        }
+        else {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              role_files: "roles_files id is invalid"
+            }
+          };
+        }
+      });
+
+
       // 履歴
       files = files.map( file => {
         if (file.hasError) return file;
