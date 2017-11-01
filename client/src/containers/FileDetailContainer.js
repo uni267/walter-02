@@ -82,6 +82,7 @@ class FileDetailContainer extends Component {
     this.props.actions.requestFetchTags();
     this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
     this.props.actions.requestFetchFilePreview(this.props.match.params.id);
+    this.props.actions.requestFetchRoles();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -329,7 +330,7 @@ class FileDetailContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     file: state.file,
-    roles: state.roles,
+    roles: state.roles.data,
     users: state.users,
     snackbar: state.snackbar,
     tags: state.tags,
