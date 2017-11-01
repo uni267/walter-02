@@ -681,16 +681,16 @@ export const upload = (req, res, next) => {
           return file;
         }
 
-        const roleIds = file.authorities.map( auth => auth.role_files._id );
+        const roleIds = file.authorities.map( auth => auth.role_files );
         const userIds = file.authorities.map( auth => auth.users )
               .filter( user => user !== undefined );
 
         const groupIds = file.authorities.map( auth => auth.groups )
               .filter( group => group !== undefined );
 
-        if (roleIds.length === intersection(roleIds, role_files) ||
-            userIds.length === intersection(userIds, users) ||
-            groupIds.length === intersection(groupIds, groups)) {
+        if (roleIds.length === intersection(roleIds, role_files).length ||
+            userIds.length === intersection(userIds, users).length ||
+            groupIds.length === intersection(groupIds, groups).length) {
 
           return file;
         }
