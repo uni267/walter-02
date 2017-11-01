@@ -660,7 +660,6 @@ export const upload = (req, res, next) => {
             }
           };
         }
-
       });
 
       // ロール、ユーザ、グループがマスタに存在するかのチェック
@@ -678,6 +677,8 @@ export const upload = (req, res, next) => {
 
         if (file.authorities === undefined || file.authorities === null ||
             file.authorities === "" || file.authorities.length === 0) {
+
+          file.authorities = [];
           return file;
         }
 
@@ -704,7 +705,6 @@ export const upload = (req, res, next) => {
           };
         }
       });
-
 
       // 履歴
       files = files.map( file => {
@@ -748,12 +748,28 @@ export const upload = (req, res, next) => {
         if (file.hasError) return false;
 
         const authorityFile = new AuthorityFile();
-        authorityFile.users = user;
+        authorityFile.users = user._id;
         authorityFile.files = model;
-        authorityFile.role_files = role;
+        authorityFile.role_files = role._id;
 
-        return authorityFile;
+        if (file.authorities.length === 0) {
+          return authorityFile;
+        } else {
+          const authorityFiles = file.authorities.map( auth => {
+            const authorityFile = new AuthorityFile();
+            authorityFile.users = mongoose.Types.ObjectId(auth.users);
+            authorityFile.files = model;
+            authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
+            return authorityFile;
+          });
+
+          return authorityFiles.concat(authorityFile);
+        }
       });
+
+      // 権限の保存
+      yield flattenDeep(authorityFiles)
+        .map( file => file ? file.save() : false );
 
       // メタ情報
       const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
@@ -769,11 +785,7 @@ export const upload = (req, res, next) => {
             value: meta.value
           })
         ));
-
       });
-
-      // authorityFilesの保存
-      yield authorityFiles.map( file => file ? file.save() : false );
 
       // fileMetaInfoの保存
       yield flattenDeep(fileMetaInfos).map( fileMeta => (
