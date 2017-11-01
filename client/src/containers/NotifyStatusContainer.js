@@ -7,6 +7,9 @@ import { connect } from "react-redux";
 import Snackbar from "material-ui/Snackbar";
 import CircularProgress from 'material-ui/CircularProgress';
 
+// components
+import ErrorReport from "../components/Common/ErrorReport";
+
 const styles = {
   circular: {
     position: "absolute",
@@ -30,6 +33,9 @@ class NotifyStatusContainer extends Component {
       <div>
         {circular}
         <Snackbar { ...this.props } />
+        <ErrorReport
+          open={this.props.exception.open}
+          message={this.props.exception.message} />
         {this.props.children}
       </div>
     );
@@ -41,7 +47,8 @@ const mapStateToProps = (state, ownProps) => {
     loading: state.loading,
     open: state.snackbar.open,
     message: state.snackbar.message,
-    duration: state.snackbar.duration
+    duration: state.snackbar.duration,
+    exception: state.exception
   };
 };
 

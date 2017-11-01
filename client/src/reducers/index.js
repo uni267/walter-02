@@ -45,6 +45,7 @@ import fileTag from "./fileTagReducer";
 import fileMetaInfo from "./fileMetaInfoReducer";
 import restoreFile from "./restoreFileReducer";
 import filePreview from "./filePreviewReducer";
+import exception from "./exceptionReducer";
 
 const fileApp = combineReducers({
   files,
@@ -90,7 +91,8 @@ const fileApp = combineReducers({
   fileTag,
   fileMetaInfo,
   restoreFile,
-  filePreview
+  filePreview,
+  exception
 });
 
 export default fileApp;
