@@ -40,28 +40,30 @@ export const verifyToken = (req, res, next) => {
 
       res.user = _user;
 
-      let requestReferer = "";
-      if(req.headers.referer !== undefined) {
-        requestReferer = ((url.parse(req.headers.referer)).path.split("/"))[1];
-      }
+      // TODO:
+      // // メニュー権限による制御
+      // let requestReferer = "";
+      // if(req.headers.referer !== undefined) {
+      //   requestReferer = ((url.parse(req.headers.referer)).path.split("/"))[1];
+      // }
 
-      // filesからのリクエストもhomeと同様に扱う
-      if(requestReferer === constants.PERMISSION_FILES) requestReferer = constants.PERMISSION_HOME;
+      // // filesからのリクエストもhomeと同様に扱う
+      // if(requestReferer === constants.PERMISSION_FILES) requestReferer = constants.PERMISSION_HOME;
 
-      const condition = {
-        $or:[
-          { users: user._id },
-          { groups: {$in: user.groups } }
-        ]
-      };
+      // const condition = {
+      //   $or:[
+      //     { users: user._id },
+      //     { groups: {$in: user.groups } }
+      //   ]
+      // };
 
-      const menus = yield AuthorityMenu.getMenus(condition);
+      // const menus = yield AuthorityMenu.getMenus(condition);
 
-      let auth = false;
-      menus.forEach( (menu) => {
-        if(menu.name === requestReferer) auth = true;
-      });
-      if(auth === false) throw "permission denied";
+      // let auth = false;
+      // menus.forEach( (menu) => {
+      //   if(menu.name === requestReferer) auth = true;
+      // });
+      // if(auth === false) throw "permission denied";
 
       next();
     }
