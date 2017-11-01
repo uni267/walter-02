@@ -530,8 +530,8 @@ export const upload = (req, res, next) => {
         if (_file.checksum === null || _file.checksum === undefined ||
             _file.checksum === "" ) {
           // @todo front側実装待ち
-          // file.hasError = true;
-          // file.errors = { checksum: "checksum is empty" };
+          file.hasError = true;
+          file.errors = { checksum: "checksum is empty" };
         }
 
         file.name = _file.name;
