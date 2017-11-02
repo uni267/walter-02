@@ -27,6 +27,8 @@ import AnalysisPeriodContainer from "./AnalysisPeriodContainer";
 import MetaInfoContainer from "./MetaInfoContainer";
 import MetaInfoDetailContainer from "./MetaInfoDetailContainer";
 import MetaInfoCreateContainer from "./MetaInfoCreateContainer";
+import RoleMenuContainer from "./RoleMenuContainer";
+import RoleMenuDetailContainer from "./RoleMenuDetailContainer";
 
 class App extends Component {
   render() {
@@ -58,13 +60,15 @@ class App extends Component {
                   <Route exact path="/analysis/periods" component={AnalysisPeriodContainer} />
                   <Route exact path="/meta_infos" component={MetaInfoContainer} />
                   <Route
-                    exact path="/meta_infos/create" 
+                    exact path="/meta_infos/create"
                     component={MetaInfoCreateContainer}
                   />
                   <Route
                     path="/meta_infos/:id"
                     component={MetaInfoDetailContainer}
                   />
+                  <Route exact path="/role_menus" component={RoleMenuContainer} />
+                  <Route path="/role_menus/:id" component={RoleMenuDetailContainer} />
                   <Route component={HomeContainer} />
                 </Switch>
               </AuthenticationContainer>

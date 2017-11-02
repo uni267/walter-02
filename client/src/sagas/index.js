@@ -73,6 +73,10 @@ import watchRestoreFile from "./watchRestoreFile";
 import watchTriggerSnackbar from "./watchTriggerSnackbar";
 import watchFetchFilePreview from "./watchFetchFilePreview";
 import watchOpenException from "./watchOpenException";
+import watchFetchRoleMenus from "./watchFetchRoleMenus";
+import watchFetchRoleMenu from "./watchFetchRoleMenu";
+import watchSaveRoleMenuName from "./watchSaveRoleMenuName";
+import watchSaveRoleMenuDescription from "./watchSaveRoleMenuDescription";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -148,6 +152,10 @@ function* Saga() {
   yield fork(watchTriggerSnackbar);
   yield fork(watchFetchFilePreview);
   yield fork(watchOpenException);
+  yield fork(watchFetchRoleMenus);
+  yield fork(watchFetchRoleMenu);
+  yield fork(watchSaveRoleMenuName);
+  yield fork(watchSaveRoleMenuDescription);
 }
 
 export default Saga;
