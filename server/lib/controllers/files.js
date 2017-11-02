@@ -13,7 +13,9 @@ import {
   intersection,
   zipWith,
   flattenDeep,
-  reject
+  reject,
+  chain,
+  uniq
 } from "lodash";
 
 // etc
@@ -70,6 +72,17 @@ export const index = (req, res, next) => {
       const total = yield File.find(conditions).count();
 
       let files = yield File.searchFiles(conditions,offset,limit,sortOption);
+
+      files = files.map( file => {
+
+        file.actions = chain(file.authorities)
+          .filter( auth => auth.users._id.toString() === res.user._id.toString() )
+          .map( auth => auth.actions )
+          .flattenDeep()
+          .uniq();
+
+        return file;
+      });
 
       res.json({
         status: { success: true, total },
