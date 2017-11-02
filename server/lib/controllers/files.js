@@ -12,7 +12,8 @@ import crypto from "crypto";
 import {
   intersection,
   zipWith,
-  flattenDeep
+  flattenDeep,
+  reject
 } from "lodash";
 
 // etc
@@ -1487,6 +1488,65 @@ export const previewExists = (req, res, next) => {
   });
 };
 
+export const exists = (req, res, next) => {
+  co(function* () {
+    try {
+      const { dir_id, files } = req.body;
+
+      if (dir_id === null ||
+          dir_id === undefined ||
+          dir_id === "") throw new ValidationError("dir_idが空です");
+
+      if (files === null ||
+          files === undefined ||
+          files === "" ||
+          files.length === 0) {
+        // validationErrorではなく空で返却するのが正解？
+        res.json({ status: { success: true }, body: [] });
+      }
+
+      const fileNames = reject( files.map( f => f.name ), name => (
+        name === undefined || name === null ||
+        name === "" || name === "undefined"
+      ));
+
+      if (files.length !== fileNames.length) {
+        throw new ValidationError("ファイル名に空のものが存在します");
+      }
+
+      const records = yield files.map( file => (
+        File.findOne({
+          dir_id: mongoose.Types.ObjectId(dir_id),
+          name: file.name
+        })
+      ));
+
+      res.json({
+        status: { success: true },
+        body: records
+      });
+
+    }
+    catch (e) {
+      let errors;
+
+      if (e.name === "Error") {
+        errors = commons.errorParser(e);
+      } else {
+        errors = e;
+      }
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+export const removeAuthority = (req, res, next) => {
+};
+
+// ここからプライベート的なメソッド
 const _exec = command => {
   return new Promise((resolve, reject)=>{
     exec(command, (err,stdout,stderr) => {
@@ -1495,10 +1555,6 @@ const _exec = command => {
     });
   });
 };
-
-export const removeAuthority = (req, res, next) => {
-};
-
 
 const moveFile = (file, dir_id, user, action) => {
     const history = {
@@ -1566,3 +1622,4 @@ const getAllowedFileIds = (user_id, permission) => {
 
   });
 };
+
