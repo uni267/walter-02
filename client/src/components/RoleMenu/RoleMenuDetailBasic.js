@@ -6,7 +6,7 @@ import TextField from "material-ui/TextField";
 import FlatButton from "material-ui/FlatButton";
 
 const RoleMenuDetailBasic = ({
-  menu,
+  roleMenu,
   changedMenu,
   validationErrors,
   roleMenuActions

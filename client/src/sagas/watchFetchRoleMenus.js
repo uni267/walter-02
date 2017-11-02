@@ -11,7 +11,7 @@ function* watchFetchRoleMenus() {
     const api = new API();
     yield put(commons.loadingStart());
     try {
-      const payload = yield call(api.fetchMenus);
+      const payload = yield call(api.fetchRoleMenus);
       yield put(actions.initRoleMenus(payload.data.body));
     }
     catch(e) {

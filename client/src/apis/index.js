@@ -387,7 +387,7 @@ export class API {
     return this.client.get(`/api/v1/previews/${preview_id}`);
   };
 
-  fetchMenus = () => {
+  fetchRoleMenus = () => {
     return this.client.get(`/api/v1/role_menus`);
   };
 
@@ -395,14 +395,14 @@ export class API {
     return this.client.get(`/api/v1/role_menus/${menu_id}`);
   };
 
-  saveRoleMenuName = (menu) => {
-    const body = { name: menu.name };
-    return this.client.patch(`/api/v1/role_menus/${menu._id}/name`, body);
+  saveRoleMenuName = (roleMenu) => {
+    const body = { name: roleMenu.name };
+    return this.client.patch(`/api/v1/role_menus/${roleMenu._id}/name`, body);
   };
 
-  saveRoleMenuDescription = (menu) => {
-    const body = { description: menu.description };
-    return this.client.patch(`/api/v1/role_menus/${menu._id}/description`, body);
+  saveRoleMenuDescription = (roleMenu) => {
+    const body = { description: roleMenu.description };
+    return this.client.patch(`/api/v1/role_menus/${roleMenu._id}/description`, body);
   }
 }
 

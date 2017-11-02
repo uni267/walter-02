@@ -12,6 +12,7 @@ import FlatButton from "material-ui/FlatButton";
 import NavigationContainer from "./NavigationContainer";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 import RoleMenuDetailBasic from "../components/RoleMenu/RoleMenuDetailBasic";
+import RoleOfMenu from "../components/RoleMenu/RoleOfMenu";
 
 // actions
 import * as MenuActions from "../actions/menus";
@@ -33,7 +34,7 @@ class RoleMenuDetailContainer extends Component {
   }
 
   render() {
-    const title = `${this.props.menu.name}の詳細`;
+    const title = `${this.props.roleMenu.name}の詳細`;
     return (
       <div>
         <NavigationContainer />
@@ -55,8 +56,13 @@ class RoleMenuDetailContainer extends Component {
                 <Card>
                   <CardTitle subtitle="メニュー"/>
                   <CardText>
-                    {/* <RoleOfMenu
-                    > */}
+                    <RoleOfMenu
+                      {...this.props}
+                      clearSearchActionText={() => {
+                        this.setState({ searchMenu: { text: ""}});
+                      }}
+                      searchMenu={this.state.searchMenu}
+                    />
                   </CardText>
                 </Card>
               </div>
@@ -73,10 +79,10 @@ class RoleMenuDetailContainer extends Component {
 const mapStateToProps = (state, ownProps) =>{
   return {
     tenant: state.tenant,
-    menu: state.menu.data,
-    changedMenu: state.menu.changed,
-    validationErrors: state.menu.errors,
-    menus: state.menus
+    roleMenu: state.roleMenu.data,
+    changedMenu: state.roleMenu.changed,
+    validationErrors: state.roleMenu.errors,
+    roleMenus: state.roleMenus
   };
 };
 

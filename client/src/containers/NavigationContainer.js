@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 // actions
-import { 
+import {
   requestChangePassword,
   toggleChangePasswordDialog,
   logout,
@@ -32,7 +32,7 @@ class NavigationContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      menu: {
+      roleMenu: {
         open: false
       }
     };
@@ -40,8 +40,8 @@ class NavigationContainer extends Component {
 
   toggleAppMenu = () => {
     this.setState({
-      menu: {
-        open: !this.state.menu.open
+      roleMenu: {
+        open: !this.state.roleMenu.open
       }
     });
   };
@@ -104,7 +104,7 @@ class NavigationContainer extends Component {
           session={this.props.session} />
 
         <AppMenu
-          open={this.state.menu.open}
+          open={this.state.roleMenu.open}
           menus={menus}
           toggle={this.toggleAppMenu}
           />

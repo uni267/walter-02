@@ -9,7 +9,7 @@ const roleMenusReducer = (state = initialState,action) => {
     case actionTypes.INIT_ROLE_MENUS:
       return {
         ...state,
-        data: action.menus
+        data: action.roleMenus
       };
     default:
       return state;

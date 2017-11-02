@@ -13,8 +13,8 @@ function* watchSaveRoleMenuName() {
     yield put(actions.clearRoleMenuValidationError());
 
     try {
-      yield call(api.saveRoleMenuName, task.menu);
-      const payload = yield call(api.fetchRoleMenu, task.menu._id);
+      yield call(api.saveRoleMenuName, task.roleMenu);
+      const payload = yield call(api.fetchRoleMenu, task.roleMenu._id);
       yield put(actions.initRoleMenu(payload.data.body));
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("表示名を変更しました"));

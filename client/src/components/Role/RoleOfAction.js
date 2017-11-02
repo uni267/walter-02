@@ -13,17 +13,16 @@ const RoleOfAction = ({
   clearSearchActionText,
   roleActions
 }) => {
-  console.log(actions);
   const renderActions = (actions) => {
     return actions.map( (action, idx) => {
       return (
-        <Chip 
+        <Chip
           key={idx}
           style={{ marginRight: 10 }}
           onRequestDelete={() => (
             roleActions.deleteRoleOfAction(role._id, action._id)
           )} >
-          
+
           {action.label}
         </Chip>
       );

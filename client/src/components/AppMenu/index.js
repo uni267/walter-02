@@ -13,17 +13,17 @@ const AppMenu = ({
   menus,
   toggle
 }) => {
-  const renderMenu = (menu, idx) => {
+  const renderMenu = (roleMenu, idx) => {
 
-    const link = <Link to={menu.link} />;
+    const link = <Link to={roleMenu.link} />;
 
     return (
       <MenuItem
         key={idx}
         onTouchTap={toggle}
         containerElement={link}
-        leftIcon={menu.icon}
-        primaryText={menu.name} />
+        leftIcon={roleMenu.icon}
+        primaryText={roleMenu.name} />
     );
   };
 
@@ -35,7 +35,7 @@ const AppMenu = ({
       onRequestChange={toggle}
       >
 
-      {menus.map( (menu, idx) => renderMenu(menu, idx) )}
+      {menus.map( (roleMenu, idx) => renderMenu(roleMenu, idx) )}
 
     </Drawer>
   );

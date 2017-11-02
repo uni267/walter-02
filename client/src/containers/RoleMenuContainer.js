@@ -46,8 +46,8 @@ class RoleMenuContainer extends Component {
                       <RoleMenuTableHeader headers={headers} />
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
-                      {this.props.menus.map( (menu,idx) => {
-                        return <RoleMenuTableBody menu={menu} key={idx} />;
+                      { this.props.roleMenus.map( (roleMenu,idx) => {
+                        return <RoleMenuTableBody roleMenu={roleMenu} key={idx} />;
                       })}
                     </TableBody>
                   </Table>
@@ -64,7 +64,7 @@ class RoleMenuContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     tenant: state.tenant,
-    menus: state.menus.data
+    roleMenus: state.roleMenus.data
   };
 };
 

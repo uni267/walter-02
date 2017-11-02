@@ -2,10 +2,10 @@ import * as actionTypes from "../actionTypes";
 
 const initialState = {
   data:{
-    menus:[]
+    roleMenus:[]
   },
   changed:{
-    menus:[]
+    roleMenus:[]
   },
   errors:{}
 };
@@ -15,8 +15,8 @@ const roleMenuReducer = (state = initialState,action) => {
     case actionTypes.INIT_ROLE_MENU:
     return {
       ...state,
-      data: action.menu,
-      changed: action.menu
+      data: action.roleMenu,
+      changed: action.roleMenu
     };
     case actionTypes.CHANGE_ROLE_MENU_NAME:
       return {
