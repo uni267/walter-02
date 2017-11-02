@@ -224,6 +224,18 @@ export const search = (req, res, next) => {
         file.dir_route = route.length > 0
           ? route.reverse().join("/")
           : "";
+
+        files = files.map( file => {
+
+          file.actions = chain(file.authorities)
+            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
+            .map( auth => auth.actions )
+            .flattenDeep()
+            .uniq();
+
+          return file;
+        });
+
         return file;
       });
 
