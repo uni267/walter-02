@@ -25,11 +25,10 @@ const FileSchema = Schema({
   is_crypted: {type:Boolean, default: false}
 });
 
-FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
-  const _this = this;
+FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption) => {
   return co(function* (){
     try {
-      let files = yield _this.aggregate([
+      let files = yield File.aggregate([
         { $match: conditions },
         { $lookup: {
           from: "tags",
@@ -127,14 +126,13 @@ FileSchema.statics.searchFiles = function(conditions,offset,limit,sortOption){
   });
 };
 
-FileSchema.statics.searchFileOne = function(conditions){
-  const _this = this;
+FileSchema.statics.searchFileOne = conditions => {
   return co(function* (){
     try {
       const offset = 0;
       const limit = 1;
       const sortOption = { _id: 1};
-      const files = yield _this.searchFiles(conditions,offset,limit,sortOption);
+      const files = yield File.searchFiles(conditions,offset,limit,sortOption);
 
       return new Promise( (resolve,reject) => resolve(files[0]) );
     } catch (error) {
