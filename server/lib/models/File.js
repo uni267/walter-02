@@ -28,97 +28,256 @@ const FileSchema = Schema({
 FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption) => {
   return co(function* (){
     try {
-      let files = yield File.aggregate([
+      return yield File.aggregate([
         { $match: conditions },
-        { $lookup: {
-          from: "tags",
-          localField: "tags",
-          foreignField: "_id",
-          as: "tags"
-        }},
-        { $lookup: {
-          from: "dirs",
-          localField: "dir_id",
-          foreignField: "descendant",
-          as: "dirs"
-        }},
-        { $lookup:{
-          from: "authority_files",
-          localField: "_id",
-          foreignField: "files",
-          as: "authorities"
-        }},
-        { $lookup: {
-          from: "file_meta_infos",
-          localField: "_id",
-          foreignField: "file_id",
-          as: "meta_infos"
-        }},
-        { $unwind: {
-          path: "$meta_infos",
-          preserveNullAndEmptyArrays: true
-        }},
-        { $lookup: {
-          from: "meta_infos",
-          localField: "meta_infos.meta_info_id",
-          foreignField: "_id",
-          as: "meta_info"
-        }},
-        { $unwind: {
-          path: "$meta_info",
-          preserveNullAndEmptyArrays: true
-        }},
-        { $group: {
-          _id: "$_id",
-          name: { $first: "$name" },
-          mime_type: { $first: "$mime_type" },
-          size: { $first: "$size" },
-          is_dir: { $first: "$is_dir" },
-          dir_id: { $first: "$dir_id" },
-          is_display: { $first: "$is_display" },
-          is_star: { $first: "$is_star" },
-          is_crypted: { $first: "$is_crypted" },
-          histories: { $first: "$histories" },
-          tags: { $first: "$tags" },
-          is_deleted: { $first: "$is_deleted" },
-          modified: { $first: "$modified" },
-          dirs: { $first: "$dirs" },
-          authorities: { $first: "$authorities" },
-          meta_infos: {
-            $push: {
-              _id: "$meta_info._id",
-              key: "$meta_info.key",
-              key_type: "$meta_info.key_type",
-              value_type: "$meta_info.value_type",
-              value: "$meta_infos.value"
+        {
+          $lookup: {
+            from: "authority_files",
+            localField: "_id",
+            foreignField: "files",
+            as: "authorities"
+          }
+        },
+        {
+          $unwind: {
+            path: "$authorities",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: "role_files",
+            localField: "authorities.role_files",
+            foreignField: "_id",
+            as: "authorities_role_files"
+          }
+        },
+        {
+          $unwind: {
+            path: "$authorities_role_files",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "authorities.users",
+            foreignField: "_id",
+            as: "authorities_users"
+          }
+        },
+        {
+          $unwind: {
+            path: "$authorities_users",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: "groups",
+            localField: "authorities.groups",
+            foreignField: "_id",
+            as: "authorities_groups"
+          }
+        },
+        {
+          $unwind: {
+            path: "$authorities_groups",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: "actions",
+            localField: "authorities_role_files.actions",
+            foreignField: "_id",
+            as: "actions"
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            mime_type: { $first: "$mime_type" },
+            size: { $first: "$size" },
+            is_dir: { $first: "$is_dir" },
+            dir_id: { $first: "$dir_id" },
+            is_display: { $first: "$is_display" },
+            is_star: { $first: "$is_star" },
+            is_crypted: { $first: "$is_crypted" },
+            histories: { $first: "$histories" },
+            is_deleted: { $first: "$is_deleted" },
+            modified: { $first: "$modified" },
+            preview_id: { $first: "$preview_id" },
+            authorities: {
+              $push: {
+                role_files: "$authorities_role_files",
+                users: "$authorities_users",
+                groups: "$authorities_groups",
+                actions: "$actions"
+              }
+            },
+            tags: { $first: "$tags" },
+            meta_infos: { $first: "$meta_infos" }
+          }
+        },
+        {
+          $lookup: {
+            from: "tags",
+            localField: "tags",
+            foreignField: "_id",
+            as: "tags"
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            mime_type: { $first: "$mime_type" },
+            size: { $first: "$size" },
+            is_dir: { $first: "$is_dir" },
+            dir_id: { $first: "$dir_id" },
+            is_display: { $first: "$is_display" },
+            is_star: { $first: "$is_star" },
+            is_crypted: { $first: "$is_crypted" },
+            histories: { $first: "$histories" },
+            tags: { $first: "$tags" },
+            is_deleted: { $first: "$is_deleted" },
+            modified: { $first: "$modified" },
+            preview_id: { $first: "$preview_id" },
+            authorities: { $first: "$authorities" }
+          }
+        },
+        {
+          $lookup: {
+            from: "dirs",
+            localField: "dir_id",
+            foreignField: "descendant",
+            as: "dirs"
+          }
+        },
+        { $unwind: "$dirs" },
+        {
+          $lookup: {
+            from: "files",
+            localField: "dirs.ancestor",
+            foreignField: "_id",
+            as: "dirs.ancestor"
+          }
+        },
+        { $unwind: "$dirs.ancestor" },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            mime_type: { $first: "$mime_type" },
+            size: { $first: "$size" },
+            is_dir: { $first: "$is_dir" },
+            dir_id: { $first: "$dir_id" },
+            is_display: { $first: "$is_display" },
+            is_star: { $first: "$is_star" },
+            is_crypted: { $first: "$is_crypted" },
+            histories: { $first: "$histories" },
+            tags: { $first: "$tags" },
+            is_deleted: { $first: "$is_deleted" },
+            modified: { $first: "$modified" },
+            preview_id: { $first: "$preview_id" },
+            authorities: { $first: "$authorities" },
+            dirs: {
+              $push: {
+                _id: "$dirs._id",
+                ancestor: "$dirs.ancestor",
+                descendant: "$dirs.descendant",
+                depth: "$dirs.depth"
+              }
             }
           }
-        }},
-        { $project:{
-          _id: 1,
-          is_star: 1,
-          is_display: 1,
-          dir_id: 1,
-          is_dir: 1,
-          size: 1,
-          mime_type: 1,
-          name: 1,
-          is_crypted: 1,
-          meta_infos: 1,
-          histories: 1,
-          tags: 1,
-          is_deleted: 1,
-          modified: 1,
-          preview_id: 1,
-          dirs: 1,
-          authorities: 1
-        }},
+        },
+        {
+          $lookup: {
+            from: "file_meta_infos",
+            localField: "_id",
+            foreignField: "file_id",
+            as: "meta_infos"
+          }
+        },
+        {
+          $unwind: {
+            path: "$meta_infos",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: "meta_infos",
+            localField: "meta_infos.meta_info_id",
+            foreignField: "_id",
+            as: "meta_info"
+          }
+        },
+        {
+          $unwind: {
+            path: "$meta_info",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            mime_type: { $first: "$mime_type" },
+            size: { $first: "$size" },
+            is_dir: { $first: "$is_dir" },
+            dir_id: { $first: "$dir_id" },
+            is_display: { $first: "$is_display" },
+            is_star: { $first: "$is_star" },
+            is_crypted: { $first: "$is_crypted" },
+            histories: { $first: "$histories" },
+            tags: { $first: "$tags" },
+            is_deleted: { $first: "$is_deleted" },
+            modified: { $first: "$modified" },
+            preview_id: { $first: "$preview_id" },
+            authorities: { $first: "$authorities" },
+            dirs: { $first: "$dirs" },
+            meta_infos: {
+              $push: {
+                _id: "$meta_info._id",
+                key: "$meta_info.key",
+                key_type: "$meta_info.key_type",
+                value_type: "$meta_info.value_type",
+                value: "$meta_infos.value"
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            mime_type: 1,
+            size: 1,
+            is_dir: 1,
+            dir_id: 1,
+            is_display: 1,
+            is_star: 1,
+            is_crypted: 1,
+            histories: 1,
+            tags: 1,
+            is_deleted: 1,
+            modified: 1,
+            dirs: 1,
+            preview_id: 1,
+            authorities: 1,
+            meta_infos: {
+              $filter: {
+                input: "$meta_infos",
+                as: "meta_infos",
+                cond: { $gte: [ "$$meta_infos._id", null ] }
+              }
+            }
+          }
+        }
       ]).skip(offset).limit(limit).sort(sortOption);
-      files = yield File.populate(files,{ path:'authorities.users', model: User } );
-      files = yield File.populate(files,{ path:'authorities.groups', model: Group } );
-      files = yield File.populate(files,{ path:'authorities.role_files', model: RoleFile } );
-
-      return yield File.populate(files,'dirs.ancestor');
 
     } catch (error) {
       throw error;
