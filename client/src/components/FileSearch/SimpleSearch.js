@@ -30,8 +30,9 @@ const SimpleSearch = ({
 };
 
 SimpleSearch.propTypes = {
-  searchFileSimple: PropTypes.func.isRequired,
-  hintText: PropTypes.string
+  hintText: PropTypes.string,
+  history: PropTypes.object,
+  actions: PropTypes.object
 };
 
 export default SimpleSearch;
