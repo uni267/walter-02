@@ -99,9 +99,8 @@ class AddDirDialog extends Component {
 }
 
 AddDirDialog.propTypes = {
-  users: PropTypes.array.isRequired,
-  createDir: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired
+  dir_id: PropTypes.string.isRequired,
+  actions: PropTypes.object
 };
 
 export default AddDirDialog;
