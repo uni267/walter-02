@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart, Pie } from "recharts";
 
 const ShapePie = ({data, cardWidth, pieColor}) => {
   const renderShape = (data) => {

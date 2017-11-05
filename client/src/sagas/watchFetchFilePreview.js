@@ -1,10 +1,9 @@
 import { delay } from "redux-saga";
-import { call, put, take, fork } from "redux-saga/effects";
+import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
 import * as actions from "../actions/files";
-import * as commons from "../actions/commons";
 
 function* fetchFilePreview(file_id) {
   const api = new API();

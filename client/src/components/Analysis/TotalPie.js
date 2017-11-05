@@ -1,7 +1,7 @@
 import React from "react";
 
 // recharts
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 const TotalPie = ({useRateTotal, cardWidth}) => {
   const colors = [
@@ -17,8 +17,6 @@ const TotalPie = ({useRateTotal, cardWidth}) => {
       const usage = useRateTotal.filter( total => total.name === "usage" )[0].value;
       return (usage / total * 100).toFixed(2);
     };
-
-    const usage = renderUsagePer(useRateTotal);
 
     const x = pieWidth / 2;
     const y = pieHeight / 2;
