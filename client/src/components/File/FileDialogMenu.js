@@ -38,8 +38,9 @@ const FileDialogMenu = ({
   let menuItems = [
     {
       name: constants.PERMISSION_DOWNLOAD,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="ダウンロード"
           leftIcon={<FileFileDownload />}
           onTouchTap={() => (this.props.actions.downloadFile(file) )}
@@ -48,8 +49,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_CHANGE_NAME,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="ファイル名変更"
           leftIcon={<EditorModeEdit />}
           onTouchTap={() => this.setState({ editFile: { open: true } })} />
@@ -57,8 +59,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_MOVE,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="移動"
           leftIcon={<ContentForward />}
           onTouchTap={() => this.props.actions.toggleMoveFileDialog(file)} />
@@ -66,8 +69,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_COPY,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           onTouchTap={() => this.props.actions.toggleCopyFileDialog(file)}
           leftIcon={<ContentContentCopy />}
           primaryText="コピー" />
@@ -75,8 +79,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_DELETE,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="削除"
           leftIcon={<ActionDelete />}
           onTouchTap={() => this.props.actions.toggleDeleteFileDialog(file)} />
@@ -84,8 +89,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_AUTHORITY,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="権限を変更"
           leftIcon={<ActionVerifiedUser />}
           onTouchTap={() => this.props.actions.toggleAuthorityFileDialog(file)} />
@@ -93,8 +99,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_CHANGE_TAG,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="タグを編集"
           leftIcon={<ActionLabel />}
           onTouchTap={() => this.props.actions.toggleFileTagDialog(file)} />
@@ -102,8 +109,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_CHANGE_META_INFO,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="メタ情報を編集"
           leftIcon={<ActionDescription />}
           onTouchTap={() => this.props.actions.toggleFileMetaInfoDialog(file)} />
@@ -111,8 +119,9 @@ const FileDialogMenu = ({
     },
     {
       name: constants.PERMISSION_VIEW_HISTORY,
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="履歴を閲覧"
           leftIcon={<ActionHistory />}
           onTouchTap={() => this.props.actions.toggleHistoryFileDialog(file)} />
@@ -120,8 +129,9 @@ const FileDialogMenu = ({
     },
     {
       name: "PERMISSION_TIMESTAMP",
-      component: (
+      component: idx => (
         <MenuItem
+          key={idx}
           primaryText="タイムスタンプ発行"
           leftIcon={<ActionFingerprint />} />
       )
@@ -146,9 +156,9 @@ const FileDialogMenu = ({
       iconButtonElement={action_menu_icon}
       anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
-      {menuItems.map( menu => (
+      {menuItems.map( (menu, idx) => (
         file.actions.map( act => act.name ).includes(menu.name)
-          ? menu.component
+          ? menu.component(idx)
           : null
       ))}
 
