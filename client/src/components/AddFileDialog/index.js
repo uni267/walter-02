@@ -140,11 +140,10 @@ const AddFileDialog = ({
 };
 
 AddFileDialog.propTypes = {
-  dir_id: PropTypes.number.isRequired,
+  dir_id: PropTypes.string.isRequired,
   open: PropTypes.bool.isRequired,
-  uploadFiles: PropTypes.array.isRequired,
   filesBuffer: PropTypes.array.isRequired,
-  closeDialog: PropTypes.bool.isRequired,
+  closeDialog: PropTypes.func.isRequired,
   actions: PropTypes.object.isRequired
 };
 
