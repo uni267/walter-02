@@ -32,7 +32,9 @@ class NotifyStatusContainer extends Component {
     return (
       <div>
         {circular}
-        <Snackbar { ...this.props } />
+        <Snackbar
+          open={this.props.open}
+          message={this.props.message} />
         <ErrorReport
           open={this.props.exception.open}
           message={this.props.exception.message}
