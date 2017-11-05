@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 
 // router
 import { withRouter } from "react-router-dom";
@@ -284,10 +283,5 @@ FileListContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(FileListContainer);
-
-FileListContainer.propTypes = {
-  dir_id: PropTypes.string.isRequired,
-  files: PropTypes.array.isRequired
-};
 
 export default withRouter(withDragDropContext(FileListContainer));
