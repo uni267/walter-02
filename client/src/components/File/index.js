@@ -5,26 +5,14 @@ import { uniq } from "lodash";
 
 // material
 import Checkbox from 'material-ui/Checkbox';
-import IconMenu from "material-ui/IconMenu";
-import IconButton from "material-ui/IconButton";
-import MenuItem from "material-ui/MenuItem";
 import TextField from "material-ui/TextField";
 
 // mateirla-icon
-import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import FileFileDownload from "material-ui/svg-icons/file/file-download";
-import EditorModeEdit from "material-ui/svg-icons/editor/mode-edit";
-import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
-import ContentForward from "material-ui/svg-icons/content/forward";
-import ActionDelete from "material-ui/svg-icons/action/delete";
-import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
-import ActionLabel from "material-ui/svg-icons/action/label";
-import ActionDescription from "material-ui/svg-icons/action/description";
-import ActionHistory from "material-ui/svg-icons/action/history";
-import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
-import ActionRestore from "material-ui/svg-icons/action/restore";
+
+// components
+import FileDialogMenu from "./FileDialogMenu";
 
 import * as constants from "../../constants";
 
@@ -149,15 +137,6 @@ class File extends Component {
 
     const checkOpacity = this.state.hover || file.checked ? 1 : 0.1;
 
-    const action_menu_icon = () => {
-      const opacity = this.state.hover ? 1 : 0.1;
-      return (
-        <IconButton style={{ opacity }}>
-          <NavigationMenu />
-        </IconButton>
-      );
-    };
-
     const favorite_icon = (
       <ActionFavorite />
     );
@@ -200,70 +179,12 @@ class File extends Component {
         </div>
 
         <div style={{ ...cellStyle, width: headers[4].width }}>
-          <IconMenu
-            iconButtonElement={action_menu_icon()}
-            anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
-            <MenuItem
-              primaryText="ダウンロード"
-              leftIcon={<FileFileDownload />}
-              onTouchTap={() => this.props.actions.downloadFile(file)}
-              />
-            <MenuItem
-              primaryText="ファイル名変更"
-              leftIcon={<EditorModeEdit />}
-              onTouchTap={() => this.setState({ editFile: { open: true } })} />
+          <FileDialogMenu
+            file={this.props.file}
+            hover={this.state.hover}
+            trashDirId={this.props.tenant.trashDirId} />
 
-            <MenuItem
-              primaryText="移動"
-              leftIcon={<ContentForward />}
-              onTouchTap={() => this.props.actions.toggleMoveFileDialog(file)} />
-
-            <MenuItem
-              onTouchTap={() => this.props.actions.toggleCopyFileDialog(file)}
-              leftIcon={<ContentContentCopy />}
-              primaryText="コピー" />
-
-            <MenuItem
-              primaryText="削除"
-              leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.actions.toggleDeleteFileDialog(file)} />
-
-            <MenuItem
-              primaryText="権限を変更"
-              leftIcon={<ActionVerifiedUser />}
-              onTouchTap={() => this.props.actions.toggleAuthorityFileDialog(file)} />
-
-            <MenuItem
-              primaryText="タグを編集"
-              leftIcon={<ActionLabel />}
-              onTouchTap={() => this.props.actions.toggleFileTagDialog(file)} />
-
-            <MenuItem
-              primaryText="メタ情報を編集"
-              leftIcon={<ActionDescription />}
-              onTouchTap={() => this.props.actions.toggleFileMetaInfoDialog(file)} />
-
-            <MenuItem
-              primaryText="履歴を閲覧"
-              leftIcon={<ActionHistory />}
-              onTouchTap={() => this.props.actions.toggleHistoryFileDialog(file)} />
-
-            <MenuItem
-              primaryText="タイムスタンプ発行"
-              leftIcon={<ActionFingerprint />}
-              />
-
-            {this.props.tenant.trashDirId === file.dir_id ?
-              (
-                <MenuItem
-                  primaryText="ゴミ箱から戻す"
-                  leftIcon={<ActionRestore />}
-                  onTouchTap={() => this.props.actions.toggleRestoreFileDialog(file)}
-                  />
-              ) : null}
-
-          </IconMenu>
         </div>
 
       </div>
@@ -284,16 +205,7 @@ File.propTypes = {
   file: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
-  }).isRequired,
-  editFileByIndex: PropTypes.func.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired,
-  toggleStar: PropTypes.func.isRequired,
-  handleAuthorityFile: PropTypes.func.isRequired,
-  handleDeleteFile: PropTypes.func.isRequired,
-  handleMoveFile: PropTypes.func.isRequired,
-  handleCopyFile: PropTypes.func.isRequired,
-  handleHistoryFile: PropTypes.func.isRequired,
-  handleTagFile: PropTypes.func.isRequired
+  }).isRequired
 };
 
 export default File;
