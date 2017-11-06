@@ -142,8 +142,9 @@ const FileDialogMenu = ({
     ? menuItems.concat(
       {
         name: constants.PERMISSION_RESTORE,
-        component: (
+        component: idx => (
           <MenuItem
+            key={idx}
             primaryText="ゴミ箱から戻す"
             leftIcon={<ActionRestore />}
             onTouchTap={() => actions.toggleRestoreFileDialog(file)} />
