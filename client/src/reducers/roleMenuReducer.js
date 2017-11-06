@@ -37,10 +37,7 @@ const roleMenuReducer = (state = initialState,action) => {
     case actionTypes.SAVE_ROLE_MENU_VALIDATION_ERROR:
       return {
         ...state,
-        changed: {
-          ...state,
-          errors: action.errors
-        }
+        errors: action.errors
       };
     case actionTypes.CLEAR_ROLE_MENU_VALIDATION_ERROR:
       return {

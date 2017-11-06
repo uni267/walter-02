@@ -412,5 +412,19 @@ export class API {
   addRoleOfMenu = (role_id, menu_id) => {
     return this.client.patch(`/api/v1/role_menus/${role_id}/menus/${menu_id}`);
   }
+
+  deleteRoleOfMenu = (role_id, menu_id) => {
+    return this.client.delete(
+      `/api/v1/role_menus/${role_id}/menus/${menu_id}`);
+  };
+
+  createRoleMenu = (roleMenu) => {
+    const body = { roleMenu, tenant_id: localStorage.getItem("tenantId") };
+    return this.client.post(`/api/v1/role_menus`, body);
+  }
+
+  deleteRoleMenu = (roleMenu) => {
+    return this.client.delete(`/api/v1/role_menus/${roleMenu._id}`);
+  }
 }
 

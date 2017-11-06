@@ -11,6 +11,9 @@ import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import Divider from "material-ui/Divider";
 
+// material icon
+import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
+
 // actions
 import * as MenuActions from "../actions/menus";
 
@@ -52,6 +55,19 @@ class RoleMenuContainer extends Component {
                     </TableBody>
                   </Table>
                 </div>
+
+                <div style={{ width:"20%", paddingLeft: 15 }}>
+                  <Divider />
+                  <Menu>
+                    <MenuItem
+                      primaryText="ロール作成"
+                      leftIcon={<ActionVerifiedUser />}
+                      onTouchTap={() => this.props.history.push("/role_menus/create")}
+                  />
+                  </Menu>
+                </div>
+
+
               </div>
             </CardText>
           </Card>

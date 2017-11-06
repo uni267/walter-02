@@ -17,7 +17,7 @@ const UserBelongsToGroup = ({
     return (
       <Chip
         key={idx}
-        style={{ marginRight: 10 }}
+        style={{ marginRight: 10, marginBottom: 10 }}
         onRequestDelete={() => {
           actions.deleteGroupOfUser(user.data._id, group._id);
         }}
@@ -26,7 +26,7 @@ const UserBelongsToGroup = ({
         {group.name}
       </Chip>
     );
-    
+
   };
 
   const _groups = groups.filter( group => {
@@ -48,7 +48,7 @@ const UserBelongsToGroup = ({
 
   return (
     <div>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", "flex-wrap":"wrap" }}>
         {user.data.groups.map( (group, idx) => renderGroup(group, idx) )}
       </div>
 

@@ -45,22 +45,21 @@ export const index = (req, res, next) => {
 export const create = (req, res, next) => {
   co(function* () {
     try {
-      const { role } = req.body;
-
-      if (role.name === undefined ||
-          role.name === null ||
-          role.name === "") throw "name is empty";
+      const { roleMenu } = req.body;
+      if (roleMenu.name === undefined ||
+          roleMenu.name === null ||
+          roleMenu.name === "") throw "name is empty";
 
       const _role = yield RoleMenu.findOne({
-        name: role.name,
+        name: roleMenu.name,
         tenant_id: res.user.tenant_id
-      })
+      });
 
       if( _role !== null ) throw "name is duplicate";
 
       const newRoleMenu = new RoleMenu();
-      newRoleMenu.name = role.name;
-      newRoleMenu.description = role.description;
+      newRoleMenu.name = roleMenu.name;
+      newRoleMenu.description = roleMenu.description;
       newRoleMenu.tenant_id = res.user.tenant_id;
 
       const createRoleMenu = yield newRoleMenu.save();
@@ -68,7 +67,7 @@ export const create = (req, res, next) => {
       res.json({
         status: { success: true },
         body: createRoleMenu
-      })
+      });
 
     }catch(e){
       let errors = {};
@@ -89,7 +88,7 @@ export const create = (req, res, next) => {
         status: { success: false, errors }
       });
     }
-  })
+  });
 };
 
 export const view = (req, res, next) => {
@@ -257,7 +256,6 @@ export const addMenuToRoleMenu = (req, res, next) => {
       role.menus = [ ...role.menus, menu._id ];
 
       const changedRoleMenu = yield role.save();
-console.log(changedRoleMenu);
       res.json({
         status: { success: true },
         body: changedRoleMenu
@@ -265,7 +263,6 @@ console.log(changedRoleMenu);
 
     } catch (e) {
       let errors = {};
-console.log(e);
       switch (e) {
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないためメニューの追加に失敗しました";

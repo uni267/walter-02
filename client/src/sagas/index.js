@@ -79,6 +79,9 @@ import watchSaveRoleMenuName from "./watchSaveRoleMenuName";
 import watchSaveRoleMenuDescription from "./watchSaveRoleMenuDescription";
 import watchFetchMenus from "./watchFetchMenus";
 import watchAddRoleOfMenu from "./watchAddRoleOfMenu";
+import watchDeleteRoleOfMenu from "./watchDeleteRoleOfMenu";
+import watchCreateRoleMenu from "./watchCreateRoleMenu";
+import watchDeleteRoleMenu from "./watchDeleteRoleMenu";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -160,6 +163,9 @@ function* Saga() {
   yield fork(watchSaveRoleMenuDescription);
   yield fork(watchFetchMenus);
   yield fork(watchAddRoleOfMenu);
+  yield fork(watchDeleteRoleOfMenu);
+  yield fork(watchCreateRoleMenu);
+  yield fork(watchDeleteRoleMenu);
 }
 
 export default Saga;

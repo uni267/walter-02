@@ -11,10 +11,10 @@ import MenuItem from "material-ui/MenuItem";
 import SocialPerson from "material-ui/svg-icons/social/person";
 import Chip from 'material-ui/Chip';
 
-import { 
-  Card, 
-  CardTitle, 
-  CardText, 
+import {
+  Card,
+  CardTitle,
+  CardText,
   CardActions
 } from 'material-ui/Card';
 
@@ -44,9 +44,9 @@ class GroupDetailContainer extends Component {
   renderBelongsToUsers = () => {
     return this.props.group.belongs_to.map( (user, idx) => {
       return (
-        <Chip 
+        <Chip
           key={idx}
-          style={{ marginRight: 10 }}
+          style={{ marginRight: 10, marginBottom: 10 }}
           onRequestDelete={() => {
             this.props.actions.deleteGroupOfUser(user._id, this.props.group._id);
           }} >
@@ -65,7 +65,7 @@ class GroupDetailContainer extends Component {
       const _id = user._id;
       const text = user.name;
       const value = (
-        <MenuItem 
+        <MenuItem
           primaryText={user.name}
           leftIcon={<SocialPerson />} />
       );
@@ -94,7 +94,7 @@ class GroupDetailContainer extends Component {
               <Card style={{ width: "35%"}} >
                 <CardTitle subtitle="所属ユーザ" />
                 <CardText>
-                  <div style={{ display: "flex" }}>
+                  <div style={{ display: "flex", "flex-wrap":"wrap" }}>
                     {this.renderBelongsToUsers()}
                   </div>
 

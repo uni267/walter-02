@@ -15,13 +15,14 @@ import FlatButton from "material-ui/FlatButton";
 
 // components
 import NavigationContainer from "./NavigationContainer";
-import RoleCreateBasic from "../components/Role/RoleCreateBasic";
+import RoleMenuCreateBasic from "../components/RoleMenu/RoleMenuCreateBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
-import * as RoleActions from "../actions/roles";
+import * as roleMenuActions from "../actions/menus";
 
-class RoleCreateContainer extends Component {
+
+class RoleMenuCreateContainer extends Component {
   render() {
     return (
       <div>
@@ -30,11 +31,11 @@ class RoleCreateContainer extends Component {
         <Card>
           <CardTitle title={<TitleWithGoBack title="ロール作成" />} />
           <CardText>
-            <div style={{ display: "flex" }}>
-              <Card style={{ width: "35%", marginRight: 20 }}>
+            <div style={{ display: "flex"}} >
+              <Card style={{ width: "35%", marginRight: 20 }} >
                 <CardTitle subtitle="基本情報" />
                 <CardText>
-                  <RoleCreateBasic {...this.props} />
+                  <RoleMenuCreateBasic {...this.props} />
                 </CardText>
               </Card>
             </div>
@@ -45,17 +46,14 @@ class RoleCreateContainer extends Component {
               label="保存"
               primary={true}
               onTouchTap={() => (
-                this.props.actions.createRole(
-                  this.props.changedRole,
-                  this.props.history
-                )
+                this.props.roleMenuActions.createRoleMenu(this.props.changedRoleMenu, this.props.history)
               )}
               />
 
-              <FlatButton label="閉じる" href="/roles" />
+              <FlatButton label="閉じる" href="/role_menus" />
           </CardActions>
-        </Card>
 
+        </Card>
       </div>
     );
   }
@@ -63,18 +61,18 @@ class RoleCreateContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    changedRole: state.role.changed,
-    validationErrors: state.role.errors
+    changedRoleMenu: state.roleMenu.changed,
+    validationErrors: state.roleMenu.errors
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  actions: bindActionCreators(RoleActions, dispatch)
+  roleMenuActions: bindActionCreators(roleMenuActions, dispatch)
 });
 
-RoleCreateContainer = connect(
+RoleMenuCreateContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(RoleCreateContainer);
+)(RoleMenuCreateContainer);
 
-export default RoleCreateContainer;
+export default RoleMenuCreateContainer;

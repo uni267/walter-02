@@ -11,16 +11,16 @@ const RoleOfMenu = ({
   menus,
   searchMenu,
   clearSearchMenuText,
-  roleMenuMenus
+  roleMenuActions
 }) => {
 
   const renderMenus = (menus) => {
     return menus.map((menu,idx) => {
       return (<Chip
         key={idx}
-        style={{ marginRight: 10 }}
+        style={{ marginRight: 10, marginBottom:10 }}
         onRequestDelete={() => (
-          roleMenuMenus.deleteRoleOfMenu(roleMenu._id, menu._id)
+          roleMenuActions.deleteRoleOfMenu(roleMenu._id, menu._id)
         )}
       >
         { menu.label }
@@ -41,7 +41,7 @@ const RoleOfMenu = ({
 
   return (
     <div>
-      <div style={{display:"flex"}}>
+      <div style={{display:"flex", "flex-wrap": "wrap"}}>
         {renderMenus(roleMenu.menus) }
       </div>
 
@@ -52,7 +52,7 @@ const RoleOfMenu = ({
           searchText={searchMenu.text}
           onTouchTap={clearSearchMenuText}
           onNewRequest={(menu) => {
-            roleMenuMenus.addRoleOfMenu(roleMenu._id, menu._id);
+            roleMenuActions.addRoleOfMenu(roleMenu._id, menu._id);
           }}
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}

@@ -15,7 +15,7 @@ import RoleMenuDetailBasic from "../components/RoleMenu/RoleMenuDetailBasic";
 import RoleOfMenu from "../components/RoleMenu/RoleOfMenu";
 
 // actions
-import * as MenuActions from "../actions/menus";
+import * as roleMenuActions from "../actions/menus";
 
 class RoleMenuDetailContainer extends Component {
   constructor(props) {
@@ -28,9 +28,9 @@ class RoleMenuDetailContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.roleMenuMenus.requestFetchRoleMenu(this.props.match.params.id);
-    this.props.roleMenuMenus.requestFetchMenus();
-    this.props.roleMenuMenus.clearRoleMenuValidationError();
+    this.props.roleMenuActions.requestFetchRoleMenu(this.props.match.params.id);
+    this.props.roleMenuActions.requestFetchMenus();
+    this.props.roleMenuActions.clearRoleMenuValidationError();
   }
 
   render() {
@@ -69,6 +69,19 @@ class RoleMenuDetailContainer extends Component {
             </div>
 
           </CardText>
+          <CardActions>
+            <FlatButton label="閉じる" primary={true} href="/role_menus" />
+            <FlatButton
+              label="削除"
+              secondary={true}
+              onTouchTap={() =>(
+                this.props.roleMenuActions.deleteRoleMenu(
+                  this.props.roleMenu,
+                  this.props.history
+                )
+              )}
+              />
+          </CardActions>
         </Card>
 
       </div>
@@ -87,7 +100,7 @@ const mapStateToProps = (state, ownProps) =>{
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  roleMenuMenus: bindActionCreators(MenuActions,dispatch)
+  roleMenuActions: bindActionCreators(roleMenuActions,dispatch)
 });
 
 RoleMenuDetailContainer = connect(

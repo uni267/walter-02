@@ -51,6 +51,15 @@ export const initMenus = (menus) => ({
 export const addRoleOfMenu = (role_id, menu_id) => ({
   type: actionTypes.ADD_ROLE_OF_MENU, role_id, menu_id
 });
-export const deleteRoleOfMenu = () => ({
-  type: actionTypes.DELETE_ROLE_OF_MENU
+
+export const deleteRoleOfMenu = (role_id, menu_id) => ({
+  type: actionTypes.DELETE_ROLE_OF_MENU, role_id, menu_id
+});
+
+export const createRoleMenu = (roleMenu, history) => ({
+  type: actionTypes.CREATE_ROLE_MENU, roleMenu, history
+});
+
+export const deleteRoleMenu = (roleMenu, history) => ({
+  type: actionTypes.DELETE_ROLE_MENU, roleMenu, history
 });

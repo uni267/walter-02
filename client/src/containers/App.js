@@ -29,6 +29,7 @@ import MetaInfoDetailContainer from "./MetaInfoDetailContainer";
 import MetaInfoCreateContainer from "./MetaInfoCreateContainer";
 import RoleMenuContainer from "./RoleMenuContainer";
 import RoleMenuDetailContainer from "./RoleMenuDetailContainer";
+import RoleMenuCreateContainer from "./RoleMenuCreateContainer";
 
 class App extends Component {
   render() {
@@ -68,6 +69,7 @@ class App extends Component {
                     component={MetaInfoDetailContainer}
                   />
                   <Route exact path="/role_menus" component={RoleMenuContainer} />
+                  <Route exact path="/role_menus/create" component={RoleMenuCreateContainer} />
                   <Route path="/role_menus/:id" component={RoleMenuDetailContainer} />
                   <Route component={HomeContainer} />
                 </Switch>

@@ -18,7 +18,7 @@ const RoleOfAction = ({
       return (
         <Chip
           key={idx}
-          style={{ marginRight: 10 }}
+          style={{ marginRight: 10, marginBottom: 10 }}
           onRequestDelete={() => (
             roleActions.deleteRoleOfAction(role._id, action._id)
           )} >
@@ -41,7 +41,7 @@ const RoleOfAction = ({
 
   return (
     <div>
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", "flex-wrap":"wrap" }}>
         {renderActions(role.actions)}
       </div>
 
