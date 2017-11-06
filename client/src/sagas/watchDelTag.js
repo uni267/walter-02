@@ -1,22 +1,26 @@
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
 
 function* watchDelTag() {
   while (true) {
-    const { file, tag } = yield take("REQUEST_DEL_TAG");
+    const { file, tag } = yield take(actions.requestDelTag().type);
     const api = new API();
-    yield put({ type: "LOADING_START" });
+    yield put(commons.loadingStart());
 
     try {
-      const payload = yield call(api.fetchDelTag, file, tag);
-      yield put({ type: "INIT_FILE", file: payload.data.body });
+      yield call(api.fetchDelTag, file, tag);
+      const payload = yield call(api.fetchFile, file._id);
+      yield put(actions.initFile(payload.data.body));
+      yield put(commons.triggerSnackbar("タグを削除しました"));
     }
     catch (e) {
       console.log(e);
     }
     finally {
-      yield put({ type: "LOADING_END" });
+      yield put(commons.loadingEnd());
     }
       
   }
