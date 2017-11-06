@@ -181,6 +181,7 @@ class File extends Component {
         <div style={{ ...cellStyle, width: headers[4].width }}>
 
           <FileDialogMenu
+            actions={this.props.actions}
             file={this.props.file}
             hover={this.state.hover}
             trashDirId={this.props.tenant.trashDirId} />

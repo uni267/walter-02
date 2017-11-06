@@ -24,9 +24,9 @@ import FileFileDownload from "material-ui/svg-icons/file/file-download";
 const FileDialogMenu = ({
   file,
   hover,
-  trashDirId
+  trashDirId,
+  actions
 }) => {
-
   const opacity = hover ? 1 : 0.1;
 
   const action_menu_icon = (
@@ -43,7 +43,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="ダウンロード"
           leftIcon={<FileFileDownload />}
-          onTouchTap={() => (this.props.actions.downloadFile(file) )}
+          onTouchTap={() => (actions.downloadFile(file) )}
           />
       )
     },
@@ -64,7 +64,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="移動"
           leftIcon={<ContentForward />}
-          onTouchTap={() => this.props.actions.toggleMoveFileDialog(file)} />
+          onTouchTap={() => actions.toggleMoveFileDialog(file)} />
       )
     },
     {
@@ -72,7 +72,7 @@ const FileDialogMenu = ({
       component: idx => (
         <MenuItem
           key={idx}
-          onTouchTap={() => this.props.actions.toggleCopyFileDialog(file)}
+          onTouchTap={() => actions.toggleCopyFileDialog(file)}
           leftIcon={<ContentContentCopy />}
           primaryText="コピー" />
       )
@@ -84,7 +84,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="削除"
           leftIcon={<ActionDelete />}
-          onTouchTap={() => this.props.actions.toggleDeleteFileDialog(file)} />
+          onTouchTap={() => actions.toggleDeleteFileDialog(file)} />
       )
     },
     {
@@ -94,7 +94,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="権限を変更"
           leftIcon={<ActionVerifiedUser />}
-          onTouchTap={() => this.props.actions.toggleAuthorityFileDialog(file)} />
+          onTouchTap={() => actions.toggleAuthorityFileDialog(file)} />
       )
     },
     {
@@ -104,7 +104,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="タグを編集"
           leftIcon={<ActionLabel />}
-          onTouchTap={() => this.props.actions.toggleFileTagDialog(file)} />
+          onTouchTap={() => actions.toggleFileTagDialog(file)} />
       )
     },
     {
@@ -114,7 +114,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="メタ情報を編集"
           leftIcon={<ActionDescription />}
-          onTouchTap={() => this.props.actions.toggleFileMetaInfoDialog(file)} />
+          onTouchTap={() => actions.toggleFileMetaInfoDialog(file)} />
       )
     },
     {
@@ -124,7 +124,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="履歴を閲覧"
           leftIcon={<ActionHistory />}
-          onTouchTap={() => this.props.actions.toggleHistoryFileDialog(file)} />
+          onTouchTap={() => actions.toggleHistoryFileDialog(file)} />
       )
     },
     {
@@ -146,7 +146,7 @@ const FileDialogMenu = ({
           <MenuItem
             primaryText="ゴミ箱から戻す"
             leftIcon={<ActionRestore />}
-            onTouchTap={() => this.props.actions.toggleRestoreFileDialog(file)} />
+            onTouchTap={() => actions.toggleRestoreFileDialog(file)} />
         )
       })
     : menuItems;
