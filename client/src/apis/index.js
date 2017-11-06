@@ -404,5 +404,13 @@ export class API {
     const body = { description: roleMenu.description };
     return this.client.patch(`/api/v1/role_menus/${roleMenu._id}/description`, body);
   }
+
+  fetchMenus = () => {
+    return this.client.get(`/api/v1/menus`);
+  }
+
+  addRoleOfMenu = (role_id, menu_id) => {
+    return this.client.patch(`/api/v1/role_menus/${role_id}/menus/${menu_id}`);
+  }
 }
 

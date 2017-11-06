@@ -114,7 +114,7 @@ export const view = (req, res, next) => {
       switch (e) {
         case "role is not found":
           errors.role = "ユーザタイプが存在しません";
-          break
+          break;
         default:
           errors.unknown = commons.errorParser(e);
           break;
@@ -257,15 +257,15 @@ export const addMenuToRoleMenu = (req, res, next) => {
       role.menus = [ ...role.menus, menu._id ];
 
       const changedRoleMenu = yield role.save();
-
+console.log(changedRoleMenu);
       res.json({
         status: { success: true },
         body: changedRoleMenu
-      })
+      });
 
     } catch (e) {
       let errors = {};
-
+console.log(e);
       switch (e) {
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないためメニューの追加に失敗しました";

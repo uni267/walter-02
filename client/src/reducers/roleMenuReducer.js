@@ -2,10 +2,10 @@ import * as actionTypes from "../actionTypes";
 
 const initialState = {
   data:{
-    roleMenus:[]
+    menus:[]
   },
   changed:{
-    roleMenus:[]
+    menus:[]
   },
   errors:{}
 };

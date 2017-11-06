@@ -39,3 +39,18 @@ export const clearRoleMenuValidationError = () => ({
 export const saveRoleMenuValidationError = (errors) => ({
   type: actionTypes.SAVE_ROLE_MENU_VALIDATION_ERROR, errors
 });
+
+export const requestFetchMenus = () => ({
+  type: actionTypes.REQUEST_FETCH_MENUS
+});
+
+export const initMenus = (menus) => ({
+  type: actionTypes.INIT_MENUS, menus
+});
+
+export const addRoleOfMenu = (role_id, menu_id) => ({
+  type: actionTypes.ADD_ROLE_OF_MENU, role_id, menu_id
+});
+export const deleteRoleOfMenu = () => ({
+  type: actionTypes.DELETE_ROLE_OF_MENU
+});

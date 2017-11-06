@@ -22,6 +22,7 @@ import ActionDonutSmall from "material-ui/svg-icons/action/donut-small";
 import SocialPerson from "material-ui/svg-icons/social/person";
 import SocialGroup from "material-ui/svg-icons/social/group";
 import ActionDescription from "material-ui/svg-icons/action/description";
+import ActionReoder from "material-ui/svg-icons/action/reorder";
 
 // components
 import AccountDialog from "../components/Account/AccountDialog";
@@ -87,6 +88,11 @@ class NavigationContainer extends Component {
         name: "メタ情報管理",
         link: "/meta_infos",
         icon: <ActionDescription />
+      },
+      {
+        name: "メニュー管理",
+        link: "/role_menus",
+        icon: <ActionReoder />
       }
     ];
 

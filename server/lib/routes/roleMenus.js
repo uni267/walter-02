@@ -22,7 +22,7 @@ router.route("/:role_id/name")
 router.route("/:role_id/description")
 .patch(controller.updateDescription);
 
-// action追加,削除
+// menu追加,削除
 router.route("/:role_id/menus/:menu_id")
   .patch(controller.addMenuToRoleMenu)
   .delete(controller.removeMenuOfRoleMenu);

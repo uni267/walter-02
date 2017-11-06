@@ -47,6 +47,7 @@ import filePreview from "./filePreviewReducer";
 import exception from "./exceptionReducer";
 import roleMenu from "./roleMenuReducer";
 import roleMenus from "./roleMenusReducer";
+import menus from "./menusReducer";
 
 const fileApp = combineReducers({
   files,
@@ -94,7 +95,8 @@ const fileApp = combineReducers({
   filePreview,
   exception,
   roleMenu,
-  roleMenus
+  roleMenus,
+  menus
 });
 
 export default fileApp;

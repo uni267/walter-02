@@ -28,9 +28,9 @@ class RoleMenuDetailContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.roleMenuActions.requestFetchRoleMenu(this.props.match.params.id);
-    this.props.roleMenuActions.requestFetchRoleMenus();
-    this.props.roleMenuActions.clearRoleMenuValidationError();
+    this.props.roleMenuMenus.requestFetchRoleMenu(this.props.match.params.id);
+    this.props.roleMenuMenus.requestFetchMenus();
+    this.props.roleMenuMenus.clearRoleMenuValidationError();
   }
 
   render() {
@@ -82,12 +82,12 @@ const mapStateToProps = (state, ownProps) =>{
     roleMenu: state.roleMenu.data,
     changedMenu: state.roleMenu.changed,
     validationErrors: state.roleMenu.errors,
-    roleMenus: state.roleMenus
+    menus: state.menus
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  roleMenuActions: bindActionCreators(MenuActions,dispatch)
+  roleMenuMenus: bindActionCreators(MenuActions,dispatch)
 });
 
 RoleMenuDetailContainer = connect(

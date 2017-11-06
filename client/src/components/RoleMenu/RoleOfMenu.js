@@ -8,19 +8,58 @@ import MenuItem from "material-ui/MenuItem";
 
 const RoleOfMenu = ({
   roleMenu,
-  roleMenus,
+  menus,
   searchMenu,
   clearSearchMenuText,
   roleMenuMenus
 }) => {
 
-  // console.log("roleMenu=>", roleMenu);
-  // console.log("roleMenus=>", roleMenus);
-  // console.log("searchMenu=>", searchMenu);
-  // console.log("clearSearchMenuText=>", clearSearchMenuText);
-  // console.log("roleMenuMenus=>", roleMenuMenus);
+  const renderMenus = (menus) => {
+    return menus.map((menu,idx) => {
+      return (<Chip
+        key={idx}
+        style={{ marginRight: 10 }}
+        onRequestDelete={() => (
+          roleMenuMenus.deleteRoleOfMenu(roleMenu._id, menu._id)
+        )}
+      >
+        { menu.label }
+      </Chip>
+      );
+    });
+  };
+
+  const _menus = menus.filter( menu => {
+    return !roleMenu.menus.map(_menu => _menu._id).includes(menu._id);
+  }).map( menu =>{
+    return {
+      _id: menu._id,
+      text: menu.label,
+      value: <MenuItem primaryText={menu.label} />
+    };
+  });
+
   return (
-    <div>segagaga</div>
+    <div>
+      <div style={{display:"flex"}}>
+        {renderMenus(roleMenu.menus) }
+      </div>
+
+      <div>
+        <AutoComplete
+          hintText="メニューを追加"
+          floatingLabelText="メニュー名"
+          searchText={searchMenu.text}
+          onTouchTap={clearSearchMenuText}
+          onNewRequest={(menu) => {
+            roleMenuMenus.addRoleOfMenu(roleMenu._id, menu._id);
+          }}
+          openOnFocus={true}
+          filter={(text, key) => key.indexOf(text) !== -1}
+          dataSource={_menus}
+        />
+      </div>
+    </div>
   );
 };
 
