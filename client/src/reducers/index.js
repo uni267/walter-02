@@ -2,7 +2,6 @@ import { combineReducers } from "redux";
 
 // reducers
 import files from "./filesReducer";
-import file from "./fileReducer";
 import dirs from "./dirsReducer";
 import snackbar from "./snackbarReducer";
 import addDir from "./addDirReducer";
@@ -49,7 +48,6 @@ import exception from "./exceptionReducer";
 
 const fileApp = combineReducers({
   files,
-  file,
   dirs,
   snackbar,
   addDir,

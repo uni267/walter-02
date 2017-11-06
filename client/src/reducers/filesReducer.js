@@ -6,6 +6,13 @@ const filesReducer = (state = [], action) => {
   case actionTypes.INIT_FILES:
     return action.files.map( file => ({ ...file, checked: false }));
 
+  case actionTypes.INIT_FILE:
+    if (state.length > 0) {
+      return state.map( file => file._id === action.file._id ? action.file : file );
+    } else {
+      return [ action.file ];
+    }
+
   case actionTypes.INIT_NEXT_FILES:
     return state.concat(action.files.map( file => ({ ...file, checked: false })));
 

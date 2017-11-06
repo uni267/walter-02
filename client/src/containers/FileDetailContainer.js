@@ -102,9 +102,7 @@ class FileDetailContainer extends Component {
     }
 
     this.props.actions.editFileByView({ ...this.props.file, name: fileName });
-    this.props.actions.requestFetchFile(this.props.file._id);
     this.setState({ editBasic: { open: false } });
-    this.props.actions.triggerSnackbar("ファイル名を変更しました");
   }
 
   renderAuthorities = (file) => {
@@ -120,7 +118,6 @@ class FileDetailContainer extends Component {
     };
 
     return file.authorities.map( (auth, idx) => renderAuthority(auth, idx));
-
   };
 
   renderHistories = (file) => {
@@ -202,7 +199,7 @@ class FileDetailContainer extends Component {
   };
 
   render() {
-    if (! this.props.file._id) return null;
+    if (this.props.file._id === undefined) return null;
 
     let previewImg;
 
@@ -328,8 +325,13 @@ class FileDetailContainer extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  const file = state.files.length > 0
+        ? state.files.filter( file => (
+          file._id === ownProps.match.params.id ))[0]
+        : {};
+
   return {
-    file: state.file,
+    file: file,
     roles: state.roles.data,
     users: state.users,
     snackbar: state.snackbar,
