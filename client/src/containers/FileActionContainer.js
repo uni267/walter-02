@@ -7,6 +7,9 @@ import { connect } from "react-redux";
 // router
 import { withRouter } from "react-router-dom";
 
+// lodash
+import { intersectionBy } from "lodash";
+
 // material
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
@@ -23,8 +26,8 @@ import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
 import DeleteAllFilesDialog from "../components/File/DeleteAllFilesDialog";
 
-// actions
 import * as FileActions from "../actions/files";
+import * as constants from "../constants";
 
 class FileActionContainer extends Component {
   constructor(props) {
@@ -40,71 +43,88 @@ class FileActionContainer extends Component {
     this.props.actions.moveFiles(this.props.selectedDir, files);
   };
 
-  render() {
-    let items = [];
-
+  renderMenuItems = () => {
     // カレントフォルダに依存するmenuなので検索結果では表示することができない
-    if (!this.props.isSearch) {
-      items = 
-        [ ...items,
-          [
-            (
-              <MenuItem
-                primaryText="アップロード"
-                leftIcon={<FileCloudUpload />}
-                onTouchTap={() => this.setState({ addFile: { open: true } })}
-                />
-            ),
-            (
-              <MenuItem
-                primaryText="新しいフォルダ"
-                leftIcon={<FileCreateNewFolder />}
-                onTouchTap={() => this.props.actions.toggleCreateDir() }
-                />
-            ),
-            (
-              <MenuItem
-                primaryText="ごみ箱"
-                leftIcon={<ActionDelete />}
-                onTouchTap={() => {
-                  this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
-                }}
-                />
-            )
-          ]
-        ];
-    }
-
-    if (this.props.checkedFiles.length > 0) {
-      items = [
-        [
-          (
-            <MenuItem
-              primaryText="移動"
-              onTouchTap={() => this.props.actions.toggleMoveFileDialog() }
-              leftIcon={<ContentContentCut />}
-              />
-          ),
-          (
-            <MenuItem
-              primaryText="コピー"
-              leftIcon={<ContentContentCopy />}
-              />
-          ),
-          (
-            <MenuItem
-              primaryText="削除"
-              leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.actions.toggleDeleteFilesDialog() }
-              />
-          )
-        ]
+    if (!this.props.isSearch && this.props.checkedFiles.length === 0) {
+      return [
+        (
+          <MenuItem
+            key={0}
+            primaryText="アップロード"
+            leftIcon={<FileCloudUpload />}
+            onTouchTap={() => this.setState({ addFile: { open: true } })}
+            />
+        ),
+        (
+          <MenuItem
+            key={1}
+            primaryText="新しいフォルダ"
+            leftIcon={<FileCreateNewFolder />}
+            onTouchTap={() => this.props.actions.toggleCreateDir() }
+            />
+        ),
+        (
+          <MenuItem
+            key={2}
+            primaryText="ごみ箱"
+            leftIcon={<ActionDelete />}
+            onTouchTap={() => {
+              this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
+            }}
+            />
+        )
       ];
     }
+
+    const allActions = [
+      {
+        name: constants.PERMISSION_MOVE,
+        component: idx => (
+          <MenuItem
+            key={idx}
+            primaryText="移動"
+            leftIcon={<ContentContentCut />}
+            onTouchTap={() => this.props.actions.toggleMoveFileDialog()} />
+        )
+      },
+      {
+        name: constants.PERMISSION_COPY,
+        component: idx => (
+          <MenuItem
+            key={idx}
+            leftIcon={<ContentContentCopy />}
+            primaryText="コピー" />
+        )
+      },
+      {
+        name: constants.PERMISSION_DELETE,
+        component: idx => (
+          <MenuItem
+            key={idx}
+            primaryText="削除"
+            leftIcon={<ActionDelete />}
+            onTouchTap={() => this.props.actions.toggleDeleteFilesDialog()} />
+        )
+      },
+    ];
+
+    // チェックされた単数/複数ファイルのactionsから積集合を算出
+    let permitActions = this.props.checkedFiles.map( file => file.actions )
+        .reduce( (prev, next, idx) => {
+          if (idx === 0) return next;
+          return intersectionBy(prev, next, "_id");
+        }, []);
+
+    permitActions = intersectionBy(allActions, permitActions, "name");
+
+    return permitActions.map( (action, idx) => action.component(idx) );
+  };
+
+  render() {
     return (
       <div style={{marginRight: 30}}>
         <Menu>
-          {items.map( item => item )}
+          {this.renderMenuItems()}
         </Menu>
 
         <AddFileDialog
