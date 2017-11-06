@@ -152,16 +152,20 @@ const FileDialogMenu = ({
       })
     : menuItems;
 
+  const renderMenu = (menu, file, idx) => {
+    if (file.actions === undefined) return null;
+
+    return file.actions.map( act => act.name ).includes(menu.name)
+      ? menu.component(idx)
+      : null;
+  };
+
   return (
     <IconMenu
       iconButtonElement={action_menu_icon}
       anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
 
-      {menuItems.map( (menu, idx) => (
-        file.actions.map( act => act.name ).includes(menu.name)
-          ? menu.component(idx)
-          : null
-      ))}
+      {menuItems.map( (menu, idx) => renderMenu(menu, file, idx) )}
 
     </IconMenu>
   );
