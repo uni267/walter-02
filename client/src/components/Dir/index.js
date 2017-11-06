@@ -258,13 +258,7 @@ Dir.propTypes = {
   rowStyle: PropTypes.object.isRequired,
   cellStyle: PropTypes.object.isRequired,
   headers: PropTypes.array.isRequired,
-  triggerSnackbar: PropTypes.func.isRequired,
-  editDir: PropTypes.func.isRequired,
-  handleMoveDir: PropTypes.func.isRequired,
-  handleCopyDir: PropTypes.func.isRequired,  
-  handleDeleteDir: PropTypes.func.isRequired,
-  handleAuthorityDir: PropTypes.func.isRequired,
-  handleHistoryDir: PropTypes.func.isRequired
+  actions: PropTypes.object.isRequired
 };
 
 export default Dir;
