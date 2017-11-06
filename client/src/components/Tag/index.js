@@ -23,22 +23,12 @@ const Tag = ({
   actions
 }) => {
 
-  const handleDelete = (file_id, tag) => {
-    actions.requestDelTag(file, tag);
-    actions.triggerSnackbar("タグを削除しました");
-  };
-
-  const handleChange = (event, index, value) => {
-    actions.requestAddTag(file, value);
-    actions.triggerSnackbar("タグを追加しました");
-  };
-
   const renderTag = (tag, idx) => {
     return (
       <Chip
         key={idx}
         style={{marginLeft: 10}}
-        onRequestDelete={() => handleDelete(file.id, tag)}
+        onRequestDelete={() => actions.requestDelTag(file, tag)}
         >
         {tag.label}
       </Chip>
@@ -62,7 +52,7 @@ const Tag = ({
       <SelectField
         floatingLabelText="タグを追加"
         value={""}
-        onChange={handleChange} >
+        onChange={(e, idx, value) => actions.requestAddTag(file, value)} >
         {_tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
       </SelectField>
     </div>
@@ -71,7 +61,8 @@ const Tag = ({
 
 Tag.propTypes = {
   file: PropTypes.object.isRequired,
-  tags: PropTypes.array.isRequired
+  tags: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 export default Tag;
