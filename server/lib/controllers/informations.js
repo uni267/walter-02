@@ -9,7 +9,7 @@ import User from "../models/User";
 import * as constants from "../../configs/constants";
 
 // etc
-import { isEmpty } from "lodash";
+import { isEmpty,first } from "lodash";
 import { logger } from "../index";
 import {
   ValidationError,
@@ -147,6 +147,91 @@ export const add = (req, res, next) => {
           break;
       default:
         errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+export const getCount = (req, res, next) => {
+  co(function*(){
+    try{
+
+      const { user_id } = req.params;
+      if( user_id === undefined || user_id === null || user_id === "" ) throw new RecordNotFoundException("user_id is empty");
+
+      const informations = yield User.aggregate([
+        { $match: { _id: ObjectId( user_id ) }},
+        { $project: {
+          informations:1,
+          _id: 0
+        }},
+        {
+          $unwind: {
+            path: "$informations"
+          }
+        }
+      ]);
+
+      const unread = informations.filter(information =>{
+        return (information.informations.read === undefined || information.informations.read === false);
+      });
+
+      res.json({
+        status: {
+          success: true,
+          total:informations.length,
+          unread: unread.length
+        },
+      });
+    } catch (e) {
+      let errors = {};
+      switch (e.message) {
+        case "user_id is empty":
+          errors.user_id = "ユーザーIDが空のためお知らせの件数を取得できませんでした。";
+          break;
+        default:
+          errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+export const toggleRead = (req, res, next) => {
+  co(function*(){
+    try {
+
+      const { user_id } = req.params;
+      const informations = req.body.informations;
+
+      const user = yield User.findById(user_id);
+
+      user.informations.map( information => {
+        if(informations.includes( information._id.toString() )){
+          information.read = !information.read;
+        }
+      });
+
+      const changedUser = yield user.save();
+
+      res.json({
+        status: {
+          success: true
+        },
+        body: changedUser
+      });
+    } catch (e) {
+      let errors = {};
+      switch (e.message) {
+        default:
+          errors.unknown = e;
       }
       logger.error(errors);
       res.status(400).json({
