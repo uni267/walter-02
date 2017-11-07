@@ -12,19 +12,22 @@ const RoleMenuCreateBasic = ({
 }) => {
     return (
     <div>
-      <TextField
-        value={changedRoleMenu.name}
-        onChange={(e, value) => roleMenuActions.changeRoleMenuName(value)}
-        errorText={validationErrors.name}
-        floatingLabelText="メニュー名"
-      />
-
-      <TextField
-        value={changedRoleMenu.description}
-        onChange={(e, value) => roleMenuActions.changeRoleMenuDescription(value)}
-        errorText={validationErrors.description}
-        floatingLabelText="備考"
-      />
+      <div>
+        <TextField
+          value={changedRoleMenu.name}
+          onChange={(e, value) => roleMenuActions.changeRoleMenuName(value)}
+          errorText={validationErrors.name}
+          floatingLabelText="メニュー名"
+        />
+      </div>
+      <div>
+        <TextField
+          value={changedRoleMenu.description}
+          onChange={(e, value) => roleMenuActions.changeRoleMenuDescription(value)}
+          errorText={validationErrors.description}
+          floatingLabelText="備考"
+        />
+      </div>
 
     </div>
   );

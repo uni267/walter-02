@@ -11,20 +11,23 @@ const RoleCreateBasic = ({
 }) => {
   return (
     <div>
-      <TextField
-        value={changedRole.name}
-        onChange={(e, value) => actions.changeRoleName(value)}
-        errorText={validationErrors.name}
-        floatingLabelText="ロール名"
-        />
+      <div>
+        <TextField
+          value={changedRole.name}
+          onChange={(e, value) => actions.changeRoleName(value)}
+          errorText={validationErrors.name}
+          floatingLabelText="ロール名"
+          />
+      </div>
+      <div>
+        <TextField
+          value={changedRole.description}
+          onChange={(e, value) => actions.changeRoleDescription(value)}
+          errorText={validationErrors.description}
+          floatingLabelText="備考"
+          />
 
-      <TextField
-        value={changedRole.description}
-        onChange={(e, value) => actions.changeRoleDescription(value)}
-        errorText={validationErrors.description}
-        floatingLabelText="備考"
-        />
-
+      </div>
     </div>
   );
 };
