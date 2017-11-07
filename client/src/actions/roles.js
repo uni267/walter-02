@@ -52,6 +52,10 @@ export const createRole = (role, history) => ({
   type: actionTypes.CREATE_ROLE, role, history
 });
 
+export const initCreateRole = () => ({
+  type: actionTypes.INIT_CREATE_ROLE
+});
+
 export const initActions = (actions) => ({
   type: actionTypes.INIT_ACTIONS, actions
 });

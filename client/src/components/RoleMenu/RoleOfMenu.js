@@ -41,7 +41,7 @@ const RoleOfMenu = ({
 
   return (
     <div>
-      <div style={{display:"flex", "flex-wrap": "wrap"}}>
+      <div style={{display:"flex", flexWrap: "wrap"}}>
         {renderMenus(roleMenu.menus) }
       </div>
 

@@ -23,6 +23,11 @@ import * as roleMenuActions from "../actions/menus";
 
 
 class RoleMenuCreateContainer extends Component {
+
+  componentWillUnmount() {
+    this.props.roleMenuActions.initCreateRoleMenu();
+  }
+
   render() {
     return (
       <div>

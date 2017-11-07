@@ -44,6 +44,9 @@ const roleMenuReducer = (state = initialState,action) => {
         ...state,
         errors: {}
       };
+    case actionTypes.INIT_CREATE_ROLE_MENU:
+      return initialState;
+
     default:
       return state;
   }

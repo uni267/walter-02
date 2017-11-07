@@ -33,6 +33,10 @@ class RoleMenuDetailContainer extends Component {
     this.props.roleMenuActions.clearRoleMenuValidationError();
   }
 
+  componentWillUnmount() {
+    this.props.roleMenuActions.initCreateRoleMenu();
+  }
+
   render() {
     const title = `${this.props.roleMenu.name}の詳細`;
     return (

@@ -41,7 +41,7 @@ const RoleOfAction = ({
 
   return (
     <div>
-      <div style={{ display: "flex", "flex-wrap":"wrap" }}>
+      <div style={{ display: "flex", flexWrap:"wrap" }}>
         {renderActions(role.actions)}
       </div>
 

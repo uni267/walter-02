@@ -44,6 +44,8 @@ const roleReducer = (state = initialState, action) => {
       ...state,
       errors: {}
     };
+  case actionTypes.INIT_CREATE_ROLE:
+    return initialState;
   default:
     return state;
   }

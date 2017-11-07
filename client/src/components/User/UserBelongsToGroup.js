@@ -48,7 +48,7 @@ const UserBelongsToGroup = ({
 
   return (
     <div>
-      <div style={{ display: "flex", "flex-wrap":"wrap" }}>
+      <div style={{ display: "flex", flexWrap:"wrap" }}>
         {user.data.groups.map( (group, idx) => renderGroup(group, idx) )}
       </div>
 

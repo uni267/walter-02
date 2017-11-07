@@ -94,7 +94,7 @@ class GroupDetailContainer extends Component {
               <Card style={{ width: "35%"}} >
                 <CardTitle subtitle="所属ユーザ" />
                 <CardText>
-                  <div style={{ display: "flex", "flex-wrap":"wrap" }}>
+                  <div style={{ display: "flex", flexWrap:"wrap" }}>
                     {this.renderBelongsToUsers()}
                   </div>
 

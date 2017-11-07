@@ -63,3 +63,7 @@ export const createRoleMenu = (roleMenu, history) => ({
 export const deleteRoleMenu = (roleMenu, history) => ({
   type: actionTypes.DELETE_ROLE_MENU, roleMenu, history
 });
+
+export const initCreateRoleMenu = () => ({
+  type: actionTypes.INIT_CREATE_ROLE_MENU
+});

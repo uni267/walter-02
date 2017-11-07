@@ -22,6 +22,11 @@ import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 import * as RoleActions from "../actions/roles";
 
 class RoleCreateContainer extends Component {
+
+  componentWillUnmount() {
+    this.props.actions.initCreateRole();
+  }
+
   render() {
     return (
       <div>

@@ -33,6 +33,10 @@ class RoleDetailContainer extends Component {
     this.props.roleActions.clearRoleValidationError();
   }
 
+  componentWillUnmount() {
+    this.props.roleActions.initCreateRole();
+  }
+
   render() {
     const title = `${this.props.role.name}の詳細`;
 
