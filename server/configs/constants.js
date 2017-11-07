@@ -6,6 +6,9 @@ export const SWIFT_CONTAINER_NAME = "walter";
 export const CRYPTO_PASSWORD = "mGjQB5F57C+W";
 export const USE_CRYPTO = true;
 
+// お知らせの取得件数
+export const INFOMATION_LIMITS_PER_PAGE = 5;
+
 // loggerの設定
 export const LOGGER_CONFIG = {
   appenders: {
