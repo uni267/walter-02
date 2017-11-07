@@ -56,6 +56,10 @@ export const view = (req, res, next) => {
     try {
 
       const { user_id } = req.params;
+      let { page } = req.query;
+
+      if(page === undefined || page === null || page === "") page = 0;
+      const offset = page * constants.INFOMATION_LIMITS_PER_PAGE;
 
       const informations = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
@@ -70,8 +74,9 @@ export const view = (req, res, next) => {
         },
         { $sort:{
           "informations.created":-1
-        }}
-        , { '$limit': constants.INFOMATION_LIMITS_PER_PAGE }
+        }},
+        { '$skip':offset },
+        { '$limit': constants.INFOMATION_LIMITS_PER_PAGE }
       ]);
 
       res.json({
