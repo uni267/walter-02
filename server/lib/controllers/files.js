@@ -968,65 +968,45 @@ export const addMeta = (req, res, next) => {
       const { file_id } = req.params;
       if (file_id === undefined ||
           file_id === null ||
-          file_id === "") throw "file_id is empty";
+          file_id === "") throw new ValidationError("ファイルのidが空です");
 
       const { meta, value } = req.body;
 
-      if (meta._id === undefined) throw "meta is empty";
+      if (meta._id === undefined) throw new ValidationError("メタ情報のidが空です");
 
       if (value === undefined ||
           value === null ||
-          value === "") throw "value is empty";
+          value === "") throw new ValidationError("メタ情報の値が空です");
 
       const [ file, metaInfo ] = yield [
         File.findById(file_id),
         MetaInfo.findById(meta._id)
       ];
 
-      if (file === null) throw "file is empty";
-      if (metaInfo === null) throw "metaInfo is empty";
+      if (file === null) throw new RecordNotFoundException("指定されたファイルが見つかりません");
+      if (metaInfo === null) throw new RecordNotFoundException("指定されたメタ情報が見つかりません");
 
-      const pushMeta = {
-        meta_info_id: metaInfo._id,
-        key: metaInfo.key,
-        value: value,
-        value_type: metaInfo.value_type
-      };
+      const addMeta = new FileMetaInfo({
+        file_id, meta_info_id: metaInfo._id, value
+      });
 
-      file.meta_infos = [ ...file.meta_infos, pushMeta ];
-
-      const changedFile = yield file.save();
+      const changedMeta = yield addMeta.save();
 
       res.json({
         status: { success: true },
-        body: changedFile
+        body: changedMeta
       });
 
     }
     catch (e) {
-      let errors = {};
+      let errors;
 
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = e;
-        break;
-      case "meta is empty":
-        errors.meta = e;
-        break;
-      case "value is empty":
-        errors.value = e;
-        break;
-      case "file is empty":
-        errors.file = e;
-        break;
-      case "metaInfo is empty":
-        errors.metaInfo = e;
-        break;
-      default:
-        errors.unknown = e;
-        break;
+      if (e.name === "Error") {
+        errors = commons.errorParser(e);
+        console.log(errors);
+      } else {
+        errors = e;
       }
-
       res.status(400).json({
         status: { success: false, errors }
       });
