@@ -8,6 +8,7 @@ db.groups.drop();
 db.users.drop();
 db.tags.drop();
 db.meta_infos.drop();
+db.display_items.drop();
 db.actions.drop();
 db.menus.drop();
 db.role_files.drop();
@@ -148,55 +149,122 @@ var tenant = db.tenants.findOne({ name: "test" });
 var meta_infos = [
   {
     tenant_id: tenant._id,
-    key: "ファイル名",
-    key_type: "name",
+    label: "取引先コード",
+    name: "",
     value_type: "String"
   },
   {
     tenant_id: tenant._id,
-    key: "お気に入り",
-    key_type: "is_star",
-    value_type: "Bool"
-  },
-  {
-    tenant_id: tenant._id,
-    key: "タグ",
-    key_type: "tags",
-    value_type: "Tag"
-  },
-  {
-    tenant_id: tenant._id,
-    key: "更新日時(より小さい)",
-    key_type: "modified_less",
-    value_type: "Date"
-  },
-  {
-    tenant_id: tenant._id,
-    key: "更新日時(より大きい)",
-    key_type: "modified_greater",
-    value_type: "Date"
-  },
-  {
-    tenant_id: tenant._id,
-    key: "取引先コード",
-    key_type: "meta",
+    label: "取引先名",
+    name: "",
     value_type: "String"
   },
   {
     tenant_id: tenant._id,
-    key: "取引先名",
-    key_type: "meta",
-    value_type: "String"
-  },
-  {
-    tenant_id: tenant._id,
-    key: "明細番号",
-    key_type: "meta",
+    label: "明細番号",
+    name: "",
     value_type: "Number"
   }
 ];
 
 db.meta_infos.insert(meta_infos);
+
+// ===============================
+//  display_items collection
+// ===============================
+var tenant = db.tenants.findOne({ name: "test" });
+
+var display_items = [
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "",
+    name: "file_checkbox",
+    search_value_type: null,
+    is_display: true,
+    order: 1,
+    width: "5%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "ファイル名",
+    name: "name",
+    search_value_type: "String",
+    is_display: true,
+    order: 2,
+    width: "50%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "更新日時",
+    name: "modified",
+    search_value_type: "Date",
+    is_display: true,
+    order: 3,
+    width: "20%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "メンバー",
+    name: "authorities",
+    search_value_type: "Select",
+    value_type: "String",
+    is_display: true,
+    order: 4,
+    width: "15%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "操作",
+    name: "action",
+    search_value_type: null,
+    is_display: true,
+    order: 5,
+    width: "10%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "お気に入り",
+    name: "favorite",
+    search_value_type: "Bool",
+    is_display: false,
+    order: 99999
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "タグ",
+    name: "tag",
+    search_value_type: "Select",
+    is_display: false,
+    order: 99999
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "更新日時(より小さい)",
+    name: "modified_less",
+    search_value_type: "Date",
+    is_display: false,
+    order: 99999
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "更新日時(より大きい)",
+    name: "modified_greater",
+    search_value_type: "Date",
+    is_display: false,
+    order: 99999
+  }
+];
+
+db.display_items.insert(display_items);
 
 // ===============================
 //  actions collection
