@@ -54,9 +54,9 @@ class App extends Component {
                   <Route path="/files/:id" component={FileDetailContainer} />
                   <Route exact path="/home" component={HomeContainer} />
                   <Route path="/home/:id" component={HomeContainer} />
-                  <Route exact path="/roles" component={RoleContainer} />
-                  <Route exact path="/roles/create" component={RoleCreateContainer} />
-                  <Route path="/roles/:id" component={RoleDetailContainer} />
+                  <Route exact path="/role_files" component={RoleContainer} />
+                  <Route exact path="/role_files/create" component={RoleCreateContainer} />
+                  <Route path="/role_files/:id" component={RoleDetailContainer} />
                   <Route exact path="/analysis" component={AnalysisContainer} />
                   <Route exact path="/analysis/periods" component={AnalysisPeriodContainer} />
                   <Route exact path="/meta_infos" component={MetaInfoContainer} />

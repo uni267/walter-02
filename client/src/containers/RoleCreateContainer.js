@@ -57,7 +57,10 @@ class RoleCreateContainer extends Component {
               )}
               />
 
-              <FlatButton label="閉じる" href="/roles" />
+            <FlatButton
+              label="閉じる"
+              onTouchTap={() => this.props.history.push("/role_files")}
+              />
           </CardActions>
         </Card>
 

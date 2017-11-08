@@ -41,6 +41,10 @@ class GroupDetailContainer extends Component {
     this.props.actions.requestFetchUsers(this.props.tenant.tenant_id);
   }
 
+  componentWillUnmount() {
+    this.props.actions.clearChangeGroupData();
+  }
+
   renderBelongsToUsers = () => {
     return this.props.group.belongs_to.map( (user, idx) => {
       return (
@@ -118,7 +122,10 @@ class GroupDetailContainer extends Component {
 
           </CardText>
           <CardActions>
-            <FlatButton label="閉じる" primary={true} href="/groups" />
+            <FlatButton
+              label="閉じる"
+              onTouchTap={() => this.props.history.push("/groups")}
+              />
             <FlatButton
               label="削除"
               secondary={true}

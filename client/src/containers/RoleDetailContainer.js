@@ -76,7 +76,10 @@ class RoleDetailContainer extends Component {
 
           </CardText>
           <CardActions>
-            <FlatButton label="閉じる" primary={true} href="/roles" />
+            <FlatButton
+              label="閉じる"
+              onTouchTap={() => this.props.history.push("/role_files")}
+              />
             <FlatButton
               label="削除"
               secondary={true}

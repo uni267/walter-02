@@ -21,6 +21,10 @@ class GroupCreateContainer extends Component {
     this.props.actions.initCreateGroup();
   }
 
+  componentWillUnmount() {
+    this.props.actions.clearChangeGroupData();
+  }
+
   render() {
     return (
       <div>
@@ -51,10 +55,13 @@ class GroupCreateContainer extends Component {
                 )
               )}
             />
-            <FlatButton label="閉じる" href="/groups" />
+            <FlatButton
+              label="閉じる"
+              onTouchTap={() => this.props.history.push("/groups")}
+            />
           </CardActions>
         </Card>
-        
+
       </div>
     );
   }

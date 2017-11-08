@@ -53,6 +53,8 @@ const groupReducer = (state = initialState, action) => {
       ...state,
       changed: initialState.changed
     };
+  case actionTypes.CLEAR_CHANGE_GROUP_DATA:
+    return initialState;
   default:
     return state;
   }

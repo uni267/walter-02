@@ -8,10 +8,10 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 // material
-import { 
-  Card, 
-  CardTitle, 
-  CardText, 
+import {
+  Card,
+  CardTitle,
+  CardText,
   CardActions
 } from 'material-ui/Card';
 
@@ -62,7 +62,8 @@ class UserCreateContainer extends Component {
 
             <FlatButton
               label="閉じる"
-              href="/users" />
+              onTouchTap={() => this.props.history.push("/users")}
+              />
 
           </CardActions>
         </Card>

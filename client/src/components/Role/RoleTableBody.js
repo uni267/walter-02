@@ -26,7 +26,7 @@ const RoleTableBody = ({
         </div>
       </TableRowColumn>
       <TableRowColumn>
-        <IconButton containerElement={<Link to={`/roles/${role._id}`} />}>
+        <IconButton containerElement={<Link to={`/role_files/${role._id}`} />}>
           <ImageEdit />
         </IconButton>
       </TableRowColumn>

@@ -65,7 +65,7 @@ class RoleContainer extends Component {
                   <MenuItem
                     primaryText="ロール作成"
                     leftIcon={<ActionVerifiedUser />}
-                    onTouchTap={() => this.props.history.push("/roles/create")}
+                    onTouchTap={() => this.props.history.push("/role_files/create")}
                     />
                 </Menu>
               </div>

@@ -67,3 +67,7 @@ export const initGroups = (groups) => ({
 export const initCreateGroup = () => ({
   type: actionTypes.INIT_CREATE_GROUP
 });
+
+export const clearChangeGroupData = () => ({
+  type: actionTypes.CLEAR_CHANGE_GROUP_DATA
+});

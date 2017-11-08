@@ -74,7 +74,10 @@ class RoleMenuDetailContainer extends Component {
 
           </CardText>
           <CardActions>
-            <FlatButton label="閉じる" primary={true} href="/role_menus" />
+            <FlatButton
+              label="閉じる"
+              onTouchTap={() => this.props.history.push("/role_menus")}
+              />
             <FlatButton
               label="削除"
               secondary={true}
