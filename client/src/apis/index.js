@@ -430,5 +430,9 @@ export class API {
   deleteRoleMenu = (roleMenu) => {
     return this.client.delete(`/api/v1/role_menus/${roleMenu._id}`);
   }
+
+  fetchDisplayItems = () => {
+    return this.client.get("/api/v1/display_items");
+  };
 }
 

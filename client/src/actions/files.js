@@ -316,3 +316,11 @@ export const filePreviewError = (errors) => ({
 export const initFile = (file) => ({
   type: actionTypes.INIT_FILE, file
 });
+
+export const requestFetchDisplayItems = () => ({
+  type: actionTypes.REQUEST_FETCH_DISPLAY_ITEMS
+});
+
+export const initDisplayItems = (displayItems) => ({
+  type: actionTypes.INIT_DISPLAY_ITEMS, displayItems
+});

@@ -49,6 +49,7 @@ import roleMenu from "./roleMenuReducer";
 import roleMenus from "./roleMenusReducer";
 import menus from "./menusReducer";
 import navigation from "./navigationReducer";
+import displayItems from "./displayItemsReducer";
 
 const fileApp = combineReducers({
   files,
@@ -98,7 +99,8 @@ const fileApp = combineReducers({
   roleMenu,
   roleMenus,
   menus,
-  navigation
+  navigation,
+  displayItems
 });
 
 export default fileApp;
