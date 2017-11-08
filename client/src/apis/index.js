@@ -139,7 +139,7 @@ export class API {
 
   deleteMetaInfoToFile = (file, meta) => {
     return this.client.delete(
-      `/api/v1/files/${file._id}/meta/${meta.meta_info_id}`);
+      `/api/v1/files/${file._id}/meta/${meta._id}`);
   }
 
   fetchUsers = () => {
