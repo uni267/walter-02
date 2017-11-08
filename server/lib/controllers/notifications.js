@@ -25,16 +25,16 @@ export const index = (req, res, next) => {
 
       const { tenant_id } = res.user;
 
-      const informations = yield User.aggregate([
+      const notifications = yield User.aggregate([
         { $match: { tenant_id: tenant_id }},
         { $project: {
-          informations:1
+          notifications:1
         }}
       ]);
 
       res.json({
         status: { success: true },
-        body: informations
+        body: notifications
       });
 
     } catch (e) {
@@ -61,19 +61,19 @@ export const view = (req, res, next) => {
       if(page === undefined || page === null || page === "") page = 0;
       const offset = page * constants.INFOMATION_LIMITS_PER_PAGE;
 
-      const informations = yield User.aggregate([
+      const notifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
         { $project: {
-          informations:1,
+          notifications:1,
           _id: 0
         }},
         {
           $unwind: {
-            path: "$informations"
+            path: "$notifications"
           }
         },
         { $sort:{
-          "informations.created":-1
+          "notifications.created":-1
         }},
         { '$skip':offset },
         { '$limit': constants.INFOMATION_LIMITS_PER_PAGE }
@@ -81,7 +81,7 @@ export const view = (req, res, next) => {
 
       res.json({
         status: { success: true },
-        body: informations
+        body: notifications
       });
 
     } catch (e) {
@@ -102,7 +102,7 @@ export const add = (req, res, next) => {
   co(function*(){
     try {
 
-      const { title, body, users  } = req.body.informations;
+      const { title, body, users  } = req.body.notifications;
 
       if(title === undefined || title === null || title === "") throw new ValidationError("title is empty");
       if(body === undefined || body === null || body === "") throw new ValidationError("body is empty");
@@ -110,7 +110,7 @@ export const add = (req, res, next) => {
 
       const created = moment().format("YYYY-MM-DD HH:mm:ss");
 
-      const information = {
+      const notification = {
         _id: new ObjectId(),
         title: title,
         body: body,
@@ -123,9 +123,9 @@ export const add = (req, res, next) => {
       if(isEmpty(user)) throw new RecordNotFoundException("user is not find");
 
       const changedUser = yield user.map(user => {
-        user.informations = [
-          ...user.informations,
-          information
+        user.notifications = [
+          ...user.notifications,
+          notification
         ];
         return user.save();
       });
@@ -168,27 +168,27 @@ export const getCount = (req, res, next) => {
       const { user_id } = req.params;
       if( user_id === undefined || user_id === null || user_id === "" ) throw new RecordNotFoundException("user_id is empty");
 
-      const informations = yield User.aggregate([
+      const notifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
         { $project: {
-          informations:1,
+          notifications:1,
           _id: 0
         }},
         {
           $unwind: {
-            path: "$informations"
+            path: "$notifications"
           }
         }
       ]);
 
-      const unread = informations.filter(information =>{
-        return (information.informations.read === undefined || information.informations.read === false);
+      const unread = notifications.filter(notification =>{
+        return (notification.notifications.read === undefined || notification.notifications.read === false);
       });
 
       res.json({
         status: {
           success: true,
-          total:informations.length,
+          total:notifications.length,
           unread: unread.length
         },
       });
@@ -214,15 +214,19 @@ export const toggleRead = (req, res, next) => {
     try {
 
       const { user_id } = req.params;
-      const informations = req.body.informations;
+      const notifications = req.body.notifications;
 
       const user = yield User.findById(user_id);
 
-      user.informations.map( information => {
-        if(informations.includes( information._id.toString() )){
-          information.read = !information.read;
+      const newNotifications = user.notifications.map( notification => {
+        let retNotification = notification;
+        if(notifications.includes( notification._id.toString() )){
+          retNotification.read = !notification.read;
         }
+        return retNotification;
       });
+
+      user.notifications = newNotifications;
 
       const changedUser = yield user.save();
 

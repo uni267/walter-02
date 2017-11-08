@@ -11,10 +11,10 @@ const UserSchema = Schema({
   enabled: Boolean,
   groups: Array,
   tenant_id: Schema.Types.ObjectId,
-  informations: [
-    { "read": Boolean },
-    { "title": String },
-    { "body": String }
+  notifications: [
+    { read: Boolean ,
+      title: String ,
+      body: String }
   ]
 });
 
