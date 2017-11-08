@@ -60,7 +60,7 @@ const Tag = ({
 };
 
 Tag.propTypes = {
-  file: PropTypes.object.isRequired,
+  file: PropTypes.object,
   tags: PropTypes.array.isRequired,
   actions: PropTypes.object.isRequired
 };
