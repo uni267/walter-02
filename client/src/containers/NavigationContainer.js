@@ -11,7 +11,8 @@ import {
   requestChangePassword,
   toggleChangePasswordDialog,
   logout,
-  triggerSnackbar
+  triggerSnackbar,
+  requestFetchAuthorityMenus
 } from "../actions";
 
 // material icons
@@ -28,6 +29,9 @@ import ActionReoder from "material-ui/svg-icons/action/reorder";
 import AccountDialog from "../components/Account/AccountDialog";
 import AppMenu from "../components/AppMenu";
 import AppNavBar from "../components/AppNavBar";
+
+// etc
+import { findIndex } from "lodash";
 
 class NavigationContainer extends Component {
   constructor(props) {
@@ -52,49 +56,65 @@ class NavigationContainer extends Component {
     this.props.history.push("/login");
   };
 
+  componentWillMount() {
+    this.props.requestFetchAuthorityMenus();
+  }
+
   render() {
-    const menus = [
+    const baseMenus = [
       {
-        name: "ファイル一覧",
+        name: "home",
+        label: "ファイル一覧",
         link: `/home/${this.props.tenant.dirId}`,
         icon: <ActionList />
       },
       {
-        name: "タグ管理",
+        name: "tags",
+        label: "タグ管理",
         link: `/tags`,
         icon: <ActionLabel />
       },
       {
-        name: "容量管理",
+        name: "analysis",
+        label: "容量管理",
         link: `/analysis`,
         icon: <ActionDonutSmall />
       },
       {
-        name: "ユーザ管理",
+        name: "users",
+        label: "ユーザ管理",
         link: "/users",
         icon: <SocialPerson />
       },
       {
-        name: "グループ管理",
+        name: "groups",
+        label: "グループ管理",
         link: "/groups",
         icon: <SocialGroup />
       },
       {
-        name: "ロール管理",
-        link: "/roles",
+        name: "role_files",
+        label: "ロール管理",
+        link: "/role_files",
         icon: <ActionVerifiedUser />
       },
       {
-        name: "メタ情報管理",
+        name: "meta_infos",
+        label: "メタ情報管理",
         link: "/meta_infos",
         icon: <ActionDescription />
       },
       {
-        name: "メニュー管理",
+        name: "role_menus",
+        label: "メニュー管理",
         link: "/role_menus",
         icon: <ActionReoder />
       }
     ];
+
+    const menus = baseMenus.filter((menu, idx)=>{
+      return ( findIndex( this.props.menus ,{ name:menu.name }) >= 0 );
+    });
 
     const appTitle = "cloud storage";
 
@@ -130,7 +150,8 @@ const mapStateToProps = (state) => {
     notifications: state.notifications,
     changePassword: state.changePassword,
     tenant: state.tenant,
-    session: state.session
+    session: state.session,
+    menus: state.navigation.data.menus
   };
 };
 
@@ -140,7 +161,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   toggleChangePasswordDialog: () => { dispatch(toggleChangePasswordDialog()); },
   logout: () => { dispatch(logout()); },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); }
+  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
+  requestFetchAuthorityMenus: () => { dispatch(requestFetchAuthorityMenus()); }
 });
 
 NavigationContainer = connect(

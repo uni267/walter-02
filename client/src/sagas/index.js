@@ -82,6 +82,7 @@ import watchAddRoleOfMenu from "./watchAddRoleOfMenu";
 import watchDeleteRoleOfMenu from "./watchDeleteRoleOfMenu";
 import watchCreateRoleMenu from "./watchCreateRoleMenu";
 import watchDeleteRoleMenu from "./watchDeleteRoleMenu";
+import watchFetchAuthorityMenus from "./watchFetchAuthorityMenus";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -166,6 +167,7 @@ function* Saga() {
   yield fork(watchDeleteRoleOfMenu);
   yield fork(watchCreateRoleMenu);
   yield fork(watchDeleteRoleMenu);
+  yield fork(watchFetchAuthorityMenus);
 }
 
 export default Saga;

@@ -23,7 +23,7 @@ const AppMenu = ({
         onTouchTap={toggle}
         containerElement={link}
         leftIcon={roleMenu.icon}
-        primaryText={roleMenu.name} />
+        primaryText={roleMenu.label} />
     );
   };
 

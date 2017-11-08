@@ -48,6 +48,7 @@ import exception from "./exceptionReducer";
 import roleMenu from "./roleMenuReducer";
 import roleMenus from "./roleMenusReducer";
 import menus from "./menusReducer";
+import navigation from "./navigationReducer";
 
 const fileApp = combineReducers({
   files,
@@ -96,7 +97,8 @@ const fileApp = combineReducers({
   exception,
   roleMenu,
   roleMenus,
-  menus
+  menus,
+  navigation
 });
 
 export default fileApp;

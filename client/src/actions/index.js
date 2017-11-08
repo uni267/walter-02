@@ -144,3 +144,10 @@ export const triggerSnackbar = (message) => ({
   type: actionTypes.TRIGGER_SNACK, message
 });
 
+export const requestFetchAuthorityMenus = () => ({
+  type: actionTypes.REQUEST_FETCH_AUTHORITY_MENUS
+});
+
+export const initAuthorityMenu = (menus) => ({
+  type: actionTypes.INIT_AUTHORITY_MENU, menus
+});

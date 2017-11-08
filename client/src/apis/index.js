@@ -409,6 +409,10 @@ export class API {
     return this.client.get(`/api/v1/menus`);
   }
 
+  fetchAuthorityMenus = () => {
+    return this.client.get(`/api/v1/authority_menus`);
+  }
+
   addRoleOfMenu = (role_id, menu_id) => {
     return this.client.patch(`/api/v1/role_menus/${role_id}/menus/${menu_id}`);
   }
