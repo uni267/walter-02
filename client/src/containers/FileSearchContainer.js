@@ -54,7 +54,7 @@ class FileSearchContainer extends Component {
                 hintText="ファイル名を入力"
                 />
             ) : null }
-            
+
           {/* 詳細検索 */}
           {this.props.searchItems.map(
               (item, idx) => item.picked ?
