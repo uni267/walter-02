@@ -242,8 +242,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption) => {
             meta_infos: {
               $push: {
                 _id: "$meta_info._id",
-                key: "$meta_info.key",
-                key_type: "$meta_info.key_type",
+                label: "$meta_info.label",
                 value_type: "$meta_info.value_type",
                 value: "$meta_infos.value"
               }

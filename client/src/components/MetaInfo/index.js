@@ -42,7 +42,7 @@ class MetaInfo extends Component {
 
     return (
       <div key={idx} style={styles.row}>
-        <div style={{...styles.cell, width: "15%"}}>{meta.key}</div>
+        <div style={{...styles.cell, width: "15%"}}>{meta.label}</div>
         <div style={{...styles.cell, width: "25%"}}>{meta.value}</div>
         <div style={{...styles.cell, width: "10%"}}>
           <RaisedButton
@@ -66,12 +66,12 @@ class MetaInfo extends Component {
     };
 
     const onNewRequest = (searchText) => {
-      this.setState({ text: searchText.key });
+      this.setState({ text: searchText.label });
       this.setState({ metaInfo: searchText });
     };
 
     const dataSourceConfig = {
-      text: "key",
+      text: "label",
       value: "_id"
     };
 
@@ -81,9 +81,9 @@ class MetaInfo extends Component {
         <div style={{...styles.cell, width: "15%"}}>
 
           <AutoComplete
-            hintText="キーを選択"
+            hintText="メタ情報を選択"
             searchText={this.state.text}
-            floatingLabelText="キーを選択"
+            floatingLabelText="メタ情報を選択"
             onTouchTap={() => this.setState({text: ""})}
             onNewRequest={onNewRequest}
             filter={AutoComplete.noFilter}
