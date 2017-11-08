@@ -81,17 +81,10 @@ const styles = {
   }
 };
 
-const headers = [
-  {key: "checkbox", width: "5%", label: ""},
-  {key: "name", width: "50%", label: "名前/場所"},
-  {key: "modified", width: "20%", label: "最終更新"},
-  {key: "dir", width: "15%", label: "メンバー"},
-  {key: false, width: "5%", label: "操作"}
-];
-
 class FileSearchResultContainer extends Component {
   componentWillMount() {
     this.fetchSearch(this.props);
+    this.props.actions.requestFetchDisplayItems();
   }
 
   componentDidMount() {
@@ -140,7 +133,7 @@ class FileSearchResultContainer extends Component {
   };
 
   renderHeaders = () => {
-    return headers.map( (header, idx) => (
+    return this.props.headers.map( (header, idx) => (
       <FileListHeader
         { ...this.props }
         key={idx}
@@ -169,7 +162,7 @@ class FileSearchResultContainer extends Component {
         dir={file} 
         rowStyle={styles.table_row}
         cellStyle={styles.table_cell}
-        headers={headers} />
+        headers={this.props.headers} />
     );
 
     const fileComponent = (
@@ -179,7 +172,7 @@ class FileSearchResultContainer extends Component {
         file={file}
         rowStyle={styles.table_row}
         cellStyle={styles.table_cell}
-        headers={headers} />
+        headers={this.props.headers} />
     );
     return file.is_dir ? dirComponent : fileComponent;
   };
@@ -236,7 +229,8 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     total: state.filePagination.total,
     page: state.filePagination.page,
-    fileSortTarget: state.fileSortTarget
+    fileSortTarget: state.fileSortTarget,
+    headers: state.displayItems
   };
 };
 

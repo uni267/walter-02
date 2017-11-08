@@ -63,14 +63,43 @@ class File extends Component {
 
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
-    return (
-      <div
-        key={idx}
-        onClick={() => this.props.history.push(`/files/${this.props.file._id}`)}
-        style={{ ...cellStyle, width: header.width, color }}>
-        {body}
-      </div>
-    );
+    const linkToFileDetail = () => {
+      this.props.history.push(`/files/${this.props.file._id}`);
+    };
+
+    let element;
+
+    if (this.props.file.dir_route === undefined) {
+      element = (
+        <div
+          key={idx}
+          onClick={linkToFileDetail}
+          style={{ ...cellStyle, width: header.width, color }}>
+          {body}
+        </div>
+      );
+    } else {
+      element = (
+        <div key={idx} style={{ ...cellStyle, width: header.width, color }}>
+          <div>
+            <div onClick={linkToFileDetail}>
+              {body}
+            </div>
+            <div style={{ fontSize: 12, color: "#aaa"}}
+                 onClick={() => (
+                   this.props.history.push(`/home/${this.props.file.dir_id}`)
+              )}>
+              場所:
+              {this.props.file.dir_route === ""
+              ? constants.TOP_DIR_NAME : this.rpops.file.dir_route }
+
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return element;
   };
 
   renderFileName = () => {
