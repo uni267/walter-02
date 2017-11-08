@@ -18,8 +18,7 @@ export const index = (req, res, next) => {
       if (tenant === null) throw "tenant is empty";
 
       const conditions = {
-        tenant_id: tenant._id,
-        key_type: KEY_TYPE_META
+        tenant_id: tenant._id
       };
 
       const meta_infos = yield MetaInfo.find(conditions);
@@ -60,19 +59,18 @@ export const add = (req, res, next) => {
           tenant_id === null ||
           tenant_id === "") throw "tenant_id is empty";
 
-      if (metainfo.key === undefined ||
-          metainfo.key === null ||
-          metainfo.key === "") throw "key is empty";
+      if (metainfo.label === undefined ||
+          metainfo.label === null ||
+          metainfo.label === "") throw "label is empty";
 
       if (metainfo.value_type === undefined ||
           metainfo.value_type === null ||
           metainfo.value_type === "") throw "value_type is empty";
 
-      metainfo.key_type = KEY_TYPE_META;
       metainfo.tenant_id = tenant_id;
 
-      let _metainfo = yield MetaInfo.findOne({ key: metainfo.key });
-      if(_metainfo !== null) throw "key is duplicate";
+      let _metainfo = yield MetaInfo.findOne({ label: metainfo.label });
+      if(_metainfo !== null) throw "label is duplicate";
      
       const createdMetainfo = yield metainfo.save();
 
@@ -83,11 +81,11 @@ export const add = (req, res, next) => {
     }catch(err){
       let errors = {};
       switch (err) {
-        case "key is empty":
-          errors.key = "key名が空です";
+        case "label is empty":
+          errors.label = "表示名が空です";
           break;
-        case "key is duplicate":
-          errors.key = "既に同名の値が存在します";
+        case "label is duplicate":
+          errors.label = "既に同名の値が存在します";
           break;
         case "value_type is empty":
           errors.value_type = "型が空です";
@@ -116,7 +114,7 @@ export const view = (req, res, next) => {
 
       const metainfo = yield MetaInfo.findById(metainfo_id);
       if (metainfo == null) throw "metainfo is empty";
-      if(metainfo.tenant_id.toString() !== tenant_id.toString() ) throw "tenant_id is diffrent"
+      if(metainfo.tenant_id.toString() !== tenant_id.toString() ) throw "tenant_id is diffrent";
 
       res.json({
         status: { success: true},
@@ -148,23 +146,22 @@ export const view = (req, res, next) => {
   });
 }
 
-export const updateKey = (req, res, next) => {
+export const updateLabel = (req, res, next) => {
   co(function* (){
     try{
       const { tenant_id } = res.user;
       const { metainfo_id } =req.params;
-      const { key } = req.body;
+      const { label } = req.body;
 
-      if (key === null ||
-          key === undefined ||
-          key === "") throw "key is empty"; 
+      if (label === null ||
+          label === undefined ||
+          label === "") throw "label is empty";
 
       const metainfo = yield MetaInfo.findById(metainfo_id);
       if(metainfo === null) throw "metainfo not found";
       if(metainfo.tenant_id.toString() !== tenant_id.toString() ) throw "tenant_id is diffrent";
-      if(metainfo.key_type !== KEY_TYPE_META ) throw "key_type is diffrent";
 
-      metainfo.key = key;
+      metainfo.label = label;
       const changedMetainfo = yield metainfo.save();
 
       res.json({
@@ -177,8 +174,8 @@ export const updateKey = (req, res, next) => {
       let errors = {};
 
       switch(err){
-        case "key is empty":
-          errors.key = err;
+        case "label is empty":
+          errors.label = err;
           break;
         default:
           errors.unknown = err;

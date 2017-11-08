@@ -4,8 +4,8 @@ mongoose.Promise = global.Promise;
 
 const MetaInfoSchema = Schema({
   tenant_id: Schema.Types.ObjectId,
-  key: String,
-  key_type: String,
+  label: String,
+  name: String,
   value_type: String
 });
 
