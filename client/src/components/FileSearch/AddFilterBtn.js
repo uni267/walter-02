@@ -17,7 +17,7 @@ const AddFilterBtn =({
     return (
       <MenuItem
         key={idx}
-        primaryText={item.key}
+        primaryText={item.label}
         onTouchTap={() => actions.searchItemPick(item)}
         />
     );

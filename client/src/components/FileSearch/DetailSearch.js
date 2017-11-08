@@ -26,8 +26,8 @@ const DetailSearch = ({
         onKeyPress={ e => {
           if (e.key === "Enter") actions.searchFileDetail(history);
         }}
-        floatingLabelText={item.key}
-        hintText={item.key}
+        floatingLabelText={item.label}
+        hintText={item.label}
         />
     );
   };
