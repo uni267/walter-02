@@ -160,7 +160,7 @@ class FileDetailContainer extends Component {
     const render = (meta, idx) => {
       return (
         <div key={idx} style={styles.metaRow}>
-          <div style={styles.metaCell}>{meta.key}</div>
+          <div style={styles.metaCell}>{meta.label}</div>
           <div style={styles.metaCell}>{meta.value}</div>
         </div>
       );
