@@ -54,7 +54,11 @@ class File extends Component {
         meta._id === header.meta_info_id
       ));
 
-      body = meta[0].value;
+      if (meta.length === 0) {
+        body = "未定義";
+      } else {
+        body = meta[0].value;
+      }
     }
 
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
