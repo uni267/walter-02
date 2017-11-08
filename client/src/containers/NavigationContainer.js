@@ -56,10 +56,6 @@ class NavigationContainer extends Component {
     this.props.history.push("/login");
   };
 
-  componentWillMount() {
-    this.props.requestFetchAuthorityMenus();
-  }
-
   render() {
     const baseMenus = [
       {
