@@ -44,6 +44,7 @@ import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
 import Action from "../models/Action";
 import FileMetaInfo from "../models/FileMetaInfo";
+import DisplayItem from "../models/DisplayItem";
 import { Swift } from "../storages/Swift";
 
 export const index = (req, res, next) => {
@@ -274,14 +275,29 @@ export const searchItems = (req, res, next) => {
           tenant_id: mongoose.Types.ObjectId(tenant_id)
       };
 
-      if (meta_only === "true") conditions.key_type = "meta";
+      let items;
 
-      const meta_infos = yield MetaInfo.find(conditions)
-            .select({ key: 1, key_type: 1, value_type: 1 });
+      if (meta_only === "true") {
+        items = yield MetaInfo.find(conditions);
+      } else {
+        const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+          meta = meta.toObject();
+          meta.meta_info_id = meta._id;
+          return meta;
+        });
+
+        const displayItems = yield DisplayItem.find({
+          ...conditions,
+          meta_info_id: null,
+          name: { $nin: ["file_checkbox", "action"] }
+        });
+
+        items = metaInfos.concat(displayItems);
+      }
 
       res.json({
         status: { success: true, message: "正常に取得が完了" },
-        body: meta_infos
+        body: items
       });
     }
     catch (e) {
