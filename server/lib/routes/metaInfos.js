@@ -12,7 +12,7 @@ router.route("/value_type")
 router.route("/:metainfo_id")
   .get(controllers.view)  // 詳細
 
-router.route("/:metainfo_id/key")
-  .patch(controllers.updateKey);  // 表示名更新
+router.route("/:metainfo_id/label")
+  .patch(controllers.updateLabel);  // 表示名更新
 
 export default router;
