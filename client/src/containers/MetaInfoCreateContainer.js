@@ -62,7 +62,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   initChangedMetaInfo: () => dispatch(actions.initChangedMetaInfo()),
-  changeMetaInfoKey: (key) => dispatch(actions.changeMetaInfoKey(key)),
+  changeMetaInfoLabel: (label) => dispatch(actions.changeMetaInfoLabel(label)),
   changeMetaInfoValueType: (value_type) => (
     dispatch(actions.changeMetaInfoValueType(value_type))
   ),

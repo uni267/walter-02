@@ -124,8 +124,8 @@ export const requestVerifyToken = (token) => ({
   type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });
 
-export const changeMetaInfoKey = (key) => ({
-  type: actionTypes.CHANGE_META_INFO_KEY, key
+export const changeMetaInfoLabel = (label) => ({
+  type: actionTypes.CHANGE_META_INFO_LABEL, label
 });
 
 export const changeMetaInfoValueType = (value_type) => ({

@@ -1,7 +1,7 @@
 import * as actionTypes from "../actionTypes";
 
 const baseStruct = {
-  key: null, value_type: null
+  label: null, value_type: null
 };
 
 const initialState = {
@@ -42,12 +42,12 @@ const metaInfoReducer = (state = initialState, action) => {
       ...state,
       target_file: action.target_file
     };
-  case actionTypes.CHANGE_META_INFO_KEY:
+  case actionTypes.CHANGE_META_INFO_LABEL:
     return {
       ...state,
       changedMetaInfo: {
         ...state.changedMetaInfo,
-        key: action.key
+        label: action.label
       }
     };
   case actionTypes.CHANGE_META_INFO_VALUE_TYPE:

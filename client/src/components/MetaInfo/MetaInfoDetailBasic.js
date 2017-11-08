@@ -12,11 +12,11 @@ const MetaInfoDetailBasic = ({
   changedMetaInfo,
   validationErrors,
   valueTypes,
-  changeMetaInfoKey,
+  changeMetaInfoLabel,
   changeMetaInfoValueType,
   displaySaveButton = true
 }) => {
-  const saveKeyBtn = (
+  const saveLabelBtn = (
     displaySaveButton
       ? (
         <FlatButton
@@ -31,13 +31,13 @@ const MetaInfoDetailBasic = ({
   return (
     <div>
       <TextField
-        value={changedMetaInfo.key}
-        onChange={(e, value) => changeMetaInfoKey(value)}
-        floatingLabelText="key名"
-        errorText={validationErrors.key}
+        value={changedMetaInfo.label}
+        onChange={(e, value) => changeMetaInfoLabel(value)}
+        floatingLabelText="表示名"
+        errorText={validationErrors.label}
         />
       
-        {saveKeyBtn}
+        {saveLabelBtn}
 
       <SelectField
         floatingLabelText="データ型"

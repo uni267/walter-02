@@ -23,7 +23,7 @@ class MetaInfoDetailContainer extends Component {
   }
 
   render() {
-    const title = `${this.props.metaInfo.key}の詳細`;
+    const title = `${this.props.metaInfo.label}の詳細`;
 
     return (
       <div>
@@ -68,8 +68,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchMetaInfo: (meta_id) => (
     dispatch(actions.requestFetchMetaInfo(meta_id))
   ),
-  changeMetaInfoKey: (key) => (
-    dispatch(actions.changeMetaInfoKey(key))
+  changeMetaInfoLabel: (label) => (
+    dispatch(actions.changeMetaInfoLabel(label))
   ),
   changeMetaInfoValueType: (value_type) => (
     dispatch(actions.changeMetaInfoValueType(value_type))

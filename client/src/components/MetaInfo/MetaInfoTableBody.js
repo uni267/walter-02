@@ -11,7 +11,7 @@ import ImageEdit from "material-ui/svg-icons/image/edit";
 const MetaInfoTableBody = ({ meta, key }) => {
   return (
     <TableRow>
-      <TableRowColumn>{meta.key}</TableRowColumn>
+      <TableRowColumn>{meta.label}</TableRowColumn>
       <TableRowColumn>{meta.value_type}</TableRowColumn>
       <TableRowColumn>
         <IconButton

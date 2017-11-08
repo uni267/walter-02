@@ -46,7 +46,7 @@ class MetaInfoContainer extends Component {
 
   render() {
     const headers = [
-      { name: "key名" },
+      { name: "表示名" },
       { name: "データ型" },
       { name: "編集" },
     ];
