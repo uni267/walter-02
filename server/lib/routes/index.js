@@ -17,6 +17,7 @@ import AuthorityFileRouter from "./authorityFiles";
 import AuthorityMenuRouter from "./authorityMenus";
 import MenuRouter from "./menus";
 import notificationRouter from "./notifications";
+import DisplayItemRouter from "./displayItems";
 
 // debug
 import TestRouter from "./test";
@@ -42,6 +43,8 @@ router.use("/api/v1/authority_files", AuthorityFileRouter);
 router.use("/api/v1/authority_menus", AuthorityMenuRouter);
 router.use("/api/v1/menus", MenuRouter);
 router.use("/api/v1/notifications", notificationRouter);
+router.use("/api/v1/display_items", DisplayItemRouter);
+
 
 // debug
 router.use("/test", TestRouter);
