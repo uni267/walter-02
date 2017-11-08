@@ -29,7 +29,7 @@ const styles = {
 
 class FileSearchContainer extends Component {
   componentWillMount() {
-    this.props.actions.requestFetchFileSearchItems(this.props.tenant.tenant_id);
+    this.props.actions.requestFetchFileSearchItems();
     this.props.actions.requestFetchTags();
   }
 
