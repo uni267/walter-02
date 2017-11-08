@@ -9,7 +9,7 @@ import User from "../models/User";
 import * as constants from "../../configs/constants";
 
 // etc
-import { isEmpty,first } from "lodash";
+import { isEmpty } from "lodash";
 import { logger } from "../index";
 import {
   ValidationError,
@@ -222,6 +222,89 @@ export const toggleRead = (req, res, next) => {
         let retNotification = notification;
         if(notifications.includes( notification._id.toString() )){
           retNotification.read = !notification.read;
+        }
+        return retNotification;
+      });
+
+      user.notifications = newNotifications;
+
+      const changedUser = yield user.save();
+
+      res.json({
+        status: {
+          success: true
+        },
+        body: changedUser
+      });
+    } catch (e) {
+      let errors = {};
+      switch (e.message) {
+        default:
+          errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+export const updateRead = (req, res, next) => {
+  co(function*(){
+    try {
+
+      const { user_id } = req.params;
+      const notifications = req.body.notifications;
+
+      const user = yield User.findById(user_id);
+
+      const newNotifications = user.notifications.map( notification => {
+        let retNotification = notification;
+        if(notifications.includes( notification._id.toString() )){
+          retNotification.read = true;
+        }
+        return retNotification;
+      });
+
+      user.notifications = newNotifications;
+
+      const changedUser = yield user.save();
+
+      res.json({
+        status: {
+          success: true
+        },
+        body: changedUser
+      });
+    } catch (e) {
+      let errors = {};
+      switch (e.message) {
+        default:
+          errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
+
+
+export const updateUnread = (req, res, next) => {
+  co(function*(){
+    try {
+
+      const { user_id } = req.params;
+      const notifications = req.body.notifications;
+
+      const user = yield User.findById(user_id);
+
+      const newNotifications = user.notifications.map( notification => {
+        let retNotification = notification;
+        if(notifications.includes( notification._id.toString() )){
+          retNotification.read = false;
         }
         return retNotification;
       });
