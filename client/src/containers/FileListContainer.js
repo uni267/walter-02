@@ -260,7 +260,6 @@ const mapStateToProps = (state, ownProps) => {
     deleteFileState: state.deleteFile,
     dirTree: state.dirTree,
     tenant: state.tenant,
-    metaInfo: state.metaInfo,
     total: state.filePagination.total,
     page: state.filePagination.page,
     downloadBlob: state.downloadFile,
