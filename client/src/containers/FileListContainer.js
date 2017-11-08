@@ -76,14 +76,6 @@ const styles = {
   }
 };
 
-const headers = [
-  {key: "checkbox", width: "5%", label: ""},
-  {key: "name",     width: "50%", label: "名前"},
-  {key: "modified", width: "20%", label: "最終更新"},
-  {key: "owner",    width: "15%", label: "メンバー"},
-  {key: false,      width: "10%", label: "操作"},
-];
-
 const fileSource = {
   beginDrag(props) {
     return {
@@ -121,6 +113,7 @@ class FileListContainer extends Component {
   componentWillMount() {
     this.props.actions.requestFetchFiles(this.props.match.params.id);
     this.props.actions.requestFetchMetaInfos();
+    this.props.actions.requestFetchDisplayItems();
   }
 
   componentDidMount() {
@@ -191,7 +184,7 @@ class FileListContainer extends Component {
         dir={file}
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
-        headers={headers}
+        headers={this.props.headers}
         />
     );
 
@@ -206,7 +199,7 @@ class FileListContainer extends Component {
         key={idx}
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
-        headers={headers}
+        headers={this.props.headers}
         file={file}
         setYOffset={(y) => this.setState({ yOffset: y })}
         />
@@ -233,7 +226,7 @@ class FileListContainer extends Component {
     return (
       <div>
         <div style={styles.row}>
-          {headers.map( (header, idx) => (
+          {this.props.headers.map( (header, idx) => (
             <FileListHeader
               key={idx} 
               header={header}
@@ -271,7 +264,8 @@ const mapStateToProps = (state, ownProps) => {
     total: state.filePagination.total,
     page: state.filePagination.page,
     downloadBlob: state.downloadFile,
-    addAuthority: state.addAuthorityFile
+    addAuthority: state.addAuthorityFile,
+    headers: state.displayItems
   };
 };
 

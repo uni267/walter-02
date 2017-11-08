@@ -59,7 +59,7 @@ const FileListHeader = ({
     return (
       <div key={idx} style={{...style, width: header.width}}>
         <FlatButton
-          onClick={() => onSortClick(header.key)}
+          onClick={() => onSortClick(header.key_type)}
           label={header.label}
           icon={sortIcon}
           labelPosition="before"

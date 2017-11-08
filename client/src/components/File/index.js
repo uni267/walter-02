@@ -40,6 +40,35 @@ class File extends Component {
     };
   }
 
+  renderCell = (header, file, cellStyle, idx) => {
+    let body;
+
+    if (header.meta_info_id === null) {
+      if (header.name === "authorities") {
+        body = this.renderMember();
+      } else {
+        body = file[header.name];
+      }
+    } else {
+      const meta = file.meta_infos.filter( meta => (
+        meta._id === header.meta_info_id
+      ));
+
+      body = meta[0].value;
+    }
+
+    const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
+
+    return (
+      <div
+        key={idx}
+        onClick={() => this.props.history.push(`/files/${this.props.file._id}`)}
+        style={{ ...cellStyle, width: header.width, color }}>
+        {body}
+      </div>
+    );
+  };
+
   renderFileName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
@@ -137,14 +166,6 @@ class File extends Component {
 
     const checkOpacity = this.state.hover || file.checked ? 1 : 0.1;
 
-    const favorite_icon = (
-      <ActionFavorite />
-    );
-
-    const favorite_icon_border = (
-      <ActionFavoriteBorder />
-    );
-
     const elements = (
       <div
         onMouseEnter={() => this.setState({ hover: true })}
@@ -162,21 +183,17 @@ class File extends Component {
 
           <Checkbox
             style={style.checkbox}
-            checkedIcon={favorite_icon}
-            uncheckedIcon={favorite_icon_border}
+            checkedIcon={<ActionFavorite />}
+            uncheckedIcon={<ActionFavoriteBorder />}
             checked={file.is_star}
             onCheck={() => this.props.actions.toggleStar(file)} />
         </div>
 
-        {this.renderFileName()}
-
-        <div style={{ ...cellStyle, width: headers[2].width }}>
-          {moment(file.modified).format("YYYY-MM-DD hh:mm:ss")}
-        </div>
-
-        <div style={{ ...cellStyle, width: headers[3].width }}>
-          {this.renderMember()}
-        </div>
+        {headers.filter( header => (
+          !["file_checkbox", "action"].includes(header.name)
+          )).map( (header, idx) => (
+          this.renderCell(header, file, cellStyle, idx)
+        ))}
 
         <div style={{ ...cellStyle, width: headers[4].width }}>
 
