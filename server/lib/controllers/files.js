@@ -1035,15 +1035,14 @@ export const removeMeta = (req, res, next) => {
       if (file === null) throw "file is empty";
       if (metaInfo === null) throw "metaInfo is empty";
 
-      file.meta_infos = file.meta_infos.filter( _meta => {
-        return _meta.meta_info_id.toString() !== metaInfo._id.toString();
-      });
-
-      const changedFile = yield file.save();
+      const removeMeta = yield FileMetaInfo.findOne({
+        file_id: mongoose.Types.ObjectId(file_id),
+        meta_info_id: mongoose.Types.ObjectId(meta_id)
+      }).remove();
 
       res.json({
         status: { success: true },
-        body: changedFile
+        body: removeMeta
       });
     }
     catch (e) {
