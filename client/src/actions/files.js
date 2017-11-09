@@ -143,6 +143,10 @@ export const toggleFileTagDialog = (file) => ({
   type: actionTypes.TOGGLE_FILE_TAG_DIALOG, file
 });
 
+export const initFileTag = (file) => ({
+  type: actionTypes.INIT_FILE_TAG, file
+});
+
 export const triggerSnackbar = (message) => ({
   type: actionTypes.TRIGGER_SNACK, message
 });
