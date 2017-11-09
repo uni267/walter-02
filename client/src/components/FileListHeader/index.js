@@ -14,21 +14,18 @@ const FileListHeader = ({
   match,
   actions
 }) => {
-  const onSortClick = (headerKey) => {
+  const onSortClick = () => {
 
     actions.initFilePagination();
 
-    const target = headerKey;
-    if (target === false) return;
-
-    if (fileSortTarget.sorted !== target) {
-      actions.setSortTarget(target);
+    if (fileSortTarget.sorted !== header._id) {
+      actions.setSortTarget(header._id);
     } else {
       actions.toggleSortTarget();
     }
   };
 
-  if ( header.key === "checkbox" ) {
+  if ( header.name === "file_checkbox" ) {
     const checkboxStyle = {
       ...style,
       paddingLeft: style.paddingLeft + 14,
@@ -44,10 +41,22 @@ const FileListHeader = ({
       </div>
     );
   }
+  else if ( header.name === "action") {
+    return (
+      <div key={idx} style={{ ...style, width: header.width}}>
+        <FlatButton
+          label={header.label}
+          labelPosition="before"
+          labelStyle={{ color: "rgb(158, 158, 158)", fontSize: 12 }}
+          style={{ textAlign: "left" }}
+          />
+      </div>
+    );
+  }
   else {
     let sortIcon;
 
-    if ( header.key === fileSortTarget.sorted ) {
+    if ( header._id === fileSortTarget.sorted ) {
       if (fileSortTarget.desc) {
         sortIcon = <ContentSort />;
       }
@@ -59,7 +68,7 @@ const FileListHeader = ({
     return (
       <div key={idx} style={{...style, width: header.width}}>
         <FlatButton
-          onClick={() => onSortClick(header.key_type)}
+          onClick={() => onSortClick()}
           label={header.label}
           icon={sortIcon}
           labelPosition="before"
