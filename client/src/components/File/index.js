@@ -10,6 +10,7 @@ import TextField from "material-ui/TextField";
 // mateirla-icon
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import Avatar from "material-ui/Avatar";
 
 // components
 import FileDialogMenu from "./FileDialogMenu";
@@ -70,33 +71,78 @@ class File extends Component {
     let element;
 
     if (this.props.file.dir_route === undefined) {
-      element = (
-        <div
-          key={idx}
-          onClick={linkToFileDetail}
-          style={{ ...cellStyle, width: header.width, color }}>
-          {body}
-        </div>
-      );
-    } else {
-      element = (
-        <div key={idx} style={{ ...cellStyle, width: header.width, color }}>
-          <div>
-            <div onClick={linkToFileDetail}>
-              {body}
-            </div>
-            <div style={{ fontSize: 12, color: "#aaa"}}
-                 onClick={() => (
-                   this.props.history.push(`/home/${this.props.file.dir_id}`)
-              )}>
-              場所:
-              {this.props.file.dir_route === ""
-              ? constants.TOP_DIR_NAME : this.rpops.file.dir_route }
-
+      if (idx === 0) {
+        element = (
+          <div
+            key={idx}
+            onClick={linkToFileDetail}
+            style={{ ...cellStyle, width: header.width, color }}>
+            <div style={{ ...cellStyle, padding: 0, width: "100%", justifyContent: "center", alignItems: "center"}}>
+              <div style={{ width: "80%" }}>
+                {body}
+              </div>
+              <div style={{ width: "20%" }}>
+                {file.tags.map( tag => (
+                  <Avatar
+                    size={14}
+                    backgroundColor={tag.color}
+                    style={{ marginLeft: 5 }}>
+                  </Avatar>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      );
+        );
+      }
+      else {
+        element = (
+          <div
+            key={idx}
+            onClick={linkToFileDetail}
+            style={{ ...cellStyle, width: header.width, color }}>
+            {body}
+          </div>
+        );
+      }
+    } else {
+      if (idx === 0) {
+        element = (
+          <div key={idx} style={{ ...cellStyle, width: header.width, color }}>
+            <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center" }}>
+              <div style={{ width: "80%" }}>
+                <div onClick={linkToFileDetail}>
+                  {body}
+                </div>
+                <div style={{ fontSize: 12, color: "#aaa"}}
+                     onClick={() => (
+                       this.props.history.push(`/home/${this.props.file.dir_id}`)
+                  )}>
+                  場所:
+                  {this.props.file.dir_route === ""
+                  ? constants.TOP_DIR_NAME : this.rpops.file.dir_route }
+                </div>
+              </div>
+              <div style={{ width: "20%" }}>
+                {file.tags.map( tag => (
+                  <Avatar
+                    size={14}
+                    backgroundColor={tag.color}
+                    style={{ marginLeft: 5 }}>
+                  </Avatar>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      } else {
+        element = (
+          <div key={idx} style={{ ...cellStyle, width: header.width, color }}>
+            <div onClick={linkToFileDetail} style={{ width: "100%" }}>
+              {body}
+            </div>
+          </div>
+        );
+      }
     }
 
     return element;
