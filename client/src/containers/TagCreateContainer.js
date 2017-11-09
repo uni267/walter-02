@@ -72,7 +72,8 @@ class TagCreateContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     changedTag: state.tag.changedTag,
-    validationErrors: state.tag.validationErrors
+    validationErrors: state.tag.validationErrors,
+    pickerOpen: state.tag.pickerOpen
   };
 };
 
