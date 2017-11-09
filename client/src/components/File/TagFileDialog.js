@@ -12,60 +12,42 @@ import Tag from "../Tag";
 
 import * as FileActions from "../../actions/files";
 
-class TagFileDialog extends Component {
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.open && !this.props.open) {
-      this.props.actions.requestFetchFile(nextProps.file._id);
-      this.props.actions.requestFetchTags();
-    }
-  }
+const TagFileDialog = ({
+  open,
+  file,
+  tags,
+  actions
+}) => {
+  const btnActions = (
+    <FlatButton
+      label="close"
+      primary={true}
+      onTouchTap={actions.toggleFileTagDialog}
+      />
+  );
 
-  render() {
-    const actions = (
-      <FlatButton
-        label="close"
-        primary={true}
-        onTouchTap={this.props.actions.toggleFileTagDialog}
+  return (
+    <Dialog
+      title="タグ編集"
+      open={open}
+      modal={false}
+      actions={btnActions} >
+
+      <Tag
+        file={file}
+        tags={tags}
+        actions={actions}
         />
-    );
 
-    return (
-      <Dialog
-        title="タグ編集"
-        open={this.props.open}
-        modal={false}
-        actions={actions} >
-
-        <Tag 
-          { ...this.props }
-          file={this.props.fetchedFile}
-          tags={this.props.tags}
-          />
-
-      </Dialog>
-    );
-  }
+    </Dialog>
+  );
 };
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    fetchedFile: state.file,
-    tags: state.tags
-  };
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  actions: bindActionCreators(FileActions, dispatch)
-});
 
 TagFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  file: PropTypes.object
+  file: PropTypes.object,
+  tags: PropTypes.array.isRequired,
+  actions: PropTypes.object.isRequired
 };
-
-TagFileDialog = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TagFileDialog);
 
 export default TagFileDialog;

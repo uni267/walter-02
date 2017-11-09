@@ -26,6 +26,7 @@ class FileOperationDialogContainer extends Component {
     this.props.actions.requestFetchRoles();
     this.props.actions.requestFetchUsers();
     this.props.actions.requestFetchMetaInfos();
+    this.props.actions.requestFetchTags();
   }
 
   render() {
@@ -73,6 +74,7 @@ class FileOperationDialogContainer extends Component {
         <TagFileDialog
           { ...this.props }
           open={this.props.fileTagState.open}
+          tags={this.props.tags}
           file={this.props.fileTagState.file} />
         <MetaInfoDialog 
           { ...this.props }
@@ -93,6 +95,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     users: state.users,
     roles: state.roles.data,
+    tags: state.tags,
     metaInfos: state.metaInfo.meta_infos,
     copyDirState: state.copyDir,
     deleteFileState: state.deleteFile,
