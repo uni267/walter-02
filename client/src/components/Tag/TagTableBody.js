@@ -8,13 +8,17 @@ import { Link } from "react-router-dom";
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import IconButton from 'material-ui/IconButton';
 import ImageEdit from "material-ui/svg-icons/image/edit";
-
+import Avatar from "material-ui/Avatar";
 
 const TagTableBody = ({ tag }) => {
   return (
     <TableRow>
       <TableRowColumn>{tag.label}</TableRowColumn>
-      <TableRowColumn>{tag.color}</TableRowColumn>
+      <TableRowColumn>
+        <div style={{ display: "flex", justifyContent: "left", alignItems: "center" }}>
+          <Avatar size={14} backgroundColor={tag.color} />
+        </div>
+      </TableRowColumn>
       <TableRowColumn>
         <IconButton containerElement={<Link to={`/tags/${tag._id}`} />}>
           <ImageEdit />
