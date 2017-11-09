@@ -63,7 +63,7 @@ export const index = (req, res, next) => {
         is_deleted: false,
         _id: {$in : file_ids}
       };
-      const sortOption = createSortOption(sort, order);
+      const sortOption = yield createSortOption(sort, order);
 
       // pagination
       if (page === undefined || page === null || page === "") page = 0;
@@ -213,7 +213,7 @@ export const search = (req, res, next) => {
       const offset = _page * limit;
       const total = yield File.find(conditions).count();
 
-      const _sort = createSortOption(sort, order);
+      const _sort = yield createSortOption(sort, order);
 
       let files = yield File.searchFiles(conditions,offset,limit,_sort);
 
@@ -390,7 +390,7 @@ export const searchDetail = (req, res, next) => {
       const total = yield File.find(query).count();
 
       const { sort, order } = params;
-      const _sort = createSortOption(sort, order);
+      const _sort = yield createSortOption(sort, order);
 
       const files = yield File.find(query)
             .skip(offset)
@@ -1609,28 +1609,26 @@ const moveFile = (file, dir_id, user, action) => {
 
 };
 
-const createSortOption = (_sort=null, _order=null) => {
-  return co(function* () {
-    const sort = {};
-    const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
+const createSortOption = co.wrap( function* (_sort=null, _order=null) {
+  const sort = {};
+  const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
 
-    if ( _sort === undefined || _sort === null || _sort === "" ) {
-      sort["id"] = order;
+  if ( _sort === undefined || _sort === null || _sort === "" ) {
+    sort["id"] = order;
 
+  } else {
+    const item = yield DisplayItem.findById(_sort);
+
+    // メタ情報以外でのソート
+    if (item.meta_info_id === null) {
+      sort[item.name] = order;
     } else {
-      const item = yield DisplayItem.findById(_sort);
-
-      // メタ情報以外でのソート
-      if (item.meta_info_id === null) {
-        sort[item.name] = order;
-      } else {
-        // sort["meta_infos"];
-      }
+      // @fixme
+      sort["id"] = order;
     }
-
-    return sort;
-  });
-};
+  }
+  return Promise.resolve(sort);
+});
 
 const getAllowedFileIds = (user_id, permission) => {
   return co(function*(){
