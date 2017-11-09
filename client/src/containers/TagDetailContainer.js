@@ -67,6 +67,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     tag: state.tag.data,
     changedTag: state.tag.changedTag,
+    pickerOpen: state.tag.pickerOpen,
     validationErrors: state.tag.validationErrors
   };
 };
