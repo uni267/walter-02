@@ -44,12 +44,14 @@ const FileListHeader = ({
   else if ( header.name === "action") {
     return (
       <div key={idx} style={{ ...style, width: header.width}}>
-        <FlatButton
-          label={header.label}
-          labelPosition="before"
-          labelStyle={{ color: "rgb(158, 158, 158)", fontSize: 12 }}
-          style={{ textAlign: "left" }}
-          />
+        <div style={{
+               color: "rgb(158, 158, 158)",
+               fontSize: 12,
+               textAlign: "center",
+               flexBasis: 70
+             }}>
+          {header.label}
+        </div>
       </div>
     );
   }
