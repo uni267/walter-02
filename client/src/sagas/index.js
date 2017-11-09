@@ -170,6 +170,7 @@ function* Saga() {
   yield fork(watchCreateRoleMenu);
   yield fork(watchDeleteRoleMenu);
   yield fork(watchFetchAuthorityMenus);
+  yield fork(watchRequestFetchDisplayItems);
   yield fork(watchSaveUserRoleId);
 }
 
