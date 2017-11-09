@@ -48,3 +48,7 @@ export const saveTagValidationError = (errors) => ({
 export const createTag = (tag, history) => ({
   type: actionTypes.CREATE_TAG, tag, history
 });
+
+export const toggleColorPicker = () => ({
+  type: actionTypes.TOGGLE_COLOR_PICKER
+});

@@ -3,7 +3,8 @@ import * as actionTypes from "../actionTypes";
 const initialState = {
   data: {},
   changedTag: {},
-  validationErrors: {}
+  validationErrors: {},
+  pickerOpen: false
 };
 
 const tagReducer = (state = initialState, action) => {
@@ -39,6 +40,11 @@ const tagReducer = (state = initialState, action) => {
         ...state.validationErrors,
         ...action.errors
       }
+    };
+  case actionTypes.TOGGLE_COLOR_PICKER:
+    return {
+      ...state,
+      pickerOpen: !state.pickerOpen
     };
   default:
     return state;
