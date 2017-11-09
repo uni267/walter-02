@@ -27,6 +27,7 @@ const AppNavBar = ({
   appTitle,
   toggleMenu,
   notifications,
+  unreadNotificationCount,
   handleAccountOpen,
   handleLogout,
   tenant,
@@ -52,7 +53,7 @@ const AppNavBar = ({
     return (
       <div style={{paddingRight: 70}}>
         <Badge
-          badgeContent={notifications.length}
+          badgeContent={unreadNotificationCount}
           style={{padding: 5}}
           secondary={true} >
 
@@ -91,7 +92,7 @@ const AppNavBar = ({
   );
 
   return (
-    <AppBar 
+    <AppBar
       title={title}
       iconElementRight={renderRightElements()}
       onLeftIconButtonTouchTap={toggleMenu} />

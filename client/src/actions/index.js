@@ -151,3 +151,11 @@ export const requestFetchAuthorityMenus = () => ({
 export const initAuthorityMenu = (menus) => ({
   type: actionTypes.INIT_AUTHORITY_MENU, menus
 });
+
+export const requestFetchNotification = () => ({
+  type: actionTypes.REQUEST_FETCH_NOTIFICATION
+});
+
+export const initNotificaiton = (notifications, count_unread) => ({
+  type: actionTypes.INIT_NOTIFICAITON, notifications, count_unread
+});

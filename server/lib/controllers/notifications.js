@@ -55,11 +55,25 @@ export const view = (req, res, next) => {
   co(function*(){
     try {
 
-      const { user_id } = req.params;
+      const { _id:user_id } = res.user;
       let { page } = req.query;
 
       if(page === undefined || page === null || page === "") page = 0;
       const offset = page * constants.INFOMATION_LIMITS_PER_PAGE;
+
+      const notificationsCount = ( yield User.aggregate([
+        { $match: { _id: ObjectId( user_id ) }},
+        { $project: {
+          notifications:1,
+          _id: 0
+        }},
+        {
+          $unwind: {
+            path: "$notifications"
+          }
+        },
+        { $match: { "notifications.read":false }}
+      ])).length;
 
       const notifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
@@ -73,14 +87,14 @@ export const view = (req, res, next) => {
           }
         },
         { $sort:{
-          "notifications.created":-1
+          "notifications.modified": -1
         }},
         { '$skip':offset },
         { '$limit': constants.INFOMATION_LIMITS_PER_PAGE }
       ]);
 
       res.json({
-        status: { success: true },
+        status: { success: true ,unread:notificationsCount},
         body: notifications
       });
 
@@ -108,13 +122,13 @@ export const add = (req, res, next) => {
       if(body === undefined || body === null || body === "") throw new ValidationError("body is empty");
       if(users === undefined || users === null  || isEmpty(users)) throw  new ValidationError("users is empty");
 
-      const created = moment().format("YYYY-MM-DD HH:mm:ss");
+      const modified = moment().format("YYYY-MM-DD HH:mm:ss");
 
       const notification = {
         _id: new ObjectId(),
         title: title,
         body: body,
-        created: created,
+        modified: modified,
         read: false
       };
 

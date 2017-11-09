@@ -3,11 +3,11 @@ import * as controller from "../controllers/notifications";
 
 const router = Router();
 
-router.get("/", controller.index) // お知らせ一覧取得
+router.get("/", controller.view) // お知らせ一覧取得
 .post("/", controller.add); // お知らせの追加
 
-// ユーザーのお知らせ一覧取得
-router.get("/:user_id", controller.view);
+// すべてのお知らせ一覧取得
+router.get("/all", controller.index);
 
 // 件数取得
 router.get("/:user_id/count", controller.getCount);

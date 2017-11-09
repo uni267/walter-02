@@ -119,6 +119,7 @@ class NavigationContainer extends Component {
         <AppNavBar
           appTitle={appTitle}
           notifications={this.props.notifications}
+          unreadNotificationCount={this.props.unreadNotificationCount}
           handleAccountOpen={this.props.toggleChangePasswordDialog}
           handleLogout={this.handleLogout}
           toggleMenu={this.toggleAppMenu}
@@ -143,7 +144,8 @@ class NavigationContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    notifications: state.notifications,
+    notifications: state.notifications.notifications,
+    unreadNotificationCount: state.notifications.unread,
     changePassword: state.changePassword,
     tenant: state.tenant,
     session: state.session,

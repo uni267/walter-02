@@ -14,7 +14,10 @@ const UserSchema = Schema({
   notifications: [
     { read: Boolean ,
       title: String ,
-      body: String }
+      body: String ,
+      create: { type:Date, default: Date.now },
+      modified: { type: Date, default: Date.now }
+    }
   ]
 });
 

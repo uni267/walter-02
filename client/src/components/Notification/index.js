@@ -5,14 +5,14 @@ import PropTypes from "prop-types";
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 
 const Notification = ({ notifications }) => {
-  const render = (notification, idx) => {
+  const render = ({ notifications }, idx) => {
     return (
       <Card key={idx}>
         <CardHeader
-          title={notification.title}
-          subtitle={notification.modified} />
+          title={notifications.title}
+          subtitle={notifications.modified} />
 
-        <CardText>{notification.body}</CardText>
+        <CardText>{notifications.body}</CardText>
       </Card>
     );
   };

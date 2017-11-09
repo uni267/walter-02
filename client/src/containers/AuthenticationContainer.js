@@ -25,6 +25,7 @@ class AuthenticationContainer extends Component {
 
     if (token) {
       this.props.requestVerifyToken(token);
+      this.props.requestFetchNotification();
     }
   }
 
@@ -54,6 +55,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   requestVerifyToken: (token) => {
     dispatch(actions.requestVerifyToken(token));
+  },
+  requestFetchNotification: () => {
+    dispatch(actions.requestFetchNotification());
   }
 });
 

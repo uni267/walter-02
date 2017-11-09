@@ -440,5 +440,9 @@ export class API {
   fetchDisplayItems = () => {
     return this.client.get("/api/v1/display_items");
   };
+
+  fetchNotification = (user_id) => {
+    return this.client.get( `/api/v1/notifications` );
+  }
 }
 
