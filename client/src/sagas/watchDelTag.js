@@ -14,6 +14,7 @@ function* watchDelTag() {
       yield call(api.fetchDelTag, file, tag);
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initFile(payload.data.body));
+      yield put(actions.initFileTag(payload.data.body));
       yield put(commons.triggerSnackbar("タグを削除しました"));
     }
     catch (e) {
