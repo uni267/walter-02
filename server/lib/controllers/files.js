@@ -1610,14 +1610,26 @@ const moveFile = (file, dir_id, user, action) => {
 };
 
 const createSortOption = (_sort=null, _order=null) => {
-  const sort = {};
-  const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
-  if( _sort === undefined || _sort === null || _sort === "" ){
-    sort["id"] = order;
-  }else{
-    sort[_sort] = order;
-  }
-  return sort;
+  return co(function* () {
+    const sort = {};
+    const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
+
+    if ( _sort === undefined || _sort === null || _sort === "" ) {
+      sort["id"] = order;
+
+    } else {
+      const item = yield DisplayItem.findById(_sort);
+
+      // メタ情報以外でのソート
+      if (item.meta_info_id === null) {
+        sort[item.name] = order;
+      } else {
+        // sort["meta_infos"];
+      }
+    }
+
+    return sort;
+  });
 };
 
 const getAllowedFileIds = (user_id, permission) => {
