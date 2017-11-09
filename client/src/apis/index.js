@@ -193,6 +193,12 @@ export class API {
       `/api/v1/users/${user._id}/password_force`, body);
   };
 
+  saveUserRoleId = (user) => {
+    const body = { role_menu_id: user.role_id };
+    return this.client.patch(
+      `/api/v1/users/${user._id}/role_menus`, body);
+  }
+
   searchUsersSimple = (tenant_id, keyword) => {
     return this.client.get(
       `/api/v1/users/?tenant_id=${tenant_id}&q=${keyword}`);

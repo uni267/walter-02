@@ -28,6 +28,7 @@ import * as UserActions from "../actions/users";
 class UserCreateContainer extends Component {
   componentWillMount() {
     this.props.actions.initNewUserTemplate();
+    this.props.actions.requestFetchRoleMenus();
   }
 
   render() {
@@ -75,7 +76,8 @@ class UserCreateContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
-    tenant: state.tenant
+    tenant: state.tenant,
+    roleMenus: state.roleMenus
   };
 };
 

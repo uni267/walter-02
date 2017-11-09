@@ -94,11 +94,14 @@ export const view = (req, res, next) => {
       const group_ids = user.groups.map( group => mongoose.Types.ObjectId(group) );
       const groups = yield Group.find({ _id: group_ids });
 
+      const { role_menus } = yield AuthorityMenu.findOne({users:user});
+
       res.json({
         status: { success: true },
         body: {
           ...user.toObject(),
           tenant: tenant.toObject(),
+          role_id: role_menus,
           groups
         }
       });

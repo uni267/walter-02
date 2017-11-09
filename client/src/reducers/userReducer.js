@@ -49,6 +49,11 @@ const userReducer = (state = initialState, action) => {
       ...state,
       changed: { ...state.changed, email: action.email }
     };
+  case actionTypes.CHANGE_USER_ROLE_ID:
+    return {
+      ...state,
+      changed: { ...state.changed, role_id: action.role_id }
+    };
   case actionTypes.INIT_NEW_USER_TEMPLATE:
     return {
       ...state,

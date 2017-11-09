@@ -87,3 +87,15 @@ export const changeUserName = (name) => ({
 export const changeUserEmail = (email) => ({
   type: actionTypes.CHANGE_USER_EMAIL, email
 });
+
+export const requestFetchRoleMenus = () => ({
+  type: actionTypes.REQUEST_FETCH_ROLE_MENUS
+});
+
+export const changeUserRoleId = (role_id) => ({
+  type: actionTypes.CHANGE_USER_ROLE_ID, role_id
+});
+
+export const saveUserRoleId = (user) => ({
+  type: actionTypes.SAVE_USER_ROLE_ID, user
+});

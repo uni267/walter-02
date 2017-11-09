@@ -7,10 +7,10 @@ import { bindActionCreators } from "redux";
 // material
 import FlatButton from 'material-ui/FlatButton';
 
-import { 
-  Card, 
-  CardTitle, 
-  CardText, 
+import {
+  Card,
+  CardTitle,
+  CardText,
   CardActions
 } from 'material-ui/Card';
 
@@ -37,6 +37,7 @@ class UserDetailContainer extends Component {
     this.props.actions.requestFetchUser(
       this.props.match.params.id, this.props.tenant.tenant_id
     );
+    this.props.actions.requestFetchRoleMenus();
   }
 
   componentWillUnmount() {
@@ -95,7 +96,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
     tenant: state.tenant,
-    groups: state.groups.data
+    groups: state.groups.data,
+    roleMenus: state.roleMenus
   };
 };
 
