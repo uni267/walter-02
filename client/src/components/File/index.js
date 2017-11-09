@@ -119,7 +119,7 @@ class File extends Component {
                   )}>
                   場所:
                   {this.props.file.dir_route === ""
-                  ? constants.TOP_DIR_NAME : this.rpops.file.dir_route }
+                  ? constants.TOP_DIR_NAME : this.props.file.dir_route }
                 </div>
               </div>
               <div style={{ width: "20%" }}>
