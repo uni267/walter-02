@@ -11,6 +11,11 @@ const fileTagReducer = (state = initialState, action) => {
     return state.open
       ? initialState
       : { open: !state.open, file: action.file };
+  case actionTypes.INIT_FILE_TAG:
+    return {
+      open: state.open,
+      file: action.file
+    };
   default:
     return state;
   }
