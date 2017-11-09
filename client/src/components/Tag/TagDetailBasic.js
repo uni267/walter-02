@@ -14,14 +14,13 @@ const TagDetailBasic = ({
   pickerOpen,
   actions
 }) => {
-  let pickerDisplay = false;
-
   const circlePicker = pickerOpen ? (
     <Card style={{ marginTop: 20 }}>
       <CardText>
         <CirclePicker
           style={{ marginTop: 20 }}
           color={changedTag.color}
+          onChangeComplete={actions.toggleColorPicker}
           onChange={ color => (
             actions.changeTagColor(color.hex)
           )}
