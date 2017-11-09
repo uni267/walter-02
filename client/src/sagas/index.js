@@ -83,11 +83,8 @@ import watchDeleteRoleOfMenu from "./watchDeleteRoleOfMenu";
 import watchCreateRoleMenu from "./watchCreateRoleMenu";
 import watchDeleteRoleMenu from "./watchDeleteRoleMenu";
 import watchFetchAuthorityMenus from "./watchFetchAuthorityMenus";
-<<<<<<< HEAD
 import watchRequestFetchDisplayItems from "./watchRequestFetchDisplayItems";
-=======
 import watchSaveUserRoleId from "./watchSaveUserRoleId";
->>>>>>> ユーザ登録にユーザ種類を追加
 
 function* Saga() {
   yield fork(watchLogin);
