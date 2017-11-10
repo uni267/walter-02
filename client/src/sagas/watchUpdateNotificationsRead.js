@@ -10,7 +10,7 @@ function* watchUpdateNotificationsRead() {
     const task = yield take(actions.requestUpdateNotificationsRead().type);
     const unreadNotificaitons = task.notifications.filter(notification => ( notification.notifications.read === false ) );
     const api = new API();
-    yield put(commons.loadingStart);
+    yield put(commons.loadingStart());
     try {
       if(unreadNotificaitons.length > 0){
         yield call(api.updateNotificationsRead, unreadNotificaitons);
