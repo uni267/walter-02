@@ -61,7 +61,9 @@ export const view = (req, res, next) => {
       if(page === undefined || page === null || page === "") page = 0;
       const offset = page * constants.INFOMATION_LIMITS_PER_PAGE;
 
-      const notificationsCount = ( yield User.aggregate([
+
+
+      const allNotifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
         { $project: {
           notifications:1,
@@ -71,9 +73,13 @@ export const view = (req, res, next) => {
           $unwind: {
             path: "$notifications"
           }
-        },
-        { $match: { "notifications.read":false }}
-      ])).length;
+        }
+      ]);
+
+      const readNotifications = allNotifications.filter(notification =>{
+        return (notification.notifications.read === undefined || notification.notifications.read === false);
+      });
+
 
       const notifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
@@ -94,7 +100,13 @@ export const view = (req, res, next) => {
       ]);
 
       res.json({
-        status: { success: true ,unread:notificationsCount},
+        status: {
+          success: true ,
+          unread:readNotifications.length,
+          total:allNotifications.length,
+          page: page,
+          offset: offset
+        },
         body: notifications
       });
 

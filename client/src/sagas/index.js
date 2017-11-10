@@ -87,6 +87,7 @@ import watchRequestFetchDisplayItems from "./watchRequestFetchDisplayItems";
 import watchSaveUserRoleId from "./watchSaveUserRoleId";
 import watchFetchNotification from "./watchFetchNotification";
 import watchUpdateNotificationsRead from "./watchUpdateNotificationsRead";
+import watchFetchMoreNotification from "./watchFetchMoreNotification";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -176,6 +177,7 @@ function* Saga() {
   yield fork(watchSaveUserRoleId);
   yield fork(watchFetchNotification);
   yield fork(watchUpdateNotificationsRead);
+  yield fork(watchFetchMoreNotification);
 }
 
 export default Saga;

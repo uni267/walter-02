@@ -15,7 +15,7 @@ function* watchUpdateNotificationsRead() {
       if(unreadNotificaitons.length > 0){
         yield call(api.updateNotificationsRead, unreadNotificaitons);
         const payload = yield call(api.fetchNotification);
-        yield put(actions.initNotificaiton(payload.data.body, payload.data.status.unread));
+        yield put(actions.initNotificaiton(payload.data.body, payload.data.status));
       }
     } catch (e) {
     }

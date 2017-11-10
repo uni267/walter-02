@@ -156,11 +156,18 @@ export const requestFetchNotification = () => ({
   type: actionTypes.REQUEST_FETCH_NOTIFICATION
 });
 
-export const initNotificaiton = (notifications, count_unread) => ({
-  type: actionTypes.INIT_NOTIFICAITON, notifications, count_unread
+export const initNotificaiton = (notifications, status) => ({
+  type: actionTypes.INIT_NOTIFICAITON, notifications, status
+});
+
+export const initMoreNotificaiton = (notifications,status) => ({
+  type: actionTypes.INIT_MORE_NOTIFICAITON, notifications, status
 });
 
 export const requestUpdateNotificationsRead = (notifications) => ({
   type: actionTypes.REQUEST_UPDATE_NOTIFICATIONS_READ, notifications
 });
 
+export const requestFetchMoreNotification = () => ({
+  type: actionTypes.REQUEST_FETCH_MORE_NOTIFICATION
+});

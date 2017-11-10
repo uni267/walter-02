@@ -4,8 +4,9 @@ import moment from "moment";
 
 // material ui
 import { Card, CardHeader, CardText } from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
 
-const Notification = ({ notifications }) => {
+const Notification = ({ notifications, moreNotificationButton, requestFetchMoreNotification }) => {
   const render = ({ notifications }, idx) => {
     return (
       <Card key={idx} >
@@ -21,6 +22,12 @@ const Notification = ({ notifications }) => {
   return (
     <div>
       {notifications.map((notification, idx) => render(notification, idx))}
+      <RaisedButton
+        label="もっと見る"
+        fullWidth={true}
+        onClick={() => requestFetchMoreNotification()}
+        disabled={moreNotificationButton}
+      />
     </div>
   );
 };

@@ -13,7 +13,20 @@ const notificationsReducer = (state = initState, action) => {
     return {
       ...state,
       notifications: action.notifications,
-      unread: action.count_unread
+      unread: action.status.unread,
+      total: action.status.total,
+      page: action.status.page,
+      offset: action.status.offset
+    };
+  case actionTypes.INIT_MORE_NOTIFICAITON:
+    const notifications = state.notifications.concat(action.notifications);
+    return {
+      ...state,
+      notifications: notifications,
+      unread: action.status.unread,
+      total: action.status.total,
+      page: action.status.page,
+      offset: action.status.offset
     };
   default:
     return state;

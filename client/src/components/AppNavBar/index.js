@@ -27,6 +27,8 @@ const AppNavBar = ({
   appTitle,
   toggleMenu,
   notifications,
+  moreNotificationButton,
+  requestFetchMoreNotification,
   unreadNotificationCount,
   requestUpdateNotificationsRead,
   handleAccountOpen,
@@ -63,7 +65,7 @@ const AppNavBar = ({
             anchorOrigin={{horizontal: "left", vertical: "bottom"}}
             onClick={()=>{requestUpdateNotificationsRead(notifications);}}
             >
-            <Notification notifications={notifications} />
+            <Notification notifications={notifications} moreNotificationButton={moreNotificationButton} requestFetchMoreNotification={requestFetchMoreNotification} />
 
           </IconMenu>
         </Badge>

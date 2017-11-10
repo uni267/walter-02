@@ -13,7 +13,8 @@ import {
   logout,
   triggerSnackbar,
   requestFetchAuthorityMenus,
-  requestUpdateNotificationsRead
+  requestUpdateNotificationsRead,
+  requestFetchMoreNotification
 } from "../actions";
 
 // material icons
@@ -122,6 +123,8 @@ class NavigationContainer extends Component {
           notifications={this.props.notifications}
           unreadNotificationCount={this.props.unreadNotificationCount}
           requestUpdateNotificationsRead={this.props.requestUpdateNotificationsRead}
+          requestFetchMoreNotification={this.props.requestFetchMoreNotification}
+          moreNotificationButton={this.props.moreNotificationButton}
           handleAccountOpen={this.props.toggleChangePasswordDialog}
           handleLogout={this.handleLogout}
           toggleMenu={this.toggleAppMenu}
@@ -148,6 +151,7 @@ const mapStateToProps = (state) => {
   return {
     notifications: state.notifications.notifications,
     unreadNotificationCount: state.notifications.unread,
+    moreNotificationButton: (state.notifications.total <= state.notifications.offset),
     changePassword: state.changePassword,
     tenant: state.tenant,
     session: state.session,
@@ -163,7 +167,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   logout: () => { dispatch(logout()); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   requestFetchAuthorityMenus: () => { dispatch(requestFetchAuthorityMenus()); },
-  requestUpdateNotificationsRead: (notifications) => { dispatch(requestUpdateNotificationsRead(notifications)) }
+  requestUpdateNotificationsRead: (notifications) => { dispatch(requestUpdateNotificationsRead(notifications)) },
+  requestFetchMoreNotification: () => { dispatch(requestFetchMoreNotification()) }
 });
 
 NavigationContainer = connect(

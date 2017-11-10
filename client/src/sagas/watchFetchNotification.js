@@ -13,7 +13,7 @@ function* watchFetchNotification(){
 
     try {
       const payload = yield call(api.fetchNotification);
-      yield put(actions.initNotificaiton(payload.data.body, payload.data.status.unread));
+      yield put(actions.initNotificaiton(payload.data.body, payload.data.status));
     } catch (e) {
 
     }

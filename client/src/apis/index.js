@@ -441,8 +441,11 @@ export class API {
     return this.client.get("/api/v1/display_items");
   };
 
-  fetchNotification = () => {
-    return this.client.get( `/api/v1/notifications` );
+  fetchNotification = (page) => {
+    const config = {
+      params:{page: (page === undefined ? 0 : page )}
+    };
+    return this.client.get( `/api/v1/notifications`,config );
   }
 
   updateNotificationsRead = (notifications) => {
