@@ -80,13 +80,24 @@ export const verifyToken = (req, res, next) => {
   co(function* () {
     try {
       const { token } = req.body;
+
+      if (token === undefined) throw new Error("token is empty");
+
       const decoded = yield verifyPromise(token);
+
       res.json({
         status: { status: "success" },
         body: { user: decoded }
       });
     }
     catch (e) {
+      res.status(400).json({
+        status: {
+          success: false,
+          message: "tokenの検証に失敗しました",
+          errors: e
+        }
+      });
     }
   });
 };
