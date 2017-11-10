@@ -8,12 +8,15 @@ import * as commons from "../actions/commons";
 function* watchUpdateNotificationsRead() {
   while(true){
     const task = yield take(actions.requestUpdateNotificationsRead().type);
+    const unreadNotificaitons = task.notifications.filter(notification => ( notification.notifications.read === false ) );
     const api = new API();
     yield put(commons.loadingStart);
     try {
-      yield call(api.updateNotificationsRead, task.notifications);
-      const payload = yield call(api.fetchNotification);
-      yield put(actions.initNotificaiton(payload.data.body, payload.data.status.unread));
+      if(unreadNotificaitons.length > 0){
+        yield call(api.updateNotificationsRead, unreadNotificaitons);
+        const payload = yield call(api.fetchNotification);
+        yield put(actions.initNotificaiton(payload.data.body, payload.data.status.unread));
+      }
     } catch (e) {
     }
     finally{
