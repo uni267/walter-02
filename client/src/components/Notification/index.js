@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 // material ui
 import { Card, CardHeader, CardText } from 'material-ui/Card';
@@ -7,10 +8,10 @@ import { Card, CardHeader, CardText } from 'material-ui/Card';
 const Notification = ({ notifications }) => {
   const render = ({ notifications }, idx) => {
     return (
-      <Card key={idx}>
+      <Card key={idx} >
         <CardHeader
           title={notifications.title}
-          subtitle={notifications.modified} />
+          subtitle={moment(notifications.modified).format("YYYY-MM-DD H:m")} />
 
         <CardText>{notifications.body}</CardText>
       </Card>

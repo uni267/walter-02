@@ -268,7 +268,7 @@ export const updateRead = (req, res, next) => {
   co(function*(){
     try {
 
-      const { user_id } = req.params;
+      const user_id = res.user._id;
       const notifications = req.body.notifications;
 
       const user = yield User.findById(user_id);
@@ -310,7 +310,7 @@ export const updateUnread = (req, res, next) => {
   co(function*(){
     try {
 
-      const { user_id } = req.params;
+      const user_id = res.user._id;
       const notifications = req.body.notifications;
 
       const user = yield User.findById(user_id);

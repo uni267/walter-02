@@ -159,3 +159,8 @@ export const requestFetchNotification = () => ({
 export const initNotificaiton = (notifications, count_unread) => ({
   type: actionTypes.INIT_NOTIFICAITON, notifications, count_unread
 });
+
+export const requestUpdateNotificationsRead = (notifications) => ({
+  type: actionTypes.REQUEST_UPDATE_NOTIFICATIONS_READ, notifications
+});
+

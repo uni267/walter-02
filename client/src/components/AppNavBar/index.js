@@ -28,6 +28,7 @@ const AppNavBar = ({
   toggleMenu,
   notifications,
   unreadNotificationCount,
+  requestUpdateNotificationsRead,
   handleAccountOpen,
   handleLogout,
   tenant,
@@ -59,8 +60,9 @@ const AppNavBar = ({
 
           <IconMenu
             iconButtonElement={notificationIcon}
-            anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-
+            anchorOrigin={{horizontal: "left", vertical: "bottom"}}
+            onClick={()=>{requestUpdateNotificationsRead(notifications);}}
+            >
             <Notification notifications={notifications} />
 
           </IconMenu>

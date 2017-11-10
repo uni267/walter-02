@@ -12,7 +12,8 @@ import {
   toggleChangePasswordDialog,
   logout,
   triggerSnackbar,
-  requestFetchAuthorityMenus
+  requestFetchAuthorityMenus,
+  requestUpdateNotificationsRead
 } from "../actions";
 
 // material icons
@@ -120,6 +121,7 @@ class NavigationContainer extends Component {
           appTitle={appTitle}
           notifications={this.props.notifications}
           unreadNotificationCount={this.props.unreadNotificationCount}
+          requestUpdateNotificationsRead={this.props.requestUpdateNotificationsRead}
           handleAccountOpen={this.props.toggleChangePasswordDialog}
           handleLogout={this.handleLogout}
           toggleMenu={this.toggleAppMenu}
@@ -160,7 +162,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   toggleChangePasswordDialog: () => { dispatch(toggleChangePasswordDialog()); },
   logout: () => { dispatch(logout()); },
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
-  requestFetchAuthorityMenus: () => { dispatch(requestFetchAuthorityMenus()); }
+  requestFetchAuthorityMenus: () => { dispatch(requestFetchAuthorityMenus()); },
+  requestUpdateNotificationsRead: (notifications) => { dispatch(requestUpdateNotificationsRead(notifications)) }
 });
 
 NavigationContainer = connect(

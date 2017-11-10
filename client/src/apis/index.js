@@ -441,8 +441,14 @@ export class API {
     return this.client.get("/api/v1/display_items");
   };
 
-  fetchNotification = (user_id) => {
+  fetchNotification = () => {
     return this.client.get( `/api/v1/notifications` );
+  }
+
+  updateNotificationsRead = (notifications) => {
+    const readNotificaitons = notifications.map(notification => notification.notifications._id);
+    const body = {notifications: readNotificaitons};
+    return this.client.patch(`/api/v1/notifications/read`, body);
   }
 }
 
