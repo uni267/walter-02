@@ -7,7 +7,7 @@
     "start": "nodemon lib/index.js --exec babel-node",
     "build": "babel lib -d dist",
     "serve": "node dist/index.js",
-    "test": "mocha --compilers js:espower-babel/guess --watch lib/**/test/*.spec.js",
+    "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
     "analyze": "babel-node batchs/index.js analyze"
   },
   "dependencies": {
