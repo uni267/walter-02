@@ -14,6 +14,7 @@ import IconMenu from "material-ui/IconMenu";
 import IconButton from 'material-ui/IconButton';
 import MenuItem from "material-ui/MenuItem";
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import Popover from 'material-ui/Popover';
 
 // components
 import Notification from "../Notification";
@@ -27,9 +28,12 @@ const AppNavBar = ({
   appTitle,
   toggleMenu,
   notifications,
+  openNotifications,
+  closeNotifications,
   moreNotificationButton,
   requestFetchMoreNotification,
   unreadNotificationCount,
+  notificationsIsOpen,
   requestUpdateNotificationsRead,
   handleAccountOpen,
   handleLogout,
@@ -38,7 +42,13 @@ const AppNavBar = ({
 }) => {
   const renderRightElements = () => {
     const notificationIcon = (
-      <IconButton iconStyle={{ color: "white" }}>
+      <IconButton
+        iconStyle={{ color: "white" }}
+        onClick={(e)=>{
+          openNotifications(e.currentTarget);
+          requestUpdateNotificationsRead(notifications);
+        }}
+      >
         <NotificationsIcon />
       </IconButton>
     );
@@ -55,20 +65,30 @@ const AppNavBar = ({
 
     return (
       <div style={{paddingRight: 70}}>
-        <Badge
+        <div id="notificationRoot" style={{display:"inline"}}>
+        { unreadNotificationCount > 0 ?(
+          <Badge
           badgeContent={unreadNotificationCount}
           style={{padding: 5}}
           secondary={true} >
+            {notificationIcon}
+          </Badge>
+        ):(
+          notificationIcon
+        )}
+        </div>
 
-          <IconMenu
-            iconButtonElement={notificationIcon}
-            anchorOrigin={{horizontal: "left", vertical: "bottom"}}
-            onClick={()=>{requestUpdateNotificationsRead(notifications);}}
-            >
+        <Popover
+          open={notificationsIsOpen.open}
+          anchorEl={document.getElementById("notificationRoot")}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={()=>{ closeNotifications(); }}
+        >
+          <div style={{ maxHeight: window.innerHeight * 0.8 }}>
             <Notification notifications={notifications} moreNotificationButton={moreNotificationButton} requestFetchMoreNotification={requestFetchMoreNotification} />
-
-          </IconMenu>
-        </Badge>
+          </div>
+        </Popover>
 
         <IconMenu
           iconButtonElement={accountIcon}

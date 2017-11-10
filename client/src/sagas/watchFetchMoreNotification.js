@@ -15,8 +15,11 @@ function* watchFetchMoreNotification(){
 
     try {
       const payload = yield call(api.fetchNotification, nextPage);
-      yield put(actions.initMoreNotificaiton(payload.data.body, payload.data.status));
-      yield call(api.updateNotificationsRead, payload.data.body);
+      const readPayload = yield call(api.updateNotificationsRead, payload.data.body);
+      const status = { ...readPayload.data.status,
+        page: payload.data.status.page
+      };
+      yield put(actions.initMoreNotificaiton(payload.data.body, status));
     } catch (e) {
 
     }

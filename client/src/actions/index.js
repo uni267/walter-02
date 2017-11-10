@@ -171,3 +171,11 @@ export const requestUpdateNotificationsRead = (notifications) => ({
 export const requestFetchMoreNotification = () => ({
   type: actionTypes.REQUEST_FETCH_MORE_NOTIFICATION
 });
+
+export const openNotifications = () => ({
+  type: actionTypes.OPEN_NOTIFICATIONS
+});
+
+export const closeNotifications = () => ({
+  type: actionTypes.CLOSE_NOTIFICATIONS
+});

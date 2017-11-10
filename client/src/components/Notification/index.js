@@ -22,12 +22,16 @@ const Notification = ({ notifications, moreNotificationButton, requestFetchMoreN
   return (
     <div>
       {notifications.map((notification, idx) => render(notification, idx))}
-      <RaisedButton
+      {
+        !moreNotificationButton?(
+        <RaisedButton
         label="もっと見る"
         fullWidth={true}
         onClick={() => requestFetchMoreNotification()}
         disabled={moreNotificationButton}
-      />
+        />
+        ):null
+      }
     </div>
   );
 };

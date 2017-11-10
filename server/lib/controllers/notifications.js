@@ -93,7 +93,7 @@ export const view = (req, res, next) => {
           }
         },
         { $sort:{
-          "notifications.modified": -1
+          "notifications._id": -1
         }},
         { '$skip':offset },
         { '$limit': constants.INFOMATION_LIMITS_PER_PAGE }
@@ -104,8 +104,7 @@ export const view = (req, res, next) => {
           success: true ,
           unread:readNotifications.length,
           total:allNotifications.length,
-          page: page,
-          offset: offset
+          page: page
         },
         body: notifications
       });
@@ -297,9 +296,28 @@ export const updateRead = (req, res, next) => {
 
       const changedUser = yield user.save();
 
+      const allNotifications = yield User.aggregate([
+        { $match: { _id: ObjectId( user_id ) }},
+        { $project: {
+          notifications:1,
+          _id: 0
+        }},
+        {
+          $unwind: {
+            path: "$notifications"
+          }
+        }
+      ]);
+
+      const readNotifications = allNotifications.filter(notification =>{
+        return (notification.notifications.read === undefined || notification.notifications.read === false);
+      });
+
       res.json({
         status: {
-          success: true
+          success: true,
+          unread:readNotifications.length,
+          total:allNotifications.length
         },
         body: changedUser
       });

@@ -14,7 +14,9 @@ import {
   triggerSnackbar,
   requestFetchAuthorityMenus,
   requestUpdateNotificationsRead,
-  requestFetchMoreNotification
+  requestFetchMoreNotification,
+  openNotifications,
+  closeNotifications
 } from "../actions";
 
 // material icons
@@ -121,9 +123,12 @@ class NavigationContainer extends Component {
         <AppNavBar
           appTitle={appTitle}
           notifications={this.props.notifications}
+          notificationsIsOpen={this.props.notificationsIsOpen}
           unreadNotificationCount={this.props.unreadNotificationCount}
           requestUpdateNotificationsRead={this.props.requestUpdateNotificationsRead}
           requestFetchMoreNotification={this.props.requestFetchMoreNotification}
+          openNotifications={this.props.openNotifications}
+          closeNotifications={this.props.closeNotifications}
           moreNotificationButton={this.props.moreNotificationButton}
           handleAccountOpen={this.props.toggleChangePasswordDialog}
           handleLogout={this.handleLogout}
@@ -150,8 +155,9 @@ class NavigationContainer extends Component {
 const mapStateToProps = (state) => {
   return {
     notifications: state.notifications.notifications,
+    notificationsIsOpen: state.notifications.open,
     unreadNotificationCount: state.notifications.unread,
-    moreNotificationButton: (state.notifications.total <= state.notifications.offset),
+    moreNotificationButton: (state.notifications.total <= state.notifications.notifications.length),
     changePassword: state.changePassword,
     tenant: state.tenant,
     session: state.session,
@@ -168,7 +174,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
   requestFetchAuthorityMenus: () => { dispatch(requestFetchAuthorityMenus()); },
   requestUpdateNotificationsRead: (notifications) => { dispatch(requestUpdateNotificationsRead(notifications)) },
-  requestFetchMoreNotification: () => { dispatch(requestFetchMoreNotification()) }
+  requestFetchMoreNotification: () => { dispatch(requestFetchMoreNotification()) },
+  openNotifications: (anchorEl) => { dispatch(openNotifications(anchorEl)) },
+  closeNotifications: () => { dispatch(closeNotifications()) }
 });
 
 NavigationContainer = connect(
