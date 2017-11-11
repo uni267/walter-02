@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import co from "co";
 import morgan from "morgan";
-import { logger } from "../index";
+import { logger } from "../logger";
 
 import * as constants from "../../configs/constants";
 

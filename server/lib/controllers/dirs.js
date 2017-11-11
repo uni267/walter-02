@@ -2,7 +2,7 @@ import co from "co";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { logger } from "../index"
+import { logger } from "../logger";
 
 import { SECURITY_CONF } from "../../configs/server";
 import Dir from "../models/Dir";

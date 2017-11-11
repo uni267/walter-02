@@ -10,7 +10,7 @@ import * as constants from "../../configs/constants";
 
 // etc
 import { isEmpty } from "lodash";
-import { logger } from "../index";
+import { logger } from "../logger";
 import {
   ValidationError,
   RecordNotFoundException,

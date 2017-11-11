@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import path from "path";
-import log4js from "log4js";
+import logger from "./logger";
 
 import { SERVER_CONF } from "../configs/server"; // mongoのipなど
 import router from "./routes";
@@ -55,9 +55,6 @@ default:
   port = SERVER_CONF.development.port;
   break;
 }
-
-log4js.configure(constants.LOGGER_CONFIG);
-export const logger = log4js.getLogger(mode);
 
 mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
 

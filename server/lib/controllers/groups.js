@@ -6,7 +6,7 @@ import RoleMenu from "../models/RoleMenu";
 import AuthorityMenu from "../models/AuthorityMenu";
 
 // etc
-import { logger } from "../index";
+import { logger } from "../logger";
 import { first } from "lodash";
 
 const { ObjectId } = mongoose.Types;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import co from "co";
-import { logger } from "../index";
+import { logger } from "../logger";
 
 // models
 import Preview from "../models/Preview";

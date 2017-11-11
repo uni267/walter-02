@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import co from "co";
 import RoleMenu from "../models/RoleMenu";
 import Menu from "../models/Menu";
-import { logger } from "../index";
+import { logger } from "../logger";
 import * as commons from "./commons";
 
 const { ObjectId } = mongoose.Types;

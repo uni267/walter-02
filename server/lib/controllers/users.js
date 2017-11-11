@@ -7,7 +7,7 @@ import Group from "../models/Group";
 import AuthorityMenu from "../models/AuthorityMenu";
 import RoleMenu from "../models/RoleMenu";
 import { concat,first } from "lodash";
-import { logger } from "../index";
+import { logger } from "../logger";
 
 const { ObjectId } = mongoose.Types;
 
