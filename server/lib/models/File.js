@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import co from "co";
-import { logger } from "../index";
+import { logger } from "../logger";
 
 import User from "./User";
 import Group from "./Group";

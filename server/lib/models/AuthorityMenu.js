@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { logger } from "../index";
+import { logger } from "../logger";
 import co from "co";
 
 mongoose.Promise = global.Promise;
