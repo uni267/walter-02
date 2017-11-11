@@ -1,14 +1,14 @@
 import request from "supertest";
 import { expect } from "chai";
 import mongoose from "mongoose";
-import LoginRouter from "../login";
+import Router from "../";
 
 import { app, mongoUrl, initdbPromise } from "./builder";
 
 const base_url = "/api/login";
 
 describe(base_url, () => {
-  app.use(base_url, LoginRouter);
+  app.use("/", Router);
   mongoose.connect(mongoUrl, { useMongoClient: true });
 
   // 前処理でdbを初期化しておく
