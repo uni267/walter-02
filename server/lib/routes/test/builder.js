@@ -27,4 +27,10 @@ const initdbPromise = new Promise( (resolve, reject) => {
   });
 });
 
-export { app, mongoUrl, initdbPromise };
+// とりあえず
+const authData = {
+  account_name: "hanako",
+  password: "test"
+};
+
+export { app, mongoUrl, initdbPromise, authData };
