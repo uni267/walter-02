@@ -29,8 +29,8 @@ describe(base_url, () => {
       it("http(400)が返却される", done => {
         request(app)
           .post(base_url)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -77,8 +77,8 @@ describe(base_url, () => {
         request(app)
           .post(base_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -126,8 +126,8 @@ describe(base_url, () => {
         request(app)
           .post(base_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -176,8 +176,8 @@ describe(base_url, () => {
         request(app)
           .post(base_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -225,8 +225,8 @@ describe(base_url, () => {
         request(app)
           .post(base_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -273,8 +273,8 @@ describe(base_url, () => {
         request(app)
           .post(base_url)
           .send(body)
-          .expect(200)
           .end( (err, res) => {
+            expect(res.status).equal(200);
             done();
           });
       });
@@ -328,8 +328,8 @@ describe(base_url, () => {
         request(app)
           .post(verify_token_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -366,8 +366,8 @@ describe(base_url, () => {
         request(app)
           .post(verify_token_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -405,8 +405,8 @@ describe(base_url, () => {
         request(app)
           .post(verify_token_url)
           .send(body)
-          .expect(400)
           .end( (err, res) => {
+            expect(res.status).equal(400);
             done();
           });
       });
@@ -453,8 +453,8 @@ describe(base_url, () => {
         request(app)
           .post(verify_token_url)
           .send(body)
-          .expect(200)
           .end( (err, res) => {
+            expect(res.status).equal(200);
             done();
           });
       });
