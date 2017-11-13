@@ -493,3 +493,91 @@ var authority_files = {
 };
 
 db.authority_files.insert(authority_files);
+
+// ===============================
+//  ユニットテスト用(dirs)
+// ===============================
+
+var folder1 = {
+  is_star: false,
+  is_display: true,
+  dir_id: db.files.findOne({ name: "Top" })._id,
+  is_dir: true,
+  name: "folder1",
+  is_crypted: false,
+  histories: [
+    {
+      body: "",
+      action: "新規作成",
+      user: db.users.findOne({ name: "hanako" })._id,
+      modified: "2017-01-01 10:00"
+    }
+  ],
+  tags: [],
+  is_deleted: false,
+  modified: "2017-01-01 10:00"
+};
+
+db.files.insert(folder1);
+
+var folder1_1 = {
+  is_star: false,
+  is_display: true,
+  dir_id: db.files.findOne({ name: "folder1" })._id,
+  is_dir: true,
+  name: "folder1-1",
+  is_crypted: false,
+  histories: [
+    {
+      body: "",
+      action: "新規作成",
+      user: db.users.findOne({ name: "hanako" })._id,
+      modified: "2017-01-01 10:00"
+    }
+  ],
+  tags: [],
+  is_deleted: false,
+  modified: "2017-01-01 10:00"
+};
+
+db.files.insert(folder1_1);
+
+var addDirs = [
+  {
+    ancestor: db.files.findOne({ name: "folder1" })._id,
+    descendant: db.files.findOne({ name: "folder1" })._id,
+    depth: 0
+  },
+  {
+    ancestor: db.files.findOne({ name: "folder1-1" })._id,
+    descendant: db.files.findOne({ name: "folder1-1" })._id,
+    depth: 0
+  },
+  {
+    ancestor: db.files.findOne({ name: "Top" })._id,
+    descendant: db.files.findOne({ name: "folder1" })._id,
+    depth: 1
+  },
+  {
+    ancestor: db.files.findOne({ name: "Top" })._id,
+    descendant: db.files.findOne({ name: "folder1-1" })._id,
+    depth: 2
+  },
+  {
+    ancestor: db.files.findOne({ name: "folder1" })._id,
+    descendant: db.files.findOne({ name: "folder1-1" })._id,
+    depth: 1
+  }
+];
+
+db.dirs.insert(addDirs);
+
+var addAuthFiles = [
+  {
+    role_files: db.role_files.findOne({ name: "フルコントロール" })._id,
+    users: db.users.findOne({ name: "hanako" })._id,
+    groups: null
+  },
+];
+
+db.authority_files.insert(addAuthFiles);
