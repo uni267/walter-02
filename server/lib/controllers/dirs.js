@@ -100,9 +100,12 @@ export const tree = (req, res, next) => {
         }).filter( child => child !== null);
 
         res.json({
-          _id: root._id,
-          name: root.name,
-          children: children
+          status: { success: true },
+          body: {
+            _id: root._id,
+            name: root.name,
+            children: children
+          }
         });
 
       }

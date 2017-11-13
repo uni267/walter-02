@@ -11,7 +11,7 @@ function* watchFetchDirTree() {
 
     try {
       const payload = yield call(api.fetchDirTree, root_id);
-      yield put({ type: "PUT_DIR_TREE", node: payload.data });
+      yield put({ type: "PUT_DIR_TREE", node: payload.data.body });
     }
     catch (e) {
     }
