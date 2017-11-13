@@ -3,16 +3,19 @@ export const SERVER_CONF = {
   development: {
     url: "mongodb://172.16.55.74",  // 社内docker
     // url: "mongodb://192.168.56.10",  // virtualbox
+    db_host: "172.16.55.74",
     db_name: "walter",
     port: 3333
   },
   integration: {
     url: "mongodb://172.16.55.74",  // 社内docker
+    db_host: "172.16.55.74",
     db_name: "walter",
     port: 3333
   },
   production: {
     url: "mongodb://192.168.56.10",  // とりあえず
+    db_host: "172.16.55.74",
     db_name: "walter",
     port: 3333
   }
