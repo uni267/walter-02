@@ -1,4 +1,5 @@
-import request from "supertest";
+import supertest from "supertest";
+import defaults from "superagent-defaults";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import Router from "../";
@@ -7,19 +8,21 @@ import { app, mongoUrl, initdbPromise, authData } from "./builder";
 
 const base_url = "/api/v1/actions";
 const login_url = "/api/login";
+
+mongoose.connect(mongoUrl, { useMongoClient: true });
+app.use("/", Router);
+
+const request = defaults(supertest(app));
 let auth;
 
 describe(base_url, () => {
-  app.use("/", Router);
-  mongoose.connect(mongoUrl, { useMongoClient: true });
-
   before ( done => {
     initdbPromise.then( () => {
-      request(app)
+      request
         .post(login_url)
         .send(authData)
         .end( (err, res) => {
-          auth = res.body.body;
+          request.set("x-auth-cloud-storage", res.body.body.token);
           done();
         });
     });
@@ -31,9 +34,8 @@ describe(base_url, () => {
     };
 
     it("http(200)が返却される", done => {
-      request(app)
+      request
         .get(base_url)
-        .set("x-auth-cloud-storage", auth.token)
         .expect(200)
         .end( ( err, res ) => {
           done();
@@ -41,9 +43,8 @@ describe(base_url, () => {
     });
 
     it(`概要は「${expected.message}」`, done => {
-      request(app)
+      request
         .get(base_url)
-        .set("x-auth-cloud-storage", auth.token)
         .end( (err, res) => {
           expect(res.body.status.message).equal(expected.message);
           done();
@@ -51,9 +52,8 @@ describe(base_url, () => {
     });
 
     it("10件以上のオブジェクトが返却される", done => {
-      request(app)
+      request
         .get(base_url)
-        .set("x-auth-cloud-storage", auth.token)
         .end( (err, res) => {
           expect(res.body.body.length > 10).equal(true);
           done();
@@ -61,9 +61,8 @@ describe(base_url, () => {
     });
 
     it("返却されるオブジェクトは_id, name, labelカラムを含んでいる", done => {
-      request(app)
+      request
         .get(base_url)
-        .set("x-auth-cloud-storage", auth.token)
         .end( (err, res) => {
           const needle = ["_id", "name", "label"];
 
@@ -77,9 +76,8 @@ describe(base_url, () => {
     });
 
     it("返却されるオブジェクトの_id, name, labelカラムは0文字以上", done => {
-      request(app)
+      request
         .get(base_url)
-        .set("x-auth-cloud-storage", auth.token)
         .end( (err, res) => {
           const needle = ["_id", "name", "label"];
 
@@ -95,9 +93,8 @@ describe(base_url, () => {
     });
 
     it("nameカラムはuniqueなもの", done => {
-      request(app)
+      request
         .get(base_url)
-        .set("x-auth-cloud-storage", auth.token)
         .end( (err, res) => {
           const names = res.body.body.map( obj => obj.name );
           expect( uniq(names).length ).equal(names.length);
