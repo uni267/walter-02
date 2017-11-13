@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import path from "path";
+import log4js from "log4js";
 import logger from "./logger";
 
 import { SERVER_CONF } from "../configs/server"; // mongoのipなど
@@ -26,6 +27,7 @@ app.use(bodyParser.json({limit: '100mb'}));
 app.use(morgan({ format: "dev", immediate: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, '../../client/build')));
+app.use(log4js.connectLogger(logger));
 
 // 環境変数
 // 開発 => development、社内テスト => integration、本番 => production
