@@ -36,8 +36,8 @@ describe(base_url, () => {
     it("http(200)が返却される", done => {
       request
         .get(base_url)
-        .expect(200)
         .end( ( err, res ) => {
+          expect(res.status).equal(200);
           done();
         });
     });
