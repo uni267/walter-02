@@ -4,13 +4,14 @@ import moment from "moment";
 
 // models
 import User from "../models/User";
+import Notification from "../models/Notification";
 
 // constants
 import * as constants from "../../configs/constants";
 
 // etc
 import { isEmpty } from "lodash";
-import { logger } from "../logger";
+import logger from "../logger";
 import {
   ValidationError,
   RecordNotFoundException,
@@ -27,6 +28,12 @@ export const index = (req, res, next) => {
 
       const notifications = yield User.aggregate([
         { $match: { tenant_id: tenant_id }},
+        { $lookup: {
+            from: "notifications",
+            localField: "_id",
+            foreignField: "users",
+            as : "notifications"
+        }},
         { $project: {
           notifications:1
         }}
@@ -65,6 +72,12 @@ export const view = (req, res, next) => {
 
       const allNotifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
+        { $lookup: {
+            from: "notifications",
+            localField: "_id",
+            foreignField: "users",
+            as : "notifications"
+        }},
         { $project: {
           notifications:1,
           _id: 0
@@ -83,6 +96,12 @@ export const view = (req, res, next) => {
 
       const notifications = yield User.aggregate([
         { $match: { _id: ObjectId( user_id ) }},
+        { $lookup: {
+            from: "notifications",
+            localField: "_id",
+            foreignField: "users",
+            as : "notifications"
+        }},
         { $project: {
           notifications:1,
           _id: 0
@@ -127,6 +146,8 @@ export const add = (req, res, next) => {
   co(function*(){
     try {
 
+      if(req.body.notifications === undefined) throw new ValidationError("notifications is empty");
+
       const { title, body, users  } = req.body.notifications;
 
       if(title === undefined || title === null || title === "") throw new ValidationError("title is empty");
@@ -135,34 +156,31 @@ export const add = (req, res, next) => {
 
       const modified = moment().format("YYYY-MM-DD HH:mm:ss");
 
-      const notification = {
-        _id: new ObjectId(),
-        title: title,
-        body: body,
-        modified: modified,
-        read: false
-      };
-
       const user_ids = users.map(user_id => ObjectId(user_id) );
       const user = yield User.find({ _id:{$in: user_ids }});
       if(isEmpty(user)) throw new RecordNotFoundException("user is not find");
 
-      const changedUser = yield user.map(user => {
-        user.notifications = [
-          ...user.notifications,
-          notification
-        ];
-        return user.save();
+      const notifications = yield user.map(user => {
+        const notification = new Notification();
+        notification.title = title;
+        notification.body = body;
+        notification.modified = modified;
+        notification.read = false;
+        notification.users = user;
+        return notification.save();
       });
 
       res.json({
         status: { success: true },
-        body: changedUser
+        body: notifications
       });
 
     } catch (e) {
       let errors = {};
       switch (e.message) {
+        case "notifications is empty":
+          errors.notifications = "お知らせが空のためお知らせの登録に失敗しました";
+          break;
         case "title is empty":
           errors.title = "タイトルが空のためお知らせの登録に失敗しました";
           break;
@@ -180,96 +198,11 @@ export const add = (req, res, next) => {
       }
       logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
-};
-
-export const getCount = (req, res, next) => {
-  co(function*(){
-    try{
-
-      const { user_id } = req.params;
-      if( user_id === undefined || user_id === null || user_id === "" ) throw new RecordNotFoundException("user_id is empty");
-
-      const notifications = yield User.aggregate([
-        { $match: { _id: ObjectId( user_id ) }},
-        { $project: {
-          notifications:1,
-          _id: 0
-        }},
-        {
-          $unwind: {
-            path: "$notifications"
-          }
-        }
-      ]);
-
-      const unread = notifications.filter(notification =>{
-        return (notification.notifications.read === undefined || notification.notifications.read === false);
-      });
-
-      res.json({
         status: {
-          success: true,
-          total:notifications.length,
-          unread: unread.length
-        },
-      });
-    } catch (e) {
-      let errors = {};
-      switch (e.message) {
-        case "user_id is empty":
-          errors.user_id = "ユーザーIDが空のためお知らせの件数を取得できませんでした。";
-          break;
-        default:
-          errors.unknown = e;
-      }
-      logger.error(errors);
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
-};
-
-export const toggleRead = (req, res, next) => {
-  co(function*(){
-    try {
-
-      const { user_id } = req.params;
-      const notifications = req.body.notifications;
-
-      const user = yield User.findById(user_id);
-
-      const newNotifications = user.notifications.map( notification => {
-        let retNotification = notification;
-        if(notifications.includes( notification._id.toString() )){
-          retNotification.read = !notification.read;
+          success: false,
+          message: "お知らせの登録に失敗しました",
+          errors
         }
-        return retNotification;
-      });
-
-      user.notifications = newNotifications;
-
-      const changedUser = yield user.save();
-
-      res.json({
-        status: {
-          success: true
-        },
-        body: changedUser
-      });
-    } catch (e) {
-      let errors = {};
-      switch (e.message) {
-        default:
-          errors.unknown = e;
-      }
-      logger.error(errors);
-      res.status(400).json({
-        status: { success: false, errors }
       });
     }
   });
@@ -282,35 +215,15 @@ export const updateRead = (req, res, next) => {
       const user_id = res.user._id;
       const notifications = req.body.notifications;
 
-      const user = yield User.findById(user_id);
+      const notificationIds = notifications.map(notificationId => ObjectId(notificationId));
+      const updateResult = yield Notification.update({
+        _id : { $in: notificationIds},
+      },{$set:{ read:true }}, { multi:true });
 
-      const newNotifications = user.notifications.map( notification => {
-        let retNotification = notification;
-        if(notifications.includes( notification._id.toString() )){
-          retNotification.read = true;
-        }
-        return retNotification;
-      });
-
-      user.notifications = newNotifications;
-
-      const changedUser = yield user.save();
-
-      const allNotifications = yield User.aggregate([
-        { $match: { _id: ObjectId( user_id ) }},
-        { $project: {
-          notifications:1,
-          _id: 0
-        }},
-        {
-          $unwind: {
-            path: "$notifications"
-          }
-        }
-      ]);
+      const allNotifications = yield Notification.find({users: ObjectId(user_id) });
 
       const readNotifications = allNotifications.filter(notification =>{
-        return (notification.notifications.read === undefined || notification.notifications.read === false);
+        return (notification.read === undefined || notification.read === false);
       });
 
       res.json({
@@ -319,7 +232,7 @@ export const updateRead = (req, res, next) => {
           unread:readNotifications.length,
           total:allNotifications.length
         },
-        body: changedUser
+        body: updateResult
       });
     } catch (e) {
       let errors = {};
@@ -335,44 +248,3 @@ export const updateRead = (req, res, next) => {
   });
 };
 
-
-export const updateUnread = (req, res, next) => {
-  co(function*(){
-    try {
-
-      const user_id = res.user._id;
-      const notifications = req.body.notifications;
-
-      const user = yield User.findById(user_id);
-
-      const newNotifications = user.notifications.map( notification => {
-        let retNotification = notification;
-        if(notifications.includes( notification._id.toString() )){
-          retNotification.read = false;
-        }
-        return retNotification;
-      });
-
-      user.notifications = newNotifications;
-
-      const changedUser = yield user.save();
-
-      res.json({
-        status: {
-          success: true
-        },
-        body: changedUser
-      });
-    } catch (e) {
-      let errors = {};
-      switch (e.message) {
-        default:
-          errors.unknown = e;
-      }
-      logger.error(errors);
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
-};

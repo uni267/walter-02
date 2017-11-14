@@ -11,14 +11,6 @@ const UserSchema = Schema({
   enabled: Boolean,
   groups: Array,
   tenant_id: Schema.Types.ObjectId,
-  notifications: [
-    { read: Boolean ,
-      title: String ,
-      body: String ,
-      create: { type:Date, default: Date.now },
-      modified: { type: Date, default: Date.now }
-    }
-  ]
 });
 
 const User = mongoose.model("users", UserSchema, "users");
