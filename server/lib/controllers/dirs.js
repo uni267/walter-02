@@ -2,7 +2,7 @@ import co from "co";
 import moment from "moment";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { logger } from "../logger";
+import logger from "../logger";
 
 import { SECURITY_CONF } from "../../configs/server";
 import Dir from "../models/Dir";
@@ -252,7 +252,6 @@ export const create = (req, res, next) => {
           break;
       }
       logger.error(errors);
-      console.log(errors);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -310,6 +309,6 @@ export const move = (req, res, next) => {
       });
     })
     .catch( err => {
-      console.log(err);
+
     });
 };
