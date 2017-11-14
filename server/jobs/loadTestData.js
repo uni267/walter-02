@@ -576,8 +576,13 @@ var addAuthFiles = [
   {
     role_files: db.role_files.findOne({ name: "フルコントロール" })._id,
     users: db.users.findOne({ name: "hanako" })._id,
-    groups: null
+    files: db.files.findOne({ name: "folder1" })._id
   },
+  {
+    role_files: db.role_files.findOne({ name: "フルコントロール" })._id,
+    users: db.users.findOne({ name: "hanako" })._id,
+    files: db.files.findOne({ name: "folder1-1" })._id
+  }
 ];
 
 db.authority_files.insert(addAuthFiles);
