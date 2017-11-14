@@ -29,7 +29,7 @@ const initdbPromise = new Promise( (resolve, reject) => {
 
 // とりあえず
 const authData = {
-  account_name: "hanako",
+  account_name: "taro",
   password: "test"
 };
 
