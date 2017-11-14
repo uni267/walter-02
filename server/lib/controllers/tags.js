@@ -2,6 +2,18 @@ import mongoose from "mongoose";
 import co from "co";
 import Tag from "../models/Tag";
 
+// constants
+import * as constants from "../../configs/constants";
+
+// etc
+import {
+  ValidationError,
+  RecordNotFoundException,
+  PermittionDeniedException
+} from "../errors/AppError";
+import logger from "../logger";
+
+
 const ObjectId = mongoose.Types.ObjectId;
 
 export const index = (req, res, next) => {
@@ -54,11 +66,11 @@ export const view = (req, res, next) => {
       const { tag_id } = req.params;
       if (tag_id === undefined ||
           tag_id === null ||
-          tag_id === "") throw "tag_id is empty";
+          tag_id === "") new ValidationError("tag_id is empty");
 
       const tag = yield Tag.findById(req.params.tag_id);
 
-      if (tag === null) throw "tag is empty";
+      if (tag === null) new RecordNotFoundException("tag is empty");
 
       res.json({
         status: { success: true },
@@ -67,19 +79,24 @@ export const view = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-      switch (e) {
+      switch (e.message) {
       case "tag_id is empty":
-        errors.tag_id = e;
+        errors.tag_id = "タグIDが空のためタグの取得に失敗しました";
         break;
       case "tag is empty":
-        errors.tag = e;
+        errors.tag = "タグが存在しないためタグの取得に失敗しました";
         break;
       default:
         errors.unknown = e;
         break;
       }
+      logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "タグの取得に失敗しました",
+          errors
+         }
       });
     }
   });
@@ -91,7 +108,9 @@ export const create = (req, res, next) => {
       const { tag } = req.body;
       if (tag.label === undefined ||
           tag.label === null ||
-          tag.label === "") throw "label is empty";
+          tag.label === "") throw new ValidationError("label is empty");
+
+      if (tag.label.length > constants.MAX_STRING_LENGTH) throw new ValidationError("label is too long");
 
       const newTag = new Tag();
       newTag.label = tag.label;
@@ -108,17 +127,24 @@ export const create = (req, res, next) => {
     catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
       case "label is empty":
         errors.label = "タグ名は必須です";
+        break;
+      case "label is too long":
+        errors.label = `タグ名の長さは${constants.MAX_STRING_LENGTH}byteまでです`;
         break;
       default:
         errors.unknown = e;
         break;
       }
-
+      logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "タグの登録に失敗しました",
+          errors
+        }
       });
     }
   });
@@ -189,7 +215,7 @@ export const changeLabel = (req, res, next) => {
         break;
       default:
         errors.unknown = e;
-        break;        
+        break;
       }
       res.status(400).json({
         status: { success: false, errors }
@@ -210,7 +236,7 @@ export const changeColor = (req, res, next) => {
 
       tag.color = color;
       const changedTag = yield tag.save();
-      
+
       res.json({
         status: { success: true },
         body: changedTag

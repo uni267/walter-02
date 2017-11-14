@@ -9,6 +9,9 @@ export const USE_CRYPTO = true;
 // お知らせの取得件数
 export const INFOMATION_LIMITS_PER_PAGE = 5;
 
+// label等の文字列最大長さ
+export const MAX_STRING_LENGTH = 255;
+
 // loggerの設定
 export const LOGGER_CONFIG = {
   appenders: {
