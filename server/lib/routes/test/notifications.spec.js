@@ -697,8 +697,7 @@ describe(base_url, () => {
     });
 
     describe('お知らせを複数(10件)登録する',() => {
-/*
-      // TODO:お知らせ10件登録
+
       before(done => {
 
         // 登録するデータ
@@ -709,15 +708,13 @@ describe(base_url, () => {
 
         User.findOne({ name:"hanako" },(err,res)=>{
           body.notifications.users = [res._id];
-          const hoge = range(2 , 4).map((i)=>{
+          const hoge = range(2 , 12).map((i)=>{
 
             body.notifications.title;
             body.notifications.body;
 
-            // console.log(body);
             return new Promise((resolve, reject) => {
               request.post(base_url).send(body).expect(200).end((err,res)=>{
-                console.log(`${i}:`,res.status);
                 resolve(res.body.body);
               });
           });
@@ -725,60 +722,66 @@ describe(base_url, () => {
           });
 
           Promise.all(hoge).then(res => {
-            console.log(res);
             done();
           });
 
         });
 
 
-      }); */
-
-
-      it.skip('http(200)が返却される',done => {
-        User.findOne({ name:"hanako" },(err,res)=>{
-          body.notifications.users = [res._id];
-
-          for(let i in range(2 , 11) ){
-              body.notifications.title += i;
-              body.notifications.body += i;
-
-              request.post(base_url)
-              .send(body)
-              .end((err,res) => {
-              });
-          }
-        });
       });
 
-      it.skip(`お知らせが全11件,うち既読1件が登録されている`,done => {
+      it(`お知らせが全11件,うち未読10件が登録されている`,done => {
         request.get(base_url)
           .expect(200)
           .end((err,res) => {
-            console.log(res.body.status);
-            expect(res.body.body.length).equal(11);
             expect(res.body.status.total).equal(11);
-            expect(res.body.status.unread).equal(1);
+            expect(res.body.status.unread).equal(10);
             done();
           });
       });
 
       describe('1ページ目を取得',() => {
-        it.skip(`取得件数が5件である`, done => {
-          done();
-        });
-        it.skip(`既読件数が1件である`, done => {
-          done();
+        it(`取得件数が5件である`, done => {
+          request.get(base_url)
+          .expect(200)
+          .end((err,res) => {
+            expect(res.body.body.length).equal(5);
+            done();
+          });
         });
       });
       describe('2ページ目を取得',() => {
-        it.skip(`取得件数が5件である`, done => {
-          done();
+        it(`取得件数が5件である`, done => {
+          request.get(base_url)
+          .query({ page: '1' })
+          .expect(200)
+          .end((err,res) => {
+            expect(res.body.body.length).equal(5);
+            done();
+          });
         });
       });
       describe('3ページ目を取得',() => {
-        it.skip(`取得件数が1件である`, done => {
-          done();
+        it(`取得件数が1件である`, done => {
+          request.get(base_url)
+          .query({ page: '2' })
+          .expect(200)
+          .end((err,res) => {
+            expect(res.body.body.length).equal(1);
+            done();
+          });
+        });
+        it(`既読件数が1件である`, done => {
+          request.get(base_url)
+          .query({ page: '2' })
+          .expect(200)
+          .end((err,res) => {
+            const readNotification = res.body.body.filter(notification => {
+              return notification.notifications.read === true;
+            });
+            expect(readNotification.length).equal(1);
+            done();
+          });
         });
       });
     });
