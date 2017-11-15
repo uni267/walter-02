@@ -601,9 +601,9 @@ describe(base_url, () => {
         body: "お知らせの本文"
       }};
 
-      describe('hanakoにお知らせを登録',() => {
+      describe('taroにお知らせを登録',() => {
         it('http(200)が返却される',done => {
-          User.findOne({ name:"hanako" },(err,res)=>{
+          User.findOne({ name:"taro" },(err,res)=>{
             body.notifications.users = [res._id];
 
             request.post(base_url)
@@ -618,7 +618,7 @@ describe(base_url, () => {
         });
       });
 
-      describe('ログインユーザ（hanako）のお知らせを取得する',() => {
+      describe('ログインユーザ（taro）のお知らせを取得する',() => {
         it('お知らせが一件登録されている',done => {
           request.get(base_url)
             .expect(200)
@@ -706,7 +706,7 @@ describe(base_url, () => {
           body: "お知らせの本文"
         }};
 
-        User.findOne({ name:"hanako" },(err,res)=>{
+        User.findOne({ name:"taro" },(err,res)=>{
           body.notifications.users = [res._id];
           const hoge = range(2 , 12).map((i)=>{
 
