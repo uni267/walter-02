@@ -30,6 +30,8 @@ const initdbPromise = new Promise( (resolve, reject) => {
 // とりあえず
 const authData = {
   account_name: "taro",
+  name: "taro",
+  email: "taro",
   password: "test"
 };
 
