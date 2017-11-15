@@ -3,7 +3,19 @@ import defaults from "superagent-defaults";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import Router from "../";
-import { intersection, uniq, head, last } from "lodash";
+import {
+  intersection,
+  uniq,
+  head,
+  last,
+  includes,
+  has,
+  pick,
+  keys,
+  values,
+  chain,
+  range
+} from "lodash";
 import { app, mongoUrl, initdbPromise, authData } from "./builder";
 
 mongoose.connect(mongoUrl, { useMongoClient: true });
@@ -31,32 +43,128 @@ describe(users_url, () => {
   // ユーザ一覧
   describe("get /", () => {
     describe("queryを省略した場合", () => {
-      it("http(200)が返却される");
-      it("0個以上のオブジェクトが返却される");
+      let payload;
+
+      before( done => {
+        request
+          .get(users_url)
+          .end( (err, res) => {
+            payload = res;
+            done();
+          });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("0個以上のオブジェクトが返却される", done => {
+        expect(payload.body.body.length > 0).equal(true);
+        done();
+      });
 
       describe("userオブジェクトの型", () => {
-        it("_id, name, account_name, emailが含まれている");
-        it("passwordが含まれていない");
-        it("groupsが含まれている");
-        it("groups[0]に_id, name, description, tenant_idが含まれている");
-        it("tenant, tenant_idが含まれている");
-        it("tenantオブジェクトに_id, name, home_dir_id, trash_dir_id, thresholdが含まれている");
+        let payload;
+
+        before( done => {
+          request
+            .get(users_url)
+            .end( (err, res) => {
+              payload = res.body.body;
+              done();
+            });
+        });
+
+        it("_id, name, account_name, email, tenant_idが含まれている", done => {
+          const needle = ["_id", "name", "account_name", "email", "tenant_id"];
+          const columns = payload.map( obj => (
+            chain(obj).pick(needle).keys().value().length === needle.length
+          ));
+
+          expect(columns.every( col => col === true )).equal(true);
+          done();
+        });
+
+        it("groupsが含まれている", done => {
+          const needle = ["groups"];
+          const columns = payload.map( obj => (
+            chain(obj).pick(needle).keys().value().length === needle.length
+          ));
+
+          expect(columns.every( col => col === true )).equal(true);
+          done();
+        });
+
+        it("groups[0]に_id, name, description, tenant_idが含まれている", done => {
+          const groups = chain(payload).head().value().groups;
+          const needle = ["_id", "name", "description", "tenant_id"];
+          const intersec = chain(groups).head().pick(needle).keys().value();
+          expect(intersec.length === needle.length).equal(true);
+          done();
+        });
       });
 
     });
 
     describe("queryにキーワードを指定した場合", () => {
-      it("http(200)が返却される");
-      it("0個以上のオブジェクトが返却される");
-      it("指定したキーワードを含んだ(name, account_nameカラム)結果が返却される");
+      let payload;
+      let query = { q: "hanako" };
+
+      before( done => {
+        request
+          .get(users_url)
+          .query(query)
+          .end( (err, res) => {
+            payload = res;
+            done();
+          });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("0個以上のオブジェクトが返却される", done => {
+        expect(payload.body.body.length > 0).equal(true);
+        done();
+      });
+
+      it("指定したキーワードを含んだ(name, account_nameカラム)結果が返却される", done => {
+        const results = payload.body.body.map( obj => (
+          includes(obj.name, query.q) || includes(obj.account_name, query.q)
+        ));
+        expect(results.every( r => r === true)).equal(true);
+        done();
+      });
 
       describe("userオブジェクトの型", () => {
-        it("_id, name, account_name, emailが含まれている");
-        it("passwordが含まれていない");
-        it("groupsが含まれている");
-        it("groups[0]に_id, name, description, tenant_idが含まれている");
-        it("tenant, tenant_idが含まれている");
-        it("tenantオブジェクトに_id, name, home_dir_id, trash_dir_id, thresholdが含まれている");
+        it("_id, name, account_name, email, tenant_idが含まれている", done => {
+          const needle = ["_id", "name", "account_name", "email", "tenant_id"];
+          const columns = payload.body.body.map( obj => (
+            chain(obj).pick(needle).keys().value().length === needle.length
+          ));
+          expect(columns.every( col => col === true )).equal(true);
+          done();
+        });
+
+        it("groupsが含まれている", done => {
+          const needle = ["groups"];
+          const columns = payload.body.body.map( obj => (
+            chain(obj).pick(needle).keys().value().length === needle.length
+          ));
+          expect(columns.every ( col => col === true )).equal(true);
+          done();
+        });
+
+        it("groups[0]に_id, name, tenant_idが含まれている", done => {
+          const needle = ["_id", "name", "tenant_id"];
+          expect(chain(payload.body.body).head().pick(needle).keys().value().length)
+            .equal(needle.length);
+          done();
+        });
+
       });
     });
 
@@ -65,926 +173,2662 @@ describe(users_url, () => {
   // ユーザ作成
   describe("post /", () => {
     describe("account_name, name, email, passwordを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("作成したユーザを取得した場合、指定したパラメータどおり作成されている");
-      it("作成したユーザでログインが可能");
+      let payload;
+      let user = {
+        account_name: "jiro",
+        name: "jiro",
+        email: "example@localhost",
+        password: "test",
+        role_id: null
+      };
+
+      before( done => {
+        request
+          .get("/api/v1/role_menus")
+          .end( (err, res) => {
+            user.role_id = head(res.body.body)._id;
+
+            request
+              .post(users_url)
+              .send({ user })
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("作成したユーザの各カラムは0文字以上", done => {
+        const needle = ["account_name", "name", "email", "role_id", "password"];
+        const values = chain(payload.body.body).pick(needle).values().value();
+        expect(values.every( p => p.length > 0 )).equal(true);
+        done();
+      });
+
+      describe("作成したユーザでログインした場合", done => {
+        let loginPayload;
+
+        before( done => {
+          request
+            .post("/api/login")
+            .send({ account_name: user.account_name, password: user.password })
+            .end( (err, res) => {
+              loginPayload = res;
+              done();
+            });
+        });
+
+        it("http(200)が返却される", done => {
+          expect(loginPayload.status).equal(200);
+          done();
+        });
+
+        it("100文字以上のtokenが返却される", done => {
+          expect(loginPayload.body.body.token.length > 100).equal(true);
+          done();
+        });
+
+      });
     });
 
     describe("account_nameが", () => {
+      let expected = {
+        message: "ユーザの作成に失敗しました",
+        detail: "account_nameが空のためユーザの作成に失敗しました"
+      };
+
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          name: "jiro",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: null,
+          name: "jiro",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: "",
+          name: "jiro",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("重複する場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: authData.account_name,
+          name: "jiro",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "account_nameが同名のユーザが存在するためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+
+        let user = {
+          account_name: range(256).join(""),
+          name: "jiro",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "account_nameが255文字より大きいためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  console.log(res.body);
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "account_nameに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+        };
+
+        describe("バックスラッシュ", () => {
+          let payload;
+          let user = {
+            account_name: "\a\b\c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("スラッシュ", () => {
+          let payload;
+          let user = {
+            account_name: "a/b/c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("コロン", () => {
+          let payload;
+          let user = {
+            account_name: "a:b:c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("アスタリスク", () => {
+          let payload;
+          let user = {
+            account_name: "a*b*c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("クエスション", () => {
+          let payload;
+          let user = {
+            account_name: "a?b?c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧開く", () => {
+          let payload;
+          let user = {
+            account_name: "a<b<c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧閉じる", () => {
+          let payload;
+          let user = {
+            account_name: "a>b>c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("パイプ", () => {
+          let payload;
+          let user = {
+            account_name: "a|b|c",
+            name: "jiro",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.account_name).equal(expected.detail);
+            done();
+          });
+        });
+
       });
     });
 
     describe("nameが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "表示名が空のためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "表示名が空のためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: null,
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "表示名が空のためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: "",
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("重複する場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "表示名が重複するユーザが存在するためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: authData.name,
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "表示名が255文字を超過するためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: range(256).join(""),
+          email: "example@localhost",
+          password: "test",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        describe("バックスラッシュ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j\\i\\r\\o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
+        describe("スラッシュ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j/i/r/o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
+        describe("コロン", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j:i:r:o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
+        describe("アスタリスク", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j*i*r*o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("クエスション", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j?i?r?o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧開く", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j<i<r<o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
+
+        describe("山括弧閉じる", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j>i>r>o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
+
+        describe("パイプ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "j|i|r|o",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
       });
     });
 
     describe("emailが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: "jiro",
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "メールアドレスが空のためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: "jiro",
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "メールアドレスが空のためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: "jiro",
+          email: "",
+          name: "jiro",
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "メールアドレスが空のためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("重複する場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: "jiro",
+          email: authData.email,
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "メールアドレスが重複しているためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: "jiro",
+          email: range(256).join(""),
+          password: "test",
+          role_id: null
+        };
+
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "メールアドレスが255文字を超過しているためユーザの作成に失敗しました"
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          done();
+        });
+
       });
 
       describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("passwordが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("重複する場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // ユーザとグループの一覧
-  describe("get /with_groups", () => {
-  });
-
-  // ユーザ詳細
-  describe("get /:user_id", () => {
-    describe("ログインユーザのuser_idを指定した場合", () => {
-      it("http(200)が返却される");
-      it("1個のオブジェクトが返却される");
-
-      describe("userオブジェクトの型", () => {
-        it("_id, name, account_name, emailが含まれている");
-        it("passwordが含まれていない");
-        it("groupsが含まれている");
-        it("groups[0]に_id, name, description, tenant_idが含まれている");
-        it("tenant, tenant_idが含まれている");
-        it("tenantオブジェクトに_id, name, home_dir_id, trash_dir_id, thresholdが含まれている");
-      });
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-  });
-
-  // 所属グループの追加
-  describe("post /:user_id/groups", () => {
-    describe("user_id, group_idを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したユーザを取得した場合、追加したグループを含めた結果が返却される");
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("指定されたgroup_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("重複している場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // パスワード変更(ユーザ向け)
-  describe("patch /:user_id/password", () => {
-
-    describe("ログインユーザのuser_id、正しいパスワードを指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したパスワードでログインすることが可能");
-    });
-
-    describe("current_passwordが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("現在のパスワードと一致しない場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("new_passwordが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("user_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // パスワード変更(管理者向け)
-  describe("patch /:user_id/password_force", () => {
-    describe("ログインユーザのuser_id、正しいパスワードを指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したパスワードでログインすることが可能");
-    });
-
-    describe("user_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("passwordが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // ユーザ有効/無効のトグル
-  describe("patch /:user_id/enabled", () => {
-    describe("有効な状態である他ユーザのuser_idを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、enable = falseとなる");
-
-      describe("変更されたユーザがログインした場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("無効な状態である他ユーザのuser_idを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、enable = trueとなる");
-
-      describe("変更されたユーザがログインした場合", () => {
-        it("http(200)が返却される");
-        it("トークンが返却される");
-        it("ユーザオブジェクトが返却される");
-      });
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // アカウント名変更
-  describe("patch /:user_id/account_name", () => {
-    describe("他ユーザのuser_id, 正しいaccount_nameを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、account_nameが変更された値として返却される");
-
-      describe("変更したユーザにて変更後のaccount_nameでログインした場合", () => {
-        it("http(200)が返却される");
-        it("トークンが返却される");
-        it("ユーザオブジェクトが返却される");
-      });
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("指定されたaccount_nameが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // ユーザの表示名変更
-  describe("patch /:user_id/name", () => {
-    describe("他ユーザのuser_id, 正しいnameを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、nameが変更された値として返却される");
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("指定されたnameが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // メールアドレス変更
-  describe("patch /:user_id/email", () => {
-    describe("他ユーザのuser_id, 正しいemailを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、emailが変更された値として返却される");
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("指定されたemailが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      // メールアドレスは必須項目ではない
-      describe("空文字の場合", () => {
-        it("http(200)が返却される");
-        it("ユーザ詳細を取得した結果、emailが空文字として返却される");
-      });
-
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-  });
-
-  // 所属グループの削除
-  describe("delete /:user_id/groups/:group_id", () => {
-    describe("user_id, group_idを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したユーザを取得した場合、削除したグループを含めた結果が返却される");
-    });
-
-    describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
-    describe("指定されたgroup_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("userが所属していないgroup_idの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-    
-  });
-
-  // メニューロールの変更
-  describe("patch /:user_id/role_menus", () => {
-    describe("user_id, 追加したいrole_menu_idを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したユーザを取得した場合、追加したロールメニューを含めた結果が返却される");
-
-      describe("変更したユーザにてログインした場合", () => {
-        it("メニューを取得した際、追加したロールメニューが表示される");
-
-        describe("追加したメニューのAPIを取得した場合", () => {
-          it("http(200)が返却される");
-          it("0個以上のオブジェクトが返却される");
+        describe("バックスラッシュ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j\\i\\r\\o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+
+        });
+        describe("スラッシュ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j/i/r/o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("コロン", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j:i:r:o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("アスタリスク", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j*i*r*o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("クエスション", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j?i?r?o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧開く", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j<i<r<o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧閉じる", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j>i>r>o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("パイプ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            email: "j|i|r|o",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
         });
       });
     });
 
-    describe("指定されたuser_idが", () => {
+    describe("passwordが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "パスワードが空のためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          name: "jiro",
+          email: "example@localhost",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "パスワードが空のためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          password: null,
+          name: "jiro",
+          email: "example@localhost",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let expected = {
+          message: "ユーザの作成に失敗しました",
+          detail: "パスワードが空のためユーザの作成に失敗しました"
+        };
+
+        let payload;
+        let user = {
+          account_name: "jiro",
+          password: "",
+          name: "jiro",
+          email: "example@localhost",
+          role_id: null
+        };
+
+        before( done => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => {
+              user.role_id = head(res.body.body)._id;
+
+              request
+                .post(users_url)
+                .send({ user })
+                .end( (err, res) => {
+                  payload = res;
+                  done();
+                });
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.name).equal(expected.detail);
+          done();
+        });
       });
 
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+        describe("バックスラッシュ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t\\e\\s\\t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("スラッシュ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t/e/s/t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("コロン", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t:e:s:t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("アスタリスク", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t*e*s*t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("クエスション", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t?e?s?t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧開く", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t<e<s<t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("山括弧閉じる", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t>e>s>t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("パイプ", () => {
+          let expected = {
+            message: "ユーザの作成に失敗しました",
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          };
+
+          let payload;
+          let user = {
+            account_name: "jiro",
+            name: "jiro",
+            password: "t|e|s|t",
+            email: "example@localhost",
+            password: "test",
+            role_id: null
+          };
+
+          before( done => {
+            request
+              .get("/api/v1/role_menus")
+              .end( (err, res) => {
+                user.role_id = head(res.body.body)._id;
+
+                request
+                  .post(users_url)
+                  .send({ user })
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.name).equal(expected.detail);
+            done();
+          });
+        });
       });
     });
-
-    describe("指定されたrole_menu_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-    });
-
   });
+
+  // ユーザとグループの一覧
+  describe("get /with_groups", () => {
+    const with_url = users_url + "/with_groups";
+
+    before( done => {
+      request
+        .get(with_url)
+        .end( (err, res) => {
+          console.log(res.body);
+          done();
+        });
+    });
+  });
+
 });
