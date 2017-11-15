@@ -66,11 +66,11 @@ export const view = (req, res, next) => {
       const { tag_id } = req.params;
       if (tag_id === undefined ||
           tag_id === null ||
-          tag_id === "") new ValidationError("tag_id is empty");
+          tag_id === "") throw new ValidationError("tag_id is empty");
 
       const tag = yield Tag.findById(req.params.tag_id);
 
-      if (tag === null) new RecordNotFoundException("tag is empty");
+      if (tag === null) throw new RecordNotFoundException("tag is empty");
 
       res.json({
         status: { success: true },
@@ -112,6 +112,14 @@ export const create = (req, res, next) => {
 
       if (tag.label.length > constants.MAX_STRING_LENGTH) throw new ValidationError("label is too long");
 
+      if( tag.color.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/) === null ) throw new ValidationError("color is not valid");
+
+      const _tag = yield Tag.find(
+        { label: tag.label },
+        { tenant_id: res.user.tenant_id }
+      ).count();
+      if (_tag > 0) throw new ValidationError("label is a duplicate");
+
       const newTag = new Tag();
       newTag.label = tag.label;
       newTag.color = tag.color;
@@ -132,7 +140,13 @@ export const create = (req, res, next) => {
         errors.label = "タグ名は必須です";
         break;
       case "label is too long":
-        errors.label = `タグ名の長さは${constants.MAX_STRING_LENGTH}byteまでです`;
+        errors.label = `タグ名の長さは${constants.MAX_STRING_LENGTH}文字までです`;
+        break;
+      case "label is a duplicate":
+        errors.label = "そのタグ名は既に使用されています";
+        break;
+      case "color is not valid":
+        errors.color = "色は16進数で指定してください";
         break;
       default:
         errors.unknown = e;
@@ -155,7 +169,7 @@ export const remove = (req, res, next) => {
     try {
       const { tag_id } = req.params;
       const tag = yield Tag.findById(tag_id);
-      if (tag === null) throw "tag is empty";
+      if (tag === null) throw new RecordNotFoundException("tag is empty");
 
       const deletedTag = yield tag.remove();
       res.json({
@@ -165,9 +179,9 @@ export const remove = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-      switch (e) {
+      switch (e.message) {
       case "tag is empty":
-        errors.tag = e;
+        errors.tag = "タグが存在しないためタグの取得に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -175,7 +189,9 @@ export const remove = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false,
+          message: "タグの削除に失敗しました",
+          errors }
       });
     }
   });
@@ -189,11 +205,19 @@ export const changeLabel = (req, res, next) => {
 
       if (label === undefined ||
           label === null ||
-          label === "") throw "label is empty";
+          label === "") throw new ValidationError("label is empty");
+      if (label.length > constants.MAX_STRING_LENGTH ) throw new ValidationError("lable is too long");
+
+      const _tag = yield Tag.find(
+        { label: label },
+        { tenant_id: res.user.tenant_id }
+      ).count();
+
+      if(_tag > 0) throw new ValidationError("label is a duplicate");
 
       const tag = yield Tag.findById(tag_id);
 
-      if (tag === null) throw "tag is empty";
+      if (tag === null) throw new RecordNotFoundException("tag is empty");
 
       tag.label = label;
       const changedTag = yield tag.save();
@@ -206,19 +230,29 @@ export const changeLabel = (req, res, next) => {
     catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
       case "label is empty":
-        errors.label = "ラベルは必須です";
+        errors.label = "タグ名は必須です";
+        break;
+      case "lable is too long":
+        errors.label = `タグ名の長さは${constants.MAX_STRING_LENGTH}文字までです`;
+        break;
+      case "label is a duplicate":
+        errors.label = "そのタグ名は既に使用されています";
         break;
       case "tag is empty":
-        errors.tag = e;
+        errors.tag = "タグが存在しないため更新に失敗しました";
         break;
       default:
         errors.unknown = e;
         break;
       }
+      logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "タグ名の変更に失敗しました",
+          errors }
       });
     }
   });
@@ -230,9 +264,11 @@ export const changeColor = (req, res, next) => {
       const { tag_id } = req.params;
       const { color } = req.body;
 
+      if( color.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/) === null ) throw new ValidationError("color is not valid");
+
       const tag = yield Tag.findById(tag_id);
 
-      if (tag === null) throw "tag is empty";
+      if (tag === null) throw new RecordNotFoundException("tag is empty");
 
       tag.color = color;
       const changedTag = yield tag.save();
@@ -245,17 +281,22 @@ export const changeColor = (req, res, next) => {
     catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
       case "tag is empty":
-        errors.tag = e;
+        errors.tag = "タグが存在しないため色の登録に失敗しました";
         break;
+      case "color is not valid":
+        errors.color = "色は16進数で指定してください";
       default:
         errors.unknown = e;
         break;
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "色の登録に失敗しました",
+          errors }
       });
     }
   });
