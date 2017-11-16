@@ -3,7 +3,7 @@ import defaults from "superagent-defaults";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import Router from "../";
-import { intersection, uniq, head, last, includes, has, pick, keys, values, chain, range } from "lodash";
+import { intersection, uniq, head, last, includes, has, pick, keys, values, chain, range, map, filter } from "lodash";
 import { app, mongoUrl, initdbPromise, authData } from "./builder";
 
 mongoose.connect(mongoUrl, { useMongoClient: true });
@@ -87,7 +87,7 @@ describe(user_url + "/:user_id", () => {
       });
     });
 
-    describe.only("指定されたuser_idが", () => {
+    describe("指定されたuser_idが", () => {
       describe("存在しないoidの場合", () => {
         let payload;
         let expected = {
@@ -129,76 +129,322 @@ describe(user_url + "/:user_id", () => {
   });
 
   // 所属グループの追加
-  describe("post /:user_id/groups", () => {
+  describe.only("post /:user_id/groups", () => {
     describe("user_id, group_idを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したユーザを取得した場合、追加したグループを含めた結果が返却される");
+      let payload;
+      let group_id;
+      let changedUser;
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .get("/api/v1/groups")
+            .end( (err, res) => {
+              if (err) reject(err);
+              resolve(res);
+            });
+        }).then( res => {
+          group_id = head(res.body.body)._id;
+
+          return new Promise( (resolve, reject) => {
+            request
+              .post(user_url + `/${user._id}/groups`)
+              .send({ group_id })
+              .end( (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+              });
+          });
+        }).then( res => {
+          payload = res;
+
+          return new Promise( (resolve, reject) => {
+            request
+            .get(user_url + `/${user._id}`)
+            .end( (err, res) => {
+              if (err) reject(err);
+              resolve(res);
+            });
+          });
+        }).then( res => {
+          changedUser = res;
+          done();
+        });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("変更したユーザを取得した場合、追加したグループを含めた結果が返却される", done => {
+        const group_ids = changedUser.body.body.groups
+              .map( group => group._id )
+              .filter( id => id === group_id );
+
+        expect(group_ids.length === 1).equal(true);
+        done();
+      });
     });
 
     describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let group_id;
+        let expected = {
+          message: "グループの追加に失敗しました",
+          detail: "指定されたユーザが存在しないためグループの追加に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .get("/api/v1/groups")
+              .end( (err, res) => {
+                resolve(res);
+              });
+          }).then( res => {
+            group_id = head(res.body.body)._id;
+
+            return new Promise ( (resolve, reject) => {
+              request
+                .post(user_url + "/invalid_oid/groups")
+                .send({ group_id })
+                .end( (err, res) => {
+                  resolve(res);
+                });
+            });
+
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
     });
 
     describe("指定されたgroup_idが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let expected = {
+          message: "グループの追加に失敗しました",
+          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .post(user_url + `/${user._id}/groups`)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let group_id = null;
+        let expected = {
+          message: "グループの追加に失敗しました",
+          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .post(user_url + `/${user._id}/groups`)
+              .send({ group_id })
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let group_id = "";
+        let expected = {
+          message: "グループの追加に失敗しました",
+          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .post(user_url + `/${user._id}/groups`)
+              .send({ group_id })
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let group_id = "invalid_oid";
+        let expected = {
+          message: "グループの追加に失敗しました",
+          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .post(user_url + `/${user._id}/groups`)
+              .send({ group_id })
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("重複している場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+
+        let expected = {
+          message: "グループの追加に失敗しました",
+          detail: "指定されたユーザは既に指定したグループに所属しているためグループの追加に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .post(user_url + `/${user._id}/groups`)
+              .send({ group_id: head(user.groups)._id })
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
+          done();
+        });
       });
     });
 
