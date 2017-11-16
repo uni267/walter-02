@@ -444,6 +444,42 @@ describe(base_url,() => {
 
 
       });
+      describe('tag_idにでたらめな文字列を指定', done => {
+        const expected = {
+          message: "タグの取得に失敗しました",
+          detail: "タグIDが不正です"
+        };
+        let response ;
+        before(done=>{
+          const newId = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.get(`${base_url}/${newId}`)
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.tag_id).equal(expected.detail);
+          done();
+        });
+      });
+
     });
 
     describe('正常系',()=>{
@@ -578,6 +614,44 @@ describe(base_url,() => {
 
       });
 
+      describe('tag_idにでたらめな文字列を指定', () => {
+        const expected = {
+          message: "タグの削除に失敗しました",
+          detail: "タグIDが不正です"
+        };
+
+        let response = {};
+
+        before(done =>{
+          const newId = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.delete(`${base_url}/${newId}`)
+          .end((err, res) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される',done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.tag_id).equal(expected.detail);
+          done();
+        });
+
+      });
     });
 
     describe('正常系',() =>{
@@ -634,7 +708,93 @@ describe(base_url,() => {
       });
     });
 
-    describe('異常系',() => {
+    describe.only('異常系',() => {
+
+
+      describe('存在しないtag_idを指定', () => {
+        const expected = {
+          message: "タグ名の変更に失敗しました",
+          detail: "タグが存在しないため更新に失敗しました"
+        };
+        const body = {
+          label: "更新"
+        };
+        let response = {};
+
+        before(done =>{
+          const newId = new mongoose.Types.ObjectId();
+          request.patch(`${base_url}/${newId}/label`)
+          .send(body)
+          .end((err, res) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される',done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.tag).equal(expected.detail);
+          done();
+        });
+
+      });
+
+      describe('tag_idにでたらめな文字列を指定', () => {
+        const expected = {
+          message: "タグ名の変更に失敗しました",
+          detail: "タグIDが不正です"
+        };
+        const body = {
+          label: "更新"
+        };
+        let response = {};
+
+        before(done =>{
+          const newId = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.patch(`${base_url}/${newId}/label`)
+          .send(body)
+          .end((err, res) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される',done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.tag_id).equal(expected.detail);
+          done();
+        });
+
+      });
+
       describe('labelが未定義',() => {
         const expected = {
           message: "タグ名の変更に失敗しました",
@@ -966,7 +1126,93 @@ describe(base_url,() => {
       });
     });
 
-    describe('異常系',() => {
+    describe.only('異常系',() => {
+
+
+      describe('存在しないtag_idを指定', () => {
+        const expected = {
+          message: "色の登録に失敗しました",
+          detail: "タグが存在しないため色の登録に失敗しました"
+        };
+        const body = {
+          color: "#ABCDEF"
+        };
+        let response = {};
+
+        before(done =>{
+          const newId = new mongoose.Types.ObjectId();
+          request.patch(`${base_url}/${newId}/color`)
+          .send(body)
+          .end((err, res) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される',done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.tag).equal(expected.detail);
+          done();
+        });
+
+      });
+
+      describe('tag_idにでたらめな文字列を指定', () => {
+        const expected = {
+          message: "色の登録に失敗しました",
+          detail: "タグIDが不正です"
+        };
+        const body = {
+          color: "#ABCDEF"
+        };
+        let response = {};
+
+        before(done =>{
+          const newId = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.patch(`${base_url}/${newId}/color`)
+          .send(body)
+          .end((err, res) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される',done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.tag_id).equal(expected.detail);
+          done();
+        });
+
+      });
+
       describe('colorに16進トリプレット表記以外を指定',()=>{
         const expected = {
           message: "色の登録に失敗しました",

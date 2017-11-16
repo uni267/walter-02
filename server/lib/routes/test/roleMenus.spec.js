@@ -492,6 +492,38 @@ describe(base_url,() => {
         });
 
       });
+      describe('role_idがでたらめな文字列を指定',() => {
+        const expected = {
+          message: "ユーザタイプを取得できませんでした",
+          detail: "ロールIDが不正です"
+        };
+        let response;
+        before(done => {
+          const id = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.get(`${base_url}/${id}`).end((err,res)=>{
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.role_id).equal(expected.detail);
+          done();
+        });
+
+      });
     });
     describe('正常系',() => {
       let response;
@@ -651,6 +683,80 @@ describe(base_url,() => {
         });
 
       });
+      describe('role_idにでたらめな文字列',() => {
+        const expected = {
+          message: "ユーザタイプを削除できませんでした",
+          detail: "ロールIDが不正です"
+        };
+
+        let response;
+        before(done => {
+          const id = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.delete(`${base_url}/${id}`)
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.role_id).equal(expected.detail);
+          done();
+        });
+
+      });
+      describe('role_idがでたらめな文字列',() => {
+        const expected = {
+          message: "ユーザタイプを削除できませんでした",
+          detail: "ロールIDが不正です"
+        };
+
+        let response;
+        before(done => {
+          const id = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.delete(`${base_url}/${id}`)
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.role_id).equal(expected.detail);
+          done();
+        });
+
+      });
     });
 
     describe('正常系',() => {
@@ -739,6 +845,42 @@ describe(base_url,() => {
         });
         it(`エラーの詳細は「${expected.detail}」`, done => {
           expect(response.body.status.errors.role).equal(expected.detail);
+          done();
+        });
+
+      });
+      describe('role_idにでたらめな文字列を指定して更新する',() => {
+        const expected = {
+          message: "ユーザタイプ名の変更に失敗しました",
+          detail: "ロールIDが不正です"
+        };
+        const sendData = {
+          name: "更新した"
+        };
+        let response;
+        before(done => {
+          const id = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.patch(`${base_url}/${id}/name`)
+          .send(sendData)
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.role_id).equal(expected.detail);
           done();
         });
 
@@ -1022,7 +1164,43 @@ describe(base_url,() => {
         });
 
       });
-      //code
+
+      describe('role_idにでたらめな文字列指定して更新する',() => {
+        const expected = {
+          message: "備考の変更に失敗しました",
+          detail: "ロールIDが不正です"
+        };
+        const sendData = {
+          description: "これはテスト用のデータです。更新されました。"
+        };
+        let response;
+        before(done => {
+          const id = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.patch(`${base_url}/${id}/description`)
+          .send(sendData)
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.role_id).equal(expected.detail);
+          done();
+        });
+
+      });
     });
 
     describe('正常系',() => {
@@ -1165,6 +1343,40 @@ describe(base_url,() => {
           done();
         });
       });
+
+      describe('role_idにでたらめな文字列を指定して更新する',() => {
+        const expected = {
+          message: "メニューの追加に失敗しました",
+          detail: "ロールIDが不正です"
+        };
+        let response;
+        before(done => {
+          const menu = first(menus);
+          const id = "asfjapfjioeawfjoejwafojfoeawjfiaoefw";
+          request.patch(`${base_url}/${id}/menus/${menu._id}`)
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+        it('http(400)が返却される', done => {
+          expect(response.status).equal(400);
+          done();
+        });
+        it('statusはfalse',done => {
+          expect(response.body.status.success).equal(false);
+          done();
+        });
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(response.body.status.message).equal(expected.message);
+          done();
+        });
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(response.body.status.errors.role_id).equal(expected.detail);
+          done();
+        });
+      });
+
       describe('存在しないmenuを登録する',() => {
         const expected = {
           message: "メニューの追加に失敗しました",
