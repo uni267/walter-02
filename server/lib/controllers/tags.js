@@ -67,7 +67,7 @@ export const view = (req, res, next) => {
       if (tag_id === undefined ||
           tag_id === null ||
           tag_id === "") throw new ValidationError("tag_id is empty");
-
+      if( !mongoose.Types.ObjectId.isValid(tag_id) ) throw new ValidationError("tag_id is not valid");
       const tag = yield Tag.findById(req.params.tag_id);
 
       if (tag === null) throw new RecordNotFoundException("tag is empty");
@@ -80,6 +80,9 @@ export const view = (req, res, next) => {
     catch (e) {
       let errors = {};
       switch (e.message) {
+      case "tag_id is not valid":
+        errors.tag_id = "タグIDが不正です";
+        break;
       case "tag_id is empty":
         errors.tag_id = "タグIDが空のためタグの取得に失敗しました";
         break;
@@ -168,6 +171,7 @@ export const remove = (req, res, next) => {
   co(function* () {
     try {
       const { tag_id } = req.params;
+      if( !mongoose.Types.ObjectId.isValid(tag_id) ) throw new ValidationError("tag_id is not valid");
       const tag = yield Tag.findById(tag_id);
       if (tag === null) throw new RecordNotFoundException("tag is empty");
 
@@ -180,6 +184,9 @@ export const remove = (req, res, next) => {
     catch (e) {
       let errors = {};
       switch (e.message) {
+      case "tag_id is not valid":
+      errors.tag_id = "タグIDが不正です";
+      break;
       case "tag is empty":
         errors.tag = "タグが存在しないためタグの取得に失敗しました";
         break;
@@ -202,6 +209,8 @@ export const changeLabel = (req, res, next) => {
     try {
       const { tag_id } = req.params;
       const { label } = req.body;
+
+      if( !mongoose.Types.ObjectId.isValid(tag_id) ) throw new ValidationError("tag_id is not valid");
 
       if (label === undefined ||
           label === null ||
@@ -231,6 +240,9 @@ export const changeLabel = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+      case "tag_id is not valid":
+        errors.tag_id = "タグIDが不正です";
+        break;
       case "label is empty":
         errors.label = "タグ名は必須です";
         break;
@@ -266,6 +278,8 @@ export const changeColor = (req, res, next) => {
 
       if( color.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/) === null ) throw new ValidationError("color is not valid");
 
+      if( !mongoose.Types.ObjectId.isValid(tag_id) ) throw new ValidationError("tag_id is not valid");
+
       const tag = yield Tag.findById(tag_id);
 
       if (tag === null) throw new RecordNotFoundException("tag is empty");
@@ -282,6 +296,9 @@ export const changeColor = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+      case "tag_id is not valid":
+        errors.tag_id = "タグIDが不正です";
+        break;
       case "tag is empty":
         errors.tag = "タグが存在しないため色の登録に失敗しました";
         break;

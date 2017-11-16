@@ -115,6 +115,8 @@ export const view = (req, res, next) => {
 
       const { role_id } = req.params;
 
+      if ( !mongoose.Types.ObjectId.isValid(role_id) ) throw new ValidationError("role_id is not valid");
+
       const role = yield RoleMenu.findById(role_id);
       if(role === null || role === undefined) throw new ValidationError("role is not found");
 
@@ -129,6 +131,9 @@ export const view = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+        case "role_id is not valid":
+          errors.role_id = "ロールIDが不正です";
+          break;
         case "role is not found":
           errors.role = "ユーザタイプが存在しません";
           break;
@@ -152,6 +157,7 @@ export const remove = (req, res, next) => {
   co(function* (){
     try {
       const { role_id } = req.params;
+      if ( !mongoose.Types.ObjectId.isValid(role_id) ) throw new ValidationError("role_id is not valid");
       const role = yield RoleMenu.findById(role_id);
 
       if (role === null) throw new RecordNotFoundException("role is empty");
@@ -168,6 +174,9 @@ export const remove = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+        case "role_id is not valid":
+          errors.role_id = "ロールIDが不正です";
+          break;
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないため削除に失敗しました";
           break;
@@ -192,6 +201,7 @@ export const updateName = (req, res, next) => {
 
       const { role_id } = req.params;
       const { name } = req.body;
+      if ( !mongoose.Types.ObjectId.isValid(role_id) ) throw new ValidationError("role_id is not valid");
       if (name === undefined || name === null || name === "") throw new ValidationError("name is empty");
       if (name.length > constants.MAX_STRING_LENGTH ) throw new ValidationError( "name is too long" );
       const _roleCount = yield RoleMenu.find({name:name}).count();
@@ -212,6 +222,9 @@ export const updateName = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+        case "role_id is not valid":
+          errors.role_id = "ロールIDが不正です";
+          break;
         case "name is empty":
           errors.name = "ユーザタイプ名が空のため変更に失敗しました";
           break;
@@ -247,6 +260,7 @@ export const updateDescription = (req, res, next) => {
       const { role_id } = req.params;
       const { description } = req.body;
 
+      if ( !mongoose.Types.ObjectId.isValid(role_id) ) throw new ValidationError("role_id is not valid");
       const role = yield RoleMenu.findById(role_id);
       if (role === undefined || role === null) throw new ValidationError("role is not found");
 
@@ -262,6 +276,9 @@ export const updateDescription = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+        case "role_id is not valid":
+          errors.role_id = "ロールIDが不正です";
+          break;
       case "role is not found":
         errors.role = "指定されたユーザタイプが見つからないため変更に失敗しました";
         break;
@@ -281,6 +298,7 @@ export const addMenuToRoleMenu = (req, res, next) => {
   co(function* (){
     try {
       const { role_id, menu_id } = req.params;
+      if ( !mongoose.Types.ObjectId.isValid(role_id) ) throw new ValidationError("role_id is not valid");
       const [ role, menu ] = yield [
         RoleMenu.findById(role_id),
         Menu.findById(menu_id)
@@ -301,6 +319,9 @@ export const addMenuToRoleMenu = (req, res, next) => {
     } catch (e) {
       let errors = {};
       switch (e.message) {
+        case "role_id is not valid":
+          errors.role_id = "ロールIDが不正です";
+          break;
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないためメニューの追加に失敗しました";
           break;
@@ -325,6 +346,7 @@ export const removeMenuOfRoleMenu = (req, res, next) => {
   co(function*(){
     try {
       const { role_id, menu_id } = req.params;
+      if ( !mongoose.Types.ObjectId.isValid(role_id) ) throw new ValidationError("role_id is not valid");
       const [ role, menu ] = yield [
         RoleMenu.findById(role_id),
         Menu.findById(menu_id)
@@ -347,6 +369,9 @@ export const removeMenuOfRoleMenu = (req, res, next) => {
       let errors = {};
 
       switch (e.message) {
+        case "role_id is not valid":
+          errors.role_id = "ロールIDが不正です";
+          break;
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないためメニューの削除に失敗しました";
           break;
@@ -366,4 +391,4 @@ export const removeMenuOfRoleMenu = (req, res, next) => {
       });
     }
   });
-}
+};
