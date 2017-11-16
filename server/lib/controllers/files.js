@@ -19,7 +19,7 @@ import {
 } from "lodash";
 
 // etc
-import { logger } from "../logger";
+import logger from "../logger";
 import * as commons from "./commons";
 import {
   ValidationError,

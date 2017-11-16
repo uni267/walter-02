@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import co from "co";
 import morgan from "morgan";
-import { logger } from "../logger";
+import logger from "../logger";
 
 import * as constants from "../../configs/constants";
 
@@ -27,7 +27,7 @@ export const files = (req, res, next) => {
 
       res.json({
         status: { success: true },
-        actions: actions
+        body: actions
       });
 
     } catch (e) {
