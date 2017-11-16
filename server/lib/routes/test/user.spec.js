@@ -863,6 +863,21 @@ describe(user_url + "/:user_id", () => {
           });
         });
 
+        after( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send({
+                current_password: body.new_password,
+                new_password: body.current_password
+              })
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
         it("http(400)が返却される", done => {
           expect(payload.status).equal(400);
           done();
@@ -884,7 +899,7 @@ describe(user_url + "/:user_id", () => {
         });
       });
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      describe("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let payload;
           let body = {
@@ -894,7 +909,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -902,6 +917,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -939,7 +969,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -947,6 +977,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -984,7 +1029,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -992,6 +1037,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -1028,7 +1088,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -1036,6 +1096,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -1074,7 +1149,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -1082,6 +1157,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -1120,7 +1210,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -1128,6 +1218,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -1166,7 +1271,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -1174,6 +1279,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -1212,7 +1332,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
           };
 
           before( done => {
@@ -1220,6 +1340,21 @@ describe(user_url + "/:user_id", () => {
               request
                 .patch(user_url + `/${user._id}/password`)
                 .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          after( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send({
+                  current_password: body.new_password,
+                  new_password: body.current_password
+                })
                 .end( (err, res) => resolve(res) );
             }).then( res => {
               payload = res;
@@ -1251,32 +1386,49 @@ describe(user_url + "/:user_id", () => {
     });
 
     describe("user_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: authData.password,
+          new_password: "foobar"
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "指定されたユーザが存在しないためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + "/invalid_oid/password")
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
     });
   });
