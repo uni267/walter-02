@@ -50,7 +50,7 @@ describe(base_url,() => {
         done();
       });
 
-      it('返却値はArrayである',done => {
+      it('返却値はobjectである',done => {
         expect( typeof response.body.body ).equal('object');
         done();
       });
