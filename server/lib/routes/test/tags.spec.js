@@ -872,6 +872,7 @@ describe(base_url,() => {
         it('別のタグが変更されないこと', done => {
           request.get(base_url).end((err,res) =>{
             const _otherTags = res.body.body.filter(tag => tag._id !== createdData._id);
+            expect(_otherTags.length === otherTags.length).equal(true);
             expect(isMatch(_otherTags,otherTags)).equal(true);
             done();
           });
@@ -925,6 +926,7 @@ describe(base_url,() => {
         it('別のタグが変更されないこと', done => {
           request.get(base_url).end((err,res) =>{
             const _otherTags = res.body.body.filter(tag => tag._id !== createdData._id);
+            expect(_otherTags.length === otherTags.length).equal(true);
             expect(isMatch(_otherTags,otherTags)).equal(true);
             done();
           });
@@ -1050,6 +1052,7 @@ describe(base_url,() => {
         it('別のタグが変更されないこと', done => {
           request.get(base_url).end((err,res) =>{
             const _otherTags = res.body.body.filter(tag => tag._id !== createdData._id);
+            expect(_otherTags.length === otherTags.length).equal(true);
             expect(isMatch(_otherTags,otherTags)).equal(true);
             done();
           });
@@ -1104,6 +1107,7 @@ describe(base_url,() => {
         it('別のタグが変更されないこと', done => {
           request.get(base_url).end((err,res) =>{
             const _otherTags = res.body.body.filter(tag => tag._id !== createdData._id);
+            expect(_otherTags.length === otherTags.length).equal(true);
             expect(isMatch(_otherTags,otherTags)).equal(true);
             done();
           });
