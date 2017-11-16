@@ -3,7 +3,7 @@ import defaults from "superagent-defaults";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import Router from "../";
-import { isArray, first, has, findIndex, isString, isMatch } from "lodash";
+import { has } from "lodash";
 import { app, mongoUrl, initdbPromise, authData } from "./builder";
 
 mongoose.connect(mongoUrl, { useMongoClient: true });
