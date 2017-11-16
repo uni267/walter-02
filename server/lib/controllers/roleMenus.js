@@ -2,8 +2,12 @@ import mongoose from "mongoose";
 import co from "co";
 import RoleMenu from "../models/RoleMenu";
 import Menu from "../models/Menu";
-import { logger } from "../logger";
+import logger from "../logger";
 import * as commons from "./commons";
+import { ValidationError, RecordNotFoundException } from "../errors/AppError";
+
+// constants
+import * as constants from "../../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 
@@ -20,7 +24,7 @@ export const index = (req, res, next) => {
             foreignField: "_id",
             as: "menus"
         }}
-      ])
+      ]);
 
       res.json({
         status: { success: true },
@@ -40,7 +44,7 @@ export const index = (req, res, next) => {
       });
     }
   });
-}
+};
 
 export const create = (req, res, next) => {
   co(function* () {
@@ -48,14 +52,18 @@ export const create = (req, res, next) => {
       const { roleMenu } = req.body;
       if (roleMenu.name === undefined ||
           roleMenu.name === null ||
-          roleMenu.name === "") throw "name is empty";
+          roleMenu.name === "") throw new ValidationError( "name is empty" );
+
+      if (roleMenu.name.length > constants.MAX_STRING_LENGTH) throw new ValidationError( "name is too long" );
+      if ((roleMenu.description !== undefined && roleMenu.description !== null)
+        && roleMenu.description.length > constants.MAX_STRING_LENGTH) throw new ValidationError( "description is too long" );
 
       const _role = yield RoleMenu.findOne({
         name: roleMenu.name,
         tenant_id: res.user.tenant_id
       });
 
-      if( _role !== null ) throw "name is duplicate";
+      if( _role !== null ) throw new ValidationError( "name is duplicate" );
 
       const newRoleMenu = new RoleMenu();
       newRoleMenu.name = roleMenu.name;
@@ -72,12 +80,18 @@ export const create = (req, res, next) => {
     }catch(e){
       let errors = {};
 
-      switch(e){
+      switch(e.message){
         case "name is empty":
           errors.name = "ユーザタイプ名が空のため作成に失敗しました";
           break;
         case "name is duplicate":
           errors.name = "同名のユーザタイプが既に存在するため作成に失敗しました";
+          break;
+        case "name is too long":
+          errors.name = "ユーザタイプ名が長過ぎるため作成に失敗しました";
+          break;
+        case "description is too long":
+          errors.description = "備考が長過ぎるため作成に失敗しました";
           break;
         default:
           errors.unknown = commons.errorParser(e);
@@ -85,7 +99,11 @@ export const create = (req, res, next) => {
       logger.error(e);
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: 'ユーザタイプの作成に失敗しました',
+          errors
+        }
       });
     }
   });
@@ -98,7 +116,7 @@ export const view = (req, res, next) => {
       const { role_id } = req.params;
 
       const role = yield RoleMenu.findById(role_id);
-      if(role === null || role === undefined) throw "role is not found";
+      if(role === null || role === undefined) throw new ValidationError("role is not found");
 
       const menus = yield Menu.find({ _id: { $in: role.menus }});
 
@@ -110,7 +128,7 @@ export const view = (req, res, next) => {
     } catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
         case "role is not found":
           errors.role = "ユーザタイプが存在しません";
           break;
@@ -120,12 +138,15 @@ export const view = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ユーザタイプを取得できませんでした",
+          errors }
       });
 
     }
   });
-}
+};
 
 export const remove = (req, res, next) => {
   co(function* (){
@@ -133,7 +154,7 @@ export const remove = (req, res, next) => {
       const { role_id } = req.params;
       const role = yield RoleMenu.findById(role_id);
 
-      if (role === null) throw "role is empty";
+      if (role === null) throw new RecordNotFoundException("role is empty");
 
       const deletedRoleMenu = role.remove();
 
@@ -146,21 +167,24 @@ export const remove = (req, res, next) => {
     } catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないため削除に失敗しました";
-          break
+          break;
         default:
           errors.unknown = commons.errorParser(e);
           break;
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ユーザタイプを削除できませんでした",
+          errors }
       });
     }
   });
-}
+};
 
 export const updateName = (req, res, next) => {
   co(function* (){
@@ -168,10 +192,13 @@ export const updateName = (req, res, next) => {
 
       const { role_id } = req.params;
       const { name } = req.body;
-      if (name === undefined || name === null || name === "") throw "name is empty";
+      if (name === undefined || name === null || name === "") throw new ValidationError("name is empty");
+      if (name.length > constants.MAX_STRING_LENGTH ) throw new ValidationError( "name is too long" );
+      const _roleCount = yield RoleMenu.find({name:name}).count();
+      if( _roleCount > 0 ) throw new ValidationError("name is duplicate");
 
       const role = yield RoleMenu.findById(role_id);
-      if (role === undefined || role === null) throw "role is not found";
+      if (role === undefined || role === null) throw new RecordNotFoundException("role is not found");
 
       role.name = name;
       const changedRoleMenu = yield role.save();
@@ -184,24 +211,34 @@ export const updateName = (req, res, next) => {
     } catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
         case "name is empty":
-          errors.name = "名称が空のため変更に失敗しました";
+          errors.name = "ユーザタイプ名が空のため変更に失敗しました";
+          break;
+        case "name is duplicate":
+          errors.name = "同名のユーザタイプが既に存在するため作成に失敗しました";
+          break;
+        case "name is too long":
+          errors.name = "ユーザタイプ名が長過ぎるため作成に失敗しました";
           break;
         case "role is not found":
           errors.role = "指定されたユーザタイプが見つからないため変更に失敗しました";
           break;
         default:
-          errors.unknown = commons.errorParser(e);
+          errors.unknown = e;
           break;
       }
-
+      logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ユーザタイプ名の変更に失敗しました",
+          errors
+          }
       });
     }
   });
-}
+};
 
 
 export const updateDescription = (req, res, next) => {
@@ -211,7 +248,7 @@ export const updateDescription = (req, res, next) => {
       const { description } = req.body;
 
       const role = yield RoleMenu.findById(role_id);
-      if (role === undefined || role === null) throw "role is not found";
+      if (role === undefined || role === null) throw new ValidationError("role is not found");
 
       role.description = description;
       const changedRoleMenu = yield role.save();
@@ -224,7 +261,7 @@ export const updateDescription = (req, res, next) => {
     catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
       case "role is not found":
         errors.role = "指定されたユーザタイプが見つからないため変更に失敗しました";
         break;
@@ -234,7 +271,7 @@ export const updateDescription = (req, res, next) => {
       }
       logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message:"備考の変更に失敗しました", errors }
       });
     }
   });
@@ -249,9 +286,9 @@ export const addMenuToRoleMenu = (req, res, next) => {
         Menu.findById(menu_id)
       ];
 
-      if( role === null ) throw "role is empty";
-      if( menu === null ) throw "menu is empty";
-      if( role.menus.indexOf(menu._id) >= 0 ) throw "menu is duplicate";
+      if( role === null ) throw new ValidationError( "role is empty" );
+      if( menu === null ) throw new ValidationError( "menu is empty" );
+      if( role.menus.indexOf(menu._id) >= 0 ) throw new ValidationError( "menu is duplicate" );
 
       role.menus = [ ...role.menus, menu._id ];
 
@@ -263,26 +300,26 @@ export const addMenuToRoleMenu = (req, res, next) => {
 
     } catch (e) {
       let errors = {};
-      switch (e) {
+      switch (e.message) {
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないためメニューの追加に失敗しました";
           break;
         case "menu is empty":
-          errors.memu = "指定されたメニューが見つからないため追加に失敗しました";
+          errors.menu = "指定されたメニューが見つからないため追加に失敗しました";
           break;
         case "menu is duplicate":
-          errors.menu = "指定されたメニューが既に登録されているため追加に失敗しました"
+          errors.menu = "指定されたメニューが既に登録されているため追加に失敗しました";
         default:
           errors.unknown = commons.errorParser(e);
           break;
       }
       logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message:"メニューの追加に失敗しました" ,errors }
       });
     }
   });
-}
+};
 
 export const removeMenuOfRoleMenu = (req, res, next) => {
   co(function*(){
@@ -293,8 +330,9 @@ export const removeMenuOfRoleMenu = (req, res, next) => {
         Menu.findById(menu_id)
       ];
 
-      if( role === null ) throw "role is empty";
-      if( menu === null ) throw "menu is empty";
+      if( role === null ) throw new ValidationError( "role is empty" );
+      if( menu === null ) throw new ValidationError( "menu is empty" );
+      if( role.menus.indexOf(menu_id) === -1 ) throw new ValidationError( "menu is not exist" );
 
       role.menus = role.menus.filter( _menus => (_menus.toString() !== menu._id.toString()));
 
@@ -308,12 +346,15 @@ export const removeMenuOfRoleMenu = (req, res, next) => {
     } catch (e) {
       let errors = {};
 
-      switch (e) {
+      switch (e.message) {
         case "role is empty":
-          errors.role = "指定されたユーザタイプが見つからないためメニューの追加に失敗しました";
+          errors.role = "指定されたユーザタイプが見つからないためメニューの削除に失敗しました";
           break;
         case "menu is empty":
-          errors.memu = "指定されたメニューが見つからないため追加に失敗しました";
+          errors.menu = "指定されたメニューが見つからないため削除に失敗しました";
+          break;
+        case "menu is not exist":
+          errors.menu = "指定されたメニューは登録されていないため削除に失敗しました";
           break;
         default:
           errors.unknown = commons.errorParser(e);
@@ -321,7 +362,7 @@ export const removeMenuOfRoleMenu = (req, res, next) => {
       }
       logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false,message:"メニューの削除に失敗しました", errors }
       });
     }
   });
