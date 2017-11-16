@@ -708,7 +708,7 @@ describe(base_url,() => {
       });
     });
 
-    describe.only('異常系',() => {
+    describe('異常系',() => {
 
 
       describe('存在しないtag_idを指定', () => {
@@ -1126,7 +1126,7 @@ describe(base_url,() => {
       });
     });
 
-    describe.only('異常系',() => {
+    describe('異常系',() => {
 
 
       describe('存在しないtag_idを指定', () => {
