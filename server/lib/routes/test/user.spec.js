@@ -129,7 +129,7 @@ describe(user_url + "/:user_id", () => {
   });
 
   // 所属グループの追加
-  describe.only("post /:user_id/groups", () => {
+  describe("post /:user_id/groups", () => {
     describe("user_id, group_idを正しく指定した場合", () => {
       let payload;
       let group_id;
@@ -454,88 +454,799 @@ describe(user_url + "/:user_id", () => {
   describe("patch /:user_id/password", () => {
 
     describe("ログインユーザのuser_id、正しいパスワードを指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したパスワードでログインすることが可能");
+      let payload;
+      let afterPayload;
+      let body = {
+        current_password: authData.password,
+        new_password: authData.password + authData.password
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .patch(user_url + `/${user._id}/password`)
+            .send(body)
+            .end( (err, res) => resolve(res) );
+        }).then( res => {
+          payload = res;
+
+          return new Promise( (resolve, reject) => {
+            request
+              .post(login_url)
+              .send({
+                account_name: authData.account_name,
+                password: body.new_password
+              })
+              .end( (err, res) => resolve(res) );
+          });
+        }).then( res => {
+          afterPayload = res;
+          done();
+        });
+      });
+
+      // パスワードを元に戻しておく
+      after( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .patch(user_url + `/${user._id}/password`)
+            .send({
+              current_password: body.new_password,
+              new_password: body.current_password
+            })
+            .end( (err, res) => resolve(res) );
+        }).then( res => {
+          done();
+        });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      describe("変更したパスワードでログインした場合", () => {
+        it("http(200)が返却される", done => {
+          expect(afterPayload.status).equal(200);
+          done();
+        });
+
+        it("tokenが返却される", done => {
+          expect(afterPayload.body.body.token.length > 0).equal(true);
+          done();
+        });
+
+        it("userオジェクトが返却される", done => {
+          expect(afterPayload.body.body.user._id.length > 0).equal(true);
+          done();
+        });
+      });
     });
 
     describe("current_passwordが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          new_password: authData.password + authData.password
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "現在のパスワードが空のためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: null,
+          new_password: authData.password + authData.password
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "現在のパスワードが空のためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
+        let payload;
+        let body = {
+          current_password: "",
+          new_password: authData.password + authData.password
+        };
 
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "現在のパスワードが空のためパスワードの変更に失敗しました"
+        };
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("現在のパスワードと一致しない場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: authData.password + authData.password,
+          new_password: authData.password + authData.password
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "指定されたパスワードが現在設定されているパスワードと一致しないためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
     });
 
     describe("new_passwordが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: authData.password
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "新しいパスワードが空のためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: authData.password,
+          new_password: null
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "新しいパスワードが空のためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: authData.password,
+          new_password: ""
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "新しいパスワードが空のためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          current_password: authData.password,
+          new_password: range(256).join("")
+        };
+
+        let expected = {
+          message: "パスワードの変更に失敗しました",
+          detail: "新しいパスワードが規定文字数を超過したためパスワードの変更に失敗しました"
+        };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/password`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          done();
+        });
       });
 
       describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        describe("バックスラッシュ", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo\\foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("スラッシュ", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo/foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("コロン", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo:foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+        });
+        describe("アスタリスク", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo*foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+
+        });
+
+        describe("クエスション", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo?foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+
+        });
+
+        describe("山括弧開く", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo<foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+
+        });
+
+        describe("山括弧閉じる", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo>foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+
+        });
+
+        describe("パイプ", () => {
+          let payload;
+          let body = {
+            current_password: authData.password,
+            new_password: "foo|foo"
+          };
+
+          let expected = {
+            message: "パスワードの変更に失敗しました",
+            detail: "新しいパスワードに禁止文字(\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+          };
+
+          before( done => {
+            new Promise( (resolve, reject) => {
+              request
+                .patch(user_url + `/${user._id}/password`)
+                .send(body)
+                .end( (err, res) => resolve(res) );
+            }).then( res => {
+              payload = res;
+              done();
+            });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.current_password).equal(expected.detail);
+            done();
+          });
+        });
       });
     });
 
