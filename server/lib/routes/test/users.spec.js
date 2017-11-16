@@ -2819,16 +2819,7 @@ describe(users_url, () => {
 
   // ユーザとグループの一覧
   describe("get /with_groups", () => {
-    const with_url = users_url + "/with_groups";
-
-    before( done => {
-      request
-        .get(with_url)
-        .end( (err, res) => {
-          console.log(res.body);
-          done();
-        });
-    });
+    it("frontから呼ばれていないのでテスト不要");
   });
 
 });
