@@ -29,24 +29,11 @@ describe(base_url, () => {
   });
 
   describe("get /", () => {
-    const expected = {
-      message: "アクションの取得に成功しました"
-    };
-
     it("http(200)が返却される", done => {
       request
         .get(base_url)
         .end( ( err, res ) => {
           expect(res.status).equal(200);
-          done();
-        });
-    });
-
-    it(`概要は「${expected.message}」`, done => {
-      request
-        .get(base_url)
-        .end( (err, res) => {
-          expect(res.body.status.message).equal(expected.message);
           done();
         });
     });
@@ -101,6 +88,17 @@ describe(base_url, () => {
           done();
         });
     });
+
+    it("labelカラムはuniqueなもの", done => {
+      request
+        .get(base_url)
+        .end( (err, res) => {
+          const labels = res.body.body.map( obj => obj.label );
+          expect( uniq(labels).length ).equal(labels.length);
+          done();
+        });
+    });
+
   });
 
 });
