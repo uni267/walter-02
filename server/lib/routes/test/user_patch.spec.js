@@ -1859,7 +1859,7 @@ describe(user_url + "/:user_id", () => {
   });
 
   // メニューロールの変更
-  describe.only("patch /:user_id/role_menus", () => {
+  describe("patch /:user_id/role_menus", () => {
     let otherUser;
     let role_id;
 
