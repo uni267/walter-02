@@ -451,10 +451,10 @@ export const updateEmail = (req, res, next) => {
         errors.user_id = e;
         break;
       case "email is empty":
-        errors.email = "メールアドレスが空のため変更に失敗しました";
+        errors.email = "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました";
         break;
       case "user is empty":
-        errors.user = "指定されたユーザが見つからないため変更に失敗しました";
+        errors.user = "指定されたユーザが存在しないため変更に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -462,7 +462,11 @@ export const updateEmail = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "メールアドレスの変更に失敗しました",
+          errors
+        }
       });
     }
   });
