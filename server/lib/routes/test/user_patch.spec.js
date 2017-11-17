@@ -1,3 +1,4 @@
+import util from "util";
 import supertest from "supertest";
 import defaults from "superagent-defaults";
 import { expect } from "chai";
@@ -828,141 +829,853 @@ describe(user_url + "/:user_id", () => {
 
   // ユーザの表示名変更
   describe("patch /:user_id/name", () => {
+    let changeUser;
+
+    before( done => {
+      request
+        .get(user_url)
+        .end( (err, res) => {
+          const __user = res.body.body.filter( _user => (
+            _user.enabled === true && _user._id !== user._id
+          ));
+
+          changeUser = _.head(__user);
+          done();
+        });
+    });
+
     describe("他ユーザのuser_id, 正しいnameを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、nameが変更された値として返却される");
+      let payload;
+      let nextPayload;
+
+      let body = {
+        name: "foobar"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .patch(user_url + `/${changeUser._id}/name`)
+            .send(body)
+            .end( (err, res) => resolve(res));
+        }).then( res => {
+          payload = res;
+
+          return new Promise( (resolve, reject) => {
+            request
+              .get(user_url + `/${changeUser._id}`)
+              .end( (err, res) => resolve(res) );
+          });
+        }).then( res => {
+          nextPayload = res;
+          done();
+        });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("ユーザ詳細を取得した結果、nameが変更された値として返却される", done => {
+        expect(nextPayload.body.body.name).equal(body.name);
+        done();
+      });
     });
 
     describe("指定されたuser_idが", () => {
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          name: "foobar"
+        };
+
+        let expected = {
+          message: "ユーザの表示名の変更に失敗しました",
+          detail: "指定されたユーザが存在しないため表示名の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/invalid_oid/name`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
     });
 
     describe("指定されたnameが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+        };
+
+        let expected = {
+          message: "ユーザの表示名の変更に失敗しました",
+          detail: "指定された表示名が空のためユーザの表示名の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${changeUser._id}/name`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          name: null
+        };
+
+        let expected = {
+          message: "ユーザの表示名の変更に失敗しました",
+          detail: "指定された表示名が空のためユーザの表示名の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${changeUser._id}/name`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          name: ""
+        };
+
+        let expected = {
+          message: "ユーザの表示名の変更に失敗しました",
+          detail: "指定された表示名が空のためユーザの表示名の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${changeUser._id}/name`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {
+          name: _.range(257).map( i => "1" ).join("")
+        };
+
+        let expected = {
+          message: "ユーザの表示名の変更に失敗しました",
+          detail: "指定された表示名の文字数が規定値を超過したため表示名の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${changeUser._id}/name`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
+          let payload;
+          let body = {
+            name: "\\foo\\bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
+
         });
 
         describe("スラッシュ", () => {
+          let payload;
+          let body = {
+            name: "/foo/bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
+
         });
 
         describe("コロン", () => {
+          let payload;
+          let body = {
+            name: ":foo:bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
+
         });
 
         describe("アスタリスク", () => {
+          let payload;
+          let body = {
+            name: "*foo*bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
         });
 
         describe("クエスチョン", () => {
+          let payload;
+          let body = {
+            name: "?foo?bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
         });
 
         describe("山括弧開く", () => {
+          let payload;
+          let body = {
+            name: "<foo<bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
         });
 
         describe("山括弧閉じる", () => {
+          let payload;
+          let body = {
+            name: ">foo>bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
         });
 
         describe("パイプ", () => {
+          let payload;
+          let body = {
+            name: "|foo|bar"
+          };
+
+          let expected = {
+            message: "ユーザの表示名の変更に失敗しました",
+            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+          };
+
+          before( done => {
+            request
+              .patch(user_url + `/${changeUser._id}/name`)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors.user_id).equal(expected.detail);
+            done();
+          });
         });
       });
     });
-
   });
 
   // メールアドレス変更
   describe("patch /:user_id/email", () => {
     describe("他ユーザのuser_id, 正しいemailを指定した場合", () => {
-      it("http(200)が返却される");
-      it("ユーザ詳細を取得した結果、emailが変更された値として返却される");
+      let payload;
+      let nextPayload;
+
+      let body = { email: "foobar@example.com" };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .patch(user_url + `/${user._id}/email`)
+            .send(body)
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          return new Promise( (resolve, reject) => {
+            request
+              .get(user_url + `/${user._id}`)
+              .end( (err, res) => resolve(res));
+          });
+        }).then(res => {
+          nextPayload = res;
+          done();
+        });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("ユーザ詳細を取得した結果、emailが変更された値として返却される", done => {
+        expect(nextPayload.body.body.email).equal(body.email);
+        done();
+      });
     });
 
     describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = { email: "foobar@example.com" };
+        let expected = {
+          message: "メールアドレスの変更に失敗しました",
+          detail: "指定されたユーザが存在しないためメールアドレスの変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/invalid_oid/email`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
     });
 
     describe("指定されたemailが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {};
+        let expected = {
+          message: "メールアドレスの変更に失敗しました",
+          detail: "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/email`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.email).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = { email: null };
+        let expected = {
+          message: "メールアドレスの変更に失敗しました",
+          detail: "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/email`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.email).equal(expected.detail);
+          done();
+        });
       });
 
       // メールアドレスは必須項目ではない
       describe("空文字の場合", () => {
-        it("http(200)が返却される");
-        it("ユーザ詳細を取得した結果、emailが空文字として返却される");
+        let payload;
+        let nextPayload;
+        let body = { email: "" };
+
+        before( done => {
+          new Promise( (resolve, reject) => {
+            request
+              .patch(user_url + `/${user._id}/email`)
+              .send(body)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            payload = res;
+
+            return new Promise( (resolve, reject) => {
+              request
+                .get(user_url + `/${user._id}`)
+                .end( (err, res) => resolve(res) );
+            });
+          }).then( res => {
+            nextPayload = res;
+            done();
+          });
+        });
+
+        it("http(200)が返却される", done => {
+          expect(payload.status).equal(200);
+          done();
+        });
+
+        it("ユーザ詳細を取得した結果、メールアドレスが反映されている", done => {
+          expect(nextPayload.body.body.email).equal(body.email);
+          done();
+        });
       });
 
-      describe("255文字以上の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+      describe("64文字以上の場合", () => {
+        let payload;
+        let body = {
+          email: _.range(257).map( i => "1" ).join("")
+        };
+        let expected = {
+          message: "メールアドレスの変更に失敗しました",
+          detail: "指定されたメールアドレスが規定文字数を超過したためメールアドレスの変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/email`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.email).equal(expected.detail);
+          done();
+        });
       });
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+      describe("禁止文字(RFC5322における)が含まれている場合", () => {
+        it.skip("ライブラリを使用するので本テストではスコープ外");
       });
     });
 
@@ -971,152 +1684,453 @@ describe(user_url + "/:user_id", () => {
   // 所属グループの削除
   describe("delete /:user_id/groups/:group_id", () => {
     describe("user_id, group_idを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したユーザを取得した場合、削除したグループを含めた結果が返却される");
+      let payload;
+      let nextPayload;
+      let group_id;
+
+      before( done => {
+        group_id = _.head(user.groups);
+
+        new Promise( (resolve, reject) => {
+          request
+            .delete( user_url + `/${user._id}/groups/${group_id}` )
+            .end( (err, res) => resolve(res) );
+        }).then( res => {
+          payload = res;
+
+          return new Promise( (resolve, reject) => {
+            request
+              .get( user_url + `/${user._id}` )
+              .end( (err, res) => resolve(res) );
+          });
+        }).then( res => {
+          nextPayload = res;
+          done();
+        });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("変更したユーザを取得した場合、削除したグループが含まれていない", done => {
+        const exists = nextPayload.body.body.groups.every( group => group !== group_id );
+        expect(exists).equal(true);
+        done();
+      });
+
+      it("ユーザの所属するグループ数が1つのみ減少している", done => {
+        expect(user.groups.length - 1).equal(nextPayload.body.body.groups.length);
+        done();
+      });
     });
 
     describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let group_id;
+        let expected = {
+          message: "グループのメンバ削除に失敗しました",
+          detail: "指定されたユーザが存在しないためグループのメンバ削除に失敗しました"
+        };
+
+        before( done => {
+          group_id = _.head(user.groups);
+
+          request
+            .delete(user_url + `/invalid_oid/groups/${group_id}`)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
+
       });
     });
 
     describe("指定されたgroup_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let expected = {
+          message: "グループのメンバ削除に失敗しました",
+          detail: "指定されたグループが存在しないためグループのメンバ削除に失敗しました"
+        };
+
+        before( done => {
+          request
+            .delete(user_url + `/${user._id}/groups/invalid_oid`)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("userが所属していないgroup_idの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let group_id;
+        let expected = {
+          message: "グループのメンバ削除に失敗しました",
+          detail: "指定されたグループにユーザが所属していないためグループのメンバ削除に失敗しました"
+        };
+
+        before( done => {
+          group_id = _.head(user.groups);
+
+          new Promise( (resolve, reject) => {
+            request
+              .delete(user_url + `/${user._id}/groups/${group_id}`)
+              .end( (err, res) => resolve(res) );
+          }).then( res => {
+            return new Promise( (resolve, reject) => {
+              request
+                .delete(user_url + `/${user._id}/groups/${group_id}`)
+                .end( (err, res) => resolve(res) );
+            });
+          }).then( res => {
+            payload = res;
+            done();
+          });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
     });
     
   });
 
   // メニューロールの変更
-  describe("patch /:user_id/role_menus", () => {
-    describe("user_id, 追加したいrole_menu_idを正しく指定した場合", () => {
-      it("http(200)が返却される");
-      it("変更したユーザを取得した場合、追加したロールメニューを含めた結果が返却される");
+  describe.only("patch /:user_id/role_menus", () => {
+    let otherUser;
+    let role_id;
 
-      describe("変更したユーザにてログインした場合", () => {
-        it("メニューを取得した際、追加したロールメニューが表示される");
+    before( done => {
+      new Promise( (resolve, reject) => {
+        // 自分以外のユーザを取得
+        request
+          .get(user_url)
+          .end( (err, res) => resolve(res) );
+      }).then( res => {
+        otherUser = _.head(res.body.body.filter( _user => _user._id !== user._id ));
 
-        describe("追加したメニューのAPIを取得した場合", () => {
-          it("http(200)が返却される");
-          it("0個以上のオブジェクトが返却される");
+        // role_menu付きのユーザオブジェクトが欲しいので
+        return new Promise( (resolve, reject) => {
+          request
+            .get(user_url + `/${otherUser._id}`)
+            .end( (err, res) => resolve(res) );
         });
+
+      }).then( res => {
+        otherUser = res.body.body;
+
+        // role_menu一覧
+        return new Promise( (resolve, reject) => {
+          request
+            .get("/api/v1/role_menus")
+            .end( (err, res) => resolve(res) );
+        });
+
+      }).then( res => {
+        role_id = res.body.body
+          .filter( role => role._id !== otherUser.role_id )[0]._id;
+        done();
+      });      
+
+    });
+
+    describe("user_id, 追加したいrole_menu_idを正しく指定した場合", () => {
+      let payload;
+      let nextPayload;
+
+      before( done => {
+          // メニューロール変更
+        new Promise( (resolve, reject) => {
+          request
+            .patch(user_url + `/${otherUser._id}/role_menus`)
+            .send({ role_menu_id: role_id })
+            .end( (err, res) => resolve(res) );
+        }).then( res => {
+          payload = res;
+
+          // 反映されているかどうか
+          return new Promise( (resolve, reject) => {
+            request
+              .get(user_url + `/${otherUser._id}`)
+              .end( (err, res) => resolve(res) );
+          });
+        }).then( res => {
+          nextPayload = res;
+          done();
+        });
+      });
+      
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("変更したユーザを取得した場合、追加したロールメニューを含めた結果が返却される", done => {
+        expect(nextPayload.body.body.role_id).equal(role_id);
+        done();
       });
     });
 
     describe("指定されたuser_idが", () => {
-      describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
-      describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
-      });
-
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let expected = {
+          message: "メニュー権限の変更に失敗しました",
+          detail: "指定されたユーザが存在しないためメニュー権限の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + "/invalid_oid/role_menus")
+            .send({ role_menu_id: role_id })
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
     });
 
     describe("指定されたrole_menu_idが", () => {
       describe("undefinedの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = {};
+        let expected = {
+          message: "メニュー権限の変更に失敗しました",
+          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/role_menus`)
+            .send(body)
+            .end( (err, res) => {
+              console.log(res.body);
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("nullの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = { role_menu_id: null };
+        let expected = {
+          message: "メニュー権限の変更に失敗しました",
+          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/role_menus`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("空文字の場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = { role_menu_id: "" };
+        let expected = {
+          message: "メニュー権限の変更に失敗しました",
+          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/role_menus`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
       });
 
       describe("存在しないoidの場合", () => {
-        it("http(400)が返却される");
-        it("statusはfalse");
-        it("エラーの概要は「xx」");
-        it("エラーの詳細は「xx」");
+        let payload;
+        let body = { role_menu_id: "invalid_oid" };
+        let expected = {
+          message: "メニュー権限の変更に失敗しました",
+          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+        };
+
+        before( done => {
+          request
+            .patch(user_url + `/${user._id}/role_menus`)
+            .send(body)
+            .end( (err, res) => {
+              payload = res;
+              done();
+            });
+        });
+
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
+          done();
+        });
+
+        it("statusはfalse", done => {
+          expect(payload.body.status.success).equal(false);
+          done();
+        });
+
+        it(`エラーの概要は「${expected.message}」`, done => {
+          expect(payload.body.status.message).equal(expected.message);
+          done();
+        });
+
+        it(`エラーの詳細は「${expected.detail}」`, done => {
+          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          done();
+        });
+
       });
     });
 
