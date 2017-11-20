@@ -1716,7 +1716,7 @@ describe(meta_infos_url, () => {
 
   });
 
-  describe.only("patch /:metainfo_id/label", () => {
+  describe("patch /:metainfo_id/label", () => {
     let metainfo;
 
     before( done => {
