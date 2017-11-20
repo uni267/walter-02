@@ -8,6 +8,7 @@ import * as constants from "../../configs/constants";
 import AuthorityFile from "../models/AuthorityFile";
 import Role from "../models/RoleFile";
 import Action from "../models/Action";
+import { ValidationError } from "../errors/AppError";
 
 export const files = (req, res, next) => {
   co(function* () {
@@ -15,8 +16,8 @@ export const files = (req, res, next) => {
 
       const user_id = res.user._id;
 
-      if(req.body.files === undefined) throw "files is undefined";
-      const files = req.body.files.map(id => mongoose.Types.ObjectId(id));
+      if(req.body.files === undefined) throw new ValidationError( "files is undefined" );
+      const files = req.body.files.filter( id => mongoose.Types.ObjectId.isValid(id) ).map(id => mongoose.Types.ObjectId(id));
 
       const condition = {
         users: mongoose.Types.ObjectId(user_id),
@@ -31,8 +32,9 @@ export const files = (req, res, next) => {
       });
 
     } catch (e) {
+      logger.error(e);
       let errors = {};
-      switch (e) {
+      switch (e.message) {
         case "files is undefined":
           errors.files = "ファイルが指定されていません";
         break;
@@ -41,7 +43,7 @@ export const files = (req, res, next) => {
       }
       logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false,message:"ファイル権限の取得に失敗しました", errors }
       });
 
     }
