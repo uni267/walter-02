@@ -151,19 +151,19 @@ var meta_infos = [
   {
     tenant_id: tenant._id,
     label: "取引先コード",
-    name: "",
+    name: "code",
     value_type: "String"
   },
   {
     tenant_id: tenant._id,
     label: "取引先名",
-    name: "",
+    name: "name",
     value_type: "String"
   },
   {
     tenant_id: tenant._id,
     label: "明細番号",
-    name: "",
+    name: "number",
     value_type: "Number"
   }
 ];
