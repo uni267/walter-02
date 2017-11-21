@@ -620,10 +620,7 @@ export const upload = (req, res, next) => {
       });
 
       // postされたメタ情報の_idがマスタに存在するかのチェック用
-      const metainfos = yield MetaInfo.find({
-        tenant_id: res.user.tenant_id,
-        key_type: "meta"
-      });
+      const metainfos = yield MetaInfo.find({ tenant_id: res.user.tenant_id });
 
       // メタ情報のチェック
       files = files.map( file => {
