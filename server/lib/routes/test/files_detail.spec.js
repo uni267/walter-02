@@ -354,6 +354,16 @@ describe(base_url,() => {
         });
       });
 
+      it('http(200)が返却される', done => {
+        expect(response.status).equal(200);
+        done();
+      });
+
+      it('statusはtrue',done => {
+        expect(response.body.status.success).equal(true);
+        done();
+      });
+
       it('_idが含まれる', done => {
         expect(has(response.body.body, '_id')).equal(true);
         done();
