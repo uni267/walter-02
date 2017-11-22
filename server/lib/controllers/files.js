@@ -769,7 +769,7 @@ export const upload = (req, res, next) => {
       ));
 
       // swift
-      zipWith(files, fileModels, (file, model) => {
+      yield zipWith(files, fileModels, (file, model) => {
         if (file.hasError) return;
 
         const regex = /;base64,(.*)$/;
@@ -777,7 +777,7 @@ export const upload = (req, res, next) => {
         const data = matches[1];
 
         const swift = new Swift();
-        swift.upload( new Buffer(data, 'base64'), model._id.toString());
+        return swift.upload( new Buffer(data, 'base64'), model._id.toString());
       });
 
       // 権限
