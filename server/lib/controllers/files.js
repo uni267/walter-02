@@ -181,6 +181,10 @@ export const download = (req, res, next) => {
     }
     catch (e) {
       logger.error(e);
+
+      res.status(400).json({
+        status: { success: false, errors: e }
+      });
     }
   });
 };
