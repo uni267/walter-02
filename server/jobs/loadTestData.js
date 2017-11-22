@@ -128,13 +128,8 @@ db.users.insert(user2);
 
 var tags = [
   {
-    color: "#000",
-    label: "重要",
-    tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1} )._id
-  },
-  {
-    color: "#111",
-    label: "業務",
+    color: "#f55",
+    label: "非表示",
     tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1} )._id
   }
 ];
@@ -145,27 +140,17 @@ db.tags.insert(tags);
 //  meta_infos collection
 // ===============================
 
+// value_type: ["String", "Number", "Date"]
 var tenant = db.tenants.findOne({ name: "test" });
 
 var meta_infos = [
-  {
-    tenant_id: tenant._id,
-    label: "取引先コード",
-    name: "code",
-    value_type: "String"
-  },
-  {
-    tenant_id: tenant._id,
-    label: "取引先名",
-    name: "name",
-    value_type: "String"
-  },
-  {
-    tenant_id: tenant._id,
-    label: "明細番号",
-    name: "number",
-    value_type: "Number"
-  }
+  { tenant_id: tenant._id, label: "受信日時", name: "receive_date_time", value_type: "Date" },
+  { tenant_id: tenant._id, label: "送信日時", name: "send_date_time", value_type: "Date" },
+  { tenant_id: tenant._id, label: "送信企業名", name: "send_company_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "送信ユーザ名", name: "send_user_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "受信企業名", name: "receive_company_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "受信ユーザ名", name: "receive_user_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "表示ファイル名", name: "display_file_name", value_type: "String" }
 ];
 
 db.meta_infos.insert(meta_infos);
