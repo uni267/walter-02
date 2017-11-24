@@ -938,7 +938,7 @@ describe(base_url,() => {
             request.get(base_url)
             .end( ( err, res ) => {
               response = res;
-              done();
+              done();z
             });
           });
           it('http(200)が返却される', done => {
@@ -981,6 +981,33 @@ describe(base_url,() => {
             done();
           });
           it(`返却値のlengthは2である`,done =>{
+            expect( response.body.body.length ).equal(2);
+            done();
+          });
+        });
+        describe('3ページ目を取得',() => {
+          let response;
+          before(done => {
+            request.get(base_url)
+            .query({ page: 2 }) // 0始まりなので
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+          it(`返却値のlengthは0である`,done =>{
             expect( response.body.body.length ).equal(2);
             done();
           });
