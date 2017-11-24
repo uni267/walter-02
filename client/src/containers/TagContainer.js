@@ -22,6 +22,7 @@ import {
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import ActionLabel from "material-ui/svg-icons/action/label";
+import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -64,17 +65,6 @@ class TagContainer extends Component {
               <div style={{ width: "20%" }}>
                 <CardTitle title="タグ管理" />
               </div>
-
-              <div style={{ width: "80%" }}>
-                <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-                  <SimpleSearch
-                    searchFileSimple={ keyword => {
-                      this.props.actions.searchTagSimple(keyword);
-                    }}
-                    hintText="タグ名を入力"
-                  />
-                </div>
-              </div>
             </div>
 
             <div style={{ display: "flex" }}>
@@ -91,6 +81,7 @@ class TagContainer extends Component {
               </div>
 
               <div style={{ width: "20%" }}>
+                <Divider />
                 <Menu>
                   <MenuItem
                     primaryText="タグ作成"
