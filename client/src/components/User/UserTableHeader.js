@@ -10,7 +10,12 @@ const UserTableHeader = ({ headers }) => {
   return (
     <TableRow>
       {headers.map( (header, idx) => {
-        return <TableHeaderColumn key={idx}>{header.name}</TableHeaderColumn>;
+        return (
+          <TableHeaderColumn
+            style={{ width: header.width }}
+            key={idx}>{header.name}
+          </TableHeaderColumn>
+        );
       })}
     </TableRow>
   );
