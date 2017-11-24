@@ -22,6 +22,7 @@ import {
 import SocialGroupAdd from "material-ui/svg-icons/social/group-add";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
+import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -66,17 +67,6 @@ class GroupContainer extends Component {
               <div style={{ width: "20%" }}>
                 <CardTitle title="グループ管理" />
               </div>
-
-              <div style={{ width: "80%" }}>
-                <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-                  <SimpleSearch
-                    searchFileSimple={ keyword => (
-                      this.props.actions.searchGroupSimple(keyword)
-                    )}
-                    hintText="グループ名を入力"
-                  />
-                </div>
-              </div>
             </div>
 
             <div style={{ display: "flex" }}>
@@ -92,6 +82,7 @@ class GroupContainer extends Component {
               </div>
               
               <div style={{ width: "20%", paddingLeft: 15 }}>
+                <Divider />
                 <Menu>
                   <MenuItem 
                     primaryText="グループ作成"

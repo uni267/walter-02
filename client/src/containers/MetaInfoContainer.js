@@ -16,6 +16,7 @@ import {
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import ActionDescription from "material-ui/svg-icons/action/description";
+import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -57,18 +58,8 @@ class MetaInfoContainer extends Component {
         <Card>
           <CardText>
             <div style={{ display: "flex" }}>
-
               <div style={{ width: "75%" }}>
                 <CardTitle title="メタ情報管理" />
-              </div>
-
-              <div style={{ width: "25%" }}>
-                <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-                  <SimpleSearch
-                    searchFileSimple={ keyword => console.log(keyword) }
-                    hintText="メタ情報名を入力"
-                  />
-                </div>
               </div>
             </div>
 
@@ -86,6 +77,7 @@ class MetaInfoContainer extends Component {
               </div>
 
               <div style={{ width: "20%" }}>
+                <Divider />
                 <Menu>
                   <MenuItem
                     primaryText="メタ情報作成"
