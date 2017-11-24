@@ -29,10 +29,10 @@ class RoleContainer extends Component {
 
   render() {
     const headers = [
-      { name: "表示名" },
-      { name: "備考" },
-      { name: "アクション" },
-      { name: "編集" }
+      { name: "表示名", width: "25%" },
+      { name: "備考", width: "25%" },
+      { name: "アクション", width: "40%" },
+      { name: "編集", width: "10%" }
     ];
 
     return (
@@ -51,7 +51,7 @@ class RoleContainer extends Component {
                   </TableHeader>
                   <TableBody displayRowCheckbox={false}>
                     {this.props.roles.map( (role, idx) => {
-                      return <RoleTableBody role={role} key={idx} />;
+                      return <RoleTableBody role={role} key={idx} headers={headers} />;
                     })}
                   </TableBody>
 
