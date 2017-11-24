@@ -149,7 +149,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "ユーザの有効化/無効化に失敗しました",
-          detail: "指定されたユーザが存在しないためユーザの有効化/無効化に失敗しました"
+          detail: "ユーザが存在しません"
         };
 
         before( done => {
@@ -289,7 +289,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "指定されたユーザが存在しないためログイン名の変更に失敗しました"
+          detail: "ユーザが存在しません"
         };
 
         before( done => {
@@ -330,7 +330,7 @@ describe(user_url + "/:user_id", () => {
         let body = {};
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "指定されたログイン名が空であるためログイン名の変更に失敗しました"
+          detail: "ログイン名が空です"
         };
 
         before( done => {
@@ -369,7 +369,7 @@ describe(user_url + "/:user_id", () => {
         let body = { account_name: null };
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "指定されたログイン名が空であるためログイン名の変更に失敗しました"
+          detail: "ログイン名が空です"
         };
 
         before( done => {
@@ -408,7 +408,7 @@ describe(user_url + "/:user_id", () => {
         let body = { account_name: "" };
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "指定されたログイン名が空であるためログイン名の変更に失敗しました"
+          detail: "ログイン名が空です"
         };
 
         before( done => {
@@ -450,7 +450,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "指定されたログイン名の文字数が規定数を超過したためログイン名の変更に失敗しました"
+          detail: "ログイン名が長すぎます"
         };
 
         before( done => {
@@ -493,7 +493,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -535,7 +535,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -578,7 +578,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -621,7 +621,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -664,7 +664,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -706,7 +706,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -748,7 +748,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -790,7 +790,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ログイン名の変更に失敗しました",
-            detail: "指定されたログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためログイン名の変更に失敗しました"
+            detail: "ログイン名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -935,7 +935,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "指定された表示名が空のためユーザの表示名の変更に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -977,7 +977,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "指定された表示名が空のためユーザの表示名の変更に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1019,7 +1019,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "指定された表示名が空のためユーザの表示名の変更に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1061,7 +1061,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "指定された表示名の文字数が規定値を超過したため表示名の変更に失敗しました"
+          detail: "表示名が長すぎます"
         };
 
         before( done => {
@@ -1104,7 +1104,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1147,7 +1147,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1190,7 +1190,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1233,7 +1233,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1275,7 +1275,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1317,7 +1317,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1359,7 +1359,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1401,7 +1401,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "ユーザの表示名の変更に失敗しました",
-            detail: "指定された表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているため表示名の変更に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1523,7 +1523,7 @@ describe(user_url + "/:user_id", () => {
         let body = {};
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました"
+          detail: "メールアドレスが空です"
         };
 
         before( done => {
@@ -1562,7 +1562,7 @@ describe(user_url + "/:user_id", () => {
         let body = { email: null };
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました"
+          detail: "メールアドレスが空です"
         };
 
         before( done => {
@@ -1640,7 +1640,7 @@ describe(user_url + "/:user_id", () => {
         };
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "指定されたメールアドレスが規定文字数を超過したためメールアドレスの変更に失敗しました"
+          detail: "メールアドレスが長すぎます"
         };
 
         before( done => {
@@ -1855,7 +1855,7 @@ describe(user_url + "/:user_id", () => {
         });
       });
     });
-    
+
   });
 
   // メニューロールの変更
@@ -1893,7 +1893,7 @@ describe(user_url + "/:user_id", () => {
         role_id = res.body.body
           .filter( role => role._id !== otherUser.role_id )[0]._id;
         done();
-      });      
+      });
 
     });
 
@@ -1922,7 +1922,7 @@ describe(user_url + "/:user_id", () => {
           done();
         });
       });
-      
+
       it("http(200)が返却される", done => {
         expect(payload.status).equal(200);
         done();

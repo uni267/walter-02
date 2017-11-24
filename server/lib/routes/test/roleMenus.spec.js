@@ -143,7 +143,7 @@ describe(base_url,() => {
       describe('nameが未定義',() => {
         const expected = {
           message: "ユーザタイプの作成に失敗しました",
-          detail: "ユーザタイプ名が空のため作成に失敗しました"
+          detail: "ユーザタイプ名が空です"
         };
         describe('nameがundefined',() => {
           const sendData = {
@@ -262,7 +262,7 @@ describe(base_url,() => {
 
         const expected = {
           message: "ユーザタイプの作成に失敗しました",
-          detail: "同名のユーザタイプが既に存在するため作成に失敗しました"
+          detail: "そのユーザタイプ名は既に使用されています"
         };
 
         const sendData = {
@@ -307,7 +307,7 @@ describe(base_url,() => {
 
         const expected = {
           message: "ユーザタイプの作成に失敗しました",
-          detail: "ユーザタイプ名が長過ぎるため作成に失敗しました"
+          detail: "ユーザタイプ名が長すぎます"
         };
 
         const sendData = {
@@ -357,7 +357,7 @@ describe(base_url,() => {
 
         const expected = {
           message: "ユーザタイプの作成に失敗しました",
-          detail: "備考が長過ぎるため作成に失敗しました"
+          detail: "備考が長すぎます"
         };
 
         const sendData = {
@@ -462,7 +462,7 @@ describe(base_url,() => {
     describe('異常系',() => {
       describe('存在しないrole_idを指定',() => {
         const expected = {
-          message: "ユーザタイプを取得できませんでした",
+          message: "ユーザタイプの取得に失敗しました",
           detail: "ユーザタイプが存在しません"
         };
         let response;
@@ -494,8 +494,8 @@ describe(base_url,() => {
       });
       describe('role_idがでたらめな文字列を指定',() => {
         const expected = {
-          message: "ユーザタイプを取得できませんでした",
-          detail: "ロールIDが不正です"
+          message: "ユーザタイプの取得に失敗しました",
+          detail: "ロールIDが不正なためユーザタイプを取得できませんでした"
         };
         let response;
         before(done => {
@@ -648,7 +648,7 @@ describe(base_url,() => {
     describe('異常系',() => {
       describe('存在しないrole_id',() => {
         const expected = {
-          message: "ユーザタイプを削除できませんでした",
+          message: "ユーザタイプの削除に失敗しました",
           detail: "指定されたユーザタイプが見つからないため削除に失敗しました"
         };
 
@@ -685,8 +685,8 @@ describe(base_url,() => {
       });
       describe('role_idにでたらめな文字列',() => {
         const expected = {
-          message: "ユーザタイプを削除できませんでした",
-          detail: "ロールIDが不正です"
+          message: "ユーザタイプの削除に失敗しました",
+          detail: "ロールIDが不正なためユーザタイプを削除できませんでした"
         };
 
         let response;
@@ -722,8 +722,8 @@ describe(base_url,() => {
       });
       describe('role_idがでたらめな文字列',() => {
         const expected = {
-          message: "ユーザタイプを削除できませんでした",
-          detail: "ロールIDが不正です"
+          message: "ユーザタイプの削除に失敗しました",
+          detail: "ロールIDが不正なためユーザタイプを削除できませんでした"
         };
 
         let response;
@@ -852,7 +852,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列を指定して更新する',() => {
         const expected = {
           message: "ユーザタイプ名の変更に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なためユーザタイプ名の変更に失敗しました"
         };
         const sendData = {
           name: "更新した"
@@ -888,7 +888,7 @@ describe(base_url,() => {
       describe('nameが未定義',() => {
         const expected = {
           message: "ユーザタイプ名の変更に失敗しました",
-          detail: "ユーザタイプ名が空のため変更に失敗しました"
+          detail: "ユーザタイプ名が空です"
         };
 
         describe('nameがundefined', () => {
@@ -986,7 +986,7 @@ describe(base_url,() => {
       describe('nameが重複', () => {
         const expected = {
           message: "ユーザタイプ名の変更に失敗しました",
-          detail: "同名のユーザタイプが既に存在するため作成に失敗しました"
+          detail: "そのユーザタイプ名は既に使用されています"
         };
 
         const sendData = {
@@ -1022,7 +1022,7 @@ describe(base_url,() => {
       describe('nameが256文字以上', () => {
         const expected = {
           message: "ユーザタイプ名の変更に失敗しました",
-          detail: "ユーザタイプ名が長過ぎるため作成に失敗しました"
+          detail: "ユーザタイプ名が長すぎます"
         };
 
         const sendData = {
@@ -1168,7 +1168,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列指定して更新する',() => {
         const expected = {
           message: "備考の変更に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なため備考の変更に失敗しました"
         };
         const sendData = {
           description: "これはテスト用のデータです。更新されました。"
@@ -1347,7 +1347,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列を指定して更新する',() => {
         const expected = {
           message: "メニューの追加に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なためメニューの追加に失敗しました"
         };
         let response;
         before(done => {

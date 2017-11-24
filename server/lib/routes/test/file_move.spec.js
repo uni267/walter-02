@@ -91,7 +91,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたファイルidが空のためファイルの移動に失敗しました"
+        detail: "指定されたファイルIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -185,7 +185,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダidが空のためファイルの移動に失敗しました"
+        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -231,7 +231,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダidが空のためファイルの移動に失敗しました"
+        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -277,7 +277,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダidが空のためファイルの移動に失敗しました"
+        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -323,7 +323,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダidが空のためファイルの移動に失敗しました"
+        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -369,7 +369,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダidが空のためファイルの移動に失敗しました"
+        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {

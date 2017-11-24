@@ -104,7 +104,7 @@ describe(base_url,() => {
     describe('異常系',() => {
       describe('存在しないfile_idを指定',() => {
         const expected = {
-          message: "ファイルの詳細を表示できません",
+          message: "ファイルの取得に失敗しました",
           detail: "指定されたファイルが見つかりません"
         };
         let response;
@@ -138,8 +138,8 @@ describe(base_url,() => {
 
       describe('file_idにでたらめな文字列を指定',() => {
         const expected = {
-          message: "ファイルの詳細を表示できません",
-          detail: "file_idが不正です"
+          message: "ファイルの取得に失敗しました",
+          detail: "ファイルIDが不正なためファイルの取得に失敗しました"
         };
         let response;
         before(done => {
@@ -171,8 +171,8 @@ describe(base_url,() => {
 
       describe('指定しているfile_idがフォルダ',() => {
         const expected = {
-          message: "ファイルの詳細を表示できません",
-          detail: "フォルダを指定しているため詳細を表示できません"
+          message: "ファイルの取得に失敗しました",
+          detail: "フォルダを指定しているためファイルの取得に失敗しました"
         };
         let response;
         before(done => {
@@ -221,8 +221,8 @@ describe(base_url,() => {
 
       describe('削除済みのfile_idを指定',() => {
         const expected = {
-          message: "ファイルの詳細を表示できません",
-          detail: "ファイルは既に削除されています"
+          message: "ファイルの取得に失敗しました",
+          detail: "ファイルは既に削除されているためファイルの取得に失敗しました"
         };
         let delete_file;
         let response;
@@ -283,8 +283,8 @@ describe(base_url,() => {
 
       describe('閲覧権限がないfile_id',() => {
         const expected = {
-          message: "ファイルの詳細を表示できません",
-          detail: "権限がありません"
+          message: "ファイルの取得に失敗しました",
+          detail: "閲覧権限が無いためファイルの取得に失敗しました"
         };
         let response;
         before(done => {

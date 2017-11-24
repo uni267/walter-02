@@ -239,7 +239,7 @@ describe(users_url, () => {
     describe("account_nameが", () => {
       let expected = {
         message: "ユーザの作成に失敗しました",
-        detail: "account_nameが空のためユーザの作成に失敗しました"
+        detail: "アカウント名が空です"
       };
 
       describe("undefinedの場合", () => {
@@ -395,7 +395,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "account_nameが同名のユーザが存在するためユーザの作成に失敗しました"
+          detail: "そのアカウント名は既に使用されています"
         };
 
         before( done => {
@@ -448,7 +448,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "account_nameが255文字より大きいためユーザの作成に失敗しました"
+          detail: "アカウント名が長すぎます"
         };
 
         before( done => {
@@ -492,7 +492,7 @@ describe(users_url, () => {
       describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "account_nameに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+          detail: "アカウント名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         describe("バックスラッシュ", () => {
@@ -870,7 +870,7 @@ describe(users_url, () => {
       describe("undefinedの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が空のためユーザの作成に失敗しました"
+          detail: "表示名が空です"
         };
 
         let payload;
@@ -922,7 +922,7 @@ describe(users_url, () => {
       describe("nullの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が空のためユーザの作成に失敗しました"
+          detail: "表示名が空です"
         };
 
         let payload;
@@ -974,7 +974,7 @@ describe(users_url, () => {
       describe("空文字の場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が空のためユーザの作成に失敗しました"
+          detail: "表示名が空です"
         };
 
         let payload;
@@ -1026,7 +1026,7 @@ describe(users_url, () => {
       describe("重複する場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が重複するユーザが存在するためユーザの作成に失敗しました"
+          detail: "その表示名は既に使用されています"
         };
 
         let payload;
@@ -1079,7 +1079,7 @@ describe(users_url, () => {
       describe("255文字以上の場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が255文字を超過するためユーザの作成に失敗しました"
+          detail: "表示名が長すぎます"
         };
 
         let payload;
@@ -1133,7 +1133,7 @@ describe(users_url, () => {
         describe("バックスラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1185,7 +1185,7 @@ describe(users_url, () => {
         describe("スラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1237,7 +1237,7 @@ describe(users_url, () => {
         describe("コロン", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1289,7 +1289,7 @@ describe(users_url, () => {
         describe("アスタリスク", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1341,7 +1341,7 @@ describe(users_url, () => {
         describe("クエスション", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1393,7 +1393,7 @@ describe(users_url, () => {
         describe("山括弧開く", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1446,7 +1446,7 @@ describe(users_url, () => {
         describe("山括弧閉じる", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1499,7 +1499,7 @@ describe(users_url, () => {
         describe("パイプ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1563,7 +1563,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが空のためユーザの作成に失敗しました"
+          detail: "メールアドレスが空です"
         };
 
         before( done => {
@@ -1615,7 +1615,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが空のためユーザの作成に失敗しました"
+          detail: "メールアドレスが空です"
         };
 
         before( done => {
@@ -1668,7 +1668,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが空のためユーザの作成に失敗しました"
+          detail: "メールアドレスが空です"
         };
 
         before( done => {
@@ -1773,7 +1773,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが255文字を超過しているためユーザの作成に失敗しました"
+          detail: "メールアドレスが長すぎます"
         };
 
         before( done => {
@@ -1818,7 +1818,7 @@ describe(users_url, () => {
         describe("バックスラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1870,7 +1870,7 @@ describe(users_url, () => {
         describe("スラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1922,7 +1922,7 @@ describe(users_url, () => {
         describe("コロン", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -1974,7 +1974,7 @@ describe(users_url, () => {
         describe("アスタリスク", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2026,7 +2026,7 @@ describe(users_url, () => {
         describe("クエスション", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2078,7 +2078,7 @@ describe(users_url, () => {
         describe("山括弧開く", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2130,7 +2130,7 @@ describe(users_url, () => {
         describe("山括弧閉じる", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2182,7 +2182,7 @@ describe(users_url, () => {
         describe("パイプ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "メールアドレスに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2237,7 +2237,7 @@ describe(users_url, () => {
       describe("undefinedの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "パスワードが空のためユーザの作成に失敗しました"
+          detail: "パスワードが空です"
         };
 
         let payload;
@@ -2288,7 +2288,7 @@ describe(users_url, () => {
       describe("nullの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "パスワードが空のためユーザの作成に失敗しました"
+          detail: "パスワードが空です"
         };
 
         let payload;
@@ -2340,7 +2340,7 @@ describe(users_url, () => {
       describe("空文字の場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "パスワードが空のためユーザの作成に失敗しました"
+          detail: "パスワードが空です"
         };
 
         let payload;
@@ -2393,7 +2393,7 @@ describe(users_url, () => {
         describe("バックスラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2446,7 +2446,7 @@ describe(users_url, () => {
         describe("スラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2499,7 +2499,7 @@ describe(users_url, () => {
         describe("コロン", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2552,7 +2552,7 @@ describe(users_url, () => {
         describe("アスタリスク", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2605,7 +2605,7 @@ describe(users_url, () => {
         describe("クエスション", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2658,7 +2658,7 @@ describe(users_url, () => {
         describe("山括弧開く", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2711,7 +2711,7 @@ describe(users_url, () => {
         describe("山括弧閉じる", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;
@@ -2764,7 +2764,7 @@ describe(users_url, () => {
         describe("パイプ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
-            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためユーザの作成に失敗しました"
+            detail: "パスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           let payload;

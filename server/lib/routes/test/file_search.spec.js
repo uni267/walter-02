@@ -96,8 +96,8 @@ describe(base_url,() => {
 
       describe('pageが不正',() => {
         const expected = {
-          message: "ファイル一覧を取得できませんでした",
-          detail: "pageが数字ではありません"
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "pageが数字ではないためファイル一覧の取得に失敗しました"
         };
         describe('pageが""', () => {
           let response;
@@ -193,8 +193,8 @@ describe(base_url,() => {
 
       describe('ソート条件が不正',() => {
         const expected = {
-          message: "ファイル一覧を取得できませんでした",
-          detail: "ソート条件が不正です"
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "ソート条件が不正なためファイル一覧の取得に失敗しました"
         };
         describe('sortが""', () => {
           let response;

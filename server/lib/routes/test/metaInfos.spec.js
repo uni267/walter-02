@@ -72,7 +72,7 @@ describe(meta_infos_url, () => {
             .map( meta => _.keys(meta) )
             .map( keys => _.intersection(keys, needle) )
             .map( keys => keys.length === needle.length );
-      
+
       expect(columns.every( b => b === true)).equal(true);
       done();
     });
@@ -135,7 +135,7 @@ describe(meta_infos_url, () => {
             .map( meta => _.keys(meta) )
             .map( keys => _.intersection(keys, needle) )
             .map( keys => keys.length === needle.length );
-      
+
       expect(columns.every( b => b === true)).equal(true);
       done();
     });
@@ -319,7 +319,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報名が空のためメタ情報の登録に失敗しました"
+          detail: "メタ情報名が空です"
         };
 
         before( done => {
@@ -367,7 +367,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報名が空のためメタ情報の登録に失敗しました"
+          detail: "メタ情報名が空です"
         };
 
         before( done => {
@@ -415,7 +415,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報名が空のためメタ情報の登録に失敗しました"
+          detail: "メタ情報名が空です"
         };
 
         before( done => {
@@ -463,7 +463,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報名が制限文字数を超過したためメタ情報の登録に失敗しました"
+          detail: "メタ情報名が長すぎます"
         };
 
         before( done => {
@@ -510,7 +510,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報名が重複しているためメタ情報の登録に失敗しました"
+          detail: "そのメタ情報名は既に使用されています"
         };
 
         before( done => {
@@ -561,7 +561,7 @@ describe(meta_infos_url, () => {
       describe("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためメタ情報の登録に失敗しました"
+          detail: "メタ情報名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         describe("バックスラッシュ", () => {
@@ -922,7 +922,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の登録に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -970,7 +970,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の登録に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1018,7 +1018,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の登録に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1066,7 +1066,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が規定文字数を超過したためメタ情報の登録に失敗しました"
+          detail: "表示名が長すぎます"
         };
 
         before( done => {
@@ -1113,7 +1113,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が重複しているためメタ情報の登録に失敗しました"
+          detail: "その表示名は既に使用されています"
         };
 
         before( done => {
@@ -1164,7 +1164,7 @@ describe(meta_infos_url, () => {
       describe("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためメタ情報の登録に失敗しました"
+          detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         describe("バックスラッシュ", () => {
@@ -1526,7 +1526,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたデータ型が空のためメタ情報の登録に失敗しました"
+          detail: "データ型が空です"
         };
 
         before( done => {
@@ -1574,7 +1574,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたデータ型が空のためメタ情報の登録に失敗しました"
+          detail: "データ型が空です"
         };
 
         before( done => {
@@ -1622,7 +1622,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたデータ型が空のためメタ情報の登録に失敗しました"
+          detail: "データ型が空です"
         };
 
         before( done => {
@@ -1782,7 +1782,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の更新に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1823,7 +1823,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の更新に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1865,7 +1865,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の更新に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1907,7 +1907,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が空のためメタ情報の更新に失敗しました"
+          detail: "表示名が空です"
         };
 
         before( done => {
@@ -1949,7 +1949,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたメタ情報の表示名が重複するためメタ情報の更新に失敗しました"
+          detail: "その表示名は既に使用されています"
         };
 
         before( done => {
@@ -1993,7 +1993,7 @@ describe(meta_infos_url, () => {
       describe("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
         let expected = {
           message: "メタ情報の更新に失敗しました",
-          detail: "指定されたメタ情報の表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためメタ情報の更新に失敗しました"
+          detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         describe("バックスラッシュ", () => {

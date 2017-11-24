@@ -471,7 +471,7 @@ describe(dir_url, () => {
 
     });
   });
-  
+
   describe("post /", () => {
     let expected = {
       message: "フォルダは正常に作成されました"
@@ -528,145 +528,151 @@ describe(dir_url, () => {
     });
 
     describe("異常系", () => {
-      expected = {
-        message: "フォルダの作成に失敗しました",
-        detail: "指定されたフォルダが存在しないためフォルダの作成に失敗しました"
-      };
+      describe('dir_idが未定義',() => {
+        expected = {
+          message: "フォルダの作成に失敗しました",
+          detail: "フォルダIDが存在しないためフォルダの作成に失敗しました"
+        };
 
-      describe("dir_idを省略した場合", () => {
-        it("http(400)を返却する", done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_undefined1" })
-            .end( (err, res) => {
-              expect(res.status).equal(400);
-              done();
-            });
+        describe("dir_idを省略した場合", () => {
+          it("http(400)を返却する", done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_undefined1" })
+              .end( (err, res) => {
+                expect(res.status).equal(400);
+                done();
+              });
+          });
+
+          it("statusはfalse", done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_undefined1" })
+              .end( (err, res) => {
+                expect(res.body.status).equal(false);
+                done();
+              });
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_undefined2" })
+              .end( (err, res) => {
+                expect(res.body.status.errors.dir_id).equal(expected.detail);
+                done();
+              });
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_undefined3" })
+              .end( (err, res) => {
+                expect(res.body.status.errors.dir_id).equal(expected.detail);
+                done();
+              });
+          });
         });
 
-        it("statusはfalse", done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_undefined1" })
-            .end( (err, res) => {
-              expect(res.body.status).equal(false);
-              done();
-            });
+        describe("dir_idがnullの場合", () => {
+          it("http(400)を返却する", done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_null", dir_id: null })
+              .end( (err, res) => {
+                expect(res.status).equal(400);
+                done();
+              });
+          });
+
+          it("statusはfalse", done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_null1" })
+              .end( (err, res) => {
+                expect(res.body.status).equal(false);
+                done();
+              });
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_null2", dir_id: null })
+              .end( (err, res) => {
+                expect(res.body.status.message).equal(expected.message);
+                done();
+              });
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_null3", dir_id: null })
+              .end( (err, res) => {
+                expect(res.body.status.errors.dir_id).equal(expected.detail);
+                done();
+              });
+          });
         });
 
-        it(`エラーの概要は「${expected.message}」`, done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_undefined2" })
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
-        });
+        describe("dir_idが空文字の場合", () => {
+          it("http(400)を返却する", done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_empty", dir_id: "" })
+              .end( (err, res) => {
+                expect(res.status).equal(400);
+                done();
+              });
+          });
 
-        it(`エラーの詳細は「${expected.detail}」`, done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_undefined3" })
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
-        });
-      });
+          it("statusはfalse", done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_empty1", dir_id: "" })
+              .end( (err, res) => {
+                expect(res.body.status).equal(false);
+                done();
+              });
+          });
 
-      describe("dir_idがnullの場合", () => {
-        it("http(400)を返却する", done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_null", dir_id: null })
-            .end( (err, res) => {
-              expect(res.status).equal(400);
-              done();
-            });
-        });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_empty2", dir_id: "" })
+              .end( (err, res) => {
+                expect(res.body.status.message).equal(expected.message);
+                done();
+              });
+          });
 
-        it("statusはfalse", done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_null1" })
-            .end( (err, res) => {
-              expect(res.body.status).equal(false);
-              done();
-            });
-        });
-
-        it(`エラーの概要は「${expected.message}」`, done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_null2", dir_id: null })
-            .end( (err, res) => {
-              expect(res.body.status.message).equal(expected.message);
-              done();
-            });
-        });
-
-        it(`エラーの詳細は「${expected.detail}」`, done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_null3", dir_id: null })
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
-        });
-      });
-
-      describe("dir_idが空文字の場合", () => {
-        it("http(400)を返却する", done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_empty", dir_id: "" })
-            .end( (err, res) => {
-              expect(res.status).equal(400);
-              done();
-            });
-        });
-
-        it("statusはfalse", done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_empty1", dir_id: "" })
-            .end( (err, res) => {
-              expect(res.body.status).equal(false);
-              done();
-            });
-        });
-
-        it(`エラーの概要は「${expected.message}」`, done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_empty2", dir_id: "" })
-            .end( (err, res) => {
-              expect(res.body.status.message).equal(expected.message);
-              done();
-            });
-        });
-
-        it(`エラーの詳細は「${expected.detail}」`, done => {
-          request
-            .post(dir_url)
-            .send({ dir_name: "dir_id_is_empty3", dir_id: "" })
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            request
+              .post(dir_url)
+              .send({ dir_name: "dir_id_is_empty3", dir_id: "" })
+              .end( (err, res) => {
+                expect(res.body.status.errors.dir_id).equal(expected.detail);
+                done();
+              });
+          });
         });
       });
 
       describe("dir_idが存在しない値の場合", () => {
+        expected = {
+          message: "フォルダの作成に失敗しました",
+          detail: "フォルダIDが不正のためフォルダの作成に失敗しました"
+        };
         it("http(400)を返却する", done => {
           request
             .post(dir_url)
             .send({ dir_name: "dir_id_is_invalid", dir_id: "undefined" })
             .end( (err, res) => {
               expect(res.status).equal(400);
-              done(); 
+              done();
             });
         });
 
@@ -704,7 +710,7 @@ describe(dir_url, () => {
       describe("dir_nameを省略した場合", () => {
         expected = {
           message: "フォルダの作成に失敗しました",
-          detail: "フォルダ名が空のため作成に失敗しました"
+          detail: "フォルダ名が空です"
         };
 
         it("http(400)を返却する", done => {
@@ -752,7 +758,7 @@ describe(dir_url, () => {
       describe("dir_nameが空文字の場合", () => {
         expected = {
           message: "フォルダの作成に失敗しました",
-          detail: "フォルダ名が空のため作成に失敗しました"
+          detail: "フォルダ名が空です"
         };
 
         it("http(400)を返却する", done => {
@@ -802,7 +808,7 @@ describe(dir_url, () => {
         describe("指定されたdir_id内に同名のフォルダが存在する場合", () => {
           expected = {
             message: "フォルダの作成に失敗しました",
-            detail: "指定されたフォルダに同名のフォルダが存在するため作成に失敗しました"
+            detail: "同名のフォルダが存在します"
           };
 
           it("http(400)を返却する", done => {
@@ -870,7 +876,7 @@ describe(dir_url, () => {
         describe("名前に「＼, / , :, *, ?, <, >, |」が含まれている場合", () => {
           expected = {
             message: "フォルダの作成に失敗しました",
-            detail: "指定されたフォルダ名に禁止文字が含まれているため作成に失敗しました"
+            detail: "フォルダ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           describe("バックスラッシュが含まれている場合", () => {

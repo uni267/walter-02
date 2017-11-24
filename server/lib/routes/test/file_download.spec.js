@@ -110,7 +110,7 @@ describe(files_url, () => {
     let file;
     let expected = {
       message: "ファイルのダウンロードに失敗しました",
-      detail: "指定されたファイルidが空のためファイルのダウンロードに失敗しました"
+      detail: "ファイルIDが空のためファイルのダウンロードに失敗しました"
     };
 
     before( done => {
@@ -146,7 +146,7 @@ describe(files_url, () => {
     let file;
     let expected = {
       message: "ファイルのダウンロードに失敗しました",
-      detail: "指定されたファイルidが空のためファイルのダウンロードに失敗しました"
+      detail: "ファイルIDが空のためファイルのダウンロードに失敗しました"
     };
 
     before( done => {
@@ -183,7 +183,7 @@ describe(files_url, () => {
     let file;
     let expected = {
       message: "ファイルのダウンロードに失敗しました",
-      detail: "指定されたファイルidが空のためファイルのダウンロードに失敗しました"
+      detail: "ファイルIDが空のためファイルのダウンロードに失敗しました"
     };
 
     before( done => {

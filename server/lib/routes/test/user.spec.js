@@ -529,7 +529,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "現在のパスワードが空のためパスワードの変更に失敗しました"
+          detail: "現在のパスワードが空です"
         };
 
         before( done => {
@@ -574,7 +574,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "現在のパスワードが空のためパスワードの変更に失敗しました"
+          detail: "現在のパスワードが空です"
         };
 
         before( done => {
@@ -619,7 +619,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "現在のパスワードが空のためパスワードの変更に失敗しました"
+          detail: "現在のパスワードが空です"
         };
 
         before( done => {
@@ -664,7 +664,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "指定されたパスワードが現在設定されているパスワードと一致しないためパスワードの変更に失敗しました"
+          detail: "パスワードが一致しません"
         };
 
         before( done => {
@@ -710,7 +710,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードが空のためパスワードの変更に失敗しました"
+          detail: "新しいパスワードが空です"
         };
 
         before( done => {
@@ -755,7 +755,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードが空のためパスワードの変更に失敗しました"
+          detail: "新しいパスワードが空です"
         };
 
         before( done => {
@@ -800,7 +800,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードが空のためパスワードの変更に失敗しました"
+          detail: "新しいパスワードが空です"
         };
 
         before( done => {
@@ -845,7 +845,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードの長さが規定文字数を超過したためパスワードの変更に失敗しました"
+          detail: "新しいパスワードが長すぎます"
         };
 
         before( done => {
@@ -891,7 +891,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -936,7 +936,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -981,7 +981,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1025,7 +1025,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1071,7 +1071,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1117,7 +1117,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1163,7 +1163,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1209,7 +1209,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1422,7 +1422,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが空のためパスワードの変更に失敗しました"
+          detail: "パスワードが空です"
         };
 
         before( done => {
@@ -1466,7 +1466,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが空のためパスワードの変更に失敗しました"
+          detail: "パスワードが空です"
         };
 
         before( done => {
@@ -1510,7 +1510,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが空のためパスワードの変更に失敗しました"
+          detail: "パスワードが空です"
         };
 
         before( done => {
@@ -1554,7 +1554,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードの長さが規定文字数を超過したためパスワードの変更に失敗しました"
+          detail: "新しいパスワードが長すぎます"
         };
 
         before( done => {
@@ -1599,7 +1599,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1643,7 +1643,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1688,7 +1688,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1733,7 +1733,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1778,7 +1778,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1822,7 +1822,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1866,7 +1866,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {
@@ -1911,7 +1911,7 @@ describe(user_url + "/:user_id", () => {
 
           let expected = {
             message: "パスワードの変更に失敗しました",
-            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためパスワードの変更に失敗しました"
+            detail: "新しいパスワードに禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
           };
 
           before( done => {

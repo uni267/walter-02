@@ -115,7 +115,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "タイトルが空のためお知らせの登録に失敗しました"
+        detail: "タイトルが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -161,7 +161,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "タイトルが空のためお知らせの登録に失敗しました"
+        detail: "タイトルが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -207,7 +207,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "タイトルが空のためお知らせの登録に失敗しました"
+        detail: "タイトルが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -255,7 +255,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "本文が空のためお知らせの登録に失敗しました"
+        detail: "本文が空です"
       };
 
       it("http(400)が返却される", done => {
@@ -304,7 +304,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "本文が空のためお知らせの登録に失敗しました"
+        detail: "本文が空です"
       };
 
       it("http(400)が返却される", done => {
@@ -353,7 +353,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "本文が空のためお知らせの登録に失敗しました"
+        detail: "本文が空です"
       };
 
       it("http(400)が返却される", done => {
@@ -402,7 +402,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "ユーザーが空のためお知らせの登録に失敗しました"
+        detail: "ユーザーが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -452,7 +452,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "ユーザーが空のためお知らせの登録に失敗しました"
+        detail: "ユーザーが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -502,7 +502,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "ユーザーが空のためお知らせの登録に失敗しました"
+        detail: "ユーザーが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -552,7 +552,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "お知らせの登録に失敗しました",
-        detail: "ユーザーが存在しないためお知らせの登録に失敗しました"
+        detail: "指定されたユーザーが存在しないためお知らせの登録に失敗しました"
       };
 
       it("http(400)が返却される", done => {

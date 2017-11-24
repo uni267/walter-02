@@ -433,7 +433,7 @@ describe(groups_url + "/:group_id", () => {
       let body = {};
       let expected = {
         message: "グループ名の変更に失敗しました",
-        detail: "グループ名が空のためグループ名の変更に失敗しました"
+        detail: "グループ名が空です"
       };
 
       before( done => {
@@ -472,7 +472,7 @@ describe(groups_url + "/:group_id", () => {
       let body = { name: null };
       let expected = {
         message: "グループ名の変更に失敗しました",
-        detail: "グループ名が空のためグループ名の変更に失敗しました"
+        detail: "グループ名が空です"
       };
 
       before( done => {
@@ -511,7 +511,7 @@ describe(groups_url + "/:group_id", () => {
       let body = { name: "" };
       let expected = {
         message: "グループ名の変更に失敗しました",
-        detail: "グループ名が空のためグループ名の変更に失敗しました"
+        detail: "グループ名が空です"
       };
 
       before( done => {
@@ -550,7 +550,7 @@ describe(groups_url + "/:group_id", () => {
       let body = { name: _.range(257).map(i => "1").join("") };
       let expected = {
         message: "グループ名の変更に失敗しました",
-        detail: "グループ名が制限文字数を超過したためグループ名の変更に失敗しました"
+        detail: "グループ名が長すぎます"
       };
 
       before( done => {
@@ -590,7 +590,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: "\\f\\o\\o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -629,7 +629,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: "/f/o/o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -668,7 +668,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: ":f:o:o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -707,7 +707,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: "*f*o*o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -746,7 +746,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: "?f?o?o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -785,7 +785,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: "<f<o<o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -824,7 +824,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: ">f>o>o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -863,7 +863,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { name: "|f|o|o" };
         let expected = {
           message: "グループ名の変更に失敗しました",
-          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループ名の変更に失敗しました"
+          detail: "グループ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -999,7 +999,7 @@ describe(groups_url + "/:group_id", () => {
       let body = {};
       let expected = {
         message: "グループの備考の更新に失敗しました",
-        detail: "指定されたグループの備考が不正なためグループの備考の更新に失敗しました"
+        detail: "備考が空です"
       };
 
       before( done => {
@@ -1039,7 +1039,7 @@ describe(groups_url + "/:group_id", () => {
       let body = { description: null };
       let expected = {
         message: "グループの備考の更新に失敗しました",
-        detail: "指定されたグループの備考が不正なためグループの備考の更新に失敗しました"
+        detail: "備考が空です"
       };
 
       before( done => {
@@ -1100,7 +1100,7 @@ describe(groups_url + "/:group_id", () => {
       let body = { description: _.range(257).map( i => "1" ).join("") };
       let expected = {
         message: "グループの備考の更新に失敗しました",
-        detail: "指定されたグループの備考の文字数が規定数を超過したためグループの備考の更新に失敗しました"
+        detail: "備考が長すぎます"
       };
 
       before( done => {
@@ -1140,7 +1140,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: "\\foo\\bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1179,7 +1179,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: "/foo/bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1218,7 +1218,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: ":foo:bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1257,7 +1257,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: "*foo*bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1296,7 +1296,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: "?foo?bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1335,7 +1335,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: "<foo<bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1374,7 +1374,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: ">foo>bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1413,7 +1413,7 @@ describe(groups_url + "/:group_id", () => {
         let body = { description: "|foo|bar" };
         let expected = {
           message: "グループの備考の更新に失敗しました",
-          detail: "指定されたグループの備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためグループの備考の更新に失敗しました"
+          detail: "備考に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -1548,7 +1548,7 @@ describe(groups_url + "/:group_id", () => {
         done();
       });
     });
-    
+
     describe("role_menu_idがoid形式ではない場合", () => {
       let payload;
       let expected = {

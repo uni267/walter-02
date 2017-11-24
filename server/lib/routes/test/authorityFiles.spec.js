@@ -90,7 +90,7 @@ describe(base_url,() => {
       describe('file_idが未定義',() => {
         const expected = {
           message: "ファイル権限の取得に失敗しました",
-          detail: "ファイルが指定されていません"
+          detail: "ファイルIDが空のためファイル権限の取得に失敗しました"
         };
         describe('filesがundefind',() => {
           const sendData = {
@@ -157,7 +157,7 @@ describe(base_url,() => {
       describe('file_idが配列ではない',() => {
         const expected = {
           message: "ファイル権限の取得に失敗しました",
-          detail: "ファイルが指定されていません"
+          detail: "ファイルIDが空のためファイル権限の取得に失敗しました"
         };
         const sendData = {
           files: file_id

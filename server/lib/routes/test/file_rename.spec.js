@@ -94,7 +94,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "指定されたファイルidが不正なためファイル名の変更に失敗しました"
+        detail: "指定されたファイルIDが不正なためファイル名の変更に失敗しました"
       };
 
       before( done => {
@@ -192,7 +192,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "指定されたファイル名が空のためファイル名の変更に失敗しました"
+        detail: "ファイル名が空です"
       };
 
       before( done => {
@@ -240,7 +240,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "指定されたファイル名が空のためファイル名の変更に失敗しました"
+        detail: "ファイル名が空です"
       };
 
       before( done => {
@@ -288,7 +288,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "指定されたファイル名が空のためファイル名の変更に失敗しました"
+        detail: "ファイル名が空です"
       };
 
       before( done => {
@@ -337,7 +337,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -385,7 +385,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -433,7 +433,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -481,7 +481,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -529,7 +529,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -577,7 +577,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -625,7 +625,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {
@@ -673,7 +673,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "指定されたファイル名に禁止文字が含まれているためファイル名の変更に失敗しました"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
         };
 
         before( done => {

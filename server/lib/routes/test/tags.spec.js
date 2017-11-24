@@ -100,7 +100,7 @@ describe(base_url,() => {
       describe("labelが未定義",()=>{
         const expected = {
           message: "タグの登録に失敗しました",
-          detail: "タグ名は必須です"
+          detail: "タグ名が空です"
         };
 
         describe("labelがundefined",() => {
@@ -220,7 +220,7 @@ describe(base_url,() => {
       describe('labelが長過ぎる場合',() => {
         const expected = {
           message: "タグの登録に失敗しました",
-          detail: "タグ名の長さは255文字までです"
+          detail: "タグ名が長すぎます"
         };
 
         const body = { tag:{
@@ -410,7 +410,7 @@ describe(base_url,() => {
 
         const expected = {
           message: "タグの取得に失敗しました",
-          detail: "タグが存在しないためタグの取得に失敗しました"
+          detail: "指定されたタグが存在しないためタグの取得に失敗しました"
         };
         let response ;
         before(done=>{
@@ -447,7 +447,7 @@ describe(base_url,() => {
       describe('tag_idにでたらめな文字列を指定', done => {
         const expected = {
           message: "タグの取得に失敗しました",
-          detail: "タグIDが不正です"
+          detail: "タグIDが不正なためタグの取得に失敗しました"
         };
         let response ;
         before(done=>{
@@ -578,7 +578,7 @@ describe(base_url,() => {
       describe('存在しないtag_idを指定', () => {
         const expected = {
           message: "タグの削除に失敗しました",
-          detail: "タグが存在しないためタグの取得に失敗しました"
+          detail: "指定されたタグが存在しないためタグの取得に失敗しました"
         };
 
         let response = {};
@@ -617,7 +617,7 @@ describe(base_url,() => {
       describe('tag_idにでたらめな文字列を指定', () => {
         const expected = {
           message: "タグの削除に失敗しました",
-          detail: "タグIDが不正です"
+          detail: "タグIDが不正なためタグの取得に失敗しました"
         };
 
         let response = {};
@@ -714,7 +714,7 @@ describe(base_url,() => {
       describe('存在しないtag_idを指定', () => {
         const expected = {
           message: "タグ名の変更に失敗しました",
-          detail: "タグが存在しないため更新に失敗しました"
+          detail: "指定されたタグが存在しないためタグ名の変更に失敗しました"
         };
         const body = {
           label: "更新"
@@ -756,7 +756,7 @@ describe(base_url,() => {
       describe('tag_idにでたらめな文字列を指定', () => {
         const expected = {
           message: "タグ名の変更に失敗しました",
-          detail: "タグIDが不正です"
+          detail: "タグIDが不正なためタグ名の変更に失敗しました"
         };
         const body = {
           label: "更新"
@@ -798,7 +798,7 @@ describe(base_url,() => {
       describe('labelが未定義',() => {
         const expected = {
           message: "タグ名の変更に失敗しました",
-          detail: "タグ名は必須です"
+          detail: "タグ名が空です"
         };
 
         describe('labelがundefined',() => {
@@ -907,7 +907,7 @@ describe(base_url,() => {
       describe('labelが256文字',() => {
         const expected = {
           message: "タグ名の変更に失敗しました",
-          detail: "タグ名の長さは255文字までです"
+          detail: "タグ名が長すぎます"
         };
         const body = {
           label: "1234567891123456789212345678931234567894123456789512345678961234567897123456789812345678991234567890123456789112345678921234567893123456789412345678951234567896123456789712345678981234567899123456789012345678911234567892123456789312345678941234567895123456"
@@ -1132,7 +1132,7 @@ describe(base_url,() => {
       describe('存在しないtag_idを指定', () => {
         const expected = {
           message: "色の登録に失敗しました",
-          detail: "タグが存在しないため色の登録に失敗しました"
+          detail: "指定されたタグが存在しないため色の登録に失敗しました"
         };
         const body = {
           color: "#ABCDEF"
@@ -1174,7 +1174,7 @@ describe(base_url,() => {
       describe('tag_idにでたらめな文字列を指定', () => {
         const expected = {
           message: "色の登録に失敗しました",
-          detail: "タグIDが不正です"
+          detail: "タグIDが不正なため色の登録に失敗しました"
         };
         const body = {
           color: "#ABCDEF"

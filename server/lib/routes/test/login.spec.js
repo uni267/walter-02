@@ -23,7 +23,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "アカウント名が空のためユーザ認証に失敗しました"
+        detail: "アカウント名が空です"
       };
 
       it("http(400)が返却される", done => {
@@ -70,7 +70,7 @@ describe(base_url, () => {
       const body = { account_name: null };
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "アカウント名が空のためユーザ認証に失敗しました"
+        detail: "アカウント名が空です"
       };
 
       it("http(400)が返却される", done => {
@@ -119,7 +119,7 @@ describe(base_url, () => {
       const body = { account_name: "hanako", password: null };
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "パスワードが空のためユーザ認証に失敗しました"
+        detail: "パスワードが空です"
       };
 
       it("http(400)が返却される", done => {
@@ -169,7 +169,7 @@ describe(base_url, () => {
       const body = { account_name: "nanashi", password: "nanashi" };
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "指定されたアカウント名が存在しないためユーザ認証に失敗しました"
+        detail: "アカウント名またはパスワードが不正のため認証に失敗しました"
       };
 
       it("http(400)が返却される", done => {
@@ -218,7 +218,7 @@ describe(base_url, () => {
       const body = { account_name: "hanako", password: "xxxx" };
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "パスワードに誤りがあるためユーザ認証に失敗しました"
+        detail: "アカウント名またはパスワードが不正のため認証に失敗しました"
       };
 
       it("http(400)が返却される", done => {

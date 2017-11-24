@@ -102,7 +102,7 @@ describe(base_url,() => {
       describe('nameが未定義',() => {
         const expected = {
           message: "ロールの作成に失敗しました",
-          detail: "ロール名が空のため作成に失敗しました"
+          detail: "ロール名が空です"
         };
         describe('nameがundefined',() => {
           const sendData = {
@@ -207,7 +207,7 @@ describe(base_url,() => {
       describe('nameが重複',() => {
         const expected = {
           message: "ロールの作成に失敗しました",
-          detail: "同名のロールが既に存在するため作成に失敗しました"
+          detail: "そのロール名は既に使用されています"
         };
         const sendData = {
           role:{
@@ -247,7 +247,7 @@ describe(base_url,() => {
       describe('nameが256文字以上',() => {
         const expected = {
           message: "ロールの作成に失敗しました",
-          detail: "ロール名が長過ぎるため作成に失敗しました"
+          detail: "ロール名が長すぎます"
         };
         const sendData = {
           role : {
@@ -288,7 +288,7 @@ describe(base_url,() => {
       describe('descriptionが256文字以上',() => {
         const expected = {
           message: "ロールの作成に失敗しました",
-          detail: "備考が長過ぎるため作成に失敗しました"
+          detail: "備考が長すぎます"
         };
         const sendData = {
           role: {
@@ -380,8 +380,8 @@ describe(base_url,() => {
     describe('異常系',() => {
       describe('存在しないrole_idを指定',() => {
         const expected = {
-          message: "ロールが取得できませんでした",
-          detail: "ロールが存在しないため取得できませんでした"
+          message: "ロールの取得に失敗しました",
+          detail: "指定されたロールが存在しないためロールの取得に失敗しました"
         };
         let response;
         before(done => {
@@ -412,8 +412,8 @@ describe(base_url,() => {
       });
       describe('role_idにでたらめな文字列を指定',() => {
         const expected = {
-          message: "ロールが取得できませんでした",
-          detail: "ロールIDが不正です"
+          message: "ロールの取得に失敗しました",
+          detail: "ロールIDが不正なためロールの取得に失敗しました"
         };
         let response;
         before(done => {
@@ -509,7 +509,7 @@ describe(base_url,() => {
     describe('異常系',() => {
       describe('存在しないrole_id',() => {
         const expected = {
-          message: "ロールを削除できませんでした",
+          message: "ロールの削除に失敗しました",
           detail: "指定されたロールが見つからないため削除に失敗しました"
         };
 
@@ -546,8 +546,8 @@ describe(base_url,() => {
       });
       describe('role_idにでたらめな文字列',() => {
         const expected = {
-          message: "ロールを削除できませんでした",
-          detail: "ロールIDが不正です"
+          message: "ロールの削除に失敗しました",
+          detail: "ロールIDが不正なため削除に失敗しました"
         };
 
         let response;
@@ -673,7 +673,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列を指定して更新する',() => {
         const expected = {
           message: "ロール名の変更に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なためロール名の変更に失敗しました"
         };
         const sendData = {
           name: "更新した"
@@ -710,7 +710,7 @@ describe(base_url,() => {
       describe('nameが未定義',() => {
         const expected = {
           message: "ロール名の変更に失敗しました",
-          detail: "名称が空のため変更に失敗しました"
+          detail: "ロール名が空です"
         };
 
         describe('nameがundefined', () => {
@@ -810,7 +810,7 @@ describe(base_url,() => {
       describe('nameが重複', () => {
         const expected = {
           message: "ロール名の変更に失敗しました",
-          detail: "同名のロールが既に存在するため変更に失敗しました"
+          detail: "そのロール名は既に使用されています"
         };
 
         const sendData = {
@@ -847,7 +847,7 @@ describe(base_url,() => {
       describe('nameが256文字以上', () => {
         const expected = {
           message: "ロール名の変更に失敗しました",
-          detail: "名称が長過ぎるため変更に失敗しました"
+          detail: "ロール名が長すぎます"
         };
 
         const sendData = {
@@ -957,7 +957,7 @@ describe(base_url,() => {
       describe('存在しないrole_idを更新する',() => {
         const expected = {
           message: "備考の変更に失敗しました",
-          detail: "指定されたロールが見つからないため変更に失敗しました"
+          detail: "指定されたロールが見つからないため備考の変更に失敗しました"
         };
         const sendData = {
           description: "これはテスト用のデータです。更新されました。"
@@ -994,7 +994,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列指定して更新する',() => {
         const expected = {
           message: "備考の変更に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なため備考の変更に失敗しました"
         };
         const sendData = {
           description: "これはテスト用のデータです。更新されました。"
@@ -1180,7 +1180,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列を指定して更新する',() => {
         const expected = {
           message: "アクションの追加に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なためアクションの追加に失敗しました"
         };
         let response;
         before(done => {
@@ -1246,7 +1246,7 @@ describe(base_url,() => {
       describe('action_idにでたらめな文字列を指定する',() => {
         const expected = {
           message: "アクションの追加に失敗しました",
-          detail: "アクションIDが不正です"
+          detail: "アクションIDが不正なためアクションの追加に失敗しました"
         };
         let response;
         before(done => {
@@ -1453,7 +1453,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列を指定して更新する',() => {
         const expected = {
           message: "アクションの削除に失敗しました",
-          detail: "ロールIDが不正です"
+          detail: "ロールIDが不正なためアクションの削除に失敗しました"
         };
         let response;
         before(done => {
@@ -1519,7 +1519,7 @@ describe(base_url,() => {
       describe('action_idにでたらめな文字列を指定する',() => {
         const expected = {
           message: "アクションの削除に失敗しました",
-          detail: "アクションIDが不正です"
+          detail: "アクションIDが不正なためアクションの削除に失敗しました"
         };
         let response;
         before(done => {

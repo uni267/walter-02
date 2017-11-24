@@ -102,8 +102,8 @@ describe(base_url,() => {
     describe('異常系',() => {
       describe('dir_idが不正',() => {
         const expected = {
-          message: "ファイル一覧を取得できませんでした",
-          Cdetail: "指定されたフォルダは存在しません"
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "指定されたフォルダが存在しないためファイル一覧の取得に失敗しました"
         };
         describe('dir_idが存在しないObjectId', () => {
           let response;
@@ -162,8 +162,8 @@ describe(base_url,() => {
       });
       describe('閲覧権限のないdir_id',() => {
           const expected = {
-            message: "ファイル一覧を取得できませんでした",
-            Cdetail: "権限がありません"
+            message: "ファイル一覧の取得に失敗しました",
+            detail: "閲覧権限が無いためファイル一覧の取得に失敗しました"
           };
           let response;
           let dir_id;
@@ -243,8 +243,8 @@ describe(base_url,() => {
 
       describe('pageが不正',() => {
         const expected = {
-          message: "ファイル一覧を取得できませんでした",
-          detail: "pageが数字ではありません"
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "pageが数字では無いファイル一覧の取得に失敗しました"
         };
         describe('pageが""', () => {
           let response;
@@ -330,8 +330,8 @@ describe(base_url,() => {
       });
       describe('ソート条件が不正',() => {
         const expected = {
-          message: "ファイル一覧を取得できませんでした",
-          detail: "ソート条件が不正です"
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "ソート条件が不正なためファイル一覧の取得に失敗しました"
         };
         describe('sortが""', () => {
           let response;

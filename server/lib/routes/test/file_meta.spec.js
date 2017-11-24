@@ -59,7 +59,7 @@ describe(files_url, () => {
           .end( (err, res) => resolve(res) );
 
       }).then( res => {
-        meta = _.get(res, ["body", "body", "0"]);        
+        meta = _.get(res, ["body", "body", "0"]);
         return new Promise( (resolve, reject) => {
           request
             .post(files_url)
@@ -97,7 +97,7 @@ describe(files_url, () => {
           done();
         });
       });
-      
+
       it("http(200)が返却される", done => {
         expect(payload.status).equal(200);
         expect(nextPayload.status).equal(200);
@@ -132,7 +132,7 @@ describe(files_url, () => {
           done();
         });
       });
-      
+
       it("http(400)が返却される", done => {
         expect(payload.status).equal(400);
         done();
@@ -168,7 +168,7 @@ describe(files_url, () => {
           done();
         });
       });
-      
+
       it("http(400)が返却される", done => {
         expect(payload.status).equal(400);
         done();
@@ -490,7 +490,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "メタ情報の削除に失敗しました",
-        detail: "指定されたメタ情報idがファイルに存在しないためメタ情報の削除に失敗しました"
+        detail: "指定されたメタ情報IDがファイルに存在しないためメタ情報の削除に失敗しました"
       };
 
       before( done => {
