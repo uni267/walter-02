@@ -48,6 +48,12 @@ class UserContainer extends Component {
       { name: "編集", width: "10%" }
     ];
 
+    const actions = {
+      searchFileSimple: (keyword) => this.props.actions.searchUsersSimple(
+        this.props.tenant.tenant_id, keyword
+      )
+    };
+
     return (
       <div>
         <NavigationContainer />
@@ -61,14 +67,7 @@ class UserContainer extends Component {
 
               <div style={{width: "80%"}}>
                 <div style={{display: "flex", flexDirection: "row-reverse"}}>
-                  <SimpleSearch
-                    searchFileSimple={(keyword) => {
-                      this.props.actions.searchUsersSimple(
-                        this.props.tenant.tenant_id,
-                        keyword
-                      );
-                    }}
-                    />
+                  <SimpleSearch actions={actions} />
                 </div>
               </div>
             </div>
