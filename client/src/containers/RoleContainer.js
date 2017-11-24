@@ -38,7 +38,6 @@ class RoleContainer extends Component {
     return (
       <div>
         <NavigationContainer />
-
         <Card>
           <CardTitle title="ロール管理" />
           <CardText>
