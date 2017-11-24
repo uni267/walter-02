@@ -31,6 +31,10 @@ class UserCreateContainer extends Component {
     this.props.actions.requestFetchRoleMenus();
   }
 
+  componentWillUnmount() {
+    this.props.actions.initNewUserTemplate();
+  }
+
   render() {
     return (
       <div>
