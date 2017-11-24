@@ -19,7 +19,7 @@ function* watchCreateRole() {
       const payload = yield call(api.fetchRoles);
       yield put(actions.initRoles(payload.data.body));
       yield put(commons.loadingEnd());
-      yield task.history.push("/roles");
+      yield task.history.push("/role_files");
       yield put(commons.triggerSnackbar("ロールを作成しました"));
     }
     catch (e) {
