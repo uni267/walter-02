@@ -8,7 +8,9 @@ const GroupTableHeader = ({ headers }) => {
   return (
     <TableRow>
       {headers.map( (header, idx) => (
-        <TableHeaderColumn key={idx}>{header.name}</TableHeaderColumn>
+        <TableHeaderColumn key={idx} style={{ width: header.width }}>
+          {header.name}
+        </TableHeaderColumn>
       ))}
     </TableRow>
   );

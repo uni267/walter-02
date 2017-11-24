@@ -38,23 +38,25 @@ class GroupContainer extends Component {
     this.props.actions.requestFetchGroups(this.props.tenant.tenant_id);
   }
 
-  renderGroups = (groups) => {
-    return groups.length === 0
-      ?
-      (
-        <TableRow>
-          <TableRowColumn>一致するグループはありません</TableRowColumn>
-        </TableRow>
-      )
-      : groups.map( (group, idx) => <GroupTableBody group={group} key={idx} />);
-  };
-
   render() {
+    const renderGroups = (groups) => {
+      return groups.length === 0
+        ?
+        (
+          <TableRow>
+            <TableRowColumn>一致するグループはありません</TableRowColumn>
+          </TableRow>
+        )
+        : groups.map( (group, idx) => (
+          <GroupTableBody group={group} key={idx} headers={headers} />
+        ));
+    };
+
     const headers = [
-      { name: "表示名" },
-      { name: "備考" },
-      { name: "ユーザ" },
-      { name: "編集" },
+      { name: "表示名", width: "20%" },
+      { name: "備考", width: "30%" },
+      { name: "ユーザ", width: "40%" },
+      { name: "編集", width: "10%" },
     ];
 
     return (
@@ -76,7 +78,7 @@ class GroupContainer extends Component {
                     <GroupTableHeader headers={headers} />
                   </TableHeader>
                   <TableBody displayRowCheckbox={false}>
-                    {this.renderGroups(this.props.groups)}
+                    {renderGroups(this.props.groups)}
                   </TableBody>
                 </Table>
               </div>

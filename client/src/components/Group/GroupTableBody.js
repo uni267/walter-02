@@ -11,10 +11,10 @@ import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
 import ImageEdit from "material-ui/svg-icons/image/edit";
 
-const GroupTableBody = ({ group, key }) => {
+const GroupTableBody = ({ group, key, headers }) => {
   const renderUser = (user, key) => {
     return (
-      <Chip key={key} style={{ marginRight: 10 }}>
+      <Chip key={key} style={{ marginRight: 10, marginTop: 5, marginBottom: 5 }}>
         {user.name}
       </Chip>
     );
@@ -22,14 +22,18 @@ const GroupTableBody = ({ group, key }) => {
 
   return (
     <TableRow>
-      <TableRowColumn>{group.name}</TableRowColumn>
-      <TableRowColumn>{group.description}</TableRowColumn>
-      <TableRowColumn>
-        <div style={{ display: "flex" }}>
+      <TableRowColumn style={{ width: headers[0].width }}>
+        {group.name}
+      </TableRowColumn>
+      <TableRowColumn style={{ width: headers[1].width }}>
+        {group.description}
+      </TableRowColumn>
+      <TableRowColumn style={{ width: headers[2].width }}>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
           {group.belongs_to.map( (user, idx) => renderUser(user, idx) )}
         </div>
       </TableRowColumn>
-      <TableRowColumn>
+      <TableRowColumn style={{ width: headers[3].width }}>
         <IconButton containerElement={<Link to={`/groups/${group._id}`} />}>
           <ImageEdit />
         </IconButton>
