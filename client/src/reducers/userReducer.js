@@ -63,7 +63,8 @@ const userReducer = (state = initialState, action) => {
         email: "",
         password: "",
         groups: []
-      }
+      },
+      errors: {}
     };
   case actionTypes.CHANGE_USER_VALIDATION_ERROR:
     return {
