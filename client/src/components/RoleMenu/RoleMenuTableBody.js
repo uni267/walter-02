@@ -13,20 +13,31 @@ import Chip from "material-ui/Chip";
 
 const RoleMenuTableBody = ({
   roleMenu,
-  key
+  key,
+  headers
 }) => {
   return (
     <TableRow key={key}>
-      <TableRowColumn>{roleMenu.name}</TableRowColumn>
-      <TableRowColumn>{roleMenu.description}</TableRowColumn>
-      <TableRowColumn>
-        <div style={{ display: "flex"}}>
+      <TableRowColumn style={{ width: headers[0].width }}>
+        {roleMenu.name}
+      </TableRowColumn>
+      <TableRowColumn style={{ width: headers[1].width }}>
+        {roleMenu.description}
+      </TableRowColumn>
+      <TableRowColumn style={{ width: headers[2].width }}>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
           { roleMenu.menus.map( (menus, idx) => {
-            return <Chip key={idx} style={{ marginRight: 10 }}>{menus.label}</Chip>;
+            return (
+              <Chip
+                key={idx}
+                style={{ marginRight: 10, marginTop: 5, marginBottom: 5 }}>
+                {menus.label}
+              </Chip>
+            );
           })}
         </div>
       </TableRowColumn>
-      <TableRowColumn>
+      <TableRowColumn style={{ width: headers[3].width }}>
           <IconButton containerElement={<Link to={`/role_menus/${roleMenu._id}`} />}>
             <ImageEdit />
           </IconButton>

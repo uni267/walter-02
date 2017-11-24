@@ -30,49 +30,54 @@ class RoleMenuContainer extends Component {
 
   render() {
     const headers = [
-      { name: "表示名" },
-      { name: "備考" },
-      { name: "メニュー" },
-      { name: "編集" }
+      { name: "表示名", width: "25%" },
+      { name: "備考", width: "25%" },
+      { name: "メニュー", width: "40%" },
+      { name: "編集", width: "10%" }
     ];
 
-      return (
-        <div>
-          <NavigationContainer />
-          <Card>
-            <CardTitle title="メニュー管理" />
-            <CardText>
-              <div style={{ display: "flex" }}>
-                <div style={{ width:"80%" }}>
-                  <Table>
-                    <TableHeader displaySelectAll={false} adjustForCheckbox={false} >
-                      <RoleMenuTableHeader headers={headers} />
-                    </TableHeader>
-                    <TableBody displayRowCheckbox={false}>
-                      { this.props.roleMenus.map( (roleMenu,idx) => {
-                        return <RoleMenuTableBody roleMenu={roleMenu} key={idx} />;
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-
-                <div style={{ width:"20%", paddingLeft: 15 }}>
-                  <Divider />
-                  <Menu>
-                    <MenuItem
-                      primaryText="ロール作成"
-                      leftIcon={<ActionVerifiedUser />}
-                      onTouchTap={() => this.props.history.push("/role_menus/create")}
-                  />
-                  </Menu>
-                </div>
-
-
+    return (
+      <div>
+        <NavigationContainer />
+        <Card>
+          <CardTitle title="メニュー管理" />
+          <CardText>
+            <div style={{ display: "flex" }}>
+              <div style={{ width:"80%" }}>
+                <Table>
+                  <TableHeader displaySelectAll={false} adjustForCheckbox={false} >
+                    <RoleMenuTableHeader headers={headers} />
+                  </TableHeader>
+                  <TableBody displayRowCheckbox={false}>
+                    { this.props.roleMenus.map( (roleMenu,idx) => {
+                      return (
+                        <RoleMenuTableBody
+                          key={idx}
+                          roleMenu={roleMenu}
+                          headers={headers} />
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </div>
-            </CardText>
-          </Card>
-        </div>
-      );
+
+              <div style={{ width:"20%", paddingLeft: 15 }}>
+                <Divider />
+                <Menu>
+                  <MenuItem
+                    primaryText="ロール作成"
+                    leftIcon={<ActionVerifiedUser />}
+                    onTouchTap={() => this.props.history.push("/role_menus/create")}
+                    />
+                </Menu>
+              </div>
+
+
+            </div>
+          </CardText>
+        </Card>
+      </div>
+    );
   };
 
 }
