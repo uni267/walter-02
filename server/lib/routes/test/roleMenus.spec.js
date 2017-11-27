@@ -495,7 +495,7 @@ describe(base_url,() => {
       describe('role_idがでたらめな文字列を指定',() => {
         const expected = {
           message: "ユーザタイプの取得に失敗しました",
-          detail: "ロールIDが不正なためユーザタイプを取得できませんでした"
+          detail: "ロールIDが不正なためユーザタイプを取得に失敗しました"
         };
         let response;
         before(done => {
@@ -686,7 +686,7 @@ describe(base_url,() => {
       describe('role_idにでたらめな文字列',() => {
         const expected = {
           message: "ユーザタイプの削除に失敗しました",
-          detail: "ロールIDが不正なためユーザタイプを削除できませんでした"
+          detail: "ロールIDが不正なためユーザタイプを削除に失敗しました"
         };
 
         let response;
@@ -723,7 +723,7 @@ describe(base_url,() => {
       describe('role_idがでたらめな文字列',() => {
         const expected = {
           message: "ユーザタイプの削除に失敗しました",
-          detail: "ロールIDが不正なためユーザタイプを削除できませんでした"
+          detail: "ロールIDが不正なためユーザタイプを削除に失敗しました"
         };
 
         let response;

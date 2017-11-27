@@ -82,16 +82,16 @@ export const create = (req, res, next) => {
 
       switch(e.message){
         case "name is empty":
-          errors.name = "ユーザタイプ名が空のため作成に失敗しました";
+          errors.name = "ユーザタイプ名が空です";
           break;
         case "name is duplicate":
-          errors.name = "同名のユーザタイプが既に存在するため作成に失敗しました";
+          errors.name = "そのユーザタイプ名は既に使用されています";
           break;
         case "name is too long":
-          errors.name = "ユーザタイプ名が長過ぎるため作成に失敗しました";
+          errors.name = "ユーザタイプ名が長すぎます";
           break;
         case "description is too long":
-          errors.description = "備考が長過ぎるため作成に失敗しました";
+          errors.description = "備考が長すぎます";
           break;
         default:
           errors.unknown = commons.errorParser(e);
@@ -132,7 +132,7 @@ export const view = (req, res, next) => {
 
       switch (e.message) {
         case "role_id is not valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なためユーザタイプを取得に失敗しました";
           break;
         case "role is not found":
           errors.role = "ユーザタイプが存在しません";
@@ -145,7 +145,7 @@ export const view = (req, res, next) => {
       res.status(400).json({
         status: {
           success: false,
-          message: "ユーザタイプを取得できませんでした",
+          message: "ユーザタイプの取得に失敗しました",
           errors }
       });
 
@@ -175,7 +175,7 @@ export const remove = (req, res, next) => {
 
       switch (e.message) {
         case "role_id is not valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なためユーザタイプを削除に失敗しました";
           break;
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないため削除に失敗しました";
@@ -188,7 +188,7 @@ export const remove = (req, res, next) => {
       res.status(400).json({
         status: {
           success: false,
-          message: "ユーザタイプを削除できませんでした",
+          message: "ユーザタイプの削除に失敗しました",
           errors }
       });
     }
@@ -223,16 +223,16 @@ export const updateName = (req, res, next) => {
 
       switch (e.message) {
         case "role_id is not valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なためユーザタイプ名の変更に失敗しました";
           break;
         case "name is empty":
-          errors.name = "ユーザタイプ名が空のため変更に失敗しました";
+          errors.name = "ユーザタイプ名が空です";
           break;
         case "name is duplicate":
-          errors.name = "同名のユーザタイプが既に存在するため作成に失敗しました";
+          errors.name = "そのユーザタイプ名は既に使用されています";
           break;
         case "name is too long":
-          errors.name = "ユーザタイプ名が長過ぎるため作成に失敗しました";
+          errors.name = "ユーザタイプ名が長すぎます";
           break;
         case "role is not found":
           errors.role = "指定されたユーザタイプが見つからないため変更に失敗しました";
@@ -277,7 +277,7 @@ export const updateDescription = (req, res, next) => {
 
       switch (e.message) {
         case "role_id is not valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なため備考の変更に失敗しました";
           break;
       case "role is not found":
         errors.role = "指定されたユーザタイプが見つからないため変更に失敗しました";
@@ -320,7 +320,7 @@ export const addMenuToRoleMenu = (req, res, next) => {
       let errors = {};
       switch (e.message) {
         case "role_id is not valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なためメニューの追加に失敗しました";
           break;
         case "role is empty":
           errors.role = "指定されたユーザタイプが見つからないためメニューの追加に失敗しました";
