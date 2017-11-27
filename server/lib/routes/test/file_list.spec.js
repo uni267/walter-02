@@ -17,7 +17,7 @@ const base_url = "/api/v1/files";
 const login_url = "/api/login";
 
 const request = defaults(supertest(app));
-let user;
+var user;
 
 // テスト用のアップロードファイル(client側から送信しているPayload)
 const requestPayload = {
@@ -171,7 +171,7 @@ describe(base_url,() => {
           let dir_id;
           before(done=>{
             // フォルダを新規作成
-            const create_dir_body = { dir_name:"新しいフォルダ" };
+            const create_dir_body = {dir_id:user.tenant.home_dir_id, dir_name:"新しいフォルダ" };
             // フォルダを作成
             new Promise((resolve, reject) => {
               request.post('/api/v1/dirs')
