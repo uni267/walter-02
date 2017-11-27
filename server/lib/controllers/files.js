@@ -1243,6 +1243,8 @@ export const toggleStar = (req, res, next) => {
           file_id === null ||
           file_id === "") throw "file_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
       const file = yield File.findById(file_id);
 
       if (file === null) throw "file is empty";
@@ -1260,10 +1262,13 @@ export const toggleStar = (req, res, next) => {
       let errors = {};
       switch (e) {
       case "file_id is empty":
-        errors.file_id = e;
+        errors.file_id = "ファイルIDが空のためファイルのお気に入りの設定に失敗しました";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルのお気に入りの設定に失敗しました";
         break;
       case "file is empty":
-        errors.file = e;
+        errors.file_id = "指定されたファイルが存在しないためファイルのお気に入りの設定に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -1271,7 +1276,11 @@ export const toggleStar = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ファイルのお気に入りの設定に失敗しました",
+          errors
+        }
       });
 
     }

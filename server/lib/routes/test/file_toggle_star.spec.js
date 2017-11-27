@@ -160,7 +160,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "ファイルのお気に入りの設定に失敗しました",
-        detail: "ファイルが存在しないためファイルのお気に入りの設定に失敗しました"
+        detail: "指定されたファイルが存在しないためファイルのお気に入りの設定に失敗しました"
       };
 
       before( done => {
