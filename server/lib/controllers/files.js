@@ -935,9 +935,13 @@ export const addTag = (req, res, next) => {
           file_id === undefined ||
           file_id === "") throw "file_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
       if (tag_id === null ||
           tag_id === undefined ||
           tag_id === "") throw "tag_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
 
       const [ file, tag ] = yield [ File.findById(file_id), Tag.findById(tag_id)];
 
@@ -961,14 +965,20 @@ export const addTag = (req, res, next) => {
       case "file_id is empty":
         errors.file_id = e;
         break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためタグの追加に失敗しました";
+        break;
       case "tag_id is empty":
         errors.tag_id = e;
         break;
+      case "tag_id is invalid":
+        errors.tag_id = "タグIDが不正のためタグの追加に失敗しました";
+        break;
       case "file is empty":
-        errors.file = e;
+        errors.file_id = "指定されたファイルが存在しないためタグの追加に失敗しました";
         break;
       case "tag is empty":
-        errors.tag = e;
+        errors.tag_id = "指定されたタグが存在しないためタグの追加に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -976,7 +986,11 @@ export const addTag = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "タグの追加に失敗しました",
+          errors
+        }
       });
     }
   });
@@ -991,9 +1005,13 @@ export const removeTag = (req, res, next) => {
           file_id === null ||
           file_id === "") throw "file_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
       if (tag_id === undefined ||
           tag_id === null ||
           tag_id === "") throw "tag_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
 
       const [ file, tag ] = yield [ File.findById(file_id), Tag.findById(tag_id) ];
 
@@ -1017,14 +1035,20 @@ export const removeTag = (req, res, next) => {
       case "file_id is empty":
         errors.file_id = e;
         break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためタグの削除に失敗しました";
+        break;
       case "tag_id is empty":
         errors.tag_id = e;
         break;
       case "file is empty":
-        errors.file = e;
+        errors.file_id = "指定されたファイルが存在しないためタグの削除に失敗しました";
         break;
       case "tag is empty":
-        errors.tag = e;
+        errors.tag_id = "指定されたタグが存在しないためタグの削除に失敗しました";
+        break;
+      case "tag_id is invalid":
+        errors.tag_id = "タグIDが不正のためタグの削除に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -1032,7 +1056,11 @@ export const removeTag = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "タグの削除に失敗しました",
+          errors
+        }
       });
     }
   });

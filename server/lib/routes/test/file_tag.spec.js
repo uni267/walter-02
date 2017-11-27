@@ -100,7 +100,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "タグの追加に失敗しました",
-        detail: "指定されたファイルが存在しないためタグの追加に失敗しました"
+        detail: "ファイルIDが不正のためタグの追加に失敗しました"
       };
 
       before( done => {
@@ -192,7 +192,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "タグの追加に失敗しました",
-        detail: "指定されたタグが存在しないためタグの追加に失敗しました"
+        detail: "タグIDが不正のためタグの追加に失敗しました"
       };
 
       before( done => {
@@ -228,7 +228,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.tag_id).equal(expected.detail);
         done();
       });
     });
@@ -274,7 +274,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.tag_id).equal(expected.detail);
         done();
       });
     });
@@ -338,7 +338,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "タグの削除に失敗しました",
-        detail: "指定されたファイルが存在しないためタグの削除に失敗しました"
+        detail: "ファイルIDが不正のためタグの削除に失敗しました"
       };
 
       before( done => {
@@ -432,7 +432,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "タグの削除に失敗しました",
-        detail: "指定されたタグが存在しないためタグの削除に失敗しました"
+        detail: "タグIDが不正のためタグの削除に失敗しました"
       };
 
       before( done => {
@@ -469,7 +469,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.tag_id).equal(expected.detail);
         done();
       });
     });
@@ -516,7 +516,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.tag_id).equal(expected.detail);
         done();
       });
     });
