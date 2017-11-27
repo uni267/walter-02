@@ -182,16 +182,16 @@ export const add = (req, res, next) => {
           errors.notifications = "お知らせが空のためお知らせの登録に失敗しました";
           break;
         case "title is empty":
-          errors.title = "タイトルが空のためお知らせの登録に失敗しました";
+          errors.title = "タイトルが空です";
           break;
         case "body is empty":
-          errors.body  = "本文が空のためお知らせの登録に失敗しました";
+          errors.body  = "本文が空です";
           break;
         case "users is empty":
-          errors.users = "ユーザーが空のためお知らせの登録に失敗しました";
+          errors.users = "ユーザーが空です";
           break;
         case "user is not find":
-          errors.user = "ユーザーが存在しないためお知らせの登録に失敗しました";
+          errors.user = "指定されたユーザーが存在しないためお知らせの登録に失敗しました";
           break;
       default:
         errors.unknown = e;
