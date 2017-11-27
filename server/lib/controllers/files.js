@@ -1006,31 +1006,44 @@ export const addMeta = (req, res, next) => {
   co(function* () {
     try {
       const { file_id } = req.params;
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw new ValidationError("ファイルのidが空です");
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
       const { meta, value } = req.body;
 
-      if (meta._id === undefined) throw new ValidationError("メタ情報のidが空です");
+      if (meta._id === undefined || meta._id === null || meta._id === "") throw "metainfo_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(meta._id)) throw "metainfo_id is invalid";
 
       if (value === undefined ||
           value === null ||
-          value === "") throw new ValidationError("メタ情報の値が空です");
+          value === "") throw "metainfo value is empty";
 
       const [ file, metaInfo ] = yield [
         File.findById(file_id),
         MetaInfo.findById(meta._id)
       ];
 
-      if (file === null) throw new RecordNotFoundException("指定されたファイルが見つかりません");
-      if (metaInfo === null) throw new RecordNotFoundException("指定されたメタ情報が見つかりません");
+      if (file === null) throw "file is empty";
+      if (metaInfo === null) throw "metainfo is empty";
 
-      const addMeta = new FileMetaInfo({
-        file_id, meta_info_id: metaInfo._id, value
+      const registMetaInfo = yield FileMetaInfo.findOne({
+        file_id: file_id,
+        meta_info_id: meta._id
       });
 
-      const changedMeta = yield addMeta.save();
+      let changedMeta;
+
+      // 既に登録されている場合
+      if (registMetaInfo) {
+        registMetaInfo.value = value;
+        changedMeta = yield registMetaInfo.save();
+      } else {
+        const addMeta = new FileMetaInfo({
+          file_id, meta_info_id: metaInfo._id, value
+        });
+
+        changedMeta = yield addMeta.save();
+      }
 
       res.json({
         status: { success: true },
@@ -1039,16 +1052,38 @@ export const addMeta = (req, res, next) => {
 
     }
     catch (e) {
-      let errors;
+      let errors = {};
 
-      if (e.name === "Error") {
-        errors = commons.errorParser(e);
-        console.log(errors);
-      } else {
-        errors = e;
+      switch(e) {
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためメタ情報の追加に失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためメタ情報の追加に失敗しました";
+        break;
+      case "metainfo_id is empty":
+        errors.metainfo_id = "メタ情報IDが空のためメタ情報の追加に失敗しました";
+        break;
+      case "metainfo_id is invalid":
+        errors.metainfo_id = "メタ情報IDが不正のためメタ情報の追加に失敗しました";
+        break;
+      case "metainfo is empty":
+        errors.metainfo_id = "指定されたメタ情報が存在しないためメタ情報の追加に失敗しました";
+        break;
+      case "metainfo value is empty":
+        errors.metainfo_value = "メタ情報の値が空のためメタ情報の追加に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
       }
+
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "メタ情報の追加に失敗しました",
+          errors
+        }
       });
     }
   });
@@ -1063,9 +1098,13 @@ export const removeMeta = (req, res, next) => {
           file_id === null ||
           file_id === "") throw "file_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
       if (meta_id === undefined ||
           meta_id === null ||
           meta_id === "") throw "meta_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(meta_id)) throw "meta_id is invalid";
 
       const [ file, metaInfo ] = yield [
         File.findById(file_id),
@@ -1078,7 +1117,13 @@ export const removeMeta = (req, res, next) => {
       const removeMeta = yield FileMetaInfo.findOne({
         file_id: mongoose.Types.ObjectId(file_id),
         meta_info_id: mongoose.Types.ObjectId(meta_id)
-      }).remove();
+      });
+
+      if (removeMeta) {
+        removeMeta.remove();
+      } else {
+        throw "meta_id is not registered";
+      }
 
       res.json({
         status: { success: true },
@@ -1090,16 +1135,25 @@ export const removeMeta = (req, res, next) => {
 
       switch (e) {
       case "file_id is empty":
-        errors.file_id = e;
+        errors.file_id = "ファイルIDが空のためメタ情報の削除に失敗しました";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためメタ情報の削除に失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためメタ情報の削除に失敗しました";
         break;
       case "meta_id is empty":
         errors.meta_id = e;
         break;
-      case "file is empty":
-        errors.file = e;
+      case "meta_id is invalid":
+        errors.meta_id = "メタ情報IDが不正のためメタ情報の削除に失敗しました";
         break;
       case "metaInfo is empty":
-        errors.metaInfo = e;
+        errors.meta_id = "指定されたメタ情報が存在しないためメタ情報の削除に失敗しました";
+        break;
+      case "meta_id is not registered":
+        errors.meta_id = "指定されたメタ情報IDがファイルに存在しないためメタ情報の削除に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -1107,7 +1161,11 @@ export const removeMeta = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "メタ情報の削除に失敗しました",
+          errors
+        }
       });
     }
   });
