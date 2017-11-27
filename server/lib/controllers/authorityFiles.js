@@ -36,7 +36,7 @@ export const files = (req, res, next) => {
       let errors = {};
       switch (e.message) {
         case "files is undefined":
-          errors.files = "ファイルが指定されていません";
+          errors.files = "ファイルIDが空のためファイル権限の取得に失敗しました";
         break;
       default:
         errors.unknown = e;
