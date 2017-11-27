@@ -47,8 +47,8 @@ describe(base_url,() => {
       expect( isArray(response.body.body)).equal(true);
       done();
     });
-    it('tagが2件登録されている',done => {
-      expect( response.body.body.length ).equal(2);
+    it('tagが1件登録されている',done => {
+      expect( response.body.body.length ).equal(1);
       done();
     });
     it('tagsには_idが含まれる', done => {
@@ -313,7 +313,7 @@ describe(base_url,() => {
         };
         const body = {
           tag:{
-            label: "重要",
+            label: "非表示",
             color: "#FFEEFF"
           }
         };
@@ -955,7 +955,7 @@ describe(base_url,() => {
           detail: "そのタグ名は既に使用されています"
         };
         const body = {
-          label: "重要"
+          label: "非表示"
         };
         let response;
         before(done => {

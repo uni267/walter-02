@@ -81,13 +81,13 @@ export const view = (req, res, next) => {
       let errors = {};
       switch (e.message) {
       case "tag_id is not valid":
-        errors.tag_id = "タグIDが不正です";
+        errors.tag_id = "タグIDが不正なためタグの取得に失敗しました";
         break;
       case "tag_id is empty":
         errors.tag_id = "タグIDが空のためタグの取得に失敗しました";
         break;
       case "tag is empty":
-        errors.tag = "タグが存在しないためタグの取得に失敗しました";
+        errors.tag = "指定されたタグが存在しないためタグの取得に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -140,10 +140,10 @@ export const create = (req, res, next) => {
 
       switch (e.message) {
       case "label is empty":
-        errors.label = "タグ名は必須です";
+        errors.label = "タグ名が空です";
         break;
       case "label is too long":
-        errors.label = `タグ名の長さは${constants.MAX_STRING_LENGTH}文字までです`;
+        errors.label = 'タグ名が長すぎます';
         break;
       case "label is a duplicate":
         errors.label = "そのタグ名は既に使用されています";
@@ -185,10 +185,10 @@ export const remove = (req, res, next) => {
       let errors = {};
       switch (e.message) {
       case "tag_id is not valid":
-      errors.tag_id = "タグIDが不正です";
+      errors.tag_id = "タグIDが不正なためタグの取得に失敗しました";
       break;
       case "tag is empty":
-        errors.tag = "タグが存在しないためタグの取得に失敗しました";
+        errors.tag = "指定されたタグが存在しないためタグの取得に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -241,19 +241,19 @@ export const changeLabel = (req, res, next) => {
 
       switch (e.message) {
       case "tag_id is not valid":
-        errors.tag_id = "タグIDが不正です";
+        errors.tag_id = "タグIDが不正なためタグ名の変更に失敗しました";
         break;
       case "label is empty":
-        errors.label = "タグ名は必須です";
+        errors.label = "タグ名が空です";
         break;
       case "lable is too long":
-        errors.label = `タグ名の長さは${constants.MAX_STRING_LENGTH}文字までです`;
+        errors.label = `タグ名が長すぎます`;
         break;
       case "label is a duplicate":
         errors.label = "そのタグ名は既に使用されています";
         break;
       case "tag is empty":
-        errors.tag = "タグが存在しないため更新に失敗しました";
+        errors.tag = "指定されたタグが存在しないためタグ名の変更に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -297,10 +297,10 @@ export const changeColor = (req, res, next) => {
 
       switch (e.message) {
       case "tag_id is not valid":
-        errors.tag_id = "タグIDが不正です";
+        errors.tag_id = "タグIDが不正なため色の登録に失敗しました";
         break;
       case "tag is empty":
-        errors.tag = "タグが存在しないため色の登録に失敗しました";
+        errors.tag = "指定されたタグが存在しないため色の登録に失敗しました";
         break;
       case "color is not valid":
         errors.color = "色は16進数で指定してください";
