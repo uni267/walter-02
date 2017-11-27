@@ -1119,7 +1119,7 @@ describe(base_url,() => {
             done();
           });
           it(`返却値のlengthは6である`,done =>{
-            expect( response.body.body.length ).equal(30);
+            expect( response.body.body.length ).equal(6);
             done();
           });
         });
@@ -1150,7 +1150,7 @@ describe(base_url,() => {
             done();
           });
           it(`返却値のlengthは0である`,done =>{
-            expect( response.body.body.length ).equal(30);
+            expect( response.body.body.length ).equal(0);
             done();
           });
         });

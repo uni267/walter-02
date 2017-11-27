@@ -90,16 +90,16 @@ export const create = (req, res, next) => {
         errors.role = "ロールが空のため作成に失敗しました";
         break;
       case "name is empty":
-        errors.name = "ロール名が空のため作成に失敗しました";
+        errors.name = "ロール名が空です";
         break;
       case "name is duplicate":
-        errors.name = "同名のロールが既に存在するため作成に失敗しました";
+        errors.name = "そのロール名は既に使用されています";
         break;
       case "name is too long":
-        errors.name = "ロール名が長過ぎるため作成に失敗しました";
+        errors.name = "ロール名が長すぎます";
         break;
       case "description is too long":
-        errors.description = "備考が長過ぎるため作成に失敗しました";
+        errors.description = "備考が長すぎます";
       default:
         errors.unknown = commons.errorParser(e);
         break;
@@ -131,17 +131,17 @@ export const view = (req, res, next) => {
       let errors = {};
       switch (e.message){
         case "role is not found":
-          errors.role = "ロールが存在しないため取得できませんでした";
+          errors.role = "指定されたロールが存在しないためロールの取得に失敗しました";
           break;
         case "role_id is not valid":
-          errors.role = "ロールIDが不正です";
+          errors.role = "ロールIDが不正なためロールの取得に失敗しました";
           break;
         default:
           errors = e;
       }
 
       res.status(400).json({
-        status: { success: false, message:"ロールが取得できませんでした", errors }
+        status: { success: false, message:"ロールの取得に失敗しました", errors }
       });
     }
 
@@ -178,16 +178,16 @@ export const updateName = (req, res, next) => {
 
       switch (e.message) {
       case "name is empty":
-        errors.name = "名称が空のため変更に失敗しました";
+        errors.name = "ロール名が空です";
         break;
       case "name is duplicate":
-        errors.name = "同名のロールが既に存在するため変更に失敗しました";
+        errors.name = "そのロール名は既に使用されています";
         break;
       case "name is too long":
-        errors.name = "名称が長過ぎるため変更に失敗しました";
+        errors.name = "ロール名が長すぎます";
         break;
       case "role_id is not valid":
-        errors.role_id = "ロールIDが不正です";
+        errors.role_id = "ロールIDが不正なためロール名の変更に失敗しました";
         break;
       case "role is not found":
         errors.role = "指定されたロールが見つからないため変更に失敗しました";
@@ -228,10 +228,10 @@ export const updateDescription = (req, res, next) => {
 
       switch (e.message) {
         case "role is not found":
-          errors.role = "指定されたロールが見つからないため変更に失敗しました";
+          errors.role = "指定されたロールが見つからないため備考の変更に失敗しました";
           break;
         case "role_id is not valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なため備考の変更に失敗しました";
           break;
       default:
         errors.unknown = commons.errorParser(e);
@@ -270,7 +270,7 @@ export const remove = (req, res, next) => {
         errors.role = "指定されたロールが見つからないため削除に失敗しました";
         break;
       case "role is not valid":
-        errors.role = "ロールIDが不正です";
+        errors.role = "ロールIDが不正なため削除に失敗しました";
         break;
       default:
         errors.unknown = commons.errorParser(e);
@@ -278,7 +278,7 @@ export const remove = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, message:"ロールを削除できませんでした" ,errors }
+        status: { success: false, message:"ロールの削除に失敗しました" ,errors }
       });
     }
   });
@@ -317,10 +317,10 @@ export const removeActionOfRoleFile = (req, res, next) => {
 
       switch (e.message) {
         case "role_id is not Valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なためアクションの削除に失敗しました";
           break;
         case "action_id is not Valid":
-          errors.action_id = "アクションIDが不正です";
+          errors.action_id = "アクションIDが不正なためアクションの削除に失敗しました";
           break;
         case "role is empty":
           errors.role = "指定されたロールが存在しないため削除に失敗しました";
@@ -371,10 +371,10 @@ export const addActionToRoleFile = (req, res, next) => {
       let errors = {};
       switch (e.message) {
         case "role_id is not Valid":
-          errors.role_id = "ロールIDが不正です";
+          errors.role_id = "ロールIDが不正なためアクションの追加に失敗しました";
           break;
         case "action_id is not Valid":
-          errors.action_id = "アクションIDが不正です";
+          errors.action_id = "アクションIDが不正なためアクションの追加に失敗しました";
           break;
         case "role is empty":
           errors.role = "指定されたロールが見つからないためアクションの追加に失敗しました";

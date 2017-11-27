@@ -108,8 +108,9 @@ describe(base_url,() => {
         describe('dir_idが存在しないObjectId', () => {
           let response;
           before(done => {
-            const id = new mongoose.Types.ObjectId();
-            request.get(`${base_url}/${id}`)
+            const id = new mongoose.Types.ObjectId().toString();
+            request.get(`${base_url}`)
+            .query({dir_id:id})
             .end( ( err, res ) => {
               response = res;
               done();
@@ -136,7 +137,8 @@ describe(base_url,() => {
           let response;
           before(done => {
             const id = 'jlasjfafewlajfklejflawfkealf';
-            request.get(`${base_url}/${id}`)
+            request.get(`${base_url}`)
+            .query({dir_id:id})
             .end( ( err, res ) => {
               response = res;
               done();
@@ -204,7 +206,8 @@ describe(base_url,() => {
             }).then(res => {
               return new Promise((resolve, reject) =>{
                 // 作成したフォルダに対してリストを取得する
-                request.get(`${base_url}/${dir_id}`)
+                request.get(`${base_url}`)
+                .query({dir_id:dir_id})
                 .end( ( err, res ) => {
                   response = res;
                   resolve(res);
@@ -244,7 +247,7 @@ describe(base_url,() => {
       describe('pageが不正',() => {
         const expected = {
           message: "ファイル一覧の取得に失敗しました",
-          detail: "pageが数字では無いファイル一覧の取得に失敗しました"
+          detail: "pageが数字では無いためファイル一覧の取得に失敗しました"
         };
         describe('pageが""', () => {
           let response;
@@ -418,7 +421,7 @@ describe(base_url,() => {
           let response;
           before(done => {
             request.get(base_url)
-            .query({ order: '' })
+            .query({ order: "" })
             .end( ( err, res ) => {
               response = res;
               done();
@@ -938,7 +941,7 @@ describe(base_url,() => {
             request.get(base_url)
             .end( ( err, res ) => {
               response = res;
-              done();z
+              done();
             });
           });
           it('http(200)が返却される', done => {
@@ -1008,7 +1011,7 @@ describe(base_url,() => {
             done();
           });
           it(`返却値のlengthは0である`,done =>{
-            expect( response.body.body.length ).equal(2);
+            expect( response.body.body.length ).equal(0);
             done();
           });
         });

@@ -276,7 +276,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption) => {
             }
           }
         }
-      ]).skip(offset).limit(limit).sort(sortOption);
+      ]).skip(offset).sort(sortOption).limit(limit);
 
     } catch (error) {
       throw error;

@@ -188,12 +188,12 @@ describe(base_url,() => {
             // 作成したフォルダのIDを取得
             return new Promise((resolve,reject)=>{
               request.get(`/api/v1/files`).end((err,res) => {
-                const create_dir = res.body.body.filter(file => (file.name === create_dir_body.name) );
+                const create_dir = res.body.body.filter(file => (file.name === create_dir_body.dir_name) );
                 resolve(create_dir);
               });
             });
           }).then(res => {
-            request.get(`${base_url}/${res._id}`)
+            request.get(`${base_url}/${res[0]._id}`)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -284,7 +284,7 @@ describe(base_url,() => {
       describe('閲覧権限がないfile_id',() => {
         const expected = {
           message: "ファイルの取得に失敗しました",
-          detail: "閲覧権限が無いためファイルの取得に失敗しました"
+          detail: "指定されたファイルが見つかりません"
         };
         let response;
         before(done => {

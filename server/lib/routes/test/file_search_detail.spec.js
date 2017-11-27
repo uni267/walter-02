@@ -104,7 +104,7 @@ describe(base_url,() => {
       it.skip('comment', done => {done();});
     });
     describe('正常系',() => {
-      describe.only('ファイル名で検索',() => {
+      describe('ファイル名で検索',() => {
 
         let response;
         before(done => {

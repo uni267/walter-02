@@ -15,7 +15,9 @@ import {
   flattenDeep,
   reject,
   chain,
-  uniq
+  uniq,
+  findIndex,
+  isNaN
 } from "lodash";
 
 // etc
@@ -24,7 +26,7 @@ import * as commons from "./commons";
 import {
   ValidationError,
   RecordNotFoundException,
-  PermittionDeniedException
+  PermisstionDeniedException
 } from "../errors/AppError";
 
 // constants
@@ -56,17 +58,33 @@ export const index = (req, res, next) => {
         dir_id = res.user.tenant.home_dir_id;
       }
 
-      const file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST );
+      if ( !mongoose.Types.ObjectId.isValid(dir_id) ) throw new ValidationError("dir_id is not valid");
+      const _dir = yield File.findById(dir_id);
+
+      if(_dir === null) throw new RecordNotFoundException("dir is not found");
+
+      const file_ids = [
+        ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
+        res.user.tenant.home_dir_id,
+        res.user.tenant.trash_dir_id
+      ];
+
+      if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
 
       const conditions = {
         dir_id: mongoose.Types.ObjectId(dir_id),
         is_deleted: false,
         _id: {$in : file_ids}
       };
+
+      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
+      if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
       const sortOption = yield createSortOption(sort, order);
 
       // pagination
-      if (page === undefined || page === null || page === "") page = 0;
+      if ( page === undefined || page === null ) page = 0;
+      if ( page === "" || isNaN( parseInt(page) ) ) throw new ValidationError("page is not number");
+
       const limit = constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
 
@@ -93,16 +111,29 @@ export const index = (req, res, next) => {
     catch (e) {
 
       let errors = {};
-      switch (e) {
-      case "dir_id is empty":
-        errors.dir_id = "dir_id is empty";
-        break;
-      default:
-        errors.unknown = e;
+      switch (e.message) {
+        case "dir_id is not valid":
+        case "dir is not found":
+          errors.dir_id = "指定されたフォルダが存在しないためファイル一覧の取得に失敗しました";
+          break;
+        case "dir_id is empty":
+          errors.dir_id = "dir_id is empty";
+          break;
+        case "permission denied":
+          errors.dir_id = "閲覧権限が無いためファイル一覧の取得に失敗しました";
+          break;
+        case "page is not number":
+          errors.page = "pageが数字では無いためファイル一覧の取得に失敗しました";
+          break;
+        case "sort is empty":
+          errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+          break;
+        default:
+          errors.unknown = e;
       }
       logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }
       });
 
     }
@@ -119,13 +150,14 @@ export const view = (req, res, next) => {
           file_id === "") {
         throw new ValidationError("file_idが空です");
       }
+      if( !mongoose.Types.ObjectId.isValid( file_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
       const file_ids = yield getAllowedFileIds(
         res.user._id, constants.PERMISSION_VIEW_DETAIL
       );
 
       if (!file_ids.map( f => f.toString() ).includes(file_id)) {
-        throw new PermittionDeniedException("権限がありません");
+        throw new PermisstionDeniedException("指定されたファイルが見つかりません");
       }
 
       const conditions = {
@@ -142,7 +174,11 @@ export const view = (req, res, next) => {
       }
 
       if (file.is_deleted) {
-        throw new RecordNotFoundException("ファイルは既に削除されています");
+        throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
+      }
+
+      if (file.is_dir) {
+        throw new RecordNotFoundException("フォルダを指定しているためファイルの取得に失敗しました");
       }
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
@@ -157,7 +193,7 @@ export const view = (req, res, next) => {
       logger.error(e);
 
       res.status(400).json({
-        status: { success: false, errors: e }
+        status: { success: false,message:"ファイルの取得に失敗しました", errors: e }
       });
     }
   });
@@ -220,25 +256,36 @@ export const search = (req, res, next) => {
 
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
-      const file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST );
+      const file_ids = [
+        ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
+        res.user.tenant.home_dir_id,
+        res.user.tenant.trash_dir_id
+      ];
+
+      const replace_target = { '[':'\\[', '(':'\\(', '-': '\\-', '.':'\\.', '*':'\\*', '$':'\\$', '|':'\\|' };
+      const query_param = q.replace(/[\[\-\.\*]/g, function(m) { return replace_target[m]; });
 
       const conditions = {
         dir_id: { $ne: trash_dir_id },
         $or: [
-          { name: { $regex: q } },
-          { "meta_infos.value": { $regex: q } }
+          { name: { $regex: query_param } },
+          { "meta_infos.value": { $regex: query_param } }
         ],
         is_display: true,
         is_deleted: false,
         _id: {$in : file_ids}
       };
 
-      const _page = page === undefined || page === null || page === ""
-            ? 0 : page;
+      const _page = page === undefined || page === null
+        ? 0 : page;
+      if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
       const limit = constants.FILE_LIMITS_PER_PAGE;
       const offset = _page * limit;
       const total = yield File.find(conditions).count();
+
+      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
+      if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
       const _sort = yield createSortOption(sort, order);
 
@@ -273,8 +320,21 @@ export const search = (req, res, next) => {
       });
     }
     catch (e) {
-      res.json({
-        status: { success: false, message: "ファイルの取得に失敗", errors: e },
+
+      let errors = {};
+      switch (e.message) {
+        case "page is not number":
+          errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
+          break;
+        case "sort is empty":
+          errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+          break;
+        default:
+          errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, message: "ファイル一覧の取得に失敗しました", errors },
         body: []
       });
     }
@@ -1293,26 +1353,28 @@ export const addAuthority = (req, res, next) => {
       const { file_id } = req.params;
       const { user, role } = req.body;
 
+      if(file_id === undefined || file_id === null || file_id === "") throw new ValidationError("file_id is empty");
+
       const file = yield File.findById(file_id);
       if (file === null) throw "file is empty";
 
       const _role = yield RoleFile.findById(role._id);
       if (_role === null) throw "role is empty";
 
-      if (user.type === undefined || user.type === null || user.type === "") throw "user.type is empty";
+      if (user.type === undefined || user.type === null || user.type === "") throw new ValidationError( "user.type is empty" );
 
 
       const authority = new AuthorityFile();
       if(user.type === 'user'){
         const _user = yield User.findById(user._id);
-        if (_user === null) throw "user is empty";
+        if (_user === null) throw new RecordNotFoundException( "user is empty" );
 
         authority.files = file;
         authority.users = _user;
         authority.role_files = _role;
       }else{
         const _group = yield Group.findById(user._id);
-        if (_group === null) throw "group is empty";
+        if (_group === null) throw new RecordNotFoundException("group is empty");
 
         authority.files = file;
         authority.groups = _group;
@@ -1329,7 +1391,10 @@ export const addAuthority = (req, res, next) => {
     }
     catch (e) {
       const errors = {};
-      switch (e) {
+      switch (e.message) {
+      case "file_id is empty":
+        errors.file_id = "ファイルIDが空のためファイル権限の取得に失敗しました";
+        break;
       case "file is empty":
         errors.file = "追加対象のファイルが見つかりません";
         break;
