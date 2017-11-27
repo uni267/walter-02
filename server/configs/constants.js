@@ -37,14 +37,18 @@ export const LOGGER_CONFIG = {
   categories:{
     default: {
       appenders:['default'],
-      level: 'ALL',
+      level: 'ALL'
     },
     production: {
       appenders:['production'],
-      level: 'error',
+      level: 'error'
     }
-  },
+  }
 };
+
+// 禁止文字一覧
+// 使い方: string.match( new RegExp(ILLIGAL_CHARACTERS.join("|")))
+export const ILLIGAL_CHARACTERS = ["\\\\", "\\/", "\\:", "\\*", "\\?", "\\<", "\\>", "\\|"];
 
 // 権限(file)
 export const PERMISSION_VIEW_LIST = "list";
