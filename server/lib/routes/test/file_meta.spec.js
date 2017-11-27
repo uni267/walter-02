@@ -118,7 +118,7 @@ describe(files_url, () => {
       let value = "test value";
       let expected = {
         message: "メタ情報の追加に失敗しました",
-        detail: "指定されたファイルが存在しないためメタ情報の追加に失敗しました"
+        detail: "ファイルIDが不正のためメタ情報の追加に失敗しました"
       };
 
       before( done => {
@@ -135,6 +135,11 @@ describe(files_url, () => {
 
       it("http(400)が返却される", done => {
         expect(payload.status).equal(400);
+        done();
+      });
+
+      it("successはfalse", done => {
+        expect(payload.body.status.success).equal(false);
         done();
       });
 
@@ -181,6 +186,258 @@ describe(files_url, () => {
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
         expect(payload.body.status.errors.file_id).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタidがundefinedの場合", () => {
+      let payload;
+      let value = "test value";
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "メタ情報IDが空のためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta: {}, value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_id).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタidがnullの場合", () => {
+      let payload;
+      let value = "test value";
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "メタ情報IDが空のためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta: {_id: null} , value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_id).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタidがoid形式ではない場合", () => {
+      let payload;
+      let value = "test value";
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "メタ情報IDが不正のためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta: {_id: "invalid_oid"} , value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_id).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタidが存在しない場合", () => {
+      let payload;
+      let value = "test value";
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "指定されたメタ情報が存在しないためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta: {_id: file._id}, value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_id).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタの値がundefinedの場合", () => {
+      let payload;
+      let value;
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "メタ情報の値が空のためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta, value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_value).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタの値がnullの場合", () => {
+      let payload;
+      let value = null;
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "メタ情報の値が空のためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta, value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_value).equal(expected.detail);
+        done();
+      });
+    });
+
+    describe("メタの値が空文字の場合", () => {
+      let payload;
+      let value = "";
+      let expected = {
+        message: "メタ情報の追加に失敗しました",
+        detail: "メタ情報の値が空のためメタ情報の追加に失敗しました"
+      };
+
+      before( done => {
+        new Promise( (resolve, reject) => {
+          request
+            .post(files_url + `/${file._id}/meta`)
+            .send({ meta, value })
+            .end( (err, res) => resolve(res) );
+        }).then(res => {
+          payload = res;
+          done();
+        });
+      });
+
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
+
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
+
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.metainfo_value).equal(expected.detail);
         done();
       });
     });
@@ -319,7 +576,7 @@ describe(files_url, () => {
       let nextPayload;
       let expected = {
         message: "メタ情報の削除に失敗しました",
-        detail: "指定されたファイルが存在しないためメタ情報の削除に失敗しました"
+        detail: "ファイルIDが不正のためメタ情報の削除に失敗しました"
       };
 
       before( done => {
@@ -368,7 +625,7 @@ describe(files_url, () => {
       before( done => {
         new Promise( (resolve, reject) => {
           request
-            .delete(files_url + `/${ObjectId()}/meta/${meta._id}`)
+            .delete(files_url + `/${meta._id}/meta/${meta._id}`)
             .end( (err, res) => resolve(res) );
         }).then( res => {
           payload = res;
@@ -405,7 +662,7 @@ describe(files_url, () => {
       let nextPayload;
       let expected = {
         message: "メタ情報の削除に失敗しました",
-        detail: "指定されたメタ情報が存在しないためメタ情報の削除に失敗しました"
+        detail: "メタ情報IDが不正のためメタ情報の削除に失敗しました"
       };
 
       before( done => {
@@ -438,7 +695,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.meta_id).equal(expected.detail);
         done();
       });
     });
@@ -481,7 +738,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.meta_id).equal(expected.detail);
         done();
       });
     });
@@ -521,7 +778,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.metainfo_id).equal(expected.detail);
+        expect(payload.body.status.errors.meta_id).equal(expected.detail);
         done();
       });
 
