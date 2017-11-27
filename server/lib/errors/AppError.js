@@ -27,9 +27,9 @@ export class RecordNotFoundException extends AppError {
   }
 }
 
-export class PermittionDeniedException extends AppError {
+export class PermisstionDeniedException extends AppError {
   constructor(message, body) {
     super(message, body);
-    this.name = "PermittionDeniedException";
+    this.name = "PermisstionDeniedException";
   }
 }

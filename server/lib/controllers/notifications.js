@@ -15,7 +15,7 @@ import logger from "../logger";
 import {
   ValidationError,
   RecordNotFoundException,
-  PermittionDeniedException
+  PermisstionDeniedException
 } from "../errors/AppError";
 
 const { ObjectId } = mongoose.Types;

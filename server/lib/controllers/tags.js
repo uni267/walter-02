@@ -9,7 +9,7 @@ import * as constants from "../../configs/constants";
 import {
   ValidationError,
   RecordNotFoundException,
-  PermittionDeniedException
+  PermisstionDeniedException
 } from "../errors/AppError";
 import logger from "../logger";
 
