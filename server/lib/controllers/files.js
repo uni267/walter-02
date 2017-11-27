@@ -486,16 +486,22 @@ export const move = (req, res, next) => {
   co(function* () {
     try {
       const file_id = req.params.file_id;
-      const dir_id = req.body.dir_id;
-      const user = yield User.findById(res.user._id);
 
       if (file_id === undefined ||
           file_id === null ||
           file_id === "") throw "file_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
+      const dir_id = req.body.dir_id;
+
       if (dir_id === undefined ||
           dir_id === null ||
-          file_id === "") throw "dir_id is empty";
+          dir_id === "") throw "dir_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(dir_id)) throw "dir_id is invalid";
+
+      const user = yield User.findById(res.user._id);
 
       if (user === null) throw "user is empty";
 
@@ -513,19 +519,25 @@ export const move = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-      // @todo ちゃんとメッセージを実装する
+
       switch (e) {
       case "file_id is empty":
-        errors.file_id = e;
+        errors.file_id = "";
         break;
-      case "dir_id is empty":
-        errors.dir_id = e;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルの移動に失敗しました";
         break;
       case "file is empty":
-        errors.file = e;
+        errors.file_id = "指定されたファイルが存在しないためファイルの移動に失敗しました";
+        break;
+      case "dir_id is empty":
+        errors.dir_id = "フォルダIDが空のためファイルの移動に失敗しました";
+        break;
+      case "dir_id is invalid":
+        errors.dir_id = "フォルダIDが不正のためファイルの移動に失敗しました";
         break;
       case "dir is empty":
-        errors.dir = e;
+        errors.dir_id = "指定されたフォルダが存在しないためファイルの移動に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -533,7 +545,11 @@ export const move = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ファイルの移動に失敗しました",
+          errors
+        }
       });
     }
   });

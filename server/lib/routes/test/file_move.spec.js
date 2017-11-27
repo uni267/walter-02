@@ -91,7 +91,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたファイルIDが空のためファイルの移動に失敗しました"
+        detail: "ファイルIDが不正のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -151,7 +151,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
 
           return new Promise( (resolve, reject) => {
             request
-              .patch(files_url + `/${ObjectId()}/move`)
+              .patch(files_url + `/${user._id}/move`)
               .send({ dir_id: user.tenant.trash_dir_id })
               .end( (err, res) => resolve(res) );
           });
@@ -185,7 +185,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
+        detail: "フォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -221,7 +221,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.dir_id).equal(expected.detail);
         done();
       });
     });
@@ -231,7 +231,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
+        detail: "フォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -267,7 +267,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.dir_id).equal(expected.detail);
         done();
       });
     });
@@ -277,7 +277,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
+        detail: "フォルダIDが空のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -313,7 +313,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.dir_id).equal(expected.detail);
         done();
       });
     });
@@ -323,7 +323,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
+        detail: "フォルダIDが不正のためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -359,7 +359,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.dir_id).equal(expected.detail);
         done();
       });
     });
@@ -369,7 +369,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       let createdFile;
       let expected = {
         message: "ファイルの移動に失敗しました",
-        detail: "指定されたフォルダIDが空のためファイルの移動に失敗しました"
+        detail: "指定されたフォルダが存在しないためファイルの移動に失敗しました"
       };
 
       before( done => {
@@ -383,8 +383,8 @@ describe("patch " + files_url + "/:file_id/move", () => {
 
           return new Promise( (resolve, reject) => {
             request
-              .patch(files_url + `/${ObjectId()}/move`)
-              .send()
+              .patch(files_url + `/${createdFile._id}/move`)
+              .send({ dir_id: user._id })
               .end( (err, res) => resolve(res) );
           });
 
@@ -405,7 +405,7 @@ describe("patch " + files_url + "/:file_id/move", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.dir_id).equal(expected.detail);
         done();
       });
     });
