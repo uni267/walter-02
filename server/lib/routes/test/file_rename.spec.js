@@ -42,6 +42,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
             resolve(res);
           });
       }).then( res => {
+        user = res.body.body.user;
         const user_id = res.body.body.user._id;
         done();
       });
@@ -94,7 +95,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "指定されたファイルIDが不正なためファイル名の変更に失敗しました"
+        detail: "ファイルIDが不正のためファイル名の変更に失敗しました"
       };
 
       before( done => {
@@ -157,7 +158,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
 
           return new Promise( (resolve, reject) => {
             request
-              .patch(files_url + `/${ObjectId()}/rename`)
+              .patch(files_url + `/${user._id}/rename`)
               .send({ name: "foobar" })
               .end( (err, res) => resolve(res) );
           });
@@ -192,7 +193,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "ファイル名が空です"
+        detail: "ファイル名が空のためファイル名の変更に失敗しました"
       };
 
       before( done => {
@@ -230,7 +231,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.file_name).equal(expected.detail);
         done();
       });
     });
@@ -240,7 +241,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "ファイル名が空です"
+        detail: "ファイル名が空のためファイル名の変更に失敗しました"
       };
 
       before( done => {
@@ -278,7 +279,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.file_name).equal(expected.detail);
         done();
       });
     });
@@ -288,7 +289,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       let file;
       let expected = {
         message: "ファイル名の変更に失敗しました",
-        detail: "ファイル名が空です"
+        detail: "ファイル名が空のためファイル名の変更に失敗しました"
       };
 
       before( done => {
@@ -326,7 +327,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.file_name).equal(expected.detail);
         done();
       });
     });
@@ -337,7 +338,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -375,7 +376,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -385,7 +386,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -423,7 +424,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -433,7 +434,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -471,7 +472,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -481,7 +482,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -519,7 +520,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -529,7 +530,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -567,7 +568,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -577,7 +578,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -615,7 +616,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -625,7 +626,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -663,7 +664,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });
@@ -673,7 +674,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         let file;
         let expected = {
           message: "ファイル名の変更に失敗しました",
-          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
+          detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました"
         };
 
         before( done => {
@@ -711,7 +712,7 @@ describe("patch " + files_url + "/:file_id/rename", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.file_id).equal(expected.detail);
+          expect(payload.body.status.errors.file_name).equal(expected.detail);
           done();
         });
       });

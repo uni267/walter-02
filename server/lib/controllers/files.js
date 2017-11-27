@@ -446,11 +446,18 @@ export const rename = (req, res, next) => {
           file_id === undefined ||
           file_id === "") throw "file_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
       if (changedFileName === null ||
           changedFileName === undefined ||
           changedFileName === "") throw "name is empty";
 
+      if (changedFileName.match( new RegExp(constants.ILLIGAL_CHARACTERS.join("|")))) {
+        throw "name is invalid";
+      }
+
       const file = yield File.findById(file_id);
+      if (file === null) throw "file is empty";
       file.name = changedFileName;
       const changedFile = yield file.save();
 
@@ -465,10 +472,19 @@ export const rename = (req, res, next) => {
 
       switch (e) {
       case "file_id is empty":
-        errors.fild_id = "file_id is empty";
+        errors.file_id = "file_id is empty";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイル名の変更に失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためファイル名の変更に失敗しました";
         break;
       case "name is empty":
-        errors.name = "ファイル名が空のため変更に失敗しました";
+        errors.file_name = "ファイル名が空のためファイル名の変更に失敗しました";
+        break;
+      case "name is invalid":
+        errors.file_name = "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイル名の変更に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -476,7 +492,11 @@ export const rename = (req, res, next) => {
       }
       logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "ファイル名の変更に失敗しました",
+          errors
+        }
       });
     }
   });
