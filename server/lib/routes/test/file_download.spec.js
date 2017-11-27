@@ -116,7 +116,6 @@ describe(files_url, () => {
     before( done => {
       request
         .get(files_url + "/download")
-        .query({ file_id: undefined })
         .buffer()
         .parse(helper.binaryParser)
         .end( (err, res) => {
@@ -130,13 +129,18 @@ describe(files_url, () => {
       done();
     });
 
+    it("successはfalse", done => {
+      expect(JSON.parse(payload.body.toString()).status.success).equal(false);
+      done();
+    });
+
     it(`エラーの概要は「${expected.message}」`, done => {
-      expect(payload.body.status.message).equal(expected.message);
+      expect(JSON.parse(payload.body.toString()).status.message).equal(expected.message);
       done();
     });
 
     it(`エラーの詳細は「${expected.detail}」`, done => {
-      expect(payload.body.status.errors).equal(expected.detail);
+      expect(JSON.parse(payload.body.toString()).status.errors.file_id).equal(expected.detail);
       done();
     });
   });
@@ -166,16 +170,20 @@ describe(files_url, () => {
       done();
     });
 
+    it("successはfalse", done => {
+      expect(JSON.parse(payload.body.toString()).status.success).equal(false);
+      done();
+    });
+
     it(`エラーの概要は「${expected.message}」`, done => {
-      expect(payload.body.status.message).equal(expected.message);
+      expect(JSON.parse(payload.body.toString()).status.message).equal(expected.message);
       done();
     });
 
     it(`エラーの詳細は「${expected.detail}」`, done => {
-      expect(payload.body.status.errors).equal(expected.detail);
+      expect(JSON.parse(payload.body.toString()).status.errors.file_id).equal(expected.detail);
       done();
     });
-
   });
 
   describe("ファイルidが空文字の場合", () => {
@@ -203,16 +211,20 @@ describe(files_url, () => {
       done();
     });
 
+    it("successはfalse", done => {
+      expect(JSON.parse(payload.body.toString()).status.success).equal(false);
+      done();
+    });
+
     it(`エラーの概要は「${expected.message}」`, done => {
-      expect(payload.body.status.message).equal(expected.message);
+      expect(JSON.parse(payload.body.toString()).status.message).equal(expected.message);
       done();
     });
 
     it(`エラーの詳細は「${expected.detail}」`, done => {
-      expect(payload.body.status.errors).equal(expected.detail);
+      expect(JSON.parse(payload.body.toString()).status.errors.file_id).equal(expected.detail);
       done();
     });
-
   });
 
   describe("ファイルidがoid形式ではない場合", () => {
@@ -220,7 +232,7 @@ describe(files_url, () => {
     let file;
     let expected = {
       message: "ファイルのダウンロードに失敗しました",
-      detail: "指定されたファイルが存在しないためファイルのダウンロードに失敗しました"
+      detail: "ファイルIDが不正のためファイルのダウンロードに失敗しました"
     };
 
     before( done => {
@@ -240,13 +252,18 @@ describe(files_url, () => {
       done();
     });
 
+    it("successはfalse", done => {
+      expect(JSON.parse(payload.body.toString()).status.success).equal(false);
+      done();
+    });
+
     it(`エラーの概要は「${expected.message}」`, done => {
-      expect(payload.body.status.message).equal(expected.message);
+      expect(JSON.parse(payload.body.toString()).status.message).equal(expected.message);
       done();
     });
 
     it(`エラーの詳細は「${expected.detail}」`, done => {
-      expect(payload.body.status.errors).equal(expected.detail);
+      expect(JSON.parse(payload.body.toString()).status.errors.file_id).equal(expected.detail);
       done();
     });
   });
@@ -262,7 +279,7 @@ describe(files_url, () => {
     before( done => {
       request
         .get(files_url + "/download")
-        .query({ file_id: ObjectId() })
+        .query({ file_id: (new ObjectId).id.toString() })
         .buffer()
         .parse(helper.binaryParser)
         .end( (err, res) => {
@@ -276,15 +293,19 @@ describe(files_url, () => {
       done();
     });
 
+    it("successはfalse", done => {
+      expect(JSON.parse(payload.body.toString()).status.success).equal(false);
+      done();
+    });
+
     it(`エラーの概要は「${expected.message}」`, done => {
-      expect(payload.body.status.message).equal(expected.message);
+      expect(JSON.parse(payload.body.toString()).status.message).equal(expected.message);
       done();
     });
 
     it(`エラーの詳細は「${expected.detail}」`, done => {
-      expect(payload.body.status.errors).equal(expected.detail);
+      expect(JSON.parse(payload.body.toString()).status.errors.file_id).equal(expected.detail);
       done();
     });
   });
-
 });

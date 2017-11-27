@@ -166,24 +166,47 @@ export const view = (req, res, next) => {
 export const download = (req, res, next) => {
   co(function* () {
     try {
-      const swift = new Swift();
-
       const { file_id }  = req.query;
-      const tenant_name = res.user.tenant.name;
+
+      if ( file_id === null || file_id === undefined || file_id === "") throw "file_id is empty";
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
       const fileRecord = yield File.findById(file_id);
-      if (fileRecord === null) throw "file not found";
+      if (fileRecord === null) throw "file is empty";
       if (fileRecord.is_deleted) throw "file is deleted";
 
+      const tenant_name = res.user.tenant.name;
+
+      const swift = new Swift();
       const readStream = yield swift.downloadFile(constants.SWIFT_CONTAINER_NAME, fileRecord);
       readStream.on("data", data => res.write(data) );
       readStream.on("end", () => res.end() );
     }
     catch (e) {
+      let errors = {};
+
+      switch(e) {
+      case "file_id is empty":
+        errors.file_id = "ファイルIDが空のためファイルのダウンロードに失敗しました";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルのダウンロードに失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためファイルのダウンロードに失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+      }
+
       logger.error(e);
 
       res.status(400).json({
-        status: { success: false, errors: e }
+        status: {
+          success: false,
+          message: "ファイルのダウンロードに失敗しました",
+          errors
+        }
       });
     }
   });
