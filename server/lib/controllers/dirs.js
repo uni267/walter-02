@@ -11,6 +11,8 @@ import Tenant from "../models/Tenant";
 import User from "../models/User";
 import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
+import { ILLIGAL_CHARACTERS } from "../../configs/constants";
+const { ObjectId } = mongoose.Types;
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -20,11 +22,9 @@ export const index = (req, res, next) => {
       // デフォルトはテナントのホーム
       if (dir_id === undefined ||
           dir_id === null ||
-          dir_id === "") {
+          dir_id === "") throw "dir_id is empty";
 
-        const tenant = yield Tenant.findById(res.user.tenant_id);
-        dir_id = tenant.home_dir_id;
-      }
+      if (!ObjectId.isValid(dir_id)) throw "dir_id is invalid";
 
       const dirs = yield Dir.find({ descendant: dir_id })
             .sort({ depth: -1 });
@@ -47,10 +47,25 @@ export const index = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-      errors.unknown = e;
+
+      switch (e) {
+      case "dir_id is invalid":
+        errors.dir_id = "指定されたフォルダが存在しないためフォルダ階層の取得に失敗しました";
+        break;
+      case "dir_id is empty":
+        errors.dir_id = "フォルダIDが不正のためフォルダ階層の取得に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          status: false,
+          message: "フォルダ階層の取得に失敗しました",
+          errors }
       });
     }
   });
@@ -63,6 +78,8 @@ export const tree = (req, res, next) => {
       if (root_id === undefined ||
           root_id === null ||
           root_id === "") throw "root_id is empty";
+
+      if (! ObjectId.isValid(root_id)) throw "root_id is invalid";
 
       const root = yield File.findById(root_id);
 
@@ -115,10 +132,13 @@ export const tree = (req, res, next) => {
 
       switch (e) {
       case "root_id is empty":
-        errors.root_id = e;
+        errors.root_id = "フォルダIDが空のためフォルダツリーの取得に失敗しました";
         break;
       case "root is empty":
-        errors.root = e;
+        errors.root_id = "指定されたフォルダが存在しないためフォルダツリーの取得に失敗しました";
+        break;
+      case "root_id is invalid":
+        errors.root_id = "フォルダIDが不正のためフォルダツリーの取得に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -126,7 +146,11 @@ export const tree = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "フォルダツリーの取得に失敗しました",
+          errors
+        }
       });
     }
   });
@@ -138,25 +162,16 @@ export const create = (req, res, next) => {
 
       const { dir_name } = req.body;
       let dir_id = req.body.dir_id;
+
       if (dir_id === null ||
-        dir_id === undefined ||
-        dir_id === "" ||
-        dir_id === "undefined") {
+          dir_id === undefined ||
+          dir_id === "") throw "dir_id is empty";
 
-        dir_id = res.user.tenant.home_dir_id;
-      }
+      if (! ObjectId.isValid(dir_id)) throw "dir_id is invalid";
 
-      if (!dir_name) {
-        res.status(400).json({
-          status: {
-            success: false,
-            message: "フォルダ名が空のためエラー",
-            errors: { dirName: "フォルダ名が空のため作成に失敗しました"}
-          },
-          body: {}
-        });
-        return;
-      }
+      if (!dir_name) throw "dir_name is empty";
+
+      if (dir_name.match( new RegExp(ILLIGAL_CHARACTERS.join("|") ))) throw "dir_name is invalid";
 
       // フォルダ情報を構築
       const dir = new File();
@@ -244,16 +259,32 @@ export const create = (req, res, next) => {
       let errors = {};
 
       switch (e) {
-        case "name is duplication":
-          errors.name = "既に同じ名前のフォルダが存在します";
-          break;
-        default:
-          errors.unknown = e;
-          break;
+      case "dir_id is empty":
+        errors.dir_id = "フォルダIDが空のためフォルダの作成に失敗しました";
+        break;
+      case "dir_id is invalid":
+        errors.dir_id = "フォルダIDが不正のためフォルダの作成に失敗しました";
+        break;
+      case "dir_name is empty":
+        errors.dir_name = "フォルダ名が空のためフォルダの作成に失敗しました";
+        break;
+      case "dir_name is invalid":
+        errors.dir_name = "フォルダ名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためフォルダの作成に失敗しました";
+        break;
+      case "name is duplication":
+        errors.dir_name = "同名のフォルダが存在するためフォルダの作成に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
       }
       logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "フォルダの作成に失敗しました",
+          errors
+        }
       });
     }
   });
