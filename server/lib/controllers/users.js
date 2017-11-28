@@ -1,3 +1,4 @@
+import util from "util";
 import mongoose from "mongoose";
 import co from "co";
 import crypto from "crypto";
@@ -86,6 +87,7 @@ export const view = (req, res, next) => {
           user_id === null ||
           user_id === "") throw "user_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
       const user = yield User.findById(user_id);
       if (user === null) throw "user is empty";
 
@@ -110,8 +112,11 @@ export const view = (req, res, next) => {
       let errors = {};
 
       switch (e) {
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためユーザの取得に失敗しました";
+        break;
       case "user_id is empty":
-        errors.user_id = e;
+        errors.user_id = "指定されたユーザが存在しないためユーザの取得に失敗しました";
         break;
       case "user is empty":
         errors.user = e;
@@ -122,7 +127,7 @@ export const view = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "ユーザの取得に失敗しました", errors }
       });
     }
   });
@@ -225,6 +230,7 @@ export const updatePassword = (req, res, next) => {
       const { user_id } = req.params;
       const { current_password, new_password } = req.body;
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
       if (current_password === null ||
           current_password === ""   ||
           current_password === undefined) throw "current password is empty";
@@ -255,11 +261,14 @@ export const updatePassword = (req, res, next) => {
       let errors = {};
 
       switch (e) {
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のため変更に失敗しました";
+        break;
       case "current password is empty":
-        errors.current_password = "パスワードが空のため変更に失敗しました";
+        errors.current_password = "現在のパスワードが空のため変更に失敗しました";
         break;
       case "new password is empty":
-        errors.new_password = "パスワードが空のため変更に失敗しました";
+        errors.new_password = "新しいパスワードが空のため変更に失敗しました";
         break;
       case "password is not match":
         errors.current_password = "変更前のパスワードが一致しないため変更に失敗しました";
@@ -273,7 +282,7 @@ export const updatePassword = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "パスワードの変更に失敗しました", errors }
       });
 
     }
@@ -290,6 +299,7 @@ export const updatePasswordForce = (req, res, next) => {
           user_id === null ||
           user_id === "") throw "user_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
       if (password === undefined ||
           password === null ||
           password === "") throw "password is empty";
@@ -314,6 +324,9 @@ export const updatePasswordForce = (req, res, next) => {
       let errors = {};
 
       switch (e) {
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためパスワードの変更に失敗しました";
+        break;
       case "user_id is empty":
         errors.user_id = e;
         break;
@@ -329,7 +342,7 @@ export const updatePasswordForce = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "パスワードの変更に失敗しました", errors }
       });
     }
   });
@@ -478,6 +491,14 @@ export const addUserToGroup = (req, res, next) => {
       const user_id = req.params.user_id;
       const group_id = req.body.group_id;
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
+
+      if (group_id === undefined || group_id === null || group_id === "") {
+        throw "group_id is empty";
+      }
+
+      if (! mongoose.Types.ObjectId.isValid(group_id)) throw "group_id is invalid";
+
       const [ user, group ] = yield [
         User.findById(user_id),
         Group.findById(group_id)
@@ -485,6 +506,8 @@ export const addUserToGroup = (req, res, next) => {
 
       if (user === null) throw `存在しないユーザです user_id: ${user_id}`;
       if (group === null) throw `存在しないグループです group_id: ${group_id}`;
+
+      if (user.groups.filter( id => id.toString() === group_id ).length > 0) throw "group_id is already exists";
 
       user.groups = [ ...user.groups, group._id ];
 
@@ -496,8 +519,27 @@ export const addUserToGroup = (req, res, next) => {
       });
     }
     catch (err) {
-      res.status(500).json({
-        status: { success: false, errors: err }
+      let errors = {};
+
+      switch(err) {
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためグループの追加に失敗しました";
+        break;
+      case "group_id is empty":
+        errors.group_id = "グループIDが空のためグループの追加に失敗しました";
+        break;
+      case "group_id is invalid":
+        errors.group_id = "グループIDが不正のためグループの追加に失敗しました";
+        break;
+      case "group_id is already exists":
+        errors.group_id = "指定されたユーザは既に指定したグループに所属しているためグループの追加に失敗しました";
+        break;
+      default:
+        errors.unknown = err;
+        break;
+      }
+      res.status(400).json({
+        status: { success: false, message: "グループの追加に失敗しました", errors }
       });
     }
   });

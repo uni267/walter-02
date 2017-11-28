@@ -1,3 +1,4 @@
+import util from "util";
 import supertest from "supertest";
 import defaults from "superagent-defaults";
 import { expect } from "chai";
@@ -92,7 +93,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "ユーザの取得に失敗しました",
-          detail: "指定されたユーザが存在しないためユーザの取得に失敗しました"
+          detail: "ユーザIDが不正のためユーザの取得に失敗しました"
         };
 
         before( done => {
@@ -144,7 +145,7 @@ describe(user_url + "/:user_id", () => {
               resolve(res);
             });
         }).then( res => {
-          group_id = head(res.body.body)._id;
+          group_id = res.body.body[1]._id;
 
           return new Promise( (resolve, reject) => {
             request
@@ -193,7 +194,7 @@ describe(user_url + "/:user_id", () => {
         let group_id;
         let expected = {
           message: "グループの追加に失敗しました",
-          detail: "指定されたユーザが存在しないためグループの追加に失敗しました"
+          detail: "ユーザIDが不正のためグループの追加に失敗しました"
         };
 
         before( done => {
@@ -248,7 +249,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "グループの追加に失敗しました",
-          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+          detail: "グループIDが空のためグループの追加に失敗しました"
         };
 
         before( done => {
@@ -288,7 +289,7 @@ describe(user_url + "/:user_id", () => {
         let group_id = null;
         let expected = {
           message: "グループの追加に失敗しました",
-          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+          detail: "グループIDが空のためグループの追加に失敗しました"
         };
 
         before( done => {
@@ -329,7 +330,7 @@ describe(user_url + "/:user_id", () => {
         let group_id = "";
         let expected = {
           message: "グループの追加に失敗しました",
-          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+          detail: "グループIDが空のためグループの追加に失敗しました"
         };
 
         before( done => {
@@ -370,7 +371,7 @@ describe(user_url + "/:user_id", () => {
         let group_id = "invalid_oid";
         let expected = {
           message: "グループの追加に失敗しました",
-          detail: "指定されたグループが存在しないためグループの追加に失敗しました"
+          detail: "グループIDが不正のためグループの追加に失敗しました"
         };
 
         before( done => {
@@ -418,7 +419,7 @@ describe(user_url + "/:user_id", () => {
           new Promise( (resolve, reject) => {
             request
               .post(user_url + `/${user._id}/groups`)
-              .send({ group_id: head(user.groups)._id })
+              .send({ group_id: head(user.groups) })
               .end( (err, res) => resolve(res) );
           }).then( res => {
             payload = res;
@@ -529,7 +530,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "現在のパスワードが空です"
+          detail: "現在のパスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -574,7 +575,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "現在のパスワードが空です"
+          detail: "現在のパスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -619,7 +620,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "現在のパスワードが空です"
+          detail: "現在のパスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -664,7 +665,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが一致しません"
+          detail: "変更前のパスワードが一致しないため変更に失敗しました"
         };
 
         before( done => {
@@ -710,7 +711,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードが空です"
+          detail: "新しいパスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -741,7 +742,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          expect(payload.body.status.errors.new_password).equal(expected.detail);
           done();
         });
       });
@@ -755,7 +756,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードが空です"
+          detail: "新しいパスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -786,7 +787,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          expect(payload.body.status.errors.new_password).equal(expected.detail);
           done();
         });
       });
@@ -800,7 +801,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "新しいパスワードが空です"
+          detail: "新しいパスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -831,12 +832,13 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.current_password).equal(expected.detail);
+          expect(payload.body.status.errors.new_password).equal(expected.detail);
           done();
         });
       });
 
-      describe("255文字以上の場合", () => {
+      // パスワードは文字数制限の対象外
+      describe.skip("255文字以上の場合", () => {
         let payload;
         let body = {
           current_password: authData.password,
@@ -881,7 +883,8 @@ describe(user_url + "/:user_id", () => {
         });
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      // パスワードは禁止文字の対象外
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let payload;
           let body = {
@@ -1257,7 +1260,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "指定されたユーザが存在しないためパスワードの変更に失敗しました"
+          detail: "ユーザIDが不正のため変更に失敗しました"
         };
 
         before( done => {
@@ -1377,7 +1380,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "指定されたユーザが存在しないためパスワードの変更に失敗しました"
+          detail: "ユーザIDが不正のためパスワードの変更に失敗しました"
         };
 
         before( done => {
@@ -1422,7 +1425,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが空です"
+          detail: "パスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -1453,7 +1456,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.password).equal(expected.detail);
           done();
         });
       });
@@ -1466,7 +1469,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが空です"
+          detail: "パスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -1497,7 +1500,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.password).equal(expected.detail);
           done();
         });
       });
@@ -1510,7 +1513,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "パスワードの変更に失敗しました",
-          detail: "パスワードが空です"
+          detail: "パスワードが空のため変更に失敗しました"
         };
 
         before( done => {
@@ -1541,12 +1544,13 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.password).equal(expected.detail);
           done();
         });
       });
 
-      describe("255文字以上の場合", () => {
+      // パスワードは文字数制限の対象外
+      describe.skip("255文字以上の場合", () => {
         let payload;
         let body = {
           password: range(256).join("")
@@ -1590,7 +1594,8 @@ describe(user_url + "/:user_id", () => {
         });
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      // パスワードは禁止文字制限の対象外
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let payload;
           let body = {
