@@ -649,7 +649,10 @@ export const upload = (req, res, next) => {
       if (dir_id === null ||
           dir_id === undefined ||
           dir_id === "" ||
-          dir_id === "undefined") throw "dir_id is empty";
+          dir_id === "undefined") {
+
+        dir_id = res.user.tenant.home_dir_id; // デフォルトはテナントのホーム
+      }
 
       const dir = yield File.findById(dir_id);
 
