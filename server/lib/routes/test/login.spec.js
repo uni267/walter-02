@@ -434,7 +434,7 @@ describe(base_url, () => {
 
     });
 
-    describe.only("検証可能なトークンを渡した場合", done => {
+    describe("検証可能なトークンを渡した場合", done => {
       let body = {};
       const expected = {
         message: "トークン認証に成功しました"
