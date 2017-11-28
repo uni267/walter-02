@@ -16,6 +16,10 @@ export const authentication = (req, res, next) => {
           account_name === null ||
           account_name === "") throw "account_name is empty";
 
+      if (password === undefined ||
+          password === null ||
+          password === "") throw "password is empty";
+
       const user = yield User.findOne({ account_name });
 
       if (user === null) throw "user is empty";
@@ -33,7 +37,7 @@ export const authentication = (req, res, next) => {
       const token = jwt.sign(_user, secretKey, { expiresIn });
 
       res.json({
-        status: { success: true, message: "ログインに成功しました" },
+        status: { success: true, message: "ユーザ認証に成功しました" },
         body: { token, user: _user }
       });
     }
@@ -42,13 +46,16 @@ export const authentication = (req, res, next) => {
 
       switch (e) {
       case "account_name is empty":
-        errors.account_name = "ユーザ名が空です";
+        errors.account_name = "アカウント名が空のためユーザ認証に失敗しました";
+        break;
+      case "password is empty":
+        errors.password = "パスワードが空のためユーザ認証に失敗しました";
         break;
       case "user is empty":
-        errors.account_name = "ユーザが存在しません";
+        errors.account_name = "アカウント名またはパスワードが不正のため認証に失敗しました";
         break;
       case "password is invalid":
-        errors.password = "パスワードに誤りがあります";
+        errors.password = "アカウント名またはパスワードが不正のため認証に失敗しました";
         break;
       default:
         errors.unknown = commons.errorParser(e);
@@ -57,7 +64,7 @@ export const authentication = (req, res, next) => {
       res.status(400).json({
         status: {
           success: false,
-          message: "ログインに失敗しました",
+          message: "ユーザ認証に失敗しました",
           errors
         }
       });
@@ -81,7 +88,7 @@ export const verifyToken = (req, res, next) => {
     try {
       const { token } = req.body;
 
-      if (token === undefined) throw new Error("token is empty");
+      if (token === undefined || token === null || token === "") throw "token is empty";
 
       const decoded = yield verifyPromise(token);
 
@@ -91,11 +98,26 @@ export const verifyToken = (req, res, next) => {
       });
     }
     catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "token is empty":
+        errors.token = "ログイントークンが空のためトークン認証に失敗しました";
+        break;
+      default:
+        if (e.name === "JsonWebTokenError") {
+          errors.token = "ログイントークンが不正のためトークン認証に失敗しました";
+        } else {
+          errors.unknown = commons.errorParser(e);
+        }
+        break;
+      }
+
       res.status(400).json({
         status: {
           success: false,
-          message: "tokenの検証に失敗しました",
-          errors: e
+          message: "トークン認証に失敗しました",
+          errors
         }
       });
     }

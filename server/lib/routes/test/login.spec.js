@@ -1,3 +1,4 @@
+import util from "util";
 import request from "supertest";
 import { expect } from "chai";
 import mongoose from "mongoose";
@@ -23,7 +24,7 @@ describe(base_url, () => {
       // 期待するエラーの情報
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "アカウント名が空です"
+        detail: "アカウント名が空のためユーザ認証に失敗しました"
       };
 
       it("http(400)が返却される", done => {
@@ -70,7 +71,7 @@ describe(base_url, () => {
       const body = { account_name: null };
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "アカウント名が空です"
+        detail: "アカウント名が空のためユーザ認証に失敗しました"
       };
 
       it("http(400)が返却される", done => {
@@ -119,7 +120,7 @@ describe(base_url, () => {
       const body = { account_name: "hanako", password: null };
       const expected = {
         message: "ユーザ認証に失敗しました",
-        detail: "パスワードが空です"
+        detail: "パスワードが空のためユーザ認証に失敗しました"
       };
 
       it("http(400)が返却される", done => {
@@ -398,7 +399,7 @@ describe(base_url, () => {
       const body = { token: "foobazbar" };
       const expected = {
         message: "トークン認証に失敗しました",
-        detail: "ログイントークンが空のためトークン認証に失敗しました"
+        detail: "ログイントークンが不正のためトークン認証に失敗しました"
       };
 
       it("http(400)が返却される", done => {
@@ -433,7 +434,7 @@ describe(base_url, () => {
 
     });
 
-    describe("検証可能なトークンを渡した場合", done => {
+    describe.only("検証可能なトークンを渡した場合", done => {
       let body = {};
       const expected = {
         message: "トークン認証に成功しました"
@@ -459,7 +460,8 @@ describe(base_url, () => {
           });
       });
 
-      it(`概要は「${expected.message}」`, done => {
+      // 成功時はメッセージ不要
+      it.skip(`概要は「${expected.message}」`, done => {
         request(app)
           .post(verify_token_url)
           .send(body)
@@ -485,6 +487,7 @@ describe(base_url, () => {
           .post(verify_token_url)
           .send(body)
           .end( (err, res) => {
+            console.log(util.inspect(res.body.body, false, null));
             expect(res.body.body.user.iat * 2 > 1).equal(true);
             expect(res.body.body.user.exp * 2 > 1).equal(true);
             done();
