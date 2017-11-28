@@ -24,6 +24,8 @@ export const authentication = (req, res, next) => {
 
       if (user === null) throw "user is empty";
 
+      if (user.enabled === false) throw "user is disabled";
+
       const hash = crypto.createHash("sha512").update(password).digest("hex");
 
       if (user.password !== hash) throw "password is invalid";
@@ -56,6 +58,9 @@ export const authentication = (req, res, next) => {
         break;
       case "password is invalid":
         errors.password = "アカウント名またはパスワードが不正のため認証に失敗しました";
+        break;
+      case "user is disabled":
+        errors.account_name = "指定されたユーザは現在無効状態のためユーザ認証に失敗しました";
         break;
       default:
         errors.unknown = commons.errorParser(e);
@@ -92,6 +97,8 @@ export const verifyToken = (req, res, next) => {
 
       const decoded = yield verifyPromise(token);
 
+      if (decoded.enabled === false) throw "user is disabled";
+
       res.json({
         status: { status: "success" },
         body: { user: decoded }
@@ -103,6 +110,9 @@ export const verifyToken = (req, res, next) => {
       switch (e) {
       case "token is empty":
         errors.token = "ログイントークンが空のためトークン認証に失敗しました";
+        break;
+      case "user is disabled":
+        errors.token = "指定されたユーザは現在無効状態のためトークン認証に失敗しました";
         break;
       default:
         if (e.name === "JsonWebTokenError") {
