@@ -8,6 +8,7 @@ import AuthorityMenu from "../models/AuthorityMenu";
 // etc
 import logger from "../logger";
 import { first } from "lodash";
+import * as constants from "../../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 
@@ -208,7 +209,11 @@ export const updateName = (req, res, next) => {
 
       if (name === null || name === undefined || name === "") throw "name is empty";
 
+      if (name.length >= constants.MAX_STRING_LENGTH) throw "name is too long";
+
       const { group_id } = req.params;
+
+      if (! mongoose.Types.ObjectId.isValid(group_id)) throw "group_id is invalid";
 
       const group = yield Group.findById(group_id);
 
@@ -228,10 +233,16 @@ export const updateName = (req, res, next) => {
 
       switch (e) {
       case "name is empty":
-        errors.name = "グループ名が空のため変更に失敗しました";
+        errors.name = "グループ名が空のためグループ名の変更に失敗しました";
+        break;
+      case "name is too long":
+        errors.name = `グループ名が制限文字数(${constants.MAX_STRING_LENGTH})を超過したためグループ名の変更に失敗しました`;
         break;
       case "group is not found":
-        errors.group = "指定されたグループが見つからないため変更に失敗しました";
+        errors.group = "指定されたグループが見つからないためグループ名の変更に失敗しました";
+        break;
+      case "group_id is invalid":
+        errors.group_id = "グループIDが不正のためグループ名の変更に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -239,7 +250,11 @@ export const updateName = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "グループ名の変更に失敗しました",
+          errors
+        }
       });
     }
   });
@@ -251,8 +266,12 @@ export const updateDescription = (req, res, next) => {
     const { group_id } = req.params;
 
     try {
+      if (! ObjectId.isValid(group_id) ) throw "group_id is invalid";
+
       const group = yield Group.findById(group_id);
       if (group === null || group === undefined) throw "group is not found";
+
+      if (description.length >= constants.MAX_STRING_LENGTH) throw "description is too long";
 
       group.description = description;
       const changedGroup = yield group.save();
@@ -266,8 +285,14 @@ export const updateDescription = (req, res, next) => {
       let errors = {};
 
       switch (e) {
+      case "group_id is invalid":
+        errors.group_id = "グループIDが不正のためグループの備考の変更に失敗しました";
+        break;
       case "group is not found":
         errors.group = "指定されたグループが見つかりませんでした";
+        break;
+      case "description is too long":
+        errors.description = `グループの備考が制限文字数(${constants.MAX_STRING_LENGTH})を超過したためグループの備考の変更に失敗しました`;        
         break;
       default:
         errors.unknown = e;
@@ -275,7 +300,11 @@ export const updateDescription = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "グループの備考の変更に失敗しました",
+          errors
+        }
       });
     }
   });
@@ -286,6 +315,14 @@ export const updateRoleMenus = (req, res) => {
     try {
       const group_id = req.params.group_id;
       const { role_menu_id } = req.body;
+
+      if (! ObjectId.isValid(group_id) ) throw "group_id is invalid";
+
+      if ( role_menu_id === undefined || role_menu_id === null || role_menu_id === "") {
+        throw "role_menu_id is empty";
+      }
+
+      if (! ObjectId.isValid(role_menu_id) ) throw "role_menu_id is invalid";
 
       const [ group ,role ] = yield [Group.findById(group_id), RoleMenu.findById(role_menu_id) ];
       if (group === null) throw "group is empty";
@@ -309,19 +346,32 @@ export const updateRoleMenus = (req, res) => {
       let errors = {};
 
       switch (e) {
-        case "group is empty":
-          errors.group = "存在しないグループです";
-          break;
-        case "role is empty":
-          errors.role_menus = "存在しないユーザタイプです";
-          break;
-        default:
-          errors.unknown = e;
-          break;
+      case "group_id is invalid":
+        errors.group_id = "グループIDが不正のためグループのメニュー権限の変更に失敗しました";
+        break;
+      case "role_menu_id is empty":
+        errors.role_menu_id = "メニュー権限IDが空のためグループのメニュー権限の変更に失敗しました";
+        break;
+      case "group is empty":
+        errors.group = "存在しないグループです";
+        break;
+      case "role_menu_id is invalid":
+        errors.role_menu_id = "指定されたメニュー権限IDが不正のためグループのメニュー権限の変更に失敗しました";
+        break;
+      case "role is empty":
+        errors.role_menu_id = "指定されたメニュー権限が存在しないためグループのメニュー権限の変更に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
       }
       logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: {
+          success: false,
+          message: "グループのメニュー権限の変更に失敗しました",
+          errors
+        }
       });
     }
   });
