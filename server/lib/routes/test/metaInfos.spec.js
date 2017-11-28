@@ -1,3 +1,4 @@
+import util from "util";
 import supertest from "supertest";
 import defaults from "superagent-defaults";
 import { expect } from "chai";
@@ -220,7 +221,7 @@ describe(meta_infos_url, () => {
       let payload;
       let expected = {
         message: "メタ情報の取得に失敗しました",
-        detail: "指定されたメタ情報が存在しないためメタ情報の取得に失敗しました"
+        detail: "メタ情報IDが不正のためメタ情報の取得に失敗しました"
       };
 
       before( done => {
@@ -319,7 +320,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "メタ情報名が空です"
+          detail: "メタ情報名が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
@@ -346,7 +347,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -356,7 +357,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
 
@@ -367,7 +368,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "メタ情報名が空です"
+          detail: "メタ情報名が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
@@ -394,7 +395,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -404,7 +405,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
 
@@ -415,7 +416,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "メタ情報名が空です"
+          detail: "メタ情報名が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
@@ -442,7 +443,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -452,7 +453,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
 
@@ -463,7 +464,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "メタ情報名が長すぎます"
+          detail: "メタ情報名が規定文字数(255)を超過したためメタ情報の登録に失敗しました"
         };
 
         before( done => {
@@ -490,7 +491,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -500,7 +501,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
       });
@@ -510,7 +511,7 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "そのメタ情報名は既に使用されています"
+          detail: "指定されたメタ情報名は既に登録されているためメタ情報の登録に失敗しました"
         };
 
         before( done => {
@@ -543,7 +544,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -553,12 +554,13 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
+      // メタ情報名は禁止文字対象外
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
         let expected = {
           message: "メタ情報の登録に失敗しました",
           detail: "メタ情報名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
@@ -922,13 +924,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "label is undefined test",
               // label: "テスト",
               value_type: "String"
             }
@@ -949,7 +951,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -959,7 +961,8 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          console.log(util.inspect(payload.body, false, null));
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
@@ -970,13 +973,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "label is null test",
               label: null,
               value_type: "String"
             }
@@ -997,7 +1000,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1007,7 +1010,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
@@ -1018,13 +1021,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "label is empty test",
               label: "",
               value_type: "String"
             }
@@ -1045,7 +1048,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1055,7 +1058,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
@@ -1066,13 +1069,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "表示名が長すぎます"
+          detail: "表示名が規定文字数(255)を超過したためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "label is too long test",
               label: _.range(257).map(i => "1").join(""),
               value_type: "String"
             }
@@ -1093,7 +1096,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1103,7 +1106,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
       });
@@ -1113,13 +1116,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "その表示名は既に使用されています"
+          detail: "指定された表示名は既に登録されているためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "name is duplicate test",
               label: null,
               value_type: "String"
             }
@@ -1146,7 +1149,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1156,12 +1159,13 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
+      // 表示名は禁止文字の対象外
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
         let expected = {
           message: "メタ情報の登録に失敗しました",
           detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
@@ -1526,13 +1530,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "データ型が空です"
+          detail: "データ型が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "value_type is undefined test",
               label: "テスト"
               // value_type: "String"
             }
@@ -1553,7 +1557,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1563,7 +1567,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.value_type).equal(expected.detail);
           done();
         });
 
@@ -1574,13 +1578,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "データ型が空です"
+          detail: "データ型が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "value_type is null test",
               label: "テスト",
               value_type: null
             }
@@ -1601,7 +1605,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1611,7 +1615,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.value_type).equal(expected.detail);
           done();
         });
 
@@ -1622,13 +1626,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "データ型が空です"
+          detail: "データ型が空のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "value_type is empty test",
               label: "テスト",
               value_type: ""
             }
@@ -1649,7 +1653,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1659,7 +1663,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.value_type).equal(expected.detail);
           done();
         });
 
@@ -1670,13 +1674,13 @@ describe(meta_infos_url, () => {
         let body;
         let expected = {
           message: "メタ情報の登録に失敗しました",
-          detail: "指定されたデータ型が(String, Number, Date)以外のためメタ情報の登録に失敗しました"
+          detail: "データ型が不正のためメタ情報の登録に失敗しました"
         };
 
         before( done => {
           body = {
             metainfo: {
-              name: "test",
+              name: "value_types is not includes test",
               label: "テスト",
               value_type: "Integer"
             }
@@ -1697,7 +1701,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1707,7 +1711,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.value_type).equal(expected.detail);
           done();
         });
 
@@ -1781,7 +1785,7 @@ describe(meta_infos_url, () => {
         let payload;
         let body;
         let expected = {
-          message: "メタ情報の登録に失敗しました",
+          message: "メタ情報の表示名更新に失敗しました",
           detail: "表示名が空です"
         };
 
@@ -1803,7 +1807,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1813,7 +1817,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
       });
@@ -1822,7 +1826,7 @@ describe(meta_infos_url, () => {
         let payload;
         let body;
         let expected = {
-          message: "メタ情報の登録に失敗しました",
+          message: "メタ情報の表示名更新に失敗しました",
           detail: "表示名が空です"
         };
 
@@ -1844,7 +1848,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1854,7 +1858,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
@@ -1864,7 +1868,7 @@ describe(meta_infos_url, () => {
         let payload;
         let body;
         let expected = {
-          message: "メタ情報の登録に失敗しました",
+          message: "メタ情報の表示名更新に失敗しました",
           detail: "表示名が空です"
         };
 
@@ -1886,7 +1890,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1896,7 +1900,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
@@ -1906,8 +1910,8 @@ describe(meta_infos_url, () => {
         let payload;
         let body;
         let expected = {
-          message: "メタ情報の登録に失敗しました",
-          detail: "表示名が空です"
+          message: "メタ情報の表示名更新に失敗しました",
+          detail: "表示名が規定文字数(255)を超過したため表示名の更新に失敗しました"
         };
 
         before( done => {
@@ -1928,7 +1932,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1938,7 +1942,7 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
@@ -1948,8 +1952,8 @@ describe(meta_infos_url, () => {
         let payload;
         let body;
         let expected = {
-          message: "メタ情報の登録に失敗しました",
-          detail: "その表示名は既に使用されています"
+          message: "メタ情報の表示名更新に失敗しました",
+          detail: "指定された表示名は既に登録されているため表示名の更新に失敗しました"
         };
 
         before( done => {
@@ -1974,7 +1978,7 @@ describe(meta_infos_url, () => {
         });
 
         it("statusはfalse", done => {
-          expect(payload.body.status).equal(false);
+          expect(payload.body.status.success).equal(false);
           done();
         });
 
@@ -1984,13 +1988,13 @@ describe(meta_infos_url, () => {
         });
 
         it(`エラー詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.tenant_id).equal(expected.detail);
+          expect(payload.body.status.errors.label).equal(expected.detail);
           done();
         });
 
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)を含んでいる場合", () => {
         let expected = {
           message: "メタ情報の更新に失敗しました",
           detail: "表示名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
