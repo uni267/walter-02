@@ -644,23 +644,20 @@ export const upload = (req, res, next) => {
       if (myFiles === null ||
           myFiles === undefined ||
           myFiles === "" ||
-          myFiles.length === 0) throw new ValidationError("files is empty");
+          myFiles.length === 0) throw "files is empty";
 
       if (dir_id === null ||
           dir_id === undefined ||
           dir_id === "" ||
-          dir_id === "undefined") {
-
-        dir_id = res.user.tenant.home_dir_id;
-      }
+          dir_id === "undefined") throw "dir_id is empty";
 
       const dir = yield File.findById(dir_id);
 
-      if (dir === null) throw new RecordNotFoundException("dir_id is not found");
+      if (dir === null) throw "dir is not found";
 
       const user = yield User.findById(res.user._id);
 
-      if (user === null) throw new RecordNotFoundException("user_id is not found");
+      if (user === null) throw "user is not found";
 
       // ファイルの基本情報
       // Modelで定義されていないプロパティを使いたいので
@@ -674,32 +671,42 @@ export const upload = (req, res, next) => {
         if (_file.name === null || _file.name === undefined ||
             _file.name === "" || _file.name === "undefined") {
           file.hasError = true;
-          file.errors = { name: "file name is empty" };
+          file.errors = { name: "ファイル名が空のためファイルのアップロードに失敗しました" };
+          return file;
+        }
+
+        if (_file.name.match( new RegExp(constants.ILLIGAL_CHARACTERS.join("|")))) {
+          file.hasError = true;
+          file.errors = { name: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました" };
+          return file;
         }
 
         if (_file.mime_type === null || _file.mime_type === undefined ||
             _file.mime_type === "" || _file.mime_type === "undefined") {
           file.hasError = true;
           file.errors = { mime_type: "mime_type is empty" };
+          return file;
         }
 
         if (_file.size === null || _file.size === undefined ||
             _file.size === "" || _file.size === "undefined") {
           file.hasError = true;
           file.errors = { size: "size is empty" };
+          return file;
         }
 
         if (_file.base64 === null || _file.base64 === undefined ||
             _file.base64 === "" || _file.base64 === "undefined") {
           file.hasError = true;
           file.errors = { base64: "base64 is empty" };
+          return file;
         }
 
         if (_file.checksum === null || _file.checksum === undefined ||
             _file.checksum === "" ) {
-          // @todo front側実装待ち
           file.hasError = true;
           file.errors = { checksum: "checksum is empty" };
+          return file;
         }
 
         file.name = _file.name;
@@ -762,22 +769,36 @@ export const upload = (req, res, next) => {
             ...file,
             hasError: true,
             errors: {
-              meta_infos: "metainfo value is empty"
+              meta_info_value: "指定されたメタ情報の値が空のためファイルのアップロードに失敗しました"
             }
           };
         }
 
-        const idCheck = file.meta_infos.filter( meta => (
-          meta._id === undefined || meta.value === null ||
-          meta.value === "" || meta.value === "undefined"
+        const idIsEmpty = file.meta_infos.filter( meta => (
+          meta._id === undefined || meta._id === null ||
+          meta._id === "" || meta._id === "undefined"
         ));
 
-        if (idCheck.length > 0) {
+        if (idIsEmpty.length > 0) {
           return {
             ...file,
             hasError: true,
             errors: {
-              meta_infos: "metainfo id is empty"
+              meta_info_id: "メタ情報IDが空のためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        const idIsInvalid = file.meta_infos.filter( meta => (
+          ! mongoose.Types.ObjectId.isValid(meta._id)
+        ));
+
+        if (idIsInvalid.length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              meta_info_id: "メタ情報IDが不正のためファイルのアップロードに失敗しました"
             }
           };
         }
@@ -793,7 +814,7 @@ export const upload = (req, res, next) => {
             ...file,
             hasError: true,
             errors: {
-              meta_infos: "metainfo id is invalid"
+              meta_info_id: "指定されたメタ情報が存在しないためファイルのアップロードに失敗しました"
             }
           };
         }
@@ -812,6 +833,20 @@ export const upload = (req, res, next) => {
           return file;
         }
 
+        const tagIsEmpty = file.tags.filter( tag => (
+          tag === undefined || tag === null || tag === ""
+        ));
+
+        if (tagIsEmpty.length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              tag_id: "指定されたタグIDが空のためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
         if (file.tags.length === intersection(file.tags, tags).length) {
           // stringからBSONに変換
           file.tags = file.tags.map( tag => mongoose.Types.ObjectId(tag) );
@@ -821,7 +856,7 @@ export const upload = (req, res, next) => {
             ...file,
             hasError: true,
             errors: {
-              tags: "tag id is invalid"
+              tag_id: "タグIDが不正のためファイルのアップロードに失敗しました"
             }
           };
         }
@@ -848,27 +883,70 @@ export const upload = (req, res, next) => {
         }
 
         const roleIds = file.authorities.map( auth => auth.role_files );
-        const userIds = file.authorities.map( auth => auth.users )
-              .filter( user => user !== undefined );
 
-        const groupIds = file.authorities.map( auth => auth.groups )
-              .filter( group => group !== undefined );
-
-        if (roleIds.length === intersection(roleIds, role_files).length ||
-            userIds.length === intersection(userIds, users).length ||
-            groupIds.length === intersection(groupIds, groups).length) {
-
-          return file;
-        }
-        else {
+        if (roleIds.filter( id => id === undefined || id === null || id === "").length > 0) {
           return {
             ...file,
             hasError: true,
             errors: {
-              role_files: "roles_files id is invalid"
+              role_file_id: "指定されたロールIDが空のためファイルのアップロードに失敗しました"
             }
           };
         }
+
+        if (roleIds.filter( id => ! mongoose.Types.ObjectId.isValid(id) ).length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              role_file_id: "指定されたロールIDが不正のためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        if (roleIds.length !== intersection(roleIds, role_files).length) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              role_file_id: "指定されたロールが存在しないためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        const userIds = file.authorities.map( auth => auth.users );
+
+        if (userIds.filter( id => id === undefined || id === null || id === "").length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              role_user_id: "指定されたユーザIDが空のためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        if (userIds.filter( id => ! mongoose.Types.ObjectId.isValid(id) ).length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              role_user_id: "指定されたユーザIDが不正のためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        if (userIds.length !== intersection(userIds, users).length) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              role_user_id: "指定されたユーザが存在しないためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        return file;
       });
 
       // 履歴
@@ -964,23 +1042,47 @@ export const upload = (req, res, next) => {
 
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
-        throw new ValidationError(
-          "file is invalid",
-          files.map( f => f.hasError ? f : {} )
-        );
+        const _errors = files.map( f => {
+          if (f.hasError === false) return {};
+          return f.errors;
+        });
+
+        logger.error(_errors);
+        res.status(400).json({
+          status: {
+            success: false,
+            message: "ファイルのアップロードに失敗しました",
+            errors: _errors
+          }
+        });
+      } else {
+        res.json({
+          status: { success: true },
+          body: changedFiles
+        });
       }
-
-      res.json({
-        status: { success: true },
-        body: changedFiles
-      });
-
     }
     catch (e) {
+      let errors = {};
       logger.error(e);
 
+      switch(e) {
+      case "files is empty":
+        errors.files = "アップロード対象のファイルが空のためファイルのアップロードに失敗しました";
+        break;
+      case "dir_id is empty":
+        errors.dir_id = "フォルダIDが空のためファイルのアップロードに失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
       res.status(400).json({
-        status: { success: false, errors: e }
+        status: {
+          success: false,
+          message: "ファイルのアップロードに失敗しました",
+          errors
+        }
       });
     }
   });

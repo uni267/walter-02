@@ -47,19 +47,22 @@ describe(files_url, () => {
   describe("post /", () => {
     describe("基本的な情報のみをアップロード(正常系)", () => {
       let payload;
-      let body = {
-        files: [
-          {
-            name: "test.txt",
-            size: 4,
-            mime_type: "text/plain",
-            base64: "data:text/plain;base64,Zm9vCg==",
-            checksum: "8f3bee6fbae63be812de5af39714824e"
-          }
-        ]
-      };
+      let body;
 
       before( done => {
+        body = {
+          dir_id: user.tenant.home_dir_id,
+          files: [
+            {
+              name: "test.txt",
+              size: 4,
+              mime_type: "text/plain",
+              base64: "data:text/plain;base64,Zm9vCg==",
+              checksum: "8f3bee6fbae63be812de5af39714824e"
+            }
+          ]
+        };
+
         request
           .post(files_url)
           .send(body)
@@ -119,19 +122,22 @@ describe(files_url, () => {
             detail: "ファイル名が空のためファイルのアップロードに失敗しました"
           };
 
-          let body = {
-            files: [
-              {
-                // name: "test.txt",
-                size: 4,
-                mime_type: "text/plain",
-                base64: "data:text/plain;base64,Zm9vCg==",
-                checksum: "8f3bee6fbae63be812de5af39714824e"
-              }
-            ]
-          };
+          let body;
 
           before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  // name: "test.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
             request
               .post(files_url)
               .send(body)
@@ -157,7 +163,7 @@ describe(files_url, () => {
           });
 
           it(`メッセージの詳細は「${expected.detail}」`, done => {
-            expect(_.head(payload.body.status.errors.body).errors.name)
+            expect(payload.body.status.errors[0].name)
               .equal(expected.detail);
             done();
           });
@@ -170,19 +176,22 @@ describe(files_url, () => {
             detail: "ファイル名が空のためファイルのアップロードに失敗しました"
           };
 
-          let body = {
-            files: [
-              {
-                name: null,
-                size: 4,
-                mime_type: "text/plain",
-                base64: "data:text/plain;base64,Zm9vCg==",
-                checksum: "8f3bee6fbae63be812de5af39714824e"
-              }
-            ]
-          };
+          let body;
 
           before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: null,
+                  size: 4,
+                  mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
             request
               .post(files_url)
               .send(body)
@@ -208,7 +217,7 @@ describe(files_url, () => {
           });
 
           it(`メッセージの詳細は「${expected.detail}」`, done => {
-            expect(_.head(payload.body.status.errors.body).errors.name)
+            expect(payload.body.status.errors[0].name)
               .equal(expected.detail);
             done();
           });
@@ -221,19 +230,22 @@ describe(files_url, () => {
             detail: "ファイル名が空のためファイルのアップロードに失敗しました"
           };
 
-          let body = {
-            files: [
-              {
-                name: "",
-                size: 4,
-                mime_type: "text/plain",
-                base64: "data:text/plain;base64,Zm9vCg==",
-                checksum: "8f3bee6fbae63be812de5af39714824e"
-              }
-            ]
-          };
+          let body;
 
           before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "",
+                  size: 4,
+                  mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
             request
               .post(files_url)
               .send(body)
@@ -259,7 +271,7 @@ describe(files_url, () => {
           });
 
           it(`メッセージの詳細は「${expected.detail}」`, done => {
-            expect(_.head(payload.body.status.errors.body).errors.name)
+            expect(payload.body.status.errors[0].name)
               .equal(expected.detail);
             done();
           });
@@ -273,19 +285,22 @@ describe(files_url, () => {
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
 
-            let body = {
-              files: [
-                {
-                  name: "\\foo\\bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: "\\foo\\bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -311,7 +326,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -324,19 +339,22 @@ describe(files_url, () => {
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
 
-            let body = {
-              files: [
-                {
-                  name: "/foo/bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: "/foo/bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -362,7 +380,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -374,20 +392,22 @@ describe(files_url, () => {
               message: "ファイルのアップロードに失敗しました",
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
-
-            let body = {
-              files: [
-                {
-                  name: ":foo:bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: ":foo:bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -413,7 +433,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -426,20 +446,22 @@ describe(files_url, () => {
               message: "ファイルのアップロードに失敗しました",
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
-
-            let body = {
-              files: [
-                {
-                  name: "*foo*bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: "*foo*bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -465,7 +487,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -477,20 +499,22 @@ describe(files_url, () => {
               message: "ファイルのアップロードに失敗しました",
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
-
-            let body = {
-              files: [
-                {
-                  name: "?foo?bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: "?foo?bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -516,7 +540,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -528,20 +552,22 @@ describe(files_url, () => {
               message: "ファイルのアップロードに失敗しました",
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
-
-            let body = {
-              files: [
-                {
-                  name: "<foo<bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: "<foo<bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -567,7 +593,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -579,20 +605,22 @@ describe(files_url, () => {
               message: "ファイルのアップロードに失敗しました",
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
-
-            let body = {
-              files: [
-                {
-                  name: ">foo>bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: ">foo>bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -618,7 +646,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -630,20 +658,22 @@ describe(files_url, () => {
               message: "ファイルのアップロードに失敗しました",
               detail: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました"
             };
-
-            let body = {
-              files: [
-                {
-                  name: "|foo|bar",
-                  size: 4,
-                  mime_type: "text/plain",
-                  base64: "data:text/plain;base64,Zm9vCg==",
-                  checksum: "8f3bee6fbae63be812de5af39714824e"
-                }
-              ]
-            };
+            let body;
 
             before( done => {
+              body = {
+                dir_id: user.tenant.home_dir_id,
+                files: [
+                  {
+                    name: "|foo|bar",
+                    size: 4,
+                    mime_type: "text/plain",
+                    base64: "data:text/plain;base64,Zm9vCg==",
+                    checksum: "8f3bee6fbae63be812de5af39714824e"
+                  }
+                ]
+              };
+
               request
                 .post(files_url)
                 .send(body)
@@ -669,7 +699,7 @@ describe(files_url, () => {
             });
 
             it(`メッセージの詳細は「${expected.detail}」`, done => {
-              expect(_.head(payload.body.status.errors.body).errors.name)
+              expect(payload.body.status.errors[0].name)
                 .equal(expected.detail);
               done();
             });
@@ -750,6 +780,7 @@ describe(files_url, () => {
             };
 
             body.files[0].meta_infos = [metainfo];
+            body.dir_id = user.tenant.home_dir_id;
 
             request
               .post(files_url)
@@ -820,10 +851,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたメタ情報が空のためファイルのアップロードに失敗しました"
+            detail: "メタ情報IDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -849,7 +881,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_id"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -876,10 +908,12 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたメタ情報が空のためファイルのアップロードに失敗しました"
+            detail: "メタ情報IDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+
             request
               .post(files_url)
               .send(body)
@@ -905,7 +939,8 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_id"]);
+            console.log(util.inspect(payload.body, false, null));
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -932,10 +967,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたメタ情報が空のためファイルのアップロードに失敗しました"
+            detail: "メタ情報IDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -961,7 +997,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_id"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -988,10 +1024,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたメタ情報が存在しないためファイルのアップロードに失敗しました"
+            detail: "メタ情報IDが不正のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1017,7 +1054,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_id"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1035,7 +1072,7 @@ describe(files_url, () => {
               checksum: "8f3bee6fbae63be812de5af39714824e",
               meta_infos: [
                 {
-                  _id: ObjectId(),
+                  _id: (new ObjectId).toString(),
                   value: "foobar"
                 }
               ]
@@ -1048,6 +1085,7 @@ describe(files_url, () => {
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1073,7 +1111,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_id"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1100,6 +1138,7 @@ describe(files_url, () => {
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .get("/api/v1/meta_infos")
               .end( (err, res) => {
@@ -1134,7 +1173,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_value"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_value"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1160,6 +1199,7 @@ describe(files_url, () => {
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .get("/api/v1/meta_infos")
               .end( (err, res) => {
@@ -1195,7 +1235,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_value"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_value"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1220,6 +1260,7 @@ describe(files_url, () => {
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .get("/api/v1/meta_infos")
               .end( (err, res) => {
@@ -1255,7 +1296,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "metainfo_value"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_value"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1279,6 +1320,7 @@ describe(files_url, () => {
       };
 
       before( done => {
+        body.dir_id = user.tenant.home_dir_id;
         request
           .get("/api/v1/tags")
           .end( (err, res) => {
@@ -1343,17 +1385,18 @@ describe(files_url, () => {
                 mime_type: "text/plain",
                 base64: "data:text/plain;base64,Zm9vCg==",
                 checksum: "8f3bee6fbae63be812de5af39714824e",
-                tags: [] // 空配列[0]はundefinedなので
+                tags: [undefined]
               }
             ]
           };
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたタグが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたタグIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1369,7 +1412,7 @@ describe(files_url, () => {
           });
 
           it("successはfalse", done => {
-            expect(payload.status.success).equal(false);
+            expect(payload.body.status.success).equal(false);
             done();
           });
 
@@ -1379,7 +1422,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "tags"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "tag_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1402,10 +1445,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたタグが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたタグIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1421,7 +1465,7 @@ describe(files_url, () => {
           });
 
           it("successはfalse", done => {
-            expect(payload.status.success).equal(false);
+            expect(payload.body.status.success).equal(false);
             done();
           });
 
@@ -1431,7 +1475,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "tags"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "tag_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1454,10 +1498,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたタグが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたタグIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1473,7 +1518,7 @@ describe(files_url, () => {
           });
 
           it("successはfalse", done => {
-            expect(payload.status.success).equal(false);
+            expect(payload.body.status.success).equal(false);
             done();
           });
 
@@ -1483,7 +1528,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "tags"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "tag_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1506,10 +1551,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたタグが存在しないためファイルのアップロードに失敗しました"
+            detail: "タグIDが不正のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1525,7 +1571,7 @@ describe(files_url, () => {
           });
 
           it("successはfalse", done => {
-            expect(payload.status.success).equal(false);
+            expect(payload.body.status.success).equal(false);
             done();
           });
 
@@ -1535,7 +1581,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "tags"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "tag_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1558,10 +1604,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたタグが存在しないためファイルのアップロードに失敗しました"
+            detail: "タグIDが不正のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             request
               .post(files_url)
               .send(body)
@@ -1577,7 +1624,7 @@ describe(files_url, () => {
           });
 
           it("successはfalse", done => {
-            expect(payload.status.success).equal(false);
+            expect(payload.body.status.success).equal(false);
             done();
           });
 
@@ -1587,7 +1634,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "tags"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "tag_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1614,6 +1661,8 @@ describe(files_url, () => {
       };
 
       before( done => {
+        body.dir_id = user.tenant.home_dir_id;
+
         new Promise( (resolve, reject) => {
 
           request
@@ -1658,7 +1707,6 @@ describe(files_url, () => {
         let nextPayload;
 
         before( done => {
-          
           const file_id = _.get(payload, ["body", "body", "0", "_id"]);
 
           request
@@ -1709,10 +1757,12 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたロールIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+
             new Promise( (resolve, reject) => {
 
               request
@@ -1723,7 +1773,7 @@ describe(files_url, () => {
               user_id = _.get(res, ["body", "body", "0", "_id"]);
 
               body.files[0].authorities = [
-                { role_files: role_file_id, users: user_id }
+                { role_files: undefined, users: user_id }
               ];
 
               return new Promise( (resolve, reject) => {
@@ -1755,7 +1805,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_file_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1779,10 +1829,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたロールIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             new Promise( (resolve, reject) => {
 
               request
@@ -1825,7 +1876,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_file_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1850,10 +1901,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたロールIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             new Promise( (resolve, reject) => {
 
               request
@@ -1896,7 +1948,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_file_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1921,10 +1973,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが存在しないためファイルのアップロードに失敗しました"
+            detail: "指定されたロールIDが不正のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             new Promise( (resolve, reject) => {
 
               request
@@ -1967,7 +2020,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_file_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -1996,6 +2049,8 @@ describe(files_url, () => {
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+
             new Promise( (resolve, reject) => {
 
               request
@@ -2006,7 +2061,7 @@ describe(files_url, () => {
               user_id = _.get(res, ["body", "body", "0", "_id"]);
 
               body.files[0].authorities = [
-                { role_files: ObjectId(), users: user_id }
+                { role_files: (new ObjectId).toString(), users: user_id }
               ];
 
               return new Promise( (resolve, reject) => {
@@ -2038,7 +2093,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_file_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -2065,10 +2120,12 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたユーザIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+
             new Promise( (resolve, reject) => {
 
               request
@@ -2111,7 +2168,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_user_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -2137,10 +2194,12 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたユーザIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+
             new Promise( (resolve, reject) => {
 
               request
@@ -2151,7 +2210,7 @@ describe(files_url, () => {
               role_file_id = _.get(res, ["body", "body", "0", "_id"]);
 
               body.files[0].authorities = [
-                { role_files: role_file_id, users: undefined }
+                { role_files: role_file_id, users: null }
               ];
 
               return new Promise( (resolve, reject) => {
@@ -2183,7 +2242,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_user_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -2208,10 +2267,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたユーザIDが空のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             new Promise( (resolve, reject) => {
 
               request
@@ -2254,7 +2314,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_user_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -2279,10 +2339,11 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたユーザIDが不正のためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
             new Promise( (resolve, reject) => {
 
               request
@@ -2325,7 +2386,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_user_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
@@ -2350,10 +2411,12 @@ describe(files_url, () => {
 
           let expected = {
             message: "ファイルのアップロードに失敗しました",
-            detail: "指定されたロールが空のためファイルのアップロードに失敗しました"
+            detail: "指定されたユーザが存在しないためファイルのアップロードに失敗しました"
           };
 
           before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+
             new Promise( (resolve, reject) => {
 
               request
@@ -2364,7 +2427,7 @@ describe(files_url, () => {
               role_file_id = _.get(res, ["body", "body", "0", "_id"]);
 
               body.files[0].authorities = [
-                { role_files: role_file_id, users: ObjectId() }
+                { role_files: role_file_id, users: (new ObjectId).toString() }
               ];
 
               return new Promise( (resolve, reject) => {
@@ -2396,7 +2459,7 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            const _err = _.get(payload, ["body", "status", "errors", "body", "0", "errors", "authorities"]);
+            const _err = _.get(payload, ["body", "status", "errors", "0", "role_user_id"]);
             expect(_err).equal(expected.detail);
             done();
           });
