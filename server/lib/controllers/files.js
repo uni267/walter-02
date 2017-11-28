@@ -262,8 +262,7 @@ export const search = (req, res, next) => {
         res.user.tenant.trash_dir_id
       ];
 
-      const replace_target = { '[':'\\[', '(':'\\(', '-': '\\-', '.':'\\.', '*':'\\*', '$':'\\$', '|':'\\|' };
-      const query_param = q.replace(/[\[\-\.\*]/g, function(m) { return replace_target[m]; });
+      const query_param = escapeRegExp(q);
 
       const conditions = {
         dir_id: { $ne: trash_dir_id },
@@ -404,7 +403,7 @@ export const searchDetail = (req, res, next) => {
     case "name":
       return ({
         [item.key_type]: {
-          $regex: item.value
+          $regex: escapeRegExp( item.value )
         },
         is_display: true
       });
@@ -425,7 +424,7 @@ export const searchDetail = (req, res, next) => {
     case "meta":
       return ({
         "meta_infos.meta_info_id": mongoose.Types.ObjectId(item._id),
-        "meta_infos.value": { $regex: item.value },
+        "meta_infos.value": { $regex: escapeRegExp( item.value ) },
         is_display: true
       });
     case "tags":
@@ -479,14 +478,29 @@ export const searchDetail = (req, res, next) => {
       const { sort, order } = params;
       const _sort = yield createSortOption(sort, order);
 
-      const files = yield File.find(query)
-            .skip(offset)
-            .limit(limit)
-            .sort(_sort);
+      const files = yield File.searchFiles(query,offset,limit,_sort);
+
+      const ret_files = files.map( file => {
+        const route = file.dirs
+                .filter( dir => dir.ancestor.is_display )
+                .map( dir => dir.ancestor.name );
+
+        file.dir_route = route.length > 0
+          ? route.reverse().join("/")
+          : "";
+
+        file.actions = chain(file.authorities)
+          .filter( auth => auth.users._id.toString() === res.user._id.toString() )
+          .map( auth => auth.actions )
+          .flattenDeep()
+          .uniq();
+
+        return file;
+      });
 
       res.json({
         status: { success: true, total },
-        body: files
+        body: ret_files
       });
     }
     catch (e) {
@@ -1997,5 +2011,24 @@ const getAllowedFileIds = (user_id, permission) => {
     return new Promise((resolve, reject) => resolve(file_ids) );
 
   });
+};
+
+const escapeRegExp = (input) => {
+  const replace_target = {
+    '\\':'\\\\',
+    '^': '\\^',
+    '$': '\\$',
+    '.': '\\.',
+    '*': '\\*',
+    '+': '\\+',
+    '?': '\\?',
+    '[': '\\[',
+    ']': '\\]',
+    '{': '\\{',
+    '}': '\\}',
+    '(': '\\(',
+    ')': '\\)'
+   };
+  return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)]/g, function(m) { return replace_target[m]; });
 };
 
