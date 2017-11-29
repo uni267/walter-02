@@ -75,6 +75,11 @@ class MetaInfo extends Component {
       value: "_id"
     };
 
+    const metaInfos = this.props.metaInfo.filter( meta => {
+      const ids = this.props.file.meta_infos.map( meta => meta._id );
+      return !ids.includes(meta._id);
+    });
+
     return (
       <div style={styles.row}>
 
@@ -88,7 +93,7 @@ class MetaInfo extends Component {
             onNewRequest={onNewRequest}
             filter={AutoComplete.noFilter}
             openOnFocus={true}
-            dataSource={this.props.metaInfo}
+            dataSource={metaInfos}
             dataSourceConfig={dataSourceConfig}
             />
             
