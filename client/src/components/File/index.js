@@ -214,9 +214,7 @@ class File extends Component {
       </div>
     );
 
-    return isDragging && connectDragSource
-      ? connectDragSource(elements)
-      : elements;
+    return connectDragSource(elements);
   }
 }
 
