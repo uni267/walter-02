@@ -60,9 +60,9 @@ const AppNavBar = ({
     );
 
     const avatarIcon = (
-      session.user_name === null
+      session.user_name === null || session.user_name === undefined
         ? <Avatar />
-        : <Avatar style={{ top: 13, left: 30 }} size={30}>{session.user_name[0].toUpperCase()}</Avatar>
+        : <Avatar size={35}>{session.user_name[0].toUpperCase()}</Avatar>
     );
 
     return (
@@ -96,10 +96,11 @@ const AppNavBar = ({
           iconButtonElement={accountIcon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
           <List>
-            <ListItem disabled={true} primaryText={session.user_name} leftAvatar={avatarIcon} />
+            <ListItem disabled={true} primaryText={session.user_name} rightAvatar={avatarIcon} />
             <Divider />
-            <ListItem primaryText="パスワード変更" onTouchTap={handleAccountOpen} />
-            <ListItem primaryText="ログアウト" onTouchTap={handleLogout} />
+            <ListItem  primaryText="パスワード変更" onTouchTap={handleAccountOpen} />
+            <Divider />
+            <ListItem  primaryText="ログアウト" onTouchTap={handleLogout} />
           </List>
         </IconMenu>
       </div>
