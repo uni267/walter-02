@@ -18,7 +18,9 @@ import {
   uniq,
   findIndex,
   find,
-  isNaN
+  isNaN,
+  first,
+  sortBy
 } from "lodash";
 
 // etc
@@ -449,24 +451,17 @@ export const searchDetail = (req, res, next) => {
   co(function* () {
     try {
       const params = req.query;
+      if ( params.page === undefined || params.page === null ) page = 0;
+      if ( params.page === "" || isNaN( parseInt(params.page) ) ) throw new ValidationError("page is not number");
+
+      if ( typeof params.sort === "string" && !mongoose.Types.ObjectId.isValid(params.sort)  ) throw new ValidationError("sort is empty");
+      if ( typeof params.order === "string" && params.order !== "asc" && params.order !== "desc" ) throw new ValidationError("sort is empty");
 
       const param_ids = Object.keys(params)
             .filter( p => !["page", "order", "sort"].includes(p) );
 
       const conditions = { _id: param_ids };
-      const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
-        meta = meta.toObject();
-        meta.meta_info_id = meta._id;
-        return meta;
-      });
-
-      const displayItems = (yield DisplayItem.find({
-        ...conditions,
-        meta_info_id: null,
-        name: { $nin: ["file_checkbox", "action"] }
-      })).map(items => items.toObject()) ;
-
-      const items = metaInfos.concat(displayItems);
+      const items = yield getSearchItem(conditions);
 
       const queries = items.map( meta => {
         const _meta = meta;
@@ -529,7 +524,7 @@ export const searchDetail = (req, res, next) => {
       const { sort, order } = params;
       const _sort = yield createSortOption(sort, order);
 
-      const files = yield File.searchFiles(query,offset,limit,_sort);
+      const files = yield File.searchFiles(query,offset,limit,_sort, mongoose.Types.ObjectId(sort));
 
       const ret_files = files.map( file => {
         const route = file.dirs
@@ -555,8 +550,23 @@ export const searchDetail = (req, res, next) => {
       });
     }
     catch (e) {
-      logger.error(e);
-      res.json({e});
+
+      let errors = {};
+      switch (e.message) {
+        case "page is not number":
+          errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
+          break;
+        case "sort is empty":
+          errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+          break;
+        default:
+          errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }
+      });
+
     }
   });
 };
@@ -2021,24 +2031,48 @@ const moveFile = (file, dir_id, user, action) => {
 };
 
 const createSortOption = co.wrap( function* (_sort=null, _order=null) {
-  const sort = {};
+  let sort = {};
   const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
 
   if ( _sort === undefined || _sort === null || _sort === "" ) {
     sort["id"] = order;
 
   } else {
-    const item = yield DisplayItem.findById(_sort);
+    const item = first(yield getSearchItem({ _id:mongoose.Types.ObjectId(_sort) }));
 
-    // メタ情報以外でのソート
     if (item.meta_info_id === null) {
+      // メタ情報以外でのソート
       sort[item.name] = order;
+    } else if(item.meta_info_id !== null) {
+      // メタ情報でのソート
+      sort = {
+         "meta_infos.sort_target":"desc",
+         "meta_infos.value": order
+      };
     } else {
       // @fixme
       sort["id"] = order;
     }
   }
-  return Promise.resolve(sort);
+return Promise.resolve(sort);
+});
+
+const getSearchItem = co.wrap( function* ( conditions ){
+  // const conditions = { _id: param_ids };
+  const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+    meta = meta.toObject();
+    meta.meta_info_id = meta._id;
+    return meta;
+  });
+
+  const displayItems = (yield DisplayItem.find({
+    ...conditions,
+    meta_info_id: null,
+    name: { $nin: ["file_checkbox", "action"] }
+  })).map(items => items.toObject()) ;
+
+  const items = metaInfos.concat(displayItems);
+  return Promise.resolve(items);
 });
 
 const getAllowedFileIds = (user_id, permission) => {

@@ -52,7 +52,12 @@ describe(base_url,() => {
 
     before(done => {
       const sendData = {dir_id : user.tenant.home_dir_id, files: []};
-      const keyWords = [ 1, "日本語", "alpha", "@###", "alpha123", "[1]", "10", "11", "20", "30" ];
+      const keyWords = [
+        1, "日本語", "alpha", "@###", "alpha123", "[1]"
+        , '01', '02', '03', '04', '05', '06', '07', '08', '09', '10'
+        , '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'
+        , '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'
+      ];
 
       new Promise((resolve,reject) => {
         // タグ一覧を取得
@@ -83,13 +88,15 @@ describe(base_url,() => {
         });
       }).then( res => {
         return new Promise((resolve, reject)=>{
+          let _file = {};
           for(let i = 0 ; i < keyWords.length ; i++){
             const files = Object.assign({}, requestPayload.files[0] );
             files.name = `text_${keyWords[i]}.txt`;
             files.tags =[tags._id];
-            files.meta_infos = [ meta ];
-            sendData.files.push( files );
+            files.meta_infos = [{ _id: meta._id, value: `meta_value${keyWords[i]}` }];
+            _file = [ ..._file, files ];
           }
+          sendData["files"] = _file;
           request.post(base_url)
           .send(sendData)
           .end( ( err, res ) => {
@@ -103,102 +110,394 @@ describe(base_url,() => {
 
 
     describe('異常系',() => {
-      it.skip('comment', done => {done();});
-    });
-    describe('正常系',() => {
-      describe('検索',() => {
-        let target_tag;
-        let role_user;
-        let role_file;
-        let file_id;
-        before(done => {
-          const sendQuery = {
-            [find(meta_infos, {name:'display_file_name'} )._id]:"表示ファイル名",
-            page:0,
-            order: "asc"
-          };
 
-          const newTag = {
-            tag:{
-              label:"新規タグ",
-              color:"#FEDCBA"
-            }
-          };
-          new Promise((resolve,reject) => {
-            request.post("/api/v1/tags")
-            .send(newTag)
+      describe('pageが不正',() => {
+        const expected = {
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "pageが数字ではないためファイル一覧の取得に失敗しました"
+        };
+        describe('pageが""', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: ""
+            })
             .end( ( err, res ) => {
-              target_tag = res.body.body;
-              resolve(res);
+              response = res;
+              done();
             });
-
-          }).then(res=>{
-            return new Promise((resolve,reject) => {
-              const sendData = {dir_id : user.tenant.home_dir_id, files: []};
-              const files = Object.assign({}, requestPayload.files[0] );
-              files.name = `メタ表示名.txt`;
-              files.meta_infos = [ {
-                _id: find(meta_infos, {name:"display_file_name"})._id,
-                value: "表示ファイル名"
-              } ];
-              files.tags = [ target_tag._id ];
-              sendData.files.push( files );
-              request.post(base_url)
-              .send(sendData)
-              .end( ( err, res ) => {
-                resolve(res);
-              });
-            });
-          }).then(res=>{
-            return new Promise((resolve, reject) =>{
-              request.get(base_url)
-              .end((err,res) => {
-
-                file_id = (find(res.body.body, { name: 'メタ表示名.txt'}))._id;
-                resolve(res);
-              });
-            });
-          }).then(res=>{
-            return new Promise((resolve, reject) =>{
-              request.get("/api/v1/users")
-              .end((err,res) => {
-                role_user = ( find(res.body.body, { name: "hanako" }) );
-                resolve(res);
-              });
-            });
-          }).then(res=>{
-            return new Promise((resolve, reject) =>{
-              request.get("/api/v1/role_files")
-              .end((err,res) => {
-                role_file = (find(res.body.body, { name: "フルコントロール" }));
-                resolve(res);
-              });
-            });
-          }).then(res=>{
-            return new Promise((resolve,reject) => {
-              const url = `${base_url}/${file_id}/authorities`;
-              request.post(url)
-              .send(
-                { user: role_user, role: role_file }
-              )
-              .end((err, res) => {
-                resolve(res);
-              });
-            });
-          }).then(res=>{
-            return new Promise((resolve, reject) => {
-              request.patch(`${base_url}/${file_id}/toggle_star`)
-              .end((err,res) => {
-                resolve(res);
-              });
-            });
-
-          }).then(res=>{
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
             done();
           });
-
-
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.page).equal(expected.detail);
+            done();
+          });
         });
+        describe('pageが不正文字列', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: '\/:*?<>|'
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.page).equal(expected.detail);
+            done();
+          });
+        });
+        describe('pageが数字以外の文字列', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: 'ichi'
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.page).equal(expected.detail);
+            done();
+          });
+        });
+      });
+
+      describe('ソート条件が不正',() => {
+        const expected = {
+          message: "ファイル一覧の取得に失敗しました",
+          detail: "ソート条件が不正なためファイル一覧の取得に失敗しました"
+        };
+        describe('sortが""', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              sort: ''
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.sort).equal(expected.detail);
+            done();
+          });
+        });
+        describe('sortが不正な文字列', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: 0,
+              sort: '\/:*?<>|'
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.sort).equal(expected.detail);
+            done();
+          });
+        });
+        describe('sortが意図しない文字列', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: 0,
+              sort: 'ichi'
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.sort).equal(expected.detail);
+            done();
+          });
+        });
+        describe('orderが""', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: 0,
+              order: ''
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.sort).equal(expected.detail);
+            done();
+          });
+        });
+        describe('orderが不正文字列', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: 0,
+              order: '\/:*?<>|'
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.sort).equal(expected.detail);
+            done();
+          });
+        });
+        describe('orderが意図しない文字列', () => {
+          let response;
+          before(done => {
+            request.get(`${base_url}/search_detail`)
+            .query({
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+              page: 0,
+              order: 'koujun'
+            })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(400)が返却される', done => {
+            expect(response.status).equal(400);
+            done();
+          });
+          it('statusはfalse',done => {
+            expect(response.body.status.success).equal(false);
+            done();
+          });
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(response.body.status.message).equal(expected.message);
+            done();
+          });
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            expect(response.body.status.errors.sort).equal(expected.detail);
+            done();
+          });;
+        });
+      });
+
+
+
+    });
+    describe('正常系',() => {
+      let target_tag;
+      let role_user;
+      let role_file;
+      let file_id;
+      before(done => {
+        const sendQuery = {
+          [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+          page:0,
+          order: "asc"
+        };
+
+        const newTag = {
+          tag:{
+            label:"新規タグ",
+            color:"#FEDCBA"
+          }
+        };
+        new Promise((resolve,reject) => {
+          request.post("/api/v1/tags")
+          .send(newTag)
+          .end( ( err, res ) => {
+            target_tag = res.body.body;
+            resolve(res);
+          });
+
+        }).then(res=>{
+          return new Promise((resolve,reject) => {
+            const sendData = {dir_id : user.tenant.home_dir_id, files: []};
+            const files = Object.assign({}, requestPayload.files[0] );
+            files.name = `メタ表示名.txt`;
+            files.meta_infos = [ {
+              _id: find(meta_infos, {name:"receive_company_name"})._id,
+              value: "受信会社名"
+            } ];
+            files.tags = [ target_tag._id ];
+            sendData.files.push( files );
+            request.post(base_url)
+            .send(sendData)
+            .end( ( err, res ) => {
+              resolve(res);
+            });
+          });
+        }).then(res=>{
+          return new Promise((resolve, reject) =>{
+            request.get(base_url)
+            .end((err,res) => {
+              resolve(res);
+            });
+          });
+        }).then(res=>{
+          file_id = (find(res.body.body, { name: 'メタ表示名.txt'}))._id;
+        }).then(res=>{
+          return new Promise((resolve, reject) =>{
+            request.get("/api/v1/users")
+            .end((err,res) => {
+              role_user = ( find(res.body.body, { name: "hanako" }) );
+              resolve(res);
+            });
+          });
+        }).then(res=>{
+          return new Promise((resolve, reject) =>{
+            request.get("/api/v1/role_files")
+            .end((err,res) => {
+              role_file = (find(res.body.body, { name: "フルコントロール" }));
+              resolve(res);
+            });
+          });
+        }).then(res=>{
+          return new Promise((resolve,reject) => {
+            const url = `${base_url}/${file_id}/authorities`;
+            request.post(url)
+            .send(
+              { user: role_user, role: role_file }
+            )
+            .end((err, res) => {
+              resolve(res);
+            });
+          });
+        }).then(res=>{
+          return new Promise((resolve, reject) => {
+            request.patch(`${base_url}/${file_id}/toggle_star`)
+            .end((err,res) => {
+              resolve(res);
+            });
+          });
+
+        }).then(res=>{
+          done();
+        });
+
+
+      });
+
+      describe('検索',() => {
 
         describe('検索条件: text',() => {
           let response;
@@ -557,8 +856,8 @@ describe(base_url,() => {
             done();
           });
 
-          it('返却値のlengthは11である',done => {
-            expect( response.body.body.length ).equal(11);
+          it('返却値のlengthは30である',done => {
+            expect( response.body.body.length ).equal(30);
             done();
           });
 
@@ -685,17 +984,17 @@ describe(base_url,() => {
             done();
           });
 
-          it('返却値のlengthは10である',done => {
-            expect( response.body.body.length ).equal(10);
+          it('返却値のlengthは30である',done => {
+            expect( response.body.body.length ).equal(30);
             done();
           });
         });
 
-        describe('検索条件 表示ファイル名（メタ情報）: 表示ファイル名',() => {
+        describe('検索条件 受信企業名（メタ情報）: 受信会社名',() => {
           let response;
           before(done => {
             const sendQuery = {
-              [find(meta_infos, {name:'display_file_name'} )._id]:"表示ファイル名",
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page:0,
               order: "asc"
             };
@@ -738,11 +1037,12 @@ describe(base_url,() => {
           });
 
           it('meta_infosに指定したメタ情報が含まれる', done => {
-            expect(　findIndex( first(response.body.body).meta_infos ,{ label:"表示ファイル名",value:"表示ファイル名" })  >= 0).equal(true);
+            expect(　findIndex( first(response.body.body).meta_infos ,{ label:"受信企業名",value:"受信会社名" })  >= 0).equal(true);
             done();
           });
 
         });
+
         describe('検索条件 ファイル名:日本語',() => {
           let response;
           before(done => {
@@ -790,11 +1090,12 @@ describe(base_url,() => {
           });
 
         });
-        describe('検索条件(複合) ファイル名:メタ表示名 ,表示ファイル名（メタ情報）: 表示ファイル名',() => {
+
+        describe('検索条件(複合) ファイル名:メタ表示名 ,受信企業名（メタ情報）: 受信会社名',() => {
           let response;
           before(done => {
             const sendQuery = {
-              [find(meta_infos, {name:'display_file_name'} )._id]:"表示ファイル名",
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               [find(search_items, {name:'name'} )._id]:"メタ表示名",
               page:0,
               order: "asc"
@@ -844,10 +1145,11 @@ describe(base_url,() => {
           });
 
           it('meta_infosに指定したメタ情報が含まれる', done => {
-            expect(　findIndex( first(response.body.body).meta_infos ,{ label:"表示ファイル名",value:"表示ファイル名" })  >= 0).equal(true);
+            expect(　findIndex( first(response.body.body).meta_infos ,{ label:"受信企業名",value:"受信会社名" })  >= 0).equal(true);
             done();
           });
         });
+
         describe('検索条件が正規表現: text[1-3]',() => {
           let response;
           before(done => {
@@ -1058,8 +1360,8 @@ describe(base_url,() => {
             expect( response.body.body instanceof Array ).equal(true);
             done();
           });
-          it('返却値のlengthは12である',done => {
-            expect( response.body.body.length ).equal(12);
+          it('返却値のlengthは30である',done => {
+            expect( response.body.body.length ).equal(30);
             done();
           });
           it('totalが30以下の場合,lengthと一致する',done => {
@@ -1074,12 +1376,11 @@ describe(base_url,() => {
           });
         });
 
-
-        describe('検索条件(複合) ファイル名:メタ表示名 ,表示ファイル名（メタ情報）: 表示ファイル名, メンバー:hanako',() => {
+        describe('検索条件(複合) ファイル名:メタ表示名 ,受信企業名（メタ情報）: 受信会社名, メンバー:hanako',() => {
           let response;
           before(done => {
             const sendQuery = {
-              [find(meta_infos, {name:'display_file_name'} )._id]:"表示ファイル名",
+              [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               [find(search_items, {name:'name'} )._id]:"メタ表示名",
               [find(search_items, {name:'authorities'} )._id]: role_user._id.toString(),
               page:0,
@@ -1115,6 +1416,311 @@ describe(base_url,() => {
             }
             done();
           });
+        });
+
+      });
+      describe('ページャー',() =>{
+
+        describe('検索条件: なし, page:0 ,order: asc',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              page: 0,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it('返却値のlengthは30である',done => {
+            expect( response.body.body.length ).equal(30);
+            done();
+          });
+
+        });
+
+        describe('検索条件: なし, page:1 ,order: asc',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              page: 1,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it('返却値のlengthは9である',done => {
+            expect( response.body.body.length ).equal(9);
+            done();
+          });
+
+        });
+
+        describe('検索条件: ファイル名:text, page:1 ,sort: name ,order: asc',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'name'} )._id]:"text",
+              page: 0,
+              sort: find(search_items, {name:'name'} )._id,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it("ファイル名の昇順である",done => {
+            expect( response.body.body[0].name ).equal("text_01.txt");
+            expect( response.body.body[1].name ).equal("text_02.txt");
+            expect( response.body.body[2].name ).equal("text_03.txt");
+            expect( response.body.body[3].name ).equal("text_04.txt");
+            expect( response.body.body[4].name ).equal("text_05.txt");
+            expect( response.body.body[5].name ).equal("text_06.txt");
+            expect( response.body.body[6].name ).equal("text_07.txt");
+            expect( response.body.body[7].name ).equal("text_08.txt");
+            expect( response.body.body[8].name ).equal("text_09.txt");
+            expect( response.body.body[9].name ).equal("text_1.txt");
+            expect( response.body.body[10].name ).equal("text_10.txt");
+            expect( response.body.body[11].name ).equal("text_11.txt");
+            expect( response.body.body[12].name ).equal("text_12.txt");
+            expect( response.body.body[13].name ).equal("text_13.txt");
+            expect( response.body.body[14].name ).equal("text_14.txt");
+            expect( response.body.body[15].name ).equal("text_15.txt");
+            expect( response.body.body[16].name ).equal("text_16.txt");
+            expect( response.body.body[17].name ).equal("text_17.txt");
+            expect( response.body.body[18].name ).equal("text_18.txt");
+            expect( response.body.body[19].name ).equal("text_19.txt");
+            expect( response.body.body[20].name ).equal("text_20.txt");
+            expect( response.body.body[21].name ).equal("text_21.txt");
+            expect( response.body.body[22].name ).equal("text_22.txt");
+            expect( response.body.body[23].name ).equal("text_23.txt");
+            expect( response.body.body[24].name ).equal("text_24.txt");
+            expect( response.body.body[25].name ).equal("text_25.txt");
+            expect( response.body.body[26].name ).equal("text_26.txt");
+            expect( response.body.body[27].name ).equal("text_27.txt");
+            expect( response.body.body[28].name ).equal("text_28.txt");
+            expect( response.body.body[29].name ).equal("text_29.txt");
+            done();
+          });
+
+
+          it('返却値のlengthは30である',done => {
+            const files = response.body.body.map(file => file.name);
+            expect( response.body.body.length ).equal(30);
+            done();
+          });
+
+        });
+
+        describe('検索条件: ファイル名:text, page:1 ,sort: name ,order: desc',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'name'} )._id]:"text",
+              page: 0,
+              sort: find(search_items, {name:'name'} )._id,
+              order: "desc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it("ファイル名の降順である",done => {
+            expect( response.body.body[0].name ).equal("text_日本語.txt");
+            expect( response.body.body[1].name ).equal("text_alpha123.txt");
+            expect( response.body.body[2].name ).equal("text_alpha.txt");
+            expect( response.body.body[3].name ).equal("text_[1].txt");
+            expect( response.body.body[4].name ).equal("text_@###.txt");
+            expect( response.body.body[5].name ).equal("text_30.txt");
+            expect( response.body.body[6].name ).equal("text_29.txt");
+            expect( response.body.body[7].name ).equal("text_28.txt");
+            expect( response.body.body[8].name ).equal("text_27.txt");
+            expect( response.body.body[9].name ).equal("text_26.txt");
+            expect( response.body.body[10].name ).equal("text_25.txt");
+            expect( response.body.body[11].name ).equal("text_24.txt");
+            expect( response.body.body[12].name ).equal("text_23.txt");
+            expect( response.body.body[13].name ).equal("text_22.txt");
+            expect( response.body.body[14].name ).equal("text_21.txt");
+            expect( response.body.body[15].name ).equal("text_20.txt");
+            expect( response.body.body[16].name ).equal("text_19.txt");
+            expect( response.body.body[17].name ).equal("text_18.txt");
+            expect( response.body.body[18].name ).equal("text_17.txt");
+            expect( response.body.body[19].name ).equal("text_16.txt");
+            expect( response.body.body[20].name ).equal("text_15.txt");
+            expect( response.body.body[21].name ).equal("text_14.txt");
+            expect( response.body.body[22].name ).equal("text_13.txt");
+            expect( response.body.body[23].name ).equal("text_12.txt");
+            expect( response.body.body[24].name ).equal("text_11.txt");
+            expect( response.body.body[25].name ).equal("text_10.txt");
+            expect( response.body.body[26].name ).equal("text_1.txt");
+            expect( response.body.body[27].name ).equal("text_09.txt");
+            expect( response.body.body[28].name ).equal("text_08.txt");
+            expect( response.body.body[29].name ).equal("text_07.txt");
+            done();
+          });
+
+          it('返却値のlengthは30である',done => {
+            const files = response.body.body.map(file => file.name);
+            expect( response.body.body.length ).equal(30);
+            done();
+          });
+
+        });
+
+        describe('検索条件: ファイル名:text, page:1 ,sort: display_file_name ,order: asc',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'name'} )._id]:"txt",
+              page: 0,
+              sort: find(search_items, {name:'receive_company_name'} )._id,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it("メタ情報受信会社名の降順である",done => {
+            expect( response.body.body[0].meta_infos[0].value  ).equal("受信会社名");
+            // expect( response.body.body[1].meta_infos[0].value  ).equal("meta_value日本語");
+            // expect( response.body.body[2].meta_infos[0].value  ).equal("meta_valuealpha123");
+            // expect( response.body.body[3].meta_infos[0].value  ).equal("meta_valuealpha");
+            // expect( response.body.body[4].meta_infos[0].value  ).equal("meta_value[1]");
+            // expect( response.body.body[5].meta_infos[0].value  ).equal("meta_value@###");
+            // expect( response.body.body[6].meta_infos[0].value  ).equal("meta_value30");
+            // expect( response.body.body[7].meta_infos[0].value  ).equal("meta_value29");
+            // expect( response.body.body[8].meta_infos[0].value  ).equal("meta_value28");
+            // expect( response.body.body[9].meta_infos[0].value  ).equal("meta_value27");
+            // expect( response.body.body[10].meta_infos[0].value ).equal("meta_value26");
+            // expect( response.body.body[11].meta_infos[0].value ).equal("meta_value25");
+            // expect( response.body.body[12].meta_infos[0].value ).equal("meta_value24");
+            // expect( response.body.body[13].meta_infos[0].value ).equal("meta_value23");
+            // expect( response.body.body[14].meta_infos[0].value ).equal("meta_value22");
+            // expect( response.body.body[15].meta_infos[0].value ).equal("meta_value21");
+            // expect( response.body.body[16].meta_infos[0].value ).equal("meta_value20");
+            // expect( response.body.body[17].meta_infos[0].value ).equal("meta_value19");
+            // expect( response.body.body[18].meta_infos[0].value ).equal("meta_value18");
+            // expect( response.body.body[19].meta_infos[0].value ).equal("meta_value17");
+            // expect( response.body.body[20].meta_infos[0].value ).equal("meta_value16");
+            // expect( response.body.body[21].meta_infos[0].value ).equal("meta_value15");
+            // expect( response.body.body[22].meta_infos[0].value ).equal("meta_value14");
+            // expect( response.body.body[23].meta_infos[0].value ).equal("meta_value13");
+            // expect( response.body.body[24].meta_infos[0].value ).equal("meta_value12");
+            // expect( response.body.body[25].meta_infos[0].value ).equal("meta_value11");
+            // expect( response.body.body[26].meta_infos[0].value ).equal("meta_value10");
+            // expect( response.body.body[27].meta_infos[0].value ).equal("meta_value1");
+            // expect( response.body.body[28].meta_infos[0].value ).equal("meta_value09");
+            // expect( response.body.body[29].meta_infos[0].value ).equal("meta_value08");
+            done();
+          });
+
+          it('返却値のlengthは30である',done => {
+            const files = response.body.body.map(file => file.name);
+            expect( response.body.body.length ).equal(30);
+            done();
+          });
+
         });
       });
     });

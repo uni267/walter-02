@@ -25,7 +25,7 @@ const FileSchema = Schema({
   is_crypted: {type:Boolean, default: false}
 });
 
-FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption) => {
+FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_id) => {
   return co(function* (){
     try {
       return yield File.aggregate([
@@ -244,7 +244,8 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption) => {
                 _id: "$meta_info._id",
                 label: "$meta_info.label",
                 value_type: "$meta_info.value_type",
-                value: "$meta_infos.value"
+                value: "$meta_infos.value",
+                sort_target: { $eq: ["$meta_infos.meta_info_id",meta_info_id ]}
               }
             }
           }
