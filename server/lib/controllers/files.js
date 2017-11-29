@@ -17,6 +17,7 @@ import {
   chain,
   uniq,
   findIndex,
+  find,
   isNaN
 } from "lodash";
 
@@ -427,7 +428,7 @@ export const searchDetail = (req, res, next) => {
         value: { $regex: escapeRegExp( item.value ) },
         is_display: true
       });
-    case "tags":
+    case "tag":
       return ({
         tags: mongoose.Types.ObjectId(item.value),
         is_display: true
@@ -454,11 +455,11 @@ export const searchDetail = (req, res, next) => {
         return meta;
       });
 
-      const displayItems = yield DisplayItem.find({
+      const displayItems = (yield DisplayItem.find({
         ...conditions,
         meta_info_id: null,
         name: { $nin: ["file_checkbox", "action"] }
-      });
+      })).map(items => items.toObject()) ;
 
       const items = metaInfos.concat(displayItems);
 
@@ -468,14 +469,23 @@ export const searchDetail = (req, res, next) => {
         return _meta;
       });
 
-      const base_items = queries.filter( q => q.meta_info_id === null ).map(q => {
+      // ユーザで検索する場合 ユーザが閲覧できるファイルを取得
+      let authorities = find(queries, {name:'authorities'});
+      let authority_file_ids = [];
+      if( authorities !== undefined ){
+        const authorityUser = yield User.findById(authorities.value)  ;
+        authority_file_ids = yield getAllowedFileIds(authorityUser._id, constants.PERMISSION_VIEW_LIST );
+      }
+
+      const base_items = queries.filter( q => ( q.meta_info_id === null && !(q.name === "authorities") ) ).map(q => {
         q.key_type = q.name;
         return q;
       });
       const meta_items = queries.filter( q => q.meta_info_id !== null ).map(q => {
         q.key_type = "meta";
         return q;
-      });;
+      });
+
 
       const base_queries = base_items[0] === undefined
             ? {}
@@ -490,15 +500,21 @@ export const searchDetail = (req, res, next) => {
       if (!page) page = 0;
       const offset = page * limit;
 
-      let query;
+      let file_metainfo_ids = [];
       if(meta_items.length > 0){
         const fileMetainfoConditions = {
           meta_info_id: meta_queries.meta_info_id,
           value: meta_queries.value
         };
-        const file_metainfo_ids = (yield FileMetaInfo.find( fileMetainfoConditions )).map(metainfo => metainfo.file_id);
+        file_metainfo_ids = (yield FileMetaInfo.find( fileMetainfoConditions )).map(metainfo => metainfo.file_id );
 
-        query = { ...base_queries, ...{ _id: { "$in":file_metainfo_ids } } };
+      }
+
+      const file_ids = authority_file_ids.concat(file_metainfo_ids);
+
+      let query;
+      if(file_ids.length > 0){
+        query = { ...base_queries, ...{ _id: { "$in":file_ids } } };
       }else{
         query = base_queries;
       }
@@ -527,6 +543,7 @@ export const searchDetail = (req, res, next) => {
 
         return file;
       });
+
       res.json({
         status: { success: true, total },
         body: ret_files

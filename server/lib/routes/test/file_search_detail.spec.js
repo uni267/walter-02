@@ -19,7 +19,7 @@ let user;
 var search_items;
 var meta_infos;
 var meta;
-
+var tags;
 // テスト用のアップロードファイル(client側から送信しているPayload)
 const requestPayload = {
   "dir_id":"",
@@ -51,9 +51,9 @@ describe(base_url,() => {
 
 
     before(done => {
-      const sendData = {dir_id : '', files: []};
+      const sendData = {dir_id : user.tenant.home_dir_id, files: []};
       const keyWords = [ 1, "日本語", "alpha", "@###", "alpha123", "[1]", "10", "11", "20", "30" ];
-      let tags;
+
       new Promise((resolve,reject) => {
         // タグ一覧を取得
         request.get("/api/v1/tags").end((err,res)=>{
@@ -106,8 +106,11 @@ describe(base_url,() => {
       it.skip('comment', done => {done();});
     });
     describe('正常系',() => {
-      describe('ファイル名で検索',() => {
-
+      describe('検索',() => {
+        let target_tag;
+        let role_user;
+        let role_file;
+        let file_id;
         before(done => {
           const sendQuery = {
             [find(meta_infos, {name:'display_file_name'} )._id]:"表示ファイル名",
@@ -115,19 +118,79 @@ describe(base_url,() => {
             order: "asc"
           };
 
-          const sendData = {dir_id : '', files: []};
-          const files = Object.assign({}, requestPayload.files[0] );
-          files.name = `メタ表示名.txt`;
-          files.meta_infos = [ {
-            _id: find(meta_infos, {name:"display_file_name"})._id,
-            value: "表示ファイル名"
-          } ];
-          sendData.files.push( files );
-          request.post(base_url)
-          .send(sendData)
-          .end( ( err, res ) => {
+          const newTag = {
+            tag:{
+              label:"新規タグ",
+              color:"#FEDCBA"
+            }
+          };
+          new Promise((resolve,reject) => {
+            request.post("/api/v1/tags")
+            .send(newTag)
+            .end( ( err, res ) => {
+              target_tag = res.body.body;
+              resolve(res);
+            });
+
+          }).then(res=>{
+            return new Promise((resolve,reject) => {
+              const sendData = {dir_id : user.tenant.home_dir_id, files: []};
+              const files = Object.assign({}, requestPayload.files[0] );
+              files.name = `メタ表示名.txt`;
+              files.meta_infos = [ {
+                _id: find(meta_infos, {name:"display_file_name"})._id,
+                value: "表示ファイル名"
+              } ];
+              files.tags = [ target_tag._id ];
+              sendData.files.push( files );
+              request.post(base_url)
+              .send(sendData)
+              .end( ( err, res ) => {
+                resolve(res);
+              });
+            });
+          }).then(res=>{
+            return new Promise((resolve, reject) =>{
+              request.get(base_url)
+              .end((err,res) => {
+
+                file_id = (find(res.body.body, { name: 'メタ表示名.txt'}))._id;
+                resolve(res);
+              });
+            });
+          }).then(res=>{
+            return new Promise((resolve, reject) =>{
+              request.get("/api/v1/users")
+              .end((err,res) => {
+                role_user = ( find(res.body.body, { name: "hanako" }) );
+                resolve(res);
+              });
+            });
+          }).then(res=>{
+            return new Promise((resolve, reject) =>{
+              request.get("/api/v1/role_files")
+              .end((err,res) => {
+                role_file = (find(res.body.body, { name: "フルコントロール" }));
+                resolve(res);
+              });
+            });
+          }).then(res=>{
+            return new Promise((resolve,reject) => {
+              const url = `${base_url}/${file_id}/authorities`;
+              request.post(url)
+              .send(
+                { user: role_user, role: role_file }
+              )
+              .end((err, res) => {
+                resolve(res);
+              });
+            });
+
+
+          }).then(res=>{
             done();
           });
+
 
         });
 
@@ -492,7 +555,136 @@ describe(base_url,() => {
             expect( response.body.body.length ).equal(11);
             done();
           });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+
         });
+
+        describe('検索条件 更新日時(より大きい): 今',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'modified_greater'} )._id]: moment().format("YYYY-MM-DD HH:mm:ss"),
+              page:0,
+              order: "asc"
+            };
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it('返却値のlengthは0である',done => {
+            expect( response.body.body.length ).equal(0);
+            done();
+          });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+
+        });
+
+        describe('検索条件 更新日時(より小さい): 前日',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'modified_less'} )._id]: moment().add('days', -1).format("YYYY-MM-DD HH:mm:ss"),
+              page:0,
+              order: "asc"
+            };
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it('返却値のlengthは0である',done => {
+            expect( response.body.body.length ).equal(0);
+            done();
+          });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+        });
+
+        describe('検索条件 更新日時(より小さい): 今',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'modified_less'} )._id]: moment().format("YYYY-MM-DD HH:mm:ss"),
+              page:0,
+              order: "asc"
+            };
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it('返却値のlengthは11である',done => {
+            expect( response.body.body.length ).equal(11);
+            done();
+          });
+        });
+
         describe('検索条件 表示ファイル名（メタ情報）: 表示ファイル名',() => {
           let response;
           before(done => {
@@ -524,6 +716,13 @@ describe(base_url,() => {
 
           it('返却値のlengthは1である',done => {
             expect( response.body.body.length ).equal(1);
+            done();
+          });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
             done();
           });
 
@@ -572,6 +771,13 @@ describe(base_url,() => {
             done();
           });
 
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+
           it('nameに「日本語」が含まれる',done =>{
             expect( response.body.body[0].name.match(/日本語/) !== null).equal(true);
             done();
@@ -611,6 +817,13 @@ describe(base_url,() => {
 
           it('返却値のlengthは1である',done => {
             expect( response.body.body.length ).equal(1);
+            done();
+          });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
             done();
           });
 
@@ -660,6 +873,162 @@ describe(base_url,() => {
 
           it('返却値のlengthは0である',done => {
             expect( response.body.body.length ).equal(0);
+            done();
+          });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+        });
+
+        describe('タグで検索: 新規タグ',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'tag'} )._id]: target_tag._id,
+              page: 0,
+              order: "asc"
+            };
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+
+          it('返却値のlengthは1である',done => {
+            expect( response.body.body.length ).equal(1);
+            done();
+          });
+
+          it('tagsが含まれる', done => {
+            expect(has( first(response.body.body), 'tags')).equal(true);
+            done();
+          });
+
+          it('tagsに指定したメタ情報が含まれる', done => {
+            expect(　findIndex( first(response.body.body).tags , target_tag)  >= 0).equal(true);
+            done();
+          });
+
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+
+        });
+
+        describe('メンバーで検索',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'authorities'} )._id]: role_user._id.toString(),
+              page:0,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+          it('返却値のlengthは3である',done => {
+            expect( response.body.body.length ).equal(3);
+            done();
+          });
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+        });
+
+        describe('お気に入りで検索: true',() => {
+          // favorite
+          it.skip('comment', done => {done();});
+          //code
+        });
+
+        describe('お気に入りで検索: false',() => {
+          it.skip('comment', done => {done();});
+          //code
+        });
+
+
+        describe('検索条件(複合) ファイル名:メタ表示名 ,表示ファイル名（メタ情報）: 表示ファイル名, メンバー:hanako',() => {
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(meta_infos, {name:'display_file_name'} )._id]:"表示ファイル名",
+              [find(search_items, {name:'name'} )._id]:"メタ表示名",
+              [find(search_items, {name:'authorities'} )._id]: role_user._id.toString(),
+              page:0,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+          it('返却値のlengthは1である',done => {
+            expect( response.body.body.length ).equal(1);
+            done();
+          });
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
             done();
           });
         });
