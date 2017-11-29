@@ -374,7 +374,7 @@ var role_files = [
       db.actions.findOne({ name: "delete" })._id,
       db.actions.findOne({ name: "revert" })._id,
       db.actions.findOne({ name: "authority" })._id,
-
+      db.actions.findOne({ name: "move" })._id
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
   }
