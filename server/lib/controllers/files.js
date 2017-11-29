@@ -1458,7 +1458,9 @@ export const addAuthority = (req, res, next) => {
       const { file_id } = req.params;
       const { user, role } = req.body;
 
-      if(file_id === undefined || file_id === null || file_id === "") throw new ValidationError("file_id is empty");
+      if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
       const file = yield File.findById(file_id);
       if (file === null) throw "file is empty";
@@ -1466,13 +1468,15 @@ export const addAuthority = (req, res, next) => {
       const _role = yield RoleFile.findById(role._id);
       if (_role === null) throw "role is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(user._id)) throw "user_id is invalid";
+
       if (user.type === undefined || user.type === null || user.type === "") throw new ValidationError( "user.type is empty" );
 
-
       const authority = new AuthorityFile();
+
       if(user.type === 'user'){
         const _user = yield User.findById(user._id);
-        if (_user === null) throw new RecordNotFoundException( "user is empty" );
+        if (_user === null) throw "user is empty";
 
         authority.files = file;
         authority.users = _user;
@@ -1486,6 +1490,14 @@ export const addAuthority = (req, res, next) => {
         authority.role_files = _role;
       }
 
+      const duplicated = yield AuthorityFile.findOne({
+        files: authority.files,
+        users: authority.users,
+        role_files: authority.role_files
+      });
+
+      if (duplicated !== null) throw "role set is duplicate";
+
       const createdAuthority = yield authority.save();
 
       res.json({
@@ -1496,32 +1508,41 @@ export const addAuthority = (req, res, next) => {
     }
     catch (e) {
       const errors = {};
-      switch (e.message) {
+      switch (e) {
       case "file_id is empty":
-        errors.file_id = "ファイルIDが空のためファイル権限の取得に失敗しました";
+        errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
         break;
       case "file is empty":
-        errors.file = "追加対象のファイルが見つかりません";
+        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
         break;
       case "user is empty":
-        errors.user = "追加対象のユーザが見つかりません";
+        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
         break;
       case "role is empty":
-        errors.role = "追加対象のロールが見つかりません";
+        errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
         break;
       case "user.type is empty":
         errors.user = "ユーザの種類が不明です";
         break;
       case "group is empty":
-          errors.group = "追加対象のユーザが見つかりません";
-          break;
+        errors.group = "追加対象のユーザが見つかりません";
+        break;
+      case "role set is duplicate":
+        errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
+        break;
       default:
         errors.unknown = e;
         break;
       }
       logger.error(e);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
       });
     }
   });

@@ -131,7 +131,7 @@ describe(files_url, () => {
       let payload;
       let expected = {
         message: "ファイルへの権限の追加に失敗しました",
-        detail: "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました"
+        detail: "ファイルIDが不正のためファイルへの権限の追加に失敗しました"
       };
 
       before( done => {
@@ -259,7 +259,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.role_file_id).equal(expected.detail);
         done();
       });
     });
@@ -283,8 +283,8 @@ describe(files_url, () => {
 
           return new Promise( (resolve, reject) => {
             request
-              .post(files_url + `/${ObjectId()}/authorities`)
-              .send({ user: role_user, role: role_file })
+              .post(files_url + `/${file._id}/authorities`)
+              .send({ user: role_user, role: (new ObjectId).toString() })
               .end( (err, res) => resolve(res) );
           });
 
@@ -305,18 +305,18 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.role_file_id).equal(expected.detail);
         done();
       });
 
     });
 
-    describe("role_user_idがoid形式ではない場合", () => {
+    describe("user_idがoid形式ではない場合", () => {
       let file;
       let payload;
       let expected = {
         message: "ファイルへの権限の追加に失敗しました",
-        detail: "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました"
+        detail: "ユーザIDが不正のためファイルへの権限の追加に失敗しました"
       };
 
       before( done => {
@@ -352,12 +352,12 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.user_id).equal(expected.detail);
         done();
       });
     });
 
-    describe("role_user_idがマスタに存在しないidの場合", () => {
+    describe("user_idがマスタに存在しないidの場合", () => {
       let file;
       let payload;
       let expected = {
@@ -373,11 +373,12 @@ describe(files_url, () => {
             .end( (err, res) => resolve(res));
         }).then( res => {
           file = _.get(res, ["body", "body", "0"]);
+          const _role_user = { ...role_user, _id: (new ObjectId).toString() };
 
           return new Promise( (resolve, reject) => {
             request
               .post(files_url + `/${file._id}/authorities`)
-              .send({ user: ObjectId(), role: role_file })
+              .send({ user: _role_user, role: role_file })
               .end( (err, res) => resolve(res) );
           });
 
@@ -398,7 +399,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.user_id).equal(expected.detail);
         done();
       });
     });
@@ -461,7 +462,7 @@ describe(files_url, () => {
       });
 
       it(`エラーの詳細は「${expected.detail}」`, done => {
-        expect(payload.body.status.errors.file_id).equal(expected.detail);
+        expect(payload.body.status.errors.role_set).equal(expected.detail);
         done();
       });
 
@@ -472,6 +473,7 @@ describe(files_url, () => {
         expect(_authorities.length).equal(1);
         done();
       });
+
     });
   });
 
