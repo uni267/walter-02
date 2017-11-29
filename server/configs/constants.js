@@ -12,6 +12,9 @@ export const INFOMATION_LIMITS_PER_PAGE = 5;
 // label等の文字列最大長さ
 export const MAX_STRING_LENGTH = 255;
 
+// email addressの制限文字数
+export const MAX_EMAIL_LENGTH = 64;
+
 // loggerの設定
 export const LOGGER_CONFIG = {
   appenders: {
