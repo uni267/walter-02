@@ -172,7 +172,8 @@ class File extends Component {
 
     const checkOpacity = this.state.hover || file.checked ? 1 : 0.1;
 
-    const elements = (
+    // react-dndの仕様でinjectされたDnDコンポーネントの関数でラップし返却する
+    return connectDragSource(
       <div
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
@@ -202,19 +203,14 @@ class File extends Component {
         ))}
 
         <div style={{ ...cellStyle, width: headers[4].width }}>
-
           <FileDialogMenu
             actions={this.props.actions}
             file={this.props.file}
             hover={this.state.hover}
             trashDirId={this.props.tenant.trashDirId} />
-
         </div>
-
       </div>
     );
-
-    return connectDragSource(elements);
   }
 }
 
