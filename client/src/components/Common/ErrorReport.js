@@ -6,8 +6,7 @@ import {red900, grey50} from 'material-ui/styles/colors';
 
 const ErrorReport = ({
   open,
-  message,
-  name
+  message
 }) => {
   const transform = message
         ? "translate3d(0, 0, 0)" : "translate3d(0, -50px, 0)";
@@ -34,8 +33,7 @@ const ErrorReport = ({
 
 ErrorReport.propTypes = {
   open: PropTypes.bool,
-  message: PropTypes.string,
-  name: PropTypes.string
+  message: PropTypes.string
 };
 
 export default ErrorReport;
