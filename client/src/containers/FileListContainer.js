@@ -142,9 +142,7 @@ class FileListContainer extends Component {
         nextProps.fileSortTarget.desc
       );
     }
-  }
 
-  componentDidUpdate() {
     window.setTimeout(() => window.scrollTo(0, this.state.yOffset), 0);
   }
 
@@ -157,6 +155,7 @@ class FileListContainer extends Component {
       window.pageYOffset > nextPageThreshold
       && this.props.files.length < this.props.total
     ) {
+      this.setState({ yOffset: window.pageYOffset });
       this.props.actions.fileNextPage();
     }
   };
