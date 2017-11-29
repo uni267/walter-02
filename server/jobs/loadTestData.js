@@ -173,11 +173,38 @@ var display_items = [
   },
   {
     tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "display_file_name" })._id,
+    label: "表示ファイル名",
+    name: "receive_file_name",
+    is_display: true,
+    order: 2,
+    width: "50%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "receive_date_time" })._id,
+    label: "受信日時",
+    name: "receive_date_time",
+    is_display: true,
+    order: 3,
+    width: "20%"
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "send_company_name" })._id,
+    label: "送信企業名",
+    name: "send_company_name",
+    is_display: true,
+    order: 4,
+    width: "15%"
+  },
+  {
+    tenant_id: tenant._id,
     meta_info_id: null,
     label: "ファイル名",
     name: "name",
     search_value_type: "String",
-    is_display: true,
+    is_display: false,
     order: 2,
     width: "50%"
   },
@@ -187,7 +214,7 @@ var display_items = [
     label: "更新日時",
     name: "modified",
     search_value_type: "Date",
-    is_display: true,
+    is_display: false,
     order: 3,
     width: "20%"
   },
@@ -198,7 +225,7 @@ var display_items = [
     name: "authorities",
     search_value_type: "Select",
     value_type: "String",
-    is_display: true,
+    is_display: false,
     order: 4,
     width: "15%"
   },
