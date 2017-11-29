@@ -350,7 +350,7 @@ export const searchItems = (req, res, next) => {
 
       if (tenant_id === undefined ||
           tenant_id === null ||
-          tenant_id === "") throw "tenant_id is empty";
+          tenant_id === "") throw new ValidationError( "tenant_id is empty" );
 
       let { meta_only } = req.query;
 
@@ -359,6 +359,13 @@ export const searchItems = (req, res, next) => {
           meta_only === "") {
         meta_only = false;
       }
+
+      if( !(
+        meta_only === "true"
+        || meta_only === "false"
+        || meta_only === true
+        || meta_only === false
+      )) throw new ValidationError( "meta_only is not boolean" );
 
       const conditions = {
           tenant_id: mongoose.Types.ObjectId(tenant_id)
@@ -391,10 +398,17 @@ export const searchItems = (req, res, next) => {
     }
     catch (e) {
       const errors = {};
-      errors.unknown = commons.errorParser(e);
+      switch (e.message) {
+        case "meta_only is not boolean":
+          errors.meta_only = "指定したオプションが真偽値以外のため検索項目の取得に失敗しました";
+          break;
+        default:
+          errors.unknown = commons.errorParser(e);
+          break;
+      }
 
       res.status(400).json({
-        status: { success: false, message: "取得時にエラーが発生", errors }
+        status: { success: false, message: "検索項目の取得に失敗しました", errors }
       });
     }
   });

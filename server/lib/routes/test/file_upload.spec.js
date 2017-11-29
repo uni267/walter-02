@@ -1690,7 +1690,7 @@ describe(files_url, () => {
               .post(files_url)
               .send(body)
               .end( (err, res) => resolve(res) );
-            
+
           });
         }).then( res => {
           payload = res;
@@ -1723,13 +1723,12 @@ describe(files_url, () => {
         });
 
         it("ロールが指定した値で保存されている", done => {
-          let authority = _.get(nextPayload, ["body", "body", "authorities", "1"]);
-
-          const _role_file_id = authority.role_files._id;
-          const _user_id = authority.users._id;
-
-          expect(_role_file_id).equal(role_file_id);
-          expect(_user_id).equal(user_id);
+          expect( _.findIndex(nextPayload.body.body.authorities,
+            {
+              role_files:{_id: role_file_id},
+              users:{_id: user_id}
+            }
+          ) >= 0).equal(true);
           done();
         });
 
@@ -1781,14 +1780,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -1852,14 +1851,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -1924,14 +1923,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -1996,14 +1995,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -2069,14 +2068,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -2144,14 +2143,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -2218,14 +2217,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -2290,14 +2289,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -2362,14 +2361,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
@@ -2435,14 +2434,14 @@ describe(files_url, () => {
                   .post(files_url)
                   .send(body)
                   .end( (err, res) => resolve(res) );
-                
+
               });
             }).then( res => {
               payload = res;
               done();
             });
           });
-          
+
           it("http(400)が返却される", done => {
             expect(payload.status).equal(400);
             done();
