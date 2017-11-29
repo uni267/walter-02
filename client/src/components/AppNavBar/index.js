@@ -12,7 +12,7 @@ import Badge from 'material-ui/Badge';
 import Divider from 'material-ui/Divider';
 import IconMenu from "material-ui/IconMenu";
 import IconButton from 'material-ui/IconButton';
-import MenuItem from "material-ui/MenuItem";
+import { List, ListItem } from "material-ui/List";
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import Popover from 'material-ui/Popover';
 
@@ -60,7 +60,9 @@ const AppNavBar = ({
     );
 
     const avatarIcon = (
-      <Avatar src="/images/shikata.jpg" />
+      session.user_name === null
+        ? <Avatar />
+        : <Avatar style={{ top: 13, left: 30 }} size={30}>{session.user_name[0].toUpperCase()}</Avatar>
     );
 
     return (
@@ -93,18 +95,12 @@ const AppNavBar = ({
         <IconMenu
           iconButtonElement={accountIcon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-          <MenuItem
-            primaryText={session.user_name}
-            leftIcon={avatarIcon}
-            disabled={true} />
-          <Divider />
-          <MenuItem
-            primaryText="パスワード変更"
-            onTouchTap={handleAccountOpen} />
-          <Divider />
-          <MenuItem
-            onTouchTap={handleLogout}
-            primaryText="ログアウト" />
+          <List>
+            <ListItem disabled={true} primaryText={session.user_name} leftAvatar={avatarIcon} />
+            <Divider />
+            <ListItem primaryText="パスワード変更" onTouchTap={handleAccountOpen} />
+            <ListItem primaryText="ログアウト" onTouchTap={handleLogout} />
+          </List>
         </IconMenu>
       </div>
     );
