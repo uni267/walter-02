@@ -1610,8 +1610,7 @@ describe(user_url + "/:user_id", () => {
         });
       });
 
-      // メールアドレスは必須項目ではない
-      describe.skip("空文字の場合", () => {
+      describe("空文字の場合", () => {
         let payload;
         let nextPayload;
         let body = { email: "" };
@@ -1624,25 +1623,12 @@ describe(user_url + "/:user_id", () => {
               .end( (err, res) => resolve(res) );
           }).then( res => {
             payload = res;
-
-            return new Promise( (resolve, reject) => {
-              request
-                .get(user_url + `/${user._id}`)
-                .end( (err, res) => resolve(res) );
-            });
-          }).then( res => {
-            nextPayload = res;
             done();
           });
         });
 
-        it("http(200)が返却される", done => {
-          expect(payload.status).equal(200);
-          done();
-        });
-
-        it("ユーザ詳細を取得した結果、メールアドレスが反映されている", done => {
-          expect(nextPayload.body.body.email).equal(body.email);
+        it("http(400)が返却される", done => {
+          expect(payload.status).equal(400);
           done();
         });
       });
