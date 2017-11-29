@@ -1,8 +1,10 @@
+import { delay } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
 import * as actions from "../actions";
+import * as commons from "../actions/commons";
 
 function* watchRequestVerifyToken() {
   while (true) {
@@ -20,7 +22,11 @@ function* watchRequestVerifyToken() {
       yield put(actions.loadingEnd());
     }
     catch (e) {
-
+      const { message, errors } = e.response.data.status;
+      yield put(commons.openException(message, errors.token));
+      localStorage.removeItem("token");
+      yield call(delay, 2000);
+      window.location.href = "/login";
     }
   }
 }
