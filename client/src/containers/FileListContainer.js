@@ -101,6 +101,21 @@ const fileTarget = {
   }
 };
 
+const dragCollect = (connect, monitor) => {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  };
+};
+
+const dropCollect = (connect, monitor) => {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver(),
+    canDrop: monitor.canDrop()
+  };
+};
+
 class FileListContainer extends Component {
   constructor(props) {
     super(props);
@@ -125,6 +140,7 @@ class FileListContainer extends Component {
       this.props.actions.requestFetchFiles(nextProps.match.params.id);
     }
 
+    // onScroll paginationで次のページにインクリメントされた際のイベント
     if (this.props.page < nextProps.page) {
       this.props.actions.requestFetchFiles(
         nextProps.match.params.id,
@@ -143,11 +159,12 @@ class FileListContainer extends Component {
       );
     }
 
+    // vdomのレンダリングが走る際、ページ上部にジャンプするため
+    // yOffsetを記憶しておき、レンダリング後にyOffsetにジャンプする
     window.setTimeout(() => window.scrollTo(0, this.state.yOffset), 0);
   }
 
   // onScroll pagination
-  // @todo スクロール幅の算出方法を改善する
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
 
@@ -155,12 +172,13 @@ class FileListContainer extends Component {
       window.pageYOffset > nextPageThreshold
       && this.props.files.length < this.props.total
     ) {
+      // yOffsetを記憶しておく
       this.setState({ yOffset: window.pageYOffset });
       this.props.actions.fileNextPage();
     }
   };
 
-  // finderからdropのハンドラ
+  // finder, explorerからファイルをドロップするハンドラ
   handleFileDrop = (item, monitor) => {
     if (monitor) {
       this.props.actions.uploadFiles(
@@ -170,11 +188,7 @@ class FileListContainer extends Component {
   }
 
   renderRow = (file, idx) => {
-    const DirDroppable = DropTarget("file", fileTarget, (con, mon) => ({
-      connectDropTarget: con.dropTarget(),
-      isOver: mon.isOver(),
-      canDrop: mon.canDrop()
-    }))(Dir);
+    const DirDroppable = DropTarget("file", fileTarget, dropCollect)(Dir);
 
     const dirComponent = (
       <DirDroppable
@@ -187,10 +201,7 @@ class FileListContainer extends Component {
         />
     );
 
-    const FileDraggable = DragSource("file", fileSource, (con, mon) => ({
-      connectDragSource: con.dragSource(),
-      isDragging: mon.isDragging()
-    }))(File);
+    const FileDraggable = DragSource("file", fileSource, dragCollect)(File);
 
     const fileComponent = (
       <FileDraggable
