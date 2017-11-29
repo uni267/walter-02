@@ -1,4 +1,4 @@
-import { call, put, take } from "redux-saga/effects";
+import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
 import * as actions from "../actions/files";
@@ -12,9 +12,17 @@ function* watchDelTag() {
 
     try {
       yield call(api.fetchDelTag, file, tag);
-      const payload = yield call(api.fetchFile, file._id);
-      yield put(actions.initFile(payload.data.body));
-      yield put(actions.initFileTag(payload.data.body));
+      yield call(api.fetchFile, file._id);
+
+      // ソート、ページネーションの状態を保持する
+      const { sorted, desc } = yield select( state => state.fileSortTarget );
+      const { page } = yield select( state => state.filePagination );
+      const payload = yield call(api.fetchFiles, file.dir_id, page, sorted, desc);
+      yield put(actions.initFiles(payload.data.body));
+
+      // タグ編集ダイアログ用のfile objectをセット
+      const changedFile = payload.data.body.filter( _file => _file._id === file._id );
+      yield put(actions.initFileTag(changedFile[0]));
       yield put(commons.triggerSnackbar("タグを削除しました"));
     }
     catch (e) {
