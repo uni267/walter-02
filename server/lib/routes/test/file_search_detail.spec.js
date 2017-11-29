@@ -185,7 +185,13 @@ describe(base_url,() => {
                 resolve(res);
               });
             });
-
+          }).then(res=>{
+            return new Promise((resolve, reject) => {
+              request.patch(`${base_url}/${file_id}/toggle_star`)
+              .end((err,res) => {
+                resolve(res);
+              });
+            });
 
           }).then(res=>{
             done();
@@ -679,8 +685,8 @@ describe(base_url,() => {
             done();
           });
 
-          it('返却値のlengthは11である',done => {
-            expect( response.body.body.length ).equal(11);
+          it('返却値のlengthは10である',done => {
+            expect( response.body.body.length ).equal(10);
             done();
           });
         });
@@ -980,14 +986,92 @@ describe(base_url,() => {
         });
 
         describe('お気に入りで検索: true',() => {
-          // favorite
-          it.skip('comment', done => {done();});
-          //code
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'favorite'} )._id]: "true",
+              page:0,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+          it('返却値のlengthは1である',done => {
+            expect( response.body.body.length ).equal(1);
+            done();
+          });
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+          it('is_starはtrueである',done => {
+            expect( first(response.body.body).is_star ).equal(true);
+            done();
+          });
+
         });
 
         describe('お気に入りで検索: false',() => {
-          it.skip('comment', done => {done();});
-          //code
+          let response;
+          before(done => {
+            const sendQuery = {
+              [find(search_items, {name:'favorite'} )._id]: "false",
+              page:0,
+              order: "asc"
+            };
+
+            request.get(`${base_url}/search_detail`)
+            .query(sendQuery)
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
+          });
+          it('http(200)が返却される', done => {
+            expect(response.status).equal(200);
+            done();
+          });
+          it('statusはtrue',done => {
+            expect(response.body.status.success).equal(true);
+            done();
+          });
+          it('Arrayである',done => {
+            expect( response.body.body instanceof Array ).equal(true);
+            done();
+          });
+          it('返却値のlengthは12である',done => {
+            expect( response.body.body.length ).equal(12);
+            done();
+          });
+          it('totalが30以下の場合,lengthと一致する',done => {
+            if(response.body.status.total <= 30 ) {
+              expect(response.body.body.length).equal(response.body.status.total);
+            }
+            done();
+          });
+          it('is_starはtrueである',done => {
+            expect( first(response.body.body).is_star ).equal(false);
+            done();
+          });
         });
 
 

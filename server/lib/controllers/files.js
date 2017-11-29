@@ -433,6 +433,11 @@ export const searchDetail = (req, res, next) => {
         tags: mongoose.Types.ObjectId(item.value),
         is_display: true
       });
+    case "favorite":
+      return ({
+        is_star: (item.value === "true"),
+        is_display: true
+      });
     default:
       return ({
         [item.key_type]: item.value,
