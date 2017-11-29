@@ -75,6 +75,7 @@ class MetaInfo extends Component {
       value: "_id"
     };
 
+    // 登録されていないメタ情報のみを抽出
     const metaInfos = this.props.metaInfo.filter( meta => {
       const ids = this.props.file.meta_infos.map( meta => meta._id );
       return !ids.includes(meta._id);
