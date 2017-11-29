@@ -151,13 +151,25 @@ export const add = (req, res, next) => {
           || user.account_name === null
           || user.account_name === "") throw "account_name is empty";
 
+      if (user.account_name.length >= constants.MAX_STRING_LENGTH) {
+        throw "account_name is too long";
+      }
+
       if (user.name === undefined
           || user.name === null
           || user.name === "") throw "name is empty";
 
+      if (user.name.length >= constants.MAX_STRING_LENGTH) {
+        throw "name is too long";
+      }
+
       if (user.email === undefined
           || user.email === null
           || user.email === "") throw "email is empty";
+
+      if (user.email.length >= constants.MAX_EMAIL_LENGTH) {
+        throw "email is too long";
+      }
 
       if (user.password === undefined
           || user.password === null
@@ -181,7 +193,7 @@ export const add = (req, res, next) => {
       authority_menus.users = user;
       authority_menus.groups = null;
 
-      const {createdUser,createdAuthorityMenu} = yield { createdUser:user.save(), createdAuthorityMenu:authority_menus.save() }
+      const {createdUser,createdAuthorityMenu} = yield { createdUser:user.save(), createdAuthorityMenu:authority_menus.save() };
 
       res.json({
         status: { success: true },
@@ -193,22 +205,31 @@ export const add = (req, res, next) => {
 
       switch (err) {
       case "name is empty":
-        errors.name = "表示名が空です";
+        errors.name = "表示名が空のためユーザの作成に失敗しました";
+        break;
+      case "name is too long":
+        errors.name = `表示名が制限文字数(${constants.MAX_STRING_LENGTH})を超過したためユーザの作成に失敗しました`;
         break;
       case "account_name is empty":
-          errors.account_name = "アカウント名が空です";
-          break;
+        errors.account_name = "アカウント名が空のためユーザの作成に失敗しました";
+        break;
+      case "account_name is too long":
+        errors.account_name = `アカウント名が制限文字数(${constants.MAX_STRING_LENGTH})を超過したためユーザの作成に失敗しました`;
+        break;
       case "account_name is duplicate":
-        errors.account_name = "既に同アカウント名のユーザが存在しています";
+        errors.account_name = "既に同アカウント名のユーザが存在するためユーザの作成に失敗しました";
         break;
       case "email is empty":
-        errors.email = "メールアドレスが空です";
+        errors.email = "メールアドレスが空のためユーザの作成に失敗しました";
+        break;
+      case "email is too long":
+        errors.email = `メールアドレスが制限文字数(${constants.MAX_EMAIL_LENGTH})を超過したためユーザの作成に失敗しました`;
         break;
       case "email is duplicate":
-        errors.email = "同じメールアドレスが既に存在しています";
+        errors.email = "メールアドレスが重複しているためユーザの作成に失敗しました";
         break;
       case "password is empty":
-        errors.password = "パスワードが空です";
+        errors.password = "パスワードが空のためユーザの作成に失敗しました";
         break;
       case "role_id is empty":
         errors.role_id = "ユーザ種類が空です";
@@ -219,7 +240,7 @@ export const add = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "ユーザの作成に失敗しました",errors }
       });
     }
   });

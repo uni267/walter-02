@@ -239,10 +239,11 @@ describe(users_url, () => {
     describe("account_nameが", () => {
       let expected = {
         message: "ユーザの作成に失敗しました",
-        detail: "アカウント名が空です"
+        detail: "アカウント名が空のためユーザの作成に失敗しました"
       };
 
       describe("undefinedの場合", () => {
+
         let payload;
         let user = {
           name: "jiro",
@@ -395,7 +396,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "そのアカウント名は既に使用されています"
+          detail: "既に同アカウント名のユーザが存在するためユーザの作成に失敗しました"
         };
 
         before( done => {
@@ -448,7 +449,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "アカウント名が長すぎます"
+          detail: "アカウント名が制限文字数(255)を超過したためユーザの作成に失敗しました"
         };
 
         before( done => {
@@ -461,7 +462,6 @@ describe(users_url, () => {
                 .post(users_url)
                 .send({ user })
                 .end( (err, res) => {
-                  console.log(res.body);
                   payload = res;
                   done();
                 });
@@ -489,7 +489,7 @@ describe(users_url, () => {
         });
       });
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      describe.skip("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
           detail: "アカウント名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれています"
@@ -870,7 +870,7 @@ describe(users_url, () => {
       describe("undefinedの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -922,7 +922,7 @@ describe(users_url, () => {
       describe("nullの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -974,7 +974,7 @@ describe(users_url, () => {
       describe("空文字の場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -1023,7 +1023,8 @@ describe(users_url, () => {
         });
       });
 
-      describe("重複する場合", () => {
+      // 重複禁止はaccount_nameのみ
+      describe.skip("重複する場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
           detail: "その表示名は既に使用されています"
@@ -1048,8 +1049,15 @@ describe(users_url, () => {
                 .post(users_url)
                 .send({ user })
                 .end( (err, res) => {
-                  payload = res;
-                  done();
+
+                  request
+                    .post(users_url)
+                    .send({ user })
+                    .end( (err, res) => {
+                      payload = res;
+                      done();
+                    });
+
                 });
             });
         });
@@ -1079,7 +1087,7 @@ describe(users_url, () => {
       describe("255文字以上の場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "表示名が長すぎます"
+          detail: "表示名が制限文字数(255)を超過したためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -1129,7 +1137,7 @@ describe(users_url, () => {
 
       });
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      describe.skip("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
@@ -1563,7 +1571,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが空です"
+          detail: "メールアドレスが空のためユーザの作成に失敗しました"
         };
 
         before( done => {
@@ -1598,10 +1606,9 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          expect(payload.body.status.errors.email).equal(expected.detail);
           done();
         });
-
       });
 
       describe("nullの場合", () => {
@@ -1615,7 +1622,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが空です"
+          detail: "メールアドレスが空のためユーザの作成に失敗しました"
         };
 
         before( done => {
@@ -1650,7 +1657,7 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          expect(payload.body.status.errors.email).equal(expected.detail);
           done();
         });
 
@@ -1668,7 +1675,7 @@ describe(users_url, () => {
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが空です"
+          detail: "メールアドレスが空のためユーザの作成に失敗しました"
         };
 
         before( done => {
@@ -1703,7 +1710,7 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          expect(payload.body.status.errors.email).equal(expected.detail);
           done();
         });
 
@@ -1712,8 +1719,8 @@ describe(users_url, () => {
       describe("重複する場合", () => {
         let payload;
         let user = {
-          account_name: "jiro",
-          name: "jiro",
+          account_name: "email duplicate",
+          name: "email duplicate",
           email: authData.email,
           password: "test",
           role_id: null
@@ -1756,24 +1763,24 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          expect(payload.body.status.errors.email).equal(expected.detail);
           done();
         });
       });
 
-      describe("255文字以上の場合", () => {
+      describe("64文字以上の場合", () => {
         let payload;
         let user = {
           account_name: "jiro",
           name: "jiro",
-          email: range(256).join(""),
+          email: "jugemjugemjugemjugemjugemjugemjugemjugemjugemjugemjugem@jugem.com",
           password: "test",
           role_id: null
         };
 
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "メールアドレスが長すぎます"
+          detail: "メールアドレスが制限文字数(64)を超過したためユーザの作成に失敗しました"
         };
 
         before( done => {
@@ -1808,13 +1815,14 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.account_name).equal(expected.detail);
+          expect(payload.body.status.errors.email).equal(expected.detail);
           done();
         });
 
       });
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      // emailの妥当性はライブラリを使用する
+      describe.skip("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
@@ -2237,7 +2245,7 @@ describe(users_url, () => {
       describe("undefinedの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "パスワードが空です"
+          detail: "パスワードが空のためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -2280,7 +2288,7 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.name).equal(expected.detail);
+          expect(payload.body.status.errors.password).equal(expected.detail);
           done();
         });
       });
@@ -2288,7 +2296,7 @@ describe(users_url, () => {
       describe("nullの場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "パスワードが空です"
+          detail: "パスワードが空のためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -2332,7 +2340,7 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.name).equal(expected.detail);
+          expect(payload.body.status.errors.password).equal(expected.detail);
           done();
         });
       });
@@ -2340,7 +2348,7 @@ describe(users_url, () => {
       describe("空文字の場合", () => {
         let expected = {
           message: "ユーザの作成に失敗しました",
-          detail: "パスワードが空です"
+          detail: "パスワードが空のためユーザの作成に失敗しました"
         };
 
         let payload;
@@ -2384,12 +2392,13 @@ describe(users_url, () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.name).equal(expected.detail);
+          expect(payload.body.status.errors.password).equal(expected.detail);
           done();
         });
       });
 
-      describe("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      // 対象外
+      describe.skip("禁止文字(\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let expected = {
             message: "ユーザの作成に失敗しました",
