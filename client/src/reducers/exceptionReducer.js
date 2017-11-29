@@ -2,7 +2,7 @@ import * as actionTypes from "../actionTypes";
 
 const initialState = {
   open: false,
-  message: null
+  message: ""
 };
 
 const exceptionReducer = (state = initialState, action) => {
