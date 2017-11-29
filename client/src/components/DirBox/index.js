@@ -27,7 +27,7 @@ const DirBox = ({
 };
 
 DirBox.propTypes = {
-  dir: PropTypes.object.isRequired,
+//  dir: PropTypes.object.isRequired,
   styles: PropTypes.object.isRequired
 };
 
