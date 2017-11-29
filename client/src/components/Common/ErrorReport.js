@@ -16,6 +16,7 @@ const ErrorReport = ({
     top: 0,
     bottom: "auto",
     left: (window.innerWidth - 288) * 0.5,
+    maxWidth: 700,
     transform: transform,
     backgroundColor: red900,
     color: grey50
@@ -24,7 +25,7 @@ const ErrorReport = ({
   return (
     <Snackbar
       open={open}
-      message={`${message} (${name})`}
+      message={message}
       style={style}
       bodyStyle={style}
       />
@@ -32,7 +33,9 @@ const ErrorReport = ({
 };
 
 ErrorReport.propTypes = {
-  message: PropTypes.string
+  open: PropTypes.bool,
+  message: PropTypes.string,
+  name: PropTypes.string
 };
 
 export default ErrorReport;
