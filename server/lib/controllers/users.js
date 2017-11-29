@@ -8,7 +8,8 @@ import Group from "../models/Group";
 import AuthorityMenu from "../models/AuthorityMenu";
 import RoleMenu from "../models/RoleMenu";
 import { concat,first } from "lodash";
-import { logger } from "../logger";
+import logger from "../logger";
+import * as constants from "../../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 
@@ -356,6 +357,8 @@ export const toggleEnabled = (req, res, next) => {
           user_id === null ||
           user_id === "") throw "user_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
+
       const user = yield User.findById(user_id);
       if (user === null) throw "user is empty";
 
@@ -373,6 +376,9 @@ export const toggleEnabled = (req, res, next) => {
       case "user_id is empty":
         errors.user_id = e;
         break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためユーザの有効化/無効化に失敗しました";
+        break;
       case "user is empty":
         errors.user = "指定されたユーザは存在しません";
         break;
@@ -382,7 +388,7 @@ export const toggleEnabled = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "ユーザの有効化/無効化に失敗しました", errors }
       });
     }
   });
@@ -398,6 +404,9 @@ export const updateName = (req, res, next) => {
           name === undefined ||
           name === "") throw "name is empty";
 
+      if (name.length >= constants.MAX_STRING_LENGTH) throw "name is too long";
+
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
       const user = yield User.findById(user_id);
       if (user === null) throw "user not found";
 
@@ -415,7 +424,13 @@ export const updateName = (req, res, next) => {
 
       switch (err) {
       case "name is empty":
-        errors.name = "表示名が空のため変更に失敗しました。";
+        errors.name = "表示名が空のため変更に失敗しました";
+        break;
+      case "name is too long":
+        errors.name = `表示名が規定文字数(${constants.MAX_STRING_LENGTH})を超過したため変更に失敗しました`;
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のため表示名の変更に失敗しました";
         break;
       case "user not found":
         errors.user = "指定されたユーザが見つからないため変更に失敗しました";
@@ -426,7 +441,7 @@ export const updateName = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "ユーザの表示名の変更に失敗しました", errors }
       });
     }
   });
@@ -442,9 +457,15 @@ export const updateEmail = (req, res, next) => {
           user_id === undefined ||
           user_id === null) throw "user_id is empty";
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
+
       if (email === ""
           || email === null
           || email === undefined) throw "email is empty";
+
+      if (email.length >= constants.MAX_EMAIL_LENGTH) {
+        throw "email is too long";
+      }
 
       const user = yield User.findById(user_id);
       if (user === null) throw "user is empty";
@@ -462,6 +483,12 @@ export const updateEmail = (req, res, next) => {
       switch (e) {
       case "user_id is empty":
         errors.user_id = e;
+        break;
+      case "email is too long":
+        errors.email = `メールアドレスが規定文字数(${constants.MAX_EMAIL_LENGTH})を超過したためメールアドレスの変更に失敗しました`;
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためメールアドレスの変更に失敗しました";
         break;
       case "email is empty":
         errors.email = "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました";
@@ -550,6 +577,9 @@ export const removeUserOfGroup = (req, res, next) => {
     try {
       const { user_id, group_id } = req.params;
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
+      if (! mongoose.Types.ObjectId.isValid(group_id)) throw "group_id is invalid";
+
       const [ user, group ] = yield [
         User.findById(user_id),
         Group.findById(group_id)
@@ -558,9 +588,11 @@ export const removeUserOfGroup = (req, res, next) => {
       if (user === null) throw "user is empty";
       if (group === null) throw "group is empty";
 
-      user.groups = user.groups.filter( _group => (
-        _group.toString() !== group._id.toString()
-      ));
+      const filtered = user.groups.filter( _group => _group.toString() !== group._id.toString() );
+
+      if (user.groups.length === filtered.length) throw "group_id is not found";
+
+      user.groups = filtered;
 
       const changedUser = yield user.save();
       res.json({
@@ -569,13 +601,32 @@ export const removeUserOfGroup = (req, res, next) => {
       });
     }
     catch (e) {
-      res.status(500).json({
-        status: { success: false, errors: e }
+      let errors = {};
+
+      switch(e) {
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためグループのメンバ削除に失敗しました";
+        break;
+      case "group_id is invalid":
+        errors.group_id = "グループIDが不正のためグループのメンバ削除に失敗しました";
+        break;
+      case "group_id is not found":
+        errors.group_id = "指定されたグループにユーザが所属していないためグループのメンバ削除に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+      res.status(400).json({
+        status: {
+          success: false,
+          message: "グループのメンバ削除に失敗しました",
+          errors
+        }
       });
     }
   });
 };
-
 
 export const updateAccountName = (req, res, next) => {
   co(function* () {
@@ -586,6 +637,10 @@ export const updateAccountName = (req, res, next) => {
       if (account_name === null ||
           account_name === undefined ||
           account_name === "") throw "account_name is empty";
+
+      if (account_name.length >= constants.MAX_STRING_LENGTH) throw "account_name is too long";
+
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
 
       const user = yield User.findById(user_id);
       if (user === null) throw "user not found";
@@ -604,7 +659,13 @@ export const updateAccountName = (req, res, next) => {
 
       switch (err) {
       case "account_name is empty":
-        errors.account_name = "アカウント名が空のため変更に失敗しました。";
+        errors.account_name = "アカウント名が空のためログイン名の変更に失敗しました";
+        break;
+      case "account_name is too long":
+        errors.account_name = `アカウント名が規定文字数(${constants.MAX_STRING_LENGTH})を超過したためログイン名の変更に失敗しました`;
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためログイン名の変更に失敗しました";
         break;
       case "user not found":
         errors.user = "指定されたユーザが見つからないため変更に失敗しました";
@@ -615,7 +676,7 @@ export const updateAccountName = (req, res, next) => {
       }
 
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "ログイン名の変更に失敗しました", errors }
       });
     }
   });
@@ -683,6 +744,14 @@ export const updateRoleMenus = (req, res, next ) => {
       const user_id = req.params.user_id;
       const { role_menu_id } = req.body;
 
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
+
+      if (role_menu_id === undefined || role_menu_id === null || role_menu_id === "") {
+        throw "role_menu_id is empty";
+      }
+
+      if (! mongoose.Types.ObjectId.isValid(role_menu_id)) throw "role_menu_id is invalid";
+
       const [ user ,role ] = yield [User.findById(user_id), RoleMenu.findById(role_menu_id) ];
 
       if (user === null) throw "user is empty";
@@ -707,19 +776,28 @@ export const updateRoleMenus = (req, res, next ) => {
       let errors = {};
 
       switch (err) {
-        case "user is empty":
-          errors.user = "存在しないユーザです";
-          break;
-        case "role is empty":
-          errors.role = "存在しないユーザタイプです";
-          break;
-        default:
-          errors = err;
-          break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためメニュー権限の変更に失敗しました";
+        break;
+      case "user is empty":
+        errors.user = "存在しないユーザです";
+        break;
+      case "role_menu_id is empty":
+        errors.role_menu_id = "メニュー権限IDが空のためメニュー権限の変更に失敗しました";
+        break;
+      case "role_menu_id is invalid":
+        errors.role_menu_id = "メニュー権限IDが不正のためメニュー権限の変更に失敗しました";
+        break;
+      case "role is empty":
+        errors.role = "存在しないユーザタイプです";
+        break;
+      default:
+        errors = err;
+        break;
       }
       logger.error(errors);
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "メニュー権限の変更に失敗しました", errors }
       });
 
     }

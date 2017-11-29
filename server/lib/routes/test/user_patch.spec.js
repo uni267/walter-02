@@ -100,47 +100,60 @@ describe(user_url + "/:user_id", () => {
         expect(nextPayload.body.body.enabled).equal(false);
         done();
       });
+    });
 
-      describe("変更されたユーザがログインした場合", () => {
-        let payload;
-        let expected = {
-          message: "ユーザ認証に失敗しました",
-          detail: "指定されたユーザは現在無効状態のためユーザ認証に失敗しました"
-        };
+    describe("変更されたユーザがログインした場合", () => {
+      let payload;
+      let expected = {
+        message: "ユーザ認証に失敗しました",
+        detail: "指定されたユーザは現在無効状態のためユーザ認証に失敗しました"
+      };
 
-        before( done => {
+      before( done => {
+        new Promise( (resolve, reject) => {
           request
-            .post(login_url)
-            .send({
-              account_name: toggleUser.account_name,
-              password: "test"
-            })
-            .end( (err, res) => {
-              payload = res;
-              done();
-            });
-        });
-
-        it("http(400)が返却される", done => {
-          expect(payload.status).equal(400);
+            .patch(user_url + `/${toggleUser._id}/enabled`)
+            .end( (err, res) => resolve(res) );
+        }).then( res => {
+          return new Promise( (resolve, reject) => {
+            request
+              .get(user_url + `/${toggleUser._id}`)
+              .end( (err, res) => resolve(res) );
+          });
+        }).then( res => {
+          return new Promise( (resolve, reject) => {
+            request
+              .post(login_url)
+              .send({
+                account_name: toggleUser.account_name,
+                password: "test"
+              })
+              .end( (err, res) => resolve(res) );
+          });
+        }).then( res => {
+          payload = res;
           done();
         });
+      });
 
-        it("statusはfalse", done => {
-          expect(payload.body.status.success).equal(false);
-          done();
-        });
+      it("http(400)が返却される", done => {
+        expect(payload.status).equal(400);
+        done();
+      });
 
-        it(`エラーの概要は「${expected.message}」`, done => {
-          expect(payload.body.status.message).equal(expected.message);
-          done();
-        });
+      it("statusはfalse", done => {
+        expect(payload.body.status.success).equal(false);
+        done();
+      });
 
-        it("エラーの詳細は「xx」", done => {
-          expect(payload.body.status.errors.account_name).equal(expected.detail);
-          done();
-        });
+      it(`エラーの概要は「${expected.message}」`, done => {
+        expect(payload.body.status.message).equal(expected.message);
+        done();
+      });
 
+      it(`エラーの詳細は「${expected.detail}」`, done => {
+        expect(payload.body.status.errors.account_name).equal(expected.detail);
+        done();
       });
     });
 
@@ -149,7 +162,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "ユーザの有効化/無効化に失敗しました",
-          detail: "ユーザが存在しません"
+          detail: "ユーザIDが不正のためユーザの有効化/無効化に失敗しました"
         };
 
         before( done => {
@@ -289,7 +302,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "ユーザが存在しません"
+          detail: "ユーザIDが不正のためログイン名の変更に失敗しました"
         };
 
         before( done => {
@@ -330,12 +343,12 @@ describe(user_url + "/:user_id", () => {
         let body = {};
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "ログイン名が空です"
+          detail: "アカウント名が空のためログイン名の変更に失敗しました"
         };
 
         before( done => {
           request
-            .post(user_url + `/${changeUser._id}/account_name`)
+            .patch(user_url + `/${changeUser._id}/account_name`)
             .send(body)
             .end( (err, res) => {
               payload = res;
@@ -369,12 +382,12 @@ describe(user_url + "/:user_id", () => {
         let body = { account_name: null };
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "ログイン名が空です"
+          detail: "アカウント名が空のためログイン名の変更に失敗しました"
         };
 
         before( done => {
           request
-            .post(user_url + `/${changeUser._id}/account_name`)
+            .patch(user_url + `/${changeUser._id}/account_name`)
             .send(body)
             .end( (err, res) => {
               payload = res;
@@ -408,12 +421,12 @@ describe(user_url + "/:user_id", () => {
         let body = { account_name: "" };
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "ログイン名が空です"
+          detail: "アカウント名が空のためログイン名の変更に失敗しました"
         };
 
         before( done => {
           request
-            .post(user_url + `/${changeUser._id}/account_name`)
+            .patch(user_url + `/${changeUser._id}/account_name`)
             .send(body)
             .end( (err, res) => {
               payload = res;
@@ -450,12 +463,12 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ログイン名の変更に失敗しました",
-          detail: "ログイン名が長すぎます"
+          detail: "アカウント名が規定文字数(255)を超過したためログイン名の変更に失敗しました"
         };
 
         before( done => {
           request
-            .post(user_url + `/${changeUser._id}/account_name`)
+            .patch(user_url + `/${changeUser._id}/account_name`)
             .send(body)
             .end( (err, res) => {
               payload = res;
@@ -484,7 +497,8 @@ describe(user_url + "/:user_id", () => {
         });
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      // account_nameは禁止文字の対象外
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let payload;
           let body = {
@@ -892,7 +906,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "指定されたユーザが存在しないため表示名の変更に失敗しました"
+          detail: "ユーザIDが不正のため表示名の変更に失敗しました"
         };
 
         before( done => {
@@ -935,7 +949,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のため変更に失敗しました"
         };
 
         before( done => {
@@ -964,7 +978,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
       });
@@ -977,7 +991,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のため変更に失敗しました"
         };
 
         before( done => {
@@ -1006,7 +1020,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
       });
@@ -1019,7 +1033,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "表示名が空です"
+          detail: "表示名が空のため変更に失敗しました"
         };
 
         before( done => {
@@ -1048,7 +1062,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
       });
@@ -1061,7 +1075,7 @@ describe(user_url + "/:user_id", () => {
 
         let expected = {
           message: "ユーザの表示名の変更に失敗しました",
-          detail: "表示名が長すぎます"
+          detail: "表示名が規定文字数(255)を超過したため変更に失敗しました"
         };
 
         before( done => {
@@ -1090,12 +1104,12 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.name).equal(expected.detail);
           done();
         });
       });
 
-      describe("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
+      describe.skip("禁止文字(\\, / , :, *, ?, <, >, |)が含まれている場合", () => {
         describe("バックスラッシュ", () => {
           let payload;
           let body = {
@@ -1482,7 +1496,7 @@ describe(user_url + "/:user_id", () => {
         let body = { email: "foobar@example.com" };
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "指定されたユーザが存在しないためメールアドレスの変更に失敗しました"
+          detail: "ユーザIDが不正のためメールアドレスの変更に失敗しました"
         };
 
         before( done => {
@@ -1523,7 +1537,7 @@ describe(user_url + "/:user_id", () => {
         let body = {};
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "メールアドレスが空です"
+          detail: "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました"
         };
 
         before( done => {
@@ -1562,7 +1576,7 @@ describe(user_url + "/:user_id", () => {
         let body = { email: null };
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "メールアドレスが空です"
+          detail: "指定されたメールアドレスが空のためメールアドレスの変更に失敗しました"
         };
 
         before( done => {
@@ -1597,7 +1611,7 @@ describe(user_url + "/:user_id", () => {
       });
 
       // メールアドレスは必須項目ではない
-      describe("空文字の場合", () => {
+      describe.skip("空文字の場合", () => {
         let payload;
         let nextPayload;
         let body = { email: "" };
@@ -1636,11 +1650,11 @@ describe(user_url + "/:user_id", () => {
       describe("64文字以上の場合", () => {
         let payload;
         let body = {
-          email: _.range(257).map( i => "1" ).join("")
+          email: "jugemjugemjugemjugemjugemjugemjugemjugemjugemjugemjugem@jugem.com"
         };
         let expected = {
           message: "メールアドレスの変更に失敗しました",
-          detail: "メールアドレスが長すぎます"
+          detail: "メールアドレスが規定文字数(64)を超過したためメールアドレスの変更に失敗しました"
         };
 
         before( done => {
@@ -1732,7 +1746,7 @@ describe(user_url + "/:user_id", () => {
         let group_id;
         let expected = {
           message: "グループのメンバ削除に失敗しました",
-          detail: "指定されたユーザが存在しないためグループのメンバ削除に失敗しました"
+          detail: "ユーザIDが不正のためグループのメンバ削除に失敗しました"
         };
 
         before( done => {
@@ -1774,7 +1788,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "グループのメンバ削除に失敗しました",
-          detail: "指定されたグループが存在しないためグループのメンバ削除に失敗しました"
+          detail: "グループIDが不正のためグループのメンバ削除に失敗しました"
         };
 
         before( done => {
@@ -1802,7 +1816,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
           done();
         });
       });
@@ -1850,7 +1864,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.group_id).equal(expected.detail);
           done();
         });
       });
@@ -1939,7 +1953,7 @@ describe(user_url + "/:user_id", () => {
         let payload;
         let expected = {
           message: "メニュー権限の変更に失敗しました",
-          detail: "指定されたユーザが存在しないためメニュー権限の変更に失敗しました"
+          detail: "ユーザIDが不正のためメニュー権限の変更に失敗しました"
         };
 
         before( done => {
@@ -1980,7 +1994,7 @@ describe(user_url + "/:user_id", () => {
         let body = {};
         let expected = {
           message: "メニュー権限の変更に失敗しました",
-          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+          detail: "メニュー権限IDが空のためメニュー権限の変更に失敗しました"
         };
 
         before( done => {
@@ -1988,7 +2002,6 @@ describe(user_url + "/:user_id", () => {
             .patch(user_url + `/${user._id}/role_menus`)
             .send(body)
             .end( (err, res) => {
-              console.log(res.body);
               payload = res;
               done();
             });
@@ -2010,7 +2023,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.role_menu_id).equal(expected.detail);
           done();
         });
       });
@@ -2020,7 +2033,7 @@ describe(user_url + "/:user_id", () => {
         let body = { role_menu_id: null };
         let expected = {
           message: "メニュー権限の変更に失敗しました",
-          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+          detail: "メニュー権限IDが空のためメニュー権限の変更に失敗しました"
         };
 
         before( done => {
@@ -2049,7 +2062,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.role_menu_id).equal(expected.detail);
           done();
         });
       });
@@ -2059,7 +2072,7 @@ describe(user_url + "/:user_id", () => {
         let body = { role_menu_id: "" };
         let expected = {
           message: "メニュー権限の変更に失敗しました",
-          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+          detail: "メニュー権限IDが空のためメニュー権限の変更に失敗しました"
         };
 
         before( done => {
@@ -2088,7 +2101,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.role_menu_id).equal(expected.detail);
           done();
         });
       });
@@ -2098,7 +2111,7 @@ describe(user_url + "/:user_id", () => {
         let body = { role_menu_id: "invalid_oid" };
         let expected = {
           message: "メニュー権限の変更に失敗しました",
-          detail: "指定されたメニュー権限が存在しないためメニュー権限の変更に失敗しました"
+          detail: "メニュー権限IDが不正のためメニュー権限の変更に失敗しました"
         };
 
         before( done => {
@@ -2127,7 +2140,7 @@ describe(user_url + "/:user_id", () => {
         });
 
         it(`エラーの詳細は「${expected.detail}」`, done => {
-          expect(payload.body.status.errors.user_id).equal(expected.detail);
+          expect(payload.body.status.errors.role_menu_id).equal(expected.detail);
           done();
         });
 
