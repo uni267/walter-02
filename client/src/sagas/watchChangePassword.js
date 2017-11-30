@@ -1,5 +1,7 @@
 import { call, put, take, select } from "redux-saga/effects";
 
+import * as commons from "../actions/commons";
+
 // api
 import { API } from "../apis";
 
@@ -17,7 +19,8 @@ function* watchChangePassword() {
       yield put({ type: "TRIGGER_SNACK", message: "パスワードを変更しました" });
     }
     catch (e) {
-      const { errors } = e.response.data.status;
+      const { message, errors } = e.response.data.status;
+      yield put(commons.openException(message));
       yield put({ type: "CHANGE_PASSWORD_FAILED", errors });
     }
     finally {
