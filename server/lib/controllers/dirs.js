@@ -22,7 +22,9 @@ export const index = (req, res, next) => {
       // デフォルトはテナントのホーム
       if (dir_id === undefined ||
           dir_id === null ||
-          dir_id === "") throw "dir_id is empty";
+          dir_id === "") {
+        dir_id = res.user.tenant.home_dir_id;
+      }
 
       if (!ObjectId.isValid(dir_id)) throw "dir_id is invalid";
 
