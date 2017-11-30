@@ -105,7 +105,38 @@ class FileDetailContainer extends Component {
     this.setState({ editBasic: { open: false } });
   }
 
-  renderAuthorities = (file) => {
+  renderBasic = () => {
+    const editable = this.props.file.actions.filter( act => (
+      act.name === "change-name"
+    )).length > 0;
+
+    const editButton = editable
+          ? (
+            <RaisedButton
+              onTouchTap={() => this.setState({ editBasic: { open: true } })}
+              label="編集" />
+          ) : null;
+
+    return (
+      <Card style={styles.innerCard}>
+        <CardHeader title="基本情報" />
+        <CardText>
+
+          <FileBasic
+            file={this.props.file}
+            open={this.state.editBasic.open}
+            changeFileName={this.changeFileName}
+            />
+
+        </CardText>
+        <CardActions>
+          {editButton}
+        </CardActions>
+      </Card>
+    );
+  };
+
+  renderAuthorities = () => {
     const renderAuthority = (auth, idx) => {
       return (
         <div key={idx} style={styles.metaRow}>
@@ -117,13 +148,51 @@ class FileDetailContainer extends Component {
       );
     };
 
-    return file.authorities.map( (auth, idx) => renderAuthority(auth, idx));
+    const editable = this.props.file.actions.filter( act => (
+      act.name === "authority"
+    )).length > 0;
+
+    const button = editable
+          ? (
+            <RaisedButton
+              onTouchTap={() => this.setState({ editAuthority: { open: true } })}
+              label="編集"
+              />
+          ) : null;
+
+    return (
+      <Card style={styles.innerCard}>
+        <CardHeader title="メンバー" />
+        <CardText>
+          {this.props.file.authorities.map( (auth, idx) => (
+            renderAuthority(auth, idx)
+          ))}
+        </CardText>
+        <CardActions>{button}</CardActions>
+      </Card>
+    );
   };
 
-  renderHistories = (file) => {
-    return file.histories.map( (history, idx) => {
-      return <History key={idx} history={history} />;
-    });
+  renderHistories = () => {
+    const permitDisplay = this.props.file.actions.filter( act => (
+      act.name === "history"
+    )).length > 0;
+
+    if (permitDisplay) {
+      return (
+        <Card style={styles.innerCard}>
+          <CardHeader title="履歴情報" />
+          <CardText>
+            {this.props.file.histories.map( (history, idx) => {
+              return <History key={idx} history={history} />;
+            })}
+          </CardText>
+        </Card>
+      );
+    }
+    else {
+      return null;
+    }
   };
 
   renderAuthorityDialog = () => {
@@ -156,7 +225,7 @@ class FileDetailContainer extends Component {
     
   };
 
-  renderMetaInfos = (file) => {
+  renderMetaInfos = () => {
     const render = (meta, idx) => {
       return (
         <div key={idx} style={styles.metaRow}>
@@ -166,7 +235,29 @@ class FileDetailContainer extends Component {
       );
     };
 
-    return file.meta_infos.map( (meta, idx) => render(meta, idx) );
+    const editable = this.props.file.actions.filter( act => (
+      act.name === "change-meta-info"
+    )).length > 0;
+
+    const button = editable
+          ? (
+            <RaisedButton
+              label="編集"
+              onTouchTap={() => (
+                this.props.actions.toggleFileMetaInfoDialog(this.props.file)
+              )}
+              />
+          ) : null;
+
+    return (
+      <Card style={styles.innerCard}>
+        <CardHeader title="メタ情報" />
+        <CardText>
+          {this.props.file.meta_infos.map( (meta, idx) => render(meta, idx) )}
+        </CardText>
+        <CardActions>{button}</CardActions>
+      </Card>
+    );
   };
 
   renderMetaInfoDialog = () => {
@@ -200,7 +291,6 @@ class FileDetailContainer extends Component {
 
   render() {
     if (this.props.file._id === undefined) return null;
-
     let previewImg;
 
     if (this.props.filePreviewState.loading) {
@@ -245,37 +335,9 @@ class FileDetailContainer extends Component {
             </div>
 
             <div style={{width: "30%"}}>
+              {this.renderBasic()}
 
-              <Card style={styles.innerCard}>
-                <CardHeader title="基本情報" />
-                <CardText>
-
-                  <FileBasic
-                    file={this.props.file}
-                    open={this.state.editBasic.open}
-                    changeFileName={this.changeFileName}
-                    />
-
-                </CardText>
-                <CardActions>
-                  <RaisedButton
-                    onTouchTap={() => this.setState({ editBasic: { open: true } })}
-                    label="編集" />
-                </CardActions>
-              </Card>
-
-              <Card style={styles.innerCard}>
-                <CardHeader title="メンバー" />
-                <CardText>
-                  {this.renderAuthorities(this.props.file)}
-                </CardText>
-                <CardActions>
-                  <RaisedButton
-                    onTouchTap={() => this.setState({ editAuthority: { open: true } })}
-                    label="編集"
-                    />
-                </CardActions>
-              </Card>
+              {this.renderAuthorities()}
 
               <Card style={styles.innerCard}>
                 <CardHeader title="タグ" />
@@ -289,27 +351,8 @@ class FileDetailContainer extends Component {
                 </CardText>
               </Card>
 
-              <Card style={styles.innerCard}>
-                <CardHeader title="メタ情報" />
-                <CardText>
-                  {this.renderMetaInfos(this.props.file)}
-                </CardText>
-                <CardActions>
-                  <RaisedButton
-                    label="編集"
-                    onTouchTap={() => (
-                      this.props.actions.toggleFileMetaInfoDialog(this.props.file)
-                    )}
-                    />
-                </CardActions>
-              </Card>
-
-              <Card style={styles.innerCard}>
-                <CardHeader title="履歴情報" />
-                <CardText>
-                  {this.renderHistories(this.props.file)}
-                </CardText>
-              </Card>
+              {this.renderMetaInfos()}
+              {this.renderHistories()}
 
             </div>
 
