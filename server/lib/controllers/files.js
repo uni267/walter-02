@@ -256,22 +256,26 @@ export const search = (req, res, next) => {
     try {
       const { q, page, sort, order } = req.query;
       const { tenant_id } = res.user.tenant_id;
-
+      if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
-      const file_ids = [
+      const query_param = escapeRegExp(q);
+
+      // meta_infos.valueから条件に該当するファイルのIDを取得
+      const search_result_on_meta_infos_id = ( yield FileMetaInfo.find({ value:{ $regex: query_param } }) ).map(file => file.file_id);
+
+      const file_ids = uniq([
         ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
         res.user.tenant.home_dir_id,
-        res.user.tenant.trash_dir_id
-      ];
-
-      const query_param = escapeRegExp(q);
+        res.user.tenant.trash_dir_id,
+        ...search_result_on_meta_infos_id
+      ]);
 
       const conditions = {
         dir_id: { $ne: trash_dir_id },
         $or: [
           { name: { $regex: query_param } },
-          { "meta_infos.value": { $regex: query_param } }
+          { _id : { $in: search_result_on_meta_infos_id } }
         ],
         is_display: true,
         is_deleted: false,

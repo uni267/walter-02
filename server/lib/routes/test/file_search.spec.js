@@ -77,7 +77,10 @@ describe(base_url,() => {
             const files = Object.assign({}, requestPayload.files[0] );
             files.name = `text_${keyWords[i]}.txt`;
             files.tags =[tags._id];
-            files.meta_infos = [ meta ];
+            files.meta_infos = [ {
+              _id: meta._id,
+              value: `meta_value_${keyWords[i]}`
+            } ];
             sendData.files.push( files );
           }
           request.post(base_url)
@@ -1040,6 +1043,45 @@ describe(base_url,() => {
 
       });
 
+      describe('メタ情報のみ該当するキーワードで検索',() => {
+        const url = `${base_url}/search`;
+        let response;
+        const search_word="meta_value_alpha123";
+        before(done => {
+          request.get(url)
+          .query({ q:search_word })
+          .end( ( err, res ) => {
+            response = res;
+            done();
+          });
+        });
+
+        it('http(200)が返却される', done => {
+          expect(response.status).equal(200);
+          done();
+        });
+
+        it('statusはtrue',done => {
+          expect(response.body.status.success).equal(true);
+          done();
+        });
+
+        it('返却値はArrayである',done => {
+          expect( response.body.body instanceof Array ).equal(true);
+          done();
+        });
+
+        it('返却値のlengthは1である',done => {
+          expect( response.body.body.length ).equal(1);
+          done();
+        });
+
+        it('メタ情報のvalueに検索キーワードが含まれる',done =>{
+          expect( findIndex( first(response.body.body).meta_infos ,{ value:search_word }) >= 0 ).equal(true);
+          done();
+        });
+
+      });
 
       describe('表示件数以上に登録されている',() => {
         before(done => {
@@ -1065,7 +1107,7 @@ describe(base_url,() => {
         describe('1ページ目を取得',() => {
           let response;
           before(done => {
-            request.get(base_url)
+            request.get(`${base_url}/search`)
             .query({
               q: "text",  // 全ファイルが該当する
               page: 0
@@ -1096,7 +1138,7 @@ describe(base_url,() => {
         describe('2ページ目を取得',() => {
           let response;
           before(done => {
-            request.get(base_url)
+            request.get(`${base_url}/search`)
             .query({
               q: "text",  // 全ファイルが該当する
               page: 1
@@ -1127,7 +1169,7 @@ describe(base_url,() => {
         describe('3ページ目を取得',() => {
           let response;
           before(done => {
-            request.get(base_url)
+            request.get(`${base_url}/search`)
             .query({
               q: "text",  // 全ファイルが該当する
               page: 2
@@ -1166,13 +1208,13 @@ describe(base_url,() => {
             });
           });
 
-          describe('name',() => {
+          describe.skip('name',() => {
             describe('nameの降順',() => {
               let response;
               let file_names;
               before(done => {
                 let display_item = display_items.filter(item => (item.name === "name"));
-                request.get(base_url)
+                request.get(`${base_url}/search`)
                 .query({ sort: display_item[0]._id , order:'desc' })
                 .end( ( err, res ) => {
                   response = res;
@@ -1229,7 +1271,7 @@ describe(base_url,() => {
               let file_names;
               before(done => {
                 let display_item = display_items.filter(item => (item.name === "name"));
-                request.get(base_url)
+                request.get(`${base_url}/search`)
                 .query({ sort: display_item[0]._id , order:'asc' })
                 .end( ( err, res ) => {
                   response = res;
@@ -1289,6 +1331,7 @@ describe(base_url,() => {
               it.skip('更新日時の昇順のテスト', done => {done();});
             });
           });
+
           describe('メンバー',() => {
             describe('メンバーの降順',() => {
               it.skip('メンバーの降順のテスト', done => {done();});
@@ -1299,11 +1342,83 @@ describe(base_url,() => {
           });
 
           describe('メタ情報',() => {
-            describe('メタ情報の降順',() => {
-              it.skip('メタ情報の降順のテスト', done => {done();});
+            describe('メタ情報「表示ファイル名」の降順',() => {
+              let response;
+              let file_metainfo_values;
+              before(done => {
+
+                new Promise((resolve, reject) => {
+                  const display_item = find(display_items, {name: "receive_file_name"} );
+                  resolve(display_item);
+                }).then(res => {
+                  const display_item = res;
+
+                  request.get(`${base_url}/search`)
+                  .query({ q:"txt", sort: display_item.meta_info_id , order:'desc' })
+                  .end( ( err, res ) => {
+                    response = res;
+                    file_metainfo_values = res.body.body.filter(file=> file.meta_infos.length > 0).map(file => file.meta_infos[0].value);
+                    done();
+                  });
+
+                });
+
+              });
+              it('http(200)が返却される', done => {
+                expect(response.status).equal(200);
+                done();
+              });
+              it('statusはtrue',done => {
+                expect(response.body.status.success).equal(true);
+                done();
+              });
+              it("メタ情報の昇順である",done => {
+                expect(file_metainfo_values[0]).equal( 'meta_value_日本語' );
+                expect(file_metainfo_values[1]).equal( 'meta_value_alpha123' );
+                expect(file_metainfo_values[2]).equal( 'meta_value_alpha' );
+                expect(file_metainfo_values[3]).equal( 'meta_value_@###' );
+                expect(file_metainfo_values[4]).equal( 'meta_value_1' );
+                done();
+              });
             });
-            describe('メタ情報の昇順',() => {
-              it.skip('メタ情報の昇順のテスト', done => {done();});
+            describe('メタ情報「表示ファイル名」の昇順',() => {
+              let response;
+              let file_metainfo_values;
+              before(done => {
+
+                new Promise((resolve, reject) => {
+                  const display_item = find(display_items, {name: "receive_file_name"} );
+                  resolve(display_item);
+                }).then(res => {
+                  const display_item = res;
+
+                  request.get(`${base_url}/search`)
+                  .query({ q:"txt", sort: display_item.meta_info_id , order:'asc' })
+                  .end( ( err, res ) => {
+                    response = res;
+                    file_metainfo_values = res.body.body.filter(file=> file.meta_infos.length > 0).map(file => file.meta_infos[0].value);
+                    done();
+                  });
+
+                });
+
+              });
+              it('http(200)が返却される', done => {
+                expect(response.status).equal(200);
+                done();
+              });
+              it('statusはtrue',done => {
+                expect(response.body.status.success).equal(true);
+                done();
+              });
+              it("メタ情報の昇順である",done => {
+                expect(file_metainfo_values[0]).equal( 'meta_value_1' );
+                expect(file_metainfo_values[1]).equal( 'meta_value_@###' );
+                expect(file_metainfo_values[2]).equal( 'meta_value_alpha' );
+                expect(file_metainfo_values[3]).equal( 'meta_value_alpha123' );
+                expect(file_metainfo_values[4]).equal( 'meta_value_日本語' );
+                done();
+              });
             });
           });
         });

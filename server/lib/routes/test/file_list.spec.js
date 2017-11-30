@@ -3,7 +3,7 @@ import defaults from "superagent-defaults";
 import { expect } from "chai";
 import mongoose from "mongoose";
 import Router from "../";
-import { first, has, chain, findIndex, indexOf, isMatch } from "lodash";
+import { first, has, chain, find } from "lodash";
 import { app, mongoUrl, initdbPromise, authData } from "./builder";
 
 // model
@@ -18,6 +18,7 @@ const login_url = "/api/login";
 
 const request = defaults(supertest(app));
 var user;
+var meta_infos;
 
 // テスト用のアップロードファイル(client側から送信しているPayload)
 const requestPayload = {
@@ -85,8 +86,9 @@ describe(base_url,() => {
         });
       }).then( res => {
         // ファイルに先頭のメタ情報を追加
+        meta_infos = find(res.body.body, {name: 'display_file_name'});
         const meta = {
-          meta: first(res.body.body),
+          meta: meta_infos,
           value: "meta_value"
         };
         return new Promise((resolve, reject)=>{
@@ -923,6 +925,10 @@ describe(base_url,() => {
               const files = Object.assign({}, requestPayload.files[0] );
               const _i = ("0" + i).slice(-2);
               files.name = `text${_i}.txt`;
+              files.meta_infos = [{
+                _id: meta_infos._id,
+                value: `meta_value_${_i}`
+              }];
               sendData.files.push( files );
             }
             request.post(base_url)
@@ -1026,7 +1032,7 @@ describe(base_url,() => {
               done();
             });
           });
-          describe('name',() => {
+          describe.skip('name',() => {
             describe('nameの降順',() => {
               let response;
               let file_names;
@@ -1159,11 +1165,135 @@ describe(base_url,() => {
           });
 
           describe('メタ情報',() => {
-            describe('メタ情報の降順',() => {
-              it.skip('メタ情報の降順のテスト', done => {done();});
+            describe('メタ情報「表示ファイル名」の降順',() => {
+              let response;
+              let file_metainfo_values;
+              before(done => {
+                try{
+                  new Promise((resolve, reject) => {
+                    const display_item = find(display_items, {name: "receive_file_name"} );
+                    resolve(display_item);
+                  }).then(res => {
+                    const display_item = res;
+
+                    request.get(base_url)
+                    .query({ sort: display_item.meta_info_id , order:'desc' })
+                    .end( ( err, res ) => {
+                      response = res;
+                      file_metainfo_values = res.body.body.filter(file=> file.meta_infos.length > 0).map(file => file.meta_infos[0].value);
+                      done();
+                    });
+                  });
+                }catch(e){
+                  console.log(e);
+                  done();
+                }
+              });
+              it('http(200)が返却される', done => {
+                expect(response.status).equal(200);
+                done();
+              });
+              it('statusはtrue',done => {
+                expect(response.body.status.success).equal(true);
+                done();
+              });
+              it("メタ情報の降順である",done => {
+                expect(file_metainfo_values[0]).equal( 'meta_value_30' );
+                expect(file_metainfo_values[1]).equal( 'meta_value_29' );
+                expect(file_metainfo_values[2]).equal( 'meta_value_28' );
+                expect(file_metainfo_values[3]).equal( 'meta_value_27' );
+                expect(file_metainfo_values[4]).equal( 'meta_value_26' );
+                expect(file_metainfo_values[5]).equal( 'meta_value_25' );
+                expect(file_metainfo_values[6]).equal( 'meta_value_24' );
+                expect(file_metainfo_values[7]).equal( 'meta_value_23' );
+                expect(file_metainfo_values[8]).equal( 'meta_value_22' );
+                expect(file_metainfo_values[9]).equal( 'meta_value_21' );
+                expect(file_metainfo_values[10]).equal( 'meta_value_20' );
+                expect(file_metainfo_values[11]).equal( 'meta_value_19' );
+                expect(file_metainfo_values[12]).equal( 'meta_value_18' );
+                expect(file_metainfo_values[13]).equal( 'meta_value_17' );
+                expect(file_metainfo_values[14]).equal( 'meta_value_16' );
+                expect(file_metainfo_values[15]).equal( 'meta_value_15' );
+                expect(file_metainfo_values[16]).equal( 'meta_value_14' );
+                expect(file_metainfo_values[17]).equal( 'meta_value_13' );
+                expect(file_metainfo_values[18]).equal( 'meta_value_12' );
+                expect(file_metainfo_values[19]).equal( 'meta_value_11' );
+                expect(file_metainfo_values[20]).equal( 'meta_value_10' );
+                expect(file_metainfo_values[21]).equal( 'meta_value_09' );
+                expect(file_metainfo_values[22]).equal( 'meta_value_08' );
+                expect(file_metainfo_values[23]).equal( 'meta_value_07' );
+                expect(file_metainfo_values[24]).equal( 'meta_value_06' );
+                expect(file_metainfo_values[25]).equal( 'meta_value_05' );
+                expect(file_metainfo_values[26]).equal( 'meta_value_04' );
+                expect(file_metainfo_values[27]).equal( 'meta_value_03' );
+                expect(file_metainfo_values[28]).equal( 'meta_value_02' );
+                expect(file_metainfo_values[29]).equal( 'meta_value_01' );
+                done();
+              });
             });
-            describe('メタ情報の昇順',() => {
-              it.skip('メタ情報の昇順のテスト', done => {done();});
+            describe('メタ情報「表示ファイル名」の昇順',() => {
+              let response;
+              let file_metainfo_values;
+              before(done => {
+
+                new Promise((resolve, reject) => {
+                  const display_item = find(display_items, {name: "receive_file_name"} );
+                  resolve(display_item);
+                }).then(res => {
+                  const display_item = res;
+
+                  request.get(base_url)
+                  .query({ sort: display_item.meta_info_id , order:'asc' })
+                  .end( ( err, res ) => {
+                    response = res;
+                    file_metainfo_values = res.body.body.filter(file=> file.meta_infos.length > 0).map(file => file.meta_infos[0].value);
+                    done();
+                  });
+
+                });
+
+              });
+              it('http(200)が返却される', done => {
+                expect(response.status).equal(200);
+                done();
+              });
+              it('statusはtrue',done => {
+                expect(response.body.status.success).equal(true);
+                done();
+              });
+              it("メタ情報の昇順である",done => {
+                expect(file_metainfo_values[0]).equal( 'meta_value' );
+                expect(file_metainfo_values[1]).equal( 'meta_value_00' );
+                expect(file_metainfo_values[2]).equal( 'meta_value_01' );
+                expect(file_metainfo_values[3]).equal( 'meta_value_02' );
+                expect(file_metainfo_values[4]).equal( 'meta_value_03' );
+                expect(file_metainfo_values[5]).equal( 'meta_value_04' );
+                expect(file_metainfo_values[6]).equal( 'meta_value_05' );
+                expect(file_metainfo_values[7]).equal( 'meta_value_06' );
+                expect(file_metainfo_values[8]).equal( 'meta_value_07' );
+                expect(file_metainfo_values[9]).equal( 'meta_value_08' );
+                expect(file_metainfo_values[10]).equal( 'meta_value_09' );
+                expect(file_metainfo_values[11]).equal( 'meta_value_10' );
+                expect(file_metainfo_values[12]).equal( 'meta_value_11' );
+                expect(file_metainfo_values[13]).equal( 'meta_value_12' );
+                expect(file_metainfo_values[14]).equal( 'meta_value_13' );
+                expect(file_metainfo_values[15]).equal( 'meta_value_14' );
+                expect(file_metainfo_values[16]).equal( 'meta_value_15' );
+                expect(file_metainfo_values[17]).equal( 'meta_value_16' );
+                expect(file_metainfo_values[18]).equal( 'meta_value_17' );
+                expect(file_metainfo_values[19]).equal( 'meta_value_18' );
+                expect(file_metainfo_values[20]).equal( 'meta_value_19' );
+                expect(file_metainfo_values[21]).equal( 'meta_value_20' );
+                expect(file_metainfo_values[22]).equal( 'meta_value_21' );
+                expect(file_metainfo_values[23]).equal( 'meta_value_22' );
+                expect(file_metainfo_values[24]).equal( 'meta_value_23' );
+                expect(file_metainfo_values[25]).equal( 'meta_value_24' );
+                expect(file_metainfo_values[26]).equal( 'meta_value_25' );
+                expect(file_metainfo_values[27]).equal( 'meta_value_26' );
+                expect(file_metainfo_values[28]).equal( 'meta_value_27' );
+                expect(file_metainfo_values[29]).equal( 'meta_value_28' );
+                done();
+              });
             });
           });
         });
