@@ -33,7 +33,11 @@ class FileSearchContainer extends Component {
     this.props.actions.requestFetchTags();
   }
 
+  
   render() {
+    const isSimple = this.props.isSimple === undefined ||
+          this.props.isSimple.length === 0;
+
     return (
       <div style={{marginTop: 10, marginRight: 25, marginBottom: 15}}>
 
@@ -45,27 +49,17 @@ class FileSearchContainer extends Component {
         </div>
 
         <div style={styles.formContainer}>
-          {/* 簡易検索 */}
-          { this.props.isSimple
+          {/* 簡易検索 or 詳細検索 */}
+          { isSimple
             ? (
               <SimpleSearch
                 {...this.props}
                 history={this.props.history}
                 hintText="ファイル名を入力"
                 />
-            ) : null }
-
-          {/* 詳細検索 */}
-          {this.props.searchItems.map(
-              (item, idx) => item.picked ?
-              <DetailSearch
-                  item={item}
-                  key={idx}
-                  history={this.props.history}
-                  {...this.props} />
-                : null
-          )}
-
+            )
+            : <DetailSearch { ...this.props } />
+          }
         </div>
       </div>
     );
@@ -79,7 +73,7 @@ const mapStateToProps = (state, ownProps) => {
     searchValues: state.fileDetailSearch.searchValues,
     open: state.fileDetailSearch.open,
     anchorElement: state.fileDetailSearch.anchorElement,
-    isSimple: state.fileDetailSearch.items.find(item => item.picked) === undefined,
+    isSimple: state.fileDetailSearch.items.find(item => item.picked),
     tags: state.tags
   };
 };
