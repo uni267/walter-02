@@ -96,13 +96,7 @@ export const index = (req, res, next) => {
       let files = yield File.searchFiles(conditions,offset,limit,sortOption);
 
       files = files.map( file => {
-
-        file.actions = chain(file.authorities)
-          .filter( auth => auth.users._id.toString() === res.user._id.toString() )
-          .map( auth => auth.actions )
-          .flattenDeep()
-          .uniq();
-
+        file.actions = extractFileActions(file.authorities, res.user._id.toString());
         return file;
       });
 
@@ -186,9 +180,11 @@ export const view = (req, res, next) => {
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
+      const actions = extractFileActions(file.authorities, res.user._id.toString());
+
       res.json({
         status: { success: true },
-        body: { ...file, tags }
+        body: { ...file, tags, actions }
       });
 
     }
@@ -2142,3 +2138,11 @@ const escapeRegExp = (input) => {
   return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)]/g, function(m) { return replace_target[m]; });
 };
 
+
+const extractFileActions = (authorities, user_id) => {
+  return chain(authorities)
+    .filter( auth => auth.users._id.toString() == user_id )
+    .map( auth => auth.actions )
+    .flattenDeep()
+    .uniq();
+};
