@@ -1,23 +1,37 @@
-import { take, select } from "redux-saga/effects";
-import $ from "jquery";
+import { call, take, select, put } from "redux-saga/effects";
 
-import { searchFileDetail } from "../actions";
+import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
+
+import { API } from "../apis";
 
 function* watchSearchFileDetail() {
   while (true) {
     try {
-      const { history } = yield take(searchFileDetail().type);
-      console.log(history);
-      const searchValues = yield select(state => state.fileDetailSearch.searchValues);
+      const { history, items } = yield take(actions.searchFileDetail().type);
 
-      const queryCollection = searchValues.map( search => (
-        { [search._id]: search.value }
-      )).map( obj => $.param(obj) ).join("&");
-      
-      history.push(`/files/search?${queryCollection}`);
+      yield put(commons.loadingStart());
+      const api = new API();
+      const { page } = yield select( state => state.filePagination );
+      const { sorted, desc } = yield select( state => state.fileSortTarget );
+
+      const payload = yield call(api.searchFilesDetail, items, page, sorted, desc);
+
+      if (page === 0 || page === null) {
+        const { total } = payload.data.status;
+        yield put(actions.initFileTotal(total));
+        yield put(actions.initFiles(payload.data.body));
+      }
+      else {
+        yield put(actions.initNextFiles(payload.data.body));
+      }
+
     }
     catch (e) {
       console.log(e);
+    }
+    finally {
+      yield put(commons.loadingEnd());
     }
   }
 }

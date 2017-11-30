@@ -293,8 +293,8 @@ export const searchValueChange = (item, value) => ({
   type: actionTypes.SEARCH_VALUE_CHANGE, item, value
 });
 
-export const searchFileDetail = (history) => ({
-  type: actionTypes.SEARCH_FILE_DETAIL, history
+export const searchFileDetail = (history, items) => ({
+  type: actionTypes.SEARCH_FILE_DETAIL, history, items
 });
 
 export const requestFetchFilePreview = (file_id) => ({

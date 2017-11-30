@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import DatePicker from 'material-ui/DatePicker';
@@ -8,133 +8,77 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 
-const DetailSearch = ({
-  item,
-  history,
-  tags,
-  searchValues,
-  actions
-}) => {
-  const textField = (item) => {
-    let valueItem = searchValues.filter( search => search._id === item._id)[0];
-    const value = valueItem === undefined ? "" : valueItem.value;
+class DetailSearch extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: []
+    };
+  }
+  
+  handleKeyPress = (event, item, searchValue) => {
+    if (event.key === "Enter") {
+
+      const queryItems = this.state.items.reduce( (pre, cur) => {
+        pre[cur._id] = cur.value;
+        return pre;
+      }, {});
+
+      this.props.actions.searchFileDetail(this.props.history, queryItems);
+
+    }
+    else {
+      const _item = { ...item, value: searchValue.getValue() };
+      const alreadyExists = this.state.items
+            .filter(item => item._id === _item._id).length > 0;
+
+      if (alreadyExists) {
+        const _items = this.state.items.map( item => {
+          return item._id === _item._id ? _item : item;
+        });
+        this.setState({ items: _items });
+      }
+      else {
+        this.setState({ items: [...this.state.items, _item ]});
+      }
+    }
+  };
+
+  searchField = (item) => {
+    let searchValue = "";
 
     return (
       <TextField
-        onChange={(e, value) => actions.searchValueChange(item, value) }
-        value={value}
-        onKeyPress={ e => {
-          if (e.key === "Enter") actions.searchFileDetail(history);
-        }}
+        ref={(input) => searchValue = input}
+        onKeyPress={ e => this.handleKeyPress(e, item, searchValue) }
         floatingLabelText={item.label}
         hintText={item.label}
         />
     );
   };
 
-  const datePicker = (item) => {
-    const selectValue = searchValues.filter( value => value._id === item._id );
-    const value = selectValue[0] === undefined
-          ? null
-          : selectValue[0].value;
-
+  renderForm = (item, idx) => {
     return (
-      <DatePicker
-        onChange={(e, value) => {
-          actions.searchValueChange(item, value);
-          actions.searchFileDetail(history);
-        }}
-        value={value}
-        floatingLabelText={item.key}
-        hintText={item.key}
-        />
+      <div key={idx} style={{display: "flex"}}>
+        <IconButton
+          style={{marginTop: 23}}
+          onClick={() => this.props.actions.searchItemNotPick(item) } >
+          <ContentRemoveCircleOutline />
+        </IconButton>
+
+        {this.searchField(item)}
+      </div>
     );
-  };
-
-  const selectField = (item) => {
-    const selectValue = searchValues.filter( value => value._id === item._id );
-
-    const value = selectValue[0] === undefined
-          ? null
-          : selectValue[0].value;
-
-    return (
-      <SelectField
-        floatingLabelText={item.key}
-        value={value}
-        onChange={(e, idx, value) => {
-          actions.searchValueChange(item, value);
-          actions.searchFileDetail(history);
-        }}
-        >
-
-        <MenuItem value={null} primaryText="" />
-        <MenuItem value={false} primaryText="No" />
-        <MenuItem value={true} primaryText="Yes" />
-      </SelectField>
-    );
-  };
-
-  const tagField = (item) => {
-    const handleChange = (event, index, value) => {
-      actions.searchValueChange(item, value);
-      actions.searchFileDetail(history);
-    };
-
-    const selectValue = searchValues.filter( value => value._id === item._id );
-
-    const value = selectValue[0] === undefined
-          ? null
-          : selectValue[0].value;
-
-    return (
-      <SelectField
-        floatingLabelText="タグを選択"
-        value={value}
-        onChange={handleChange} >
-        {tags.map( (tag, idx) => (
-          <MenuItem value={tag._id} primaryText={tag.label} />
-        ))}
-      </SelectField>
-    );
-  };
-
-  let searchForm;
-  switch (item.value_type) {
-  case "String":
-    searchForm = textField;
-    break;
-  case "Date":
-    searchForm = datePicker;
-    break;
-  case "Bool":
-    searchForm = selectField;
-    break;
-  case "Tag":
-    searchForm = tagField;
-    break;
-  default:
-    searchForm = textField;
-    break;
   }
 
-  return (
-    <div style={{display: "flex"}}>
-
-      <IconButton
-        style={{marginTop: 23}}
-        onClick={() => actions.searchItemNotPick(item) } >
-        <ContentRemoveCircleOutline />
-      </IconButton>
-
-      {searchForm(item)}
-
-    </div>
-  );
-};
-
-DetailSearch.propTypes = {
-  item: PropTypes.object.isRequired
-};
+  render() {
+    const items = this.props.searchItems.filter(item => item.picked);
+    return (
+      <div style={{ display: "flex", flexDirection: "row-reverse", flexWrap: "wrap" }}>
+        {items.map( (item, idx) => this.renderForm(item) )}
+      </div>
+    );
+  }
+}
 
 export default DetailSearch;
