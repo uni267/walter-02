@@ -52,8 +52,8 @@ import FileMetaInfo from "../models/FileMetaInfo";
 import DisplayItem from "../models/DisplayItem";
 import { Swift } from "../storages/Swift";
 
-export const index = (req, res, next) => {
-  co(function* () {
+export const index = (req, res, next, export_excel=false) => {
+  return co(function* () {
     try {
       let { dir_id, page ,sort ,order} = req.query;
       // デフォルトはテナントのホーム
@@ -88,10 +88,11 @@ export const index = (req, res, next) => {
       if ( page === undefined || page === null ) page = 0;
       if ( page === "" || isNaN( parseInt(page) ) ) throw new ValidationError("page is not number");
 
-      const limit = constants.FILE_LIMITS_PER_PAGE;
-      const offset = page * limit;
 
       const total = yield File.find(conditions).count();
+
+      const limit = export_excel ? total : constants.FILE_LIMITS_PER_PAGE;
+      const offset = page * limit;
 
       let files = yield File.searchFiles(conditions,offset,limit,sortOption);
 
@@ -100,10 +101,14 @@ export const index = (req, res, next) => {
         return file;
       });
 
-      res.json({
-        status: { success: true, total },
-        body: files
-      });
+      if(export_excel){
+        return files;
+      }else{
+        res.json({
+          status: { success: true, total },
+          body: files
+        });
+      }
     }
     catch (e) {
 

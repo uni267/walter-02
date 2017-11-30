@@ -18,6 +18,7 @@ import AuthorityMenuRouter from "./authorityMenus";
 import MenuRouter from "./menus";
 import notificationRouter from "./notifications";
 import DisplayItemRouter from "./displayItems";
+import ExcelRouter from "./excels";
 
 // debug
 import TestRouter from "./test";
@@ -44,6 +45,7 @@ router.use("/api/v1/authority_menus", AuthorityMenuRouter);
 router.use("/api/v1/menus", MenuRouter);
 router.use("/api/v1/notifications", notificationRouter);
 router.use("/api/v1/display_items", DisplayItemRouter);
+router.use("/api/v1/excels", ExcelRouter);
 
 
 // debug
