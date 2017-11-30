@@ -1,4 +1,4 @@
-import { call, put, take } from "redux-saga/effects";
+import { call, put, take, select } from "redux-saga/effects";
 
 // api
 import { API } from "../apis";
@@ -11,8 +11,8 @@ function* watchChangePassword() {
 
     try {
       yield put({ type: "LOADING_START" });
-
-      yield call(api.changePassword, current_password, new_password);
+      const user_id = yield select( state => state.session.user_id );
+      yield call(api.changePassword, user_id, current_password, new_password);
       yield put({ type: "CHANGE_PASSWORD_SUCCESS" });
       yield put({ type: "TRIGGER_SNACK", message: "パスワードを変更しました" });
     }

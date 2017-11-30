@@ -60,10 +60,8 @@ export class API {
     return this.client.patch(`/api/v1/files/${file._id}/rename`, file);
   };
 
-  changePassword = (current_password, new_password) => {
-    const user_id = localStorage.getItem("userId");
+  changePassword = (user_id, current_password, new_password) => {
     const body = { current_password, new_password };
-
     return this.client.patch(`/api/v1/users/${user_id}/password`, body);
   };
 
