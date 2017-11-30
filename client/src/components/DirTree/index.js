@@ -46,7 +46,13 @@ class DirTree extends Component {
   };
 
   handleClick = () => {
-    if (this.state.chilren !== null && this.state.children.length > 0) {
+    console.log(this.state.children);
+    if (this.state.chilren === null ||
+        this.state.children === undefined ||
+        this.state.children.length === 0) {
+      return false;
+    }
+    else {
       this.setState({ viewChild: !this.state.viewChild });
     }
   };
