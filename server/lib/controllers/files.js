@@ -479,7 +479,20 @@ export const searchDetail = (req, res, next) => {
             .filter( p => !["page", "order", "sort"].includes(p) );
 
       const conditions = { _id: param_ids };
-      const items = yield getSearchItem(conditions);
+
+      const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+        meta = meta.toObject();
+        meta.meta_info_id = meta._id;
+        return meta;
+      });
+
+      const displayItems = (yield DisplayItem.find({
+        ...conditions,
+        meta_info_id: null,
+        name: { $nin: ["file_checkbox", "action"] }
+      })).map(items => items.toObject()) ;
+
+      const items = metaInfos.concat(displayItems);
 
       const queries = items.map( meta => {
         const _meta = meta;
@@ -2056,7 +2069,19 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
     sort["id"] = order;
 
   } else {
-    const item = first(yield getSearchItem({ _id:mongoose.Types.ObjectId(_sort) }));
+    const conditions = { _id: mongoose.Types.ObjectId(_sort) };
+    const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+      meta = meta.toObject();
+      meta.meta_info_id = meta._id;
+      return meta;
+    });
+
+    const displayItems = (yield DisplayItem.find({
+      ...conditions,
+      name: { $nin: ["file_checkbox", "action"] }
+    })).map(items => items.toObject()) ;
+
+    const item = metaInfos.concat(displayItems);
 
     if (item.meta_info_id === null) {
       // メタ情報以外でのソート
@@ -2073,24 +2098,6 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
     }
   }
 return Promise.resolve(sort);
-});
-
-const getSearchItem = co.wrap( function* ( conditions ){
-  // const conditions = { _id: param_ids };
-  const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
-    meta = meta.toObject();
-    meta.meta_info_id = meta._id;
-    return meta;
-  });
-
-  const displayItems = (yield DisplayItem.find({
-    ...conditions,
-    meta_info_id: null,
-    name: { $nin: ["file_checkbox", "action"] }
-  })).map(items => items.toObject()) ;
-
-  const items = metaInfos.concat(displayItems);
-  return Promise.resolve(items);
 });
 
 const getAllowedFileIds = (user_id, permission) => {

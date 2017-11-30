@@ -409,91 +409,101 @@ describe(base_url,() => {
       let role_file;
       let file_id;
       before(done => {
-        const sendQuery = {
-          [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
-          page:0,
-          order: "asc"
-        };
+        try {
+          const sendQuery = {
+            [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
+            page:0,
+            order: "asc"
+          };
 
-        const newTag = {
-          tag:{
-            label:"新規タグ",
-            color:"#FEDCBA"
-          }
-        };
-        new Promise((resolve,reject) => {
-          request.post("/api/v1/tags")
-          .send(newTag)
-          .end( ( err, res ) => {
-            target_tag = res.body.body;
-            resolve(res);
-          });
-
-        }).then(res=>{
-          return new Promise((resolve,reject) => {
-            const sendData = {dir_id : user.tenant.home_dir_id, files: []};
-            const files = Object.assign({}, requestPayload.files[0] );
-            files.name = `メタ表示名.txt`;
-            files.meta_infos = [ {
-              _id: find(meta_infos, {name:"receive_company_name"})._id,
-              value: "受信会社名"
-            } ];
-            files.tags = [ target_tag._id ];
-            sendData.files.push( files );
-            request.post(base_url)
-            .send(sendData)
+          const newTag = {
+            tag:{
+              label:"新規タグ",
+              color:"#FEDCBA"
+            }
+          };
+          let meta_info_id;
+          new Promise((resolve,reject) => {
+            request.post("/api/v1/tags")
+            .send(newTag)
             .end( ( err, res ) => {
+              target_tag = res.body.body;
               resolve(res);
             });
-          });
-        }).then(res=>{
-          return new Promise((resolve, reject) =>{
-            request.get(base_url)
-            .end((err,res) => {
+          }).then(res=>{
+            return new Promise((resolve,reject) => {
+              meta_info_id = find(meta_infos, {name:"receive_company_name"})._id;
               resolve(res);
             });
-          });
-        }).then(res=>{
-          file_id = (find(res.body.body, { name: 'メタ表示名.txt'}))._id;
-        }).then(res=>{
-          return new Promise((resolve, reject) =>{
-            request.get("/api/v1/users")
-            .end((err,res) => {
-              role_user = ( find(res.body.body, { name: "hanako" }) );
-              resolve(res);
+          }).then(res=>{
+            return new Promise((resolve,reject) => {
+              const sendData = {dir_id : user.tenant.home_dir_id, files: []};
+              const files = Object.assign({}, requestPayload.files[0] );
+              files.name = `メタ表示名.txt`;
+              files.meta_infos = [ {
+                _id: meta_info_id,
+                value: "受信会社名"
+              } ];
+              files.tags = [ target_tag._id ];
+              sendData.files.push( files );
+              request.post(base_url)
+              .send(sendData)
+              .end( ( err, res ) => {
+                resolve(res);
+              });
             });
-          });
-        }).then(res=>{
-          return new Promise((resolve, reject) =>{
-            request.get("/api/v1/role_files")
-            .end((err,res) => {
-              role_file = (find(res.body.body, { name: "フルコントロール" }));
-              resolve(res);
+          }).then(res=>{
+            return new Promise((resolve, reject) =>{
+              request.get(base_url)
+              .end((err,res) => {
+                resolve(res);
+              });
             });
-          });
-        }).then(res=>{
-          return new Promise((resolve,reject) => {
-            const url = `${base_url}/${file_id}/authorities`;
-            request.post(url)
-            .send(
-              { user: role_user, role: role_file }
-            )
-            .end((err, res) => {
-              resolve(res);
+          }).then(res=>{
+            file_id = (find(res.body.body, { name: 'メタ表示名.txt'}))._id;
+          }).then(res=>{
+            return new Promise((resolve, reject) =>{
+              request.get("/api/v1/users")
+              .end((err,res) => {
+                role_user = ( find(res.body.body, { name: "hanako" }) );
+                resolve(res);
+              });
             });
-          });
-        }).then(res=>{
-          return new Promise((resolve, reject) => {
-            request.patch(`${base_url}/${file_id}/toggle_star`)
-            .end((err,res) => {
-              resolve(res);
+          }).then(res=>{
+            return new Promise((resolve, reject) =>{
+              request.get("/api/v1/role_files")
+              .end((err,res) => {
+                role_file = (find(res.body.body, { name: "フルコントロール" }));
+                resolve(res);
+              });
             });
+          }).then(res=>{
+            return new Promise((resolve,reject) => {
+              const url = `${base_url}/${file_id}/authorities`;
+              request.post(url)
+              .send(
+                { user: role_user, role: role_file }
+              )
+              .end((err, res) => {
+                resolve(res);
+              });
+            });
+          }).then(res=>{
+            return new Promise((resolve, reject) => {
+              request.patch(`${base_url}/${file_id}/toggle_star`)
+              .end((err,res) => {
+                resolve(res);
+              });
+            });
+
+          }).then(res=>{
+            done();
           });
 
-        }).then(res=>{
+        } catch (error) {
+          console.log(error);
           done();
-        });
-
+        }
 
       });
 
