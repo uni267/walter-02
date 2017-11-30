@@ -43,18 +43,28 @@ const Tag = ({
 
   const _tags = tags.filter(tag => !file.tags.map( t => t._id ).includes(tag._id));
 
-  return (
-    <div>
-      <div style={{...styles.row, display: "flex"}}>
-        {file.tags.map( (tag, idx) => renderTag(tag, idx) )}
-      </div>
+  const addTagButton = () => {
+    const editable = file.actions.filter( act => (
+      act.name === "change-tag"
+    )).length > 0;
 
+    return editable
+      ? (
       <SelectField
         floatingLabelText="タグを追加"
         value={""}
         onChange={(e, idx, value) => actions.requestAddTag(file, value)} >
         {_tags.map( (tag, idx) => renderMenuItem(tag, idx) )}
       </SelectField>
+      ) : null;
+  };
+
+  return (
+    <div>
+      <div style={{...styles.row, display: "flex"}}>
+        {file.tags.map( (tag, idx) => renderTag(tag, idx) )}
+      </div>
+      {addTagButton()}
     </div>
   );
 };
