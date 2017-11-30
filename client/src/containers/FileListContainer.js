@@ -126,9 +126,14 @@ class FileListContainer extends Component {
   }
 
   componentWillMount() {
-    this.props.actions.requestFetchFiles(this.props.match.params.id);
-    this.props.actions.requestFetchMetaInfos();
-    this.props.actions.requestFetchDisplayItems();
+    // @fixme
+    new Promise( (resolve, reject) => {
+      this.props.actions.requestFetchDisplayItems();
+      resolve();
+    }).then( res => {
+      this.props.actions.requestFetchFiles(this.props.match.params.id);
+      this.props.actions.requestFetchMetaInfos();
+    });
   }
 
   componentDidMount() {
