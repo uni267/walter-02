@@ -52,10 +52,8 @@ class DetailSearch extends Component {
           if (e.key === "Enter") {
             this.execSearch();
           }
-          else {
-            this.appendSearchValue(item, searchValue.getValue() );
-          }
         }}
+        onChange={ e => this.appendSearchValue(item, searchValue.getValue()) }
         floatingLabelText={item.label}
         hintText={item.label}
         />
