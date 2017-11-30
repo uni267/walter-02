@@ -95,7 +95,7 @@ const AppNavBar = ({
         <IconMenu
           iconButtonElement={accountIcon}
           anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-          <List>
+          <List style={{ padding: 0 }}>
             <ListItem disabled={true} primaryText={session.user_name} rightAvatar={avatarIcon} />
             <Divider />
             <ListItem  primaryText="パスワード変更" onTouchTap={handleAccountOpen} />
