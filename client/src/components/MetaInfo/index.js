@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import RaisedButton from "material-ui/RaisedButton";
 import AutoComplete from "material-ui/AutoComplete";
 import TextField from "material-ui/TextField";
+import DatePicker from "material-ui/DatePicker";
 
 const styles = {
   row: {
@@ -31,7 +32,8 @@ class MetaInfo extends Component {
     this.state = {
       addable: false,
       text: "",
-      metaInfo: null
+      metaInfo: null,
+      metaInfoValue: null
     };
   }
 
@@ -58,11 +60,16 @@ class MetaInfo extends Component {
       this.props.addMetaInfoToFile(
         file,
         this.state.metaInfo,
-        this.refs.metaValue.getValue()
+        this.state.metaInfoValue
+        // this.refs.metaValue.getValue()
       );
 
-      this.setState({ addable: false });
-      this.setState({ text: "" });
+      this.setState({
+        addable: false ,
+        text: "",
+        metaInfo: null,
+        metaInfoValue: null
+      });
     };
 
     const onNewRequest = (searchText) => {
@@ -80,6 +87,33 @@ class MetaInfo extends Component {
       const ids = this.props.file.meta_infos.map( meta => meta._id );
       return !ids.includes(meta._id);
     });
+
+    const renderForm = () => {
+      if (this.state.metaInfo === null) return null;
+
+      switch(this.state.metaInfo.value_type) {
+      case "Date":
+        return (
+          <DatePicker
+            onChange={ (e, value) => this.setState({ metaInfoValue: value }) }
+            floatingLabelText="日付を入力"
+            hintText="日付を入力"
+            />
+        );
+      case "String":
+        return (
+          <TextField
+            ref="metaValue"
+            onChange={ () => {
+              this.setState({ metaInfoValue: this.refs.metaValue.getValue() });
+            }}
+            hintText="値を入力"
+            floatingLabelText="値を入力" />
+        );
+      default:
+        return null;
+      }
+    };
 
     return (
       <div style={styles.row}>
@@ -101,10 +135,7 @@ class MetaInfo extends Component {
         </div>
         <div style={{...styles.cell, width: "25%"}}>
 
-          <TextField
-            ref="metaValue"
-            hintText="値を入力"
-            floatingLabelText="値を入力" />
+          {renderForm()}
 
         </div>
         <div style={{...styles.cell, width: "10%"}}>
