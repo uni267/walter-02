@@ -23,7 +23,12 @@ function* watchAddAuthorityToFile() {
     }
     catch (e) {
       const { message } = e.response.data.status;
-      yield put(commons.openException(message));
+      if (e.response.data.status.errors.role_set !== undefined) {
+        const detail = e.response.data.status.errors.role_set;
+        yield put(commons.openException(message, detail));
+      } else {
+        yield put(commons.openException(message));
+      }
       yield put(commons.loadingEnd());
     }
   }
