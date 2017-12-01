@@ -38,7 +38,7 @@ class NotifyStatusContainer extends Component {
         <ErrorReport
           open={this.props.exception.open}
           message={this.props.exception.message}
-          name={this.props.exception.name} />
+          detail={this.props.exception.detail} />
         {this.props.children}
       </div>
     );
