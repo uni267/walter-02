@@ -1,4 +1,4 @@
-import { call, put, take } from "redux-saga/effects";
+import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
 
@@ -16,7 +16,14 @@ function* watchMoveFile() {
       yield call(api.moveFile, dir, file);
       const payload = yield call(api.fetchFiles, file.dir_id);
       yield put(actions.initFiles(payload.data.body));
-      yield put(actions.toggleMoveFileDialog());
+
+      // DnDから呼ばれる場合もあるので
+      const dialogOpen = yield select( state => state.moveFile.open );
+
+      if (dialogOpen === true) {
+        yield put(actions.toggleMoveFileDialog());
+      }
+
       yield put(commons.triggerSnackbar(`${file.name}を${dir.name}に移動しました`));
     }
     catch (e) {
