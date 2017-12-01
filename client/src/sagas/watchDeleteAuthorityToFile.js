@@ -15,20 +15,16 @@ function* watchDeleteAuthorityToFile() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(api.addAuthorityToFile, file, user, role);
+      console.log(file,user,role);
+      yield call(api.deleteAuthorityToFile, file, user, role);
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initFile(payload.data.body));
       yield put(commons.loadingEnd());
-      yield put(commons.triggerSnackbar("権限を追加しました"));
+      yield put(commons.triggerSnackbar("権限を削除しました"));
     }
     catch (e) {
-      const { message } = e.response.data.status;
-      if (e.response.data.status.errors.role_set !== undefined) {
-        const detail = e.response.data.status.errors.role_set;
-        yield put(commons.openException(message, detail));
-      } else {
-        yield put(commons.openException(message));
-      }
+      const { message, errors } = e.response.data.status;
+      yield put(commons.openException(message, JSON.stringify(errors)));
       yield put(commons.loadingEnd());
     }
   }
