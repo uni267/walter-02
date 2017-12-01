@@ -83,6 +83,7 @@ class FileDetailContainer extends Component {
     this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
     this.props.actions.requestFetchFilePreview(this.props.match.params.id);
     this.props.actions.requestFetchRoles();
+    this.props.actions.requestFetchUsers();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -217,6 +218,7 @@ class FileDetailContainer extends Component {
           users={this.props.users}
           roles={this.props.roles}
           addAuthority={this.props.addAuthority}
+          addAuthorityToFile={this.props.actions.addAuthorityToFile}
           deleteAuthority={this.props.actions.deleteAuthority}
           triggerSnackbar={this.props.actions.triggerSnackbar} />
 
