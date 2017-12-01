@@ -2,7 +2,8 @@ import * as actionTypes from "../actionTypes";
 
 const initialState = {
   open: false,
-  message: ""
+  message: "",
+  detail: null
 };
 
 const exceptionReducer = (state = initialState, action) => {
@@ -10,7 +11,8 @@ const exceptionReducer = (state = initialState, action) => {
   case actionTypes.INIT_EXCEPTION:
     return {
       open: true,
-      message: action.message
+      message: action.message,
+      detail: action.detail
     };
   case actionTypes.CLOSE_EXCEPTION:
     return initialState;

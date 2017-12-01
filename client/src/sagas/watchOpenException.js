@@ -5,9 +5,9 @@ import * as commons from "../actions/commons";
 
 function* watchOpenException() {
   while (true) {
-    const { message, name } = yield take(commons.openException().type);
+    const { message, detail } = yield take(commons.openException().type);
 
-    yield put(commons.initException(name, message));
+    yield put(commons.initException(message, detail));
     yield call(delay, 3000);
     yield put(commons.closeException());
   }
