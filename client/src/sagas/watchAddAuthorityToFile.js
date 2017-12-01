@@ -17,12 +17,13 @@ function* watchAddAuthorityToFile() {
     try {
       yield call(api.addAuthorityToFile, file, user, role);
       const payload = yield call(api.fetchFile, file._id);
-      yield put(actions.initAuthorityFileDialog(payload.data.body));
+      yield put(actions.initFile(payload.data.body));
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("権限を追加しました"));
     }
     catch (e) {
-      console.log(e);
+      const { message } = e.response.data.status;
+      yield put(commons.openException(message));
       yield put(commons.loadingEnd());
     }
   }
