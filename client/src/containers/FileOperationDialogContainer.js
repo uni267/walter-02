@@ -22,13 +22,6 @@ import MetaInfoDialog from "../components/File/MetaInfoDialog";
 import RestoreFileDialog from "../components/File/RestoreFileDialog";
 
 class FileOperationDialogContainer extends Component {
-  componentWillMount() {
-    this.props.actions.requestFetchRoles();
-    this.props.actions.requestFetchUsers();
-    this.props.actions.requestFetchMetaInfos();
-    this.props.actions.requestFetchTags();
-  }
-
   render() {
     return (
       <div>
@@ -50,7 +43,7 @@ class FileOperationDialogContainer extends Component {
         <AuthorityFileDialog
           { ...this.props }
           open={this.props.authorityFileState.open}
-          file={this.props.authorityFileState.file}
+          file={this.props.authorityFileTarget}
           users={this.props.users}
           roles={this.props.roles} />
         <DeleteFileDialog
@@ -92,6 +85,16 @@ class FileOperationDialogContainer extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  let authorityFileTarget;
+
+  if (state.authorityFile.file._id !== undefined) {
+    authorityFileTarget = state.files.filter( file => (
+      file._id === state.authorityFile.file._id
+    ))[0];
+  } else {
+    authorityFileTarget = state.authorityFile.file;
+  }
+
   return {
     users: state.users,
     roles: state.roles.data,
@@ -108,7 +111,8 @@ const mapStateToProps = (state, ownProps) => {
     fileHistoryState: state.fileHistory,
     fileTagState: state.fileTag,
     fileMetaInfoState: state.fileMetaInfo,
-    restoreFileState: state.restoreFile
+    restoreFileState: state.restoreFile,
+    authorityFileTarget
   };
 };
 
