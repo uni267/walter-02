@@ -1654,28 +1654,28 @@ export const removeAuthority = (req, res, next) => {
   co(function* () {
     try {
       const { file_id } = req.params;
-      const { user, role } = req.body;
+      const { user_id, role_id } = req.query;
 
       if (! mongoose.Types.ObjectId.isValid(file_id) ) throw "file_id is invalid";
 
-      if (user === undefined ||
-          user === null ||
-          user === "") throw "user_id is empty";
+      if (user_id === undefined ||
+          user_id === null ||
+          user_id === "") throw "user_id is empty";
 
-      if (role === undefined ||
-          role === null ||
-          role === "") throw "role_id is empty";
+      if (role_id === undefined ||
+          role_id === null ||
+          role_id === "") throw "role_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(user._id) ) throw "user_id is invalid";
-      if (! mongoose.Types.ObjectId.isValid(role._id) ) throw "role_id is invalid";
+      if (! mongoose.Types.ObjectId.isValid(user_id) ) throw "user_id is invalid";
+      if (! mongoose.Types.ObjectId.isValid(role_id) ) throw "role_id is invalid";
 
       const file = yield File.findById(file_id);
       if (file === null) throw "file is empty";
 
-      const role_user = yield User.findById(user._id);
+      const role_user = yield User.findById(user_id);
       if (role_user === null) throw "user is empty";
 
-      const role_file = yield RoleFile.findById(role._id);
+      const role_file = yield RoleFile.findById(role_id);
       if (role_file === null) throw "role is empty";
 
       if (role_user.type === undefined ||

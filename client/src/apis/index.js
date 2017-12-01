@@ -355,8 +355,8 @@ export class API {
   };
 
   deleteAuthorityToFile = (file, user, role) => {
-    const body = { user, role };
-    return this.client.delete(`/api/v1/files/${file._id}/authorities`, body);
+    const params = { user_id: user._id, role_id: role._id };
+    return this.client.delete(`/api/v1/files/${file._id}/authorities`, { params });
   };
 
   verifyToken = (token) => {
