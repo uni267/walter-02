@@ -112,7 +112,8 @@ const mapStateToProps = (state, ownProps) => {
     fileTagState: state.fileTag,
     fileMetaInfoState: state.fileMetaInfo,
     restoreFileState: state.restoreFile,
-    authorityFileTarget
+    authorityFileTarget,
+    session: state.session
   };
 };
 

@@ -51,19 +51,17 @@ class Authority extends Component {
       },
       deleteDialog: {
         open: false,
-        file_id: null,
-        auth_id: null
+        file: {},
+        user: {},
+        role: {}
       }
     };
   }
 
-  // onDeleteClick = (file_id, auth_id) => {
-  //   this.props.deleteAuthority(file_id, auth_id);
-  //   this.props.triggerSnackbar("権限を削除しました");
-  // }
-
   renderAuthorities = (file) => {
     return file.authorities.map( (auth, idx) => {
+
+      const deletable = auth.users._id === this.props.session.user_id;
 
       return (
         <div key={idx} style={style.row}>
@@ -76,12 +74,13 @@ class Authority extends Component {
           <div style={{...style.cell, width: "120px"}}>
             <RaisedButton
               label="削除"
-              disabled={true}
+              disabled={deletable}
               onClick={() => this.setState({
                 deleteDialog: {
                   open: true,
-                  file_id: file.id,
-                  auth_id: auth.id
+                  file: file,
+                  user: auth.users,
+                  role: auth.role_files
                 }
               })}
               />
@@ -118,11 +117,13 @@ class Authority extends Component {
           label="OK"
           primary={true}
           onTouchTap={() => {
-            this.setState({ deleteDialog: { open: false } });
-            this.onDeleteClick(
-              this.state.deleteDialog.file_id,
-              this.state.deleteDialog.auth_id
+            this.props.deleteAuthorityToFile(
+              this.state.deleteDialog.file,
+              this.state.deleteDialog.user,
+              this.state.deleteDialog.role
             );
+
+            this.setState({ deleteDialog: { open: false } });
           }}
           />
       ),

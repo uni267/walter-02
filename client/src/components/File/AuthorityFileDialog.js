@@ -13,7 +13,8 @@ const AuthorityFileDialog = ({
   file,
   users,
   roles,
-  actions
+  actions,
+  session
 }) => {
   const dialogActions = (
     <FlatButton
@@ -37,7 +38,8 @@ const AuthorityFileDialog = ({
         roles={roles}
         addAuthorityToFile={actions.addAuthorityToFile}
         deleteAuthorityToFile={actions.deleteAuthorityToFile}
-        triggerSnackbar={actions.triggerSnackbar} />
+        triggerSnackbar={actions.triggerSnackbar}
+        session={session} />
 
     </Dialog>
   );

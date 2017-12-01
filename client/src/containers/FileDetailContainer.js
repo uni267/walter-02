@@ -224,9 +224,10 @@ class FileDetailContainer extends Component {
           file={this.props.file}
           users={this.props.users}
           roles={this.props.roles}
+          session={this.props.session}
           addAuthority={this.props.addAuthority}
           addAuthorityToFile={this.props.actions.addAuthorityToFile}
-          deleteAuthority={this.props.actions.deleteAuthority}
+          deleteAuthorityToFile={this.props.actions.deleteAuthorityToFile}
           triggerSnackbar={this.props.actions.triggerSnackbar} />
 
       </Dialog>
@@ -390,7 +391,8 @@ const mapStateToProps = (state, ownProps) => {
     metaInfo: state.metaInfo,
     tenant: state.tenant,
     fileMetaInfo: state.fileMetaInfo,
-    filePreviewState: state.filePreview
+    filePreviewState: state.filePreview,
+    session: state.session
   };
 };
 
