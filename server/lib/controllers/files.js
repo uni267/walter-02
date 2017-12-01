@@ -1650,6 +1650,105 @@ export const addAuthority = (req, res, next) => {
   });
 };
 
+export const removeAuthority = (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      const { user, role } = req.body;
+
+      if (! mongoose.Types.ObjectId.isValid(file_id) ) throw "file_id is invalid";
+
+      if (user === undefined ||
+          user === null ||
+          user === "") throw "user_id is empty";
+
+      if (role === undefined ||
+          role === null ||
+          role === "") throw "role_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(user._id) ) throw "user_id is invalid";
+      if (! mongoose.Types.ObjectId.isValid(role._id) ) throw "role_id is invalid";
+
+      const file = yield File.findById(file_id);
+      if (file === null) throw "file is empty";
+
+      const role_user = yield User.findById(user._id);
+      if (role_user === null) throw "user is empty";
+
+      const role_file = yield RoleFile.findById(role._id);
+      if (role_file === null) throw "role is empty";
+
+      if (role_user.type === undefined ||
+          role_user.type === null ||
+          role_user.type === "") throw "user.type is empty";
+
+      const authority = AuthorityFile.findOne({
+        role_files: role_file._id,
+        users: role_user._id,
+        files: file._id
+      });
+
+      if (authority === null) throw "authority is empty";
+
+      const removeResult = yield authority.remove();
+
+      if (removeResult.result.ok !== 1) throw "remove authority is failed";
+
+      res.json({
+        status: { success: true },
+        body: { role_files: role_file, users: role_user, files: file }
+      });
+    }
+    catch (e) {
+      let errors = {};
+
+      switch (e) {
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルへの権限の削除に失敗しました";
+        break;
+      case "user_id is empty":
+        errors.user_id = "ユーザIDが空のためファイルへの権限の削除に失敗しました";
+        break;
+      case "role_id is empty":
+        errors.role_id = "ファイル権限IDが空のためファイルへの権限の削除に失敗しました";
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためファイルへの権限の削除に失敗しました";
+        break;
+      case "role_id is invalid":
+        errors.role_id = "ファイル権限IDが不正のためファイルへの権限の削除に失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "user is empty":
+        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "role is empty":
+        errors.role_id = "指定されたファイル権限が存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "user.type is empty":
+        errors.user_type = "ユーザ種別が空のためファイルへの権限の削除に失敗しました";
+        break;
+      case "authority is empty":
+        errors.role = "指定された権限セットが存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "remove authority is failed":
+        errors.remove = "原因不明のエラーで権限の削除に失敗しました";
+        errors.unknown = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, message: "ファイルへの権限の削除に失敗しました", errors }
+      });
+    }
+  });
+};
+
 export const moveTrash = (req, res, next) => {
   co(function* () {
     try {
@@ -2009,9 +2108,6 @@ export const exists = (req, res, next) => {
       });
     }
   });
-};
-
-export const removeAuthority = (req, res, next) => {
 };
 
 // ここからプライベート的なメソッド
