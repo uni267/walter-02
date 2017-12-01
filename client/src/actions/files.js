@@ -32,8 +32,8 @@ export const addAuthorityToFile = (file, user, role) => ({
   type: actionTypes.ADD_AUTHORITY_TO_FILE, file, user, role
 });
 
-export const deleteAuthorityToFile = (file_id, authority_id) => ({
-  type: actionTypes.DELETE_AUTHORITY, file_id, authority_id
+export const deleteAuthorityToFile = (file, user, role) => ({
+  type: actionTypes.DELETE_AUTHORITY_TO_FILE, file, user, role
 });
 
 export const setSortTarget = (sorted) => ({

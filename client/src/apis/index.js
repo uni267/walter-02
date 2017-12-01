@@ -354,6 +354,11 @@ export class API {
       `/api/v1/files/${file._id}/authorities`, body);
   };
 
+  deleteAuthorityToFile = (file, user, role) => {
+    const body = { user, role };
+    return this.client.delete(`/api/v1/files/${file._id}/authorities`, body);
+  };
+
   verifyToken = (token) => {
     const body = { token };
     return this.client.post(`/api/login/verify_token`, body);
