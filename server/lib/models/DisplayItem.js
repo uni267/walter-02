@@ -9,6 +9,7 @@ const DisplayItemSchema = Schema({
   name: String,
   search_value_type: String,
   is_display: Boolean,
+  is_excel: Boolean,
   order: Number
 });
 

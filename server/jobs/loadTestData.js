@@ -168,8 +168,9 @@ var display_items = [
     name: "file_checkbox",
     search_value_type: null,
     is_display: true,
-    order: 1,
-    width: "5%"
+    is_excel: false,
+    width: "5%",
+    order: 10
   },
   {
     tenant_id: tenant._id,
@@ -177,8 +178,9 @@ var display_items = [
     label: "表示ファイル名",
     name: "receive_file_name",
     is_display: true,
-    order: 2,
-    width: "50%"
+    is_excel: true,
+    width: "50%",
+    order: 20
   },
   {
     tenant_id: tenant._id,
@@ -186,8 +188,9 @@ var display_items = [
     label: "受信日時",
     name: "receive_date_time",
     is_display: true,
-    order: 3,
-    width: "20%"
+    is_excel: true,
+    width: "20%",
+    order: 30
   },
   {
     tenant_id: tenant._id,
@@ -195,8 +198,56 @@ var display_items = [
     label: "送信企業名",
     name: "send_company_name",
     is_display: true,
-    order: 4,
-    width: "15%"
+    is_excel: true,
+    width: "15%",
+    order: 40
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "操作",
+    name: "action",
+    search_value_type: null,
+    is_display: true,
+    is_excel: false,
+    width: "10%",
+    order: 50
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "send_date_time" })._id,
+    label: "送信日時",
+    name: "send_date_time",
+    is_display: false,
+    is_excel: true,
+    order: 60
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "send_user_name" })._id,
+    label: "送信ユーザ名",
+    name: "send_user_name",
+    is_display: false,
+    is_excel: true,
+    order: 70
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "receive_company_name" })._id,
+    label: "受信企業名",
+    name: "receive_company_name",
+    is_display: false,
+    is_excel: true,
+    order: 80
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "receive_user_name" })._id,
+    label: "受信ユーザ名",
+    name: "receive_user_name",
+    is_display: false,
+    is_excel: true,
+    order: 90
   },
   {
     tenant_id: tenant._id,
@@ -205,8 +256,9 @@ var display_items = [
     name: "name",
     search_value_type: "String",
     is_display: false,
-    order: 2,
-    width: "50%"
+    is_excel: false,
+    width: "50%",
+    order: 100
   },
   {
     tenant_id: tenant._id,
@@ -215,8 +267,9 @@ var display_items = [
     name: "modified",
     search_value_type: "Date",
     is_display: false,
-    order: 3,
-    width: "20%"
+    is_excel: false,
+    width: "20%",
+    order: 110
   },
   {
     tenant_id: tenant._id,
@@ -226,18 +279,9 @@ var display_items = [
     search_value_type: "Select",
     value_type: "String",
     is_display: false,
-    order: 4,
-    width: "15%"
-  },
-  {
-    tenant_id: tenant._id,
-    meta_info_id: null,
-    label: "操作",
-    name: "action",
-    search_value_type: null,
-    is_display: true,
-    order: 5,
-    width: "10%"
+    is_excel: false,
+    width: "15%",
+    order: 120
   },
   {
     tenant_id: tenant._id,
@@ -246,7 +290,8 @@ var display_items = [
     name: "favorite",
     search_value_type: "Bool",
     is_display: false,
-    order: 99999
+    is_excel: false,
+    order: 130
   },
   {
     tenant_id: tenant._id,
@@ -255,7 +300,8 @@ var display_items = [
     name: "tag",
     search_value_type: "Select",
     is_display: false,
-    order: 99999
+    is_excel: true,
+    order: 140
   },
   {
     tenant_id: tenant._id,
@@ -264,7 +310,8 @@ var display_items = [
     name: "modified_less",
     search_value_type: "Date",
     is_display: false,
-    order: 99999
+    is_excel: false,
+    order: 150
   },
   {
     tenant_id: tenant._id,
@@ -273,7 +320,8 @@ var display_items = [
     name: "modified_greater",
     search_value_type: "Date",
     is_display: false,
-    order: 99999
+    is_excel: false,
+    order: 160
   }
 ];
 
