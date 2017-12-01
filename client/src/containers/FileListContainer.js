@@ -133,6 +133,8 @@ class FileListContainer extends Component {
     }).then( res => {
       this.props.actions.requestFetchFiles(this.props.match.params.id);
       this.props.actions.requestFetchMetaInfos();
+      this.props.actions.requestFetchUsers();
+      this.props.actions.requestFetchRoles();
     });
   }
 
@@ -262,7 +264,7 @@ class FileListContainer extends Component {
 
         </TableBodyWrapper>
 
-        <FileOperationDialogContainer />
+        <FileOperationDialogContainer { ...this.props } />
       </div>
     );
   }
