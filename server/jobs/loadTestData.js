@@ -184,6 +184,16 @@ var display_items = [
   },
   {
     tenant_id: tenant._id,
+    meta_info_id: null,
+    label: "場所",
+    name: "dir_route",
+    search_value_type: "String",
+    is_display: false,
+    is_excel: true,
+    order: 25
+  },
+  {
+    tenant_id: tenant._id,
     meta_info_id: db.meta_infos.findOne({ name: "receive_date_time" })._id,
     label: "受信日時",
     name: "receive_date_time",
@@ -279,7 +289,7 @@ var display_items = [
     search_value_type: "Select",
     value_type: "String",
     is_display: false,
-    is_excel: false,
+    is_excel: true,
     width: "15%",
     order: 120
   },

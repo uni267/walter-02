@@ -102,6 +102,19 @@ export const index = (req, res, next, export_excel=false) => {
       });
 
       if(export_excel){
+
+        files = files.map( file => {
+          const route = file.dirs
+                .filter( dir => dir.ancestor.is_display )
+                .map( dir => dir.ancestor.name );
+
+          file.dir_route = route.length > 0
+            ? route.reverse().join("/")
+            : "";
+
+          return file;
+        });
+
         return files;
       }else{
         res.json({
@@ -252,8 +265,8 @@ export const download = (req, res, next) => {
   });
 };
 
-export const search = (req, res, next) => {
-  co(function* () {
+export const search = (req, res, next, export_excel=false) => {
+  return co(function* () {
     try {
       const { q, page, sort, order } = req.query;
       const { tenant_id } = res.user.tenant_id;
@@ -287,9 +300,9 @@ export const search = (req, res, next) => {
         ? 0 : page;
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const limit = constants.FILE_LIMITS_PER_PAGE;
-      const offset = _page * limit;
       const total = yield File.find(conditions).count();
+      const limit = export_excel ? total : constants.FILE_LIMITS_PER_PAGE;
+      const offset = _page * limit;
 
       if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
@@ -321,10 +334,14 @@ export const search = (req, res, next) => {
         return file;
       });
 
-      res.json({
-        status: { success: true, total },
-        body: files
-      });
+      if(export_excel){
+        return files;
+      }else{
+        res.json({
+          status: { success: true, total },
+          body: files
+        });
+      }
     }
     catch (e) {
 
@@ -419,7 +436,7 @@ export const searchItems = (req, res, next) => {
   });
 };
 
-export const searchDetail = (req, res, next) => {
+export const searchDetail = (req, res, next, export_excel=false) => {
   const buildQuery = (item) => {
     switch ( item.key_type ) {
     case "name":
@@ -467,7 +484,7 @@ export const searchDetail = (req, res, next) => {
     }
   };
 
-  co(function* () {
+  return co(function* () {
     try {
       const params = req.query;
       if ( params.page === undefined || params.page === null ) page = 0;
@@ -527,11 +544,6 @@ export const searchDetail = (req, res, next) => {
             ? {}
             : Object.assign(...meta_items.map(buildQuery));
 
-      const limit = constants.FILE_LIMITS_PER_PAGE;
-      let { page } = req.query;
-      if (!page) page = 0;
-      const offset = page * limit;
-
       let file_metainfo_ids = [];
       if(meta_items.length > 0){
         const fileMetainfoConditions = {
@@ -552,6 +564,11 @@ export const searchDetail = (req, res, next) => {
       }
 
       const total = yield File.find(query).count();
+
+      const limit = export_excel ? total : constants.FILE_LIMITS_PER_PAGE;
+      let { page } = req.query;
+      if (!page) page = 0;
+      const offset = page * limit;
 
       const { sort, order } = params;
       const _sort = yield createSortOption(sort, order);
@@ -576,10 +593,14 @@ export const searchDetail = (req, res, next) => {
         return file;
       });
 
-      res.json({
-        status: { success: true, total },
-        body: ret_files
-      });
+      if(export_excel){
+        return ret_files;
+      }else{
+        res.json({
+          status: { success: true, total },
+          body: ret_files
+        });
+      }
     }
     catch (e) {
 
