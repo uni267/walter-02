@@ -530,7 +530,7 @@ describe(files_url, () => {
           return new Promise( (resolve, reject) => {
             request
               .delete(files_url + `/${file._id}/authorities`)
-              .send({ user: role_user, role: role_file })
+              .query({ user_id: role_user._id, role_id: role_file._id })
               .end( (err, res) => resolve(res) );
           });
 
@@ -605,7 +605,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/invalid_oid/authorities`)
-                .send({ user: role_user, role: role_file })
+                .query({ user_id: role_user._id, role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -661,7 +661,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${(new ObjectId).toString()}/authorities`)
-                .send({ user: role_user, role: role_file })
+                .query({ user_id: role_user._id, role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -719,7 +719,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: role_user, role: undefined })
+                .query({ user_id: role_user._id, role: undefined })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -775,7 +775,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: role_user, role: null })
+                .query({ user_id: role_user._id, role: null })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -831,7 +831,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: role_user, role: "" })
+                .query({ user_id: role_user._id, role: "" })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -887,7 +887,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: role_user, role: { _id: "invalid_oid" }})
+                .query({ user_id: role_user._id, role_id: "invalid_oid" })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -943,7 +943,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: role_user, role: { _id: (new ObjectId).toString() } })
+                .query({ user_id: role_user._id, role_id: (new ObjectId).toString() })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -1001,7 +1001,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: undefined, role: role_file })
+                .query({ user_id: undefined, role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -1057,7 +1057,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: null, role: role_file })
+                .query({ user_id: null, role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -1113,7 +1113,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: "", role: role_file })
+                .query({ user_id: "", role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -1169,7 +1169,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: { _id: "invalid_oid" }, role: role_file })
+                .query({ user_id: "invalid_oid", role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
@@ -1226,7 +1226,7 @@ describe(files_url, () => {
             return new Promise( (resolve, reject) => {
               request
                 .delete(files_url + `/${file._id}/authorities`)
-                .send({ user: { _id: (new ObjectId).toString() }, role: role_file })
+                .query({ user_id: (new ObjectId).toString(), role_id: role_file._id })
                 .end( (err, res) => resolve(res) );
             });
 
