@@ -185,7 +185,14 @@ class FileDetailContainer extends Component {
           <CardHeader title="履歴情報" />
           <CardText>
             {this.props.file.histories.map( (history, idx) => {
-              return <History key={idx} history={history} />;
+              return (
+                <History
+                  { ...this.props }
+                  key={idx}
+                  file={this.props.file}
+                  history={history}
+                  />
+              );
             })}
           </CardText>
         </Card>
