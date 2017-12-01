@@ -61,7 +61,6 @@ class MetaInfo extends Component {
         file,
         this.state.metaInfo,
         this.state.metaInfoValue
-        // this.refs.metaValue.getValue()
       );
 
       this.setState({
