@@ -31,7 +31,8 @@ export const index = (req, res, next) => {
         folderCount,
         useRateFolder,
         useRateTag,
-        useRateMimeType
+        useRateMimeType,
+        useRateUser
       ] = yield [
         AnalysisUseRateTotal.find(conditions),
         AnalysisFileCount.find(conditions),
@@ -82,6 +83,12 @@ export const index = (req, res, next) => {
         }));
       }
 
+      if (useRateUser.length > 0) {
+        useRateUser = useRateUser.map( user => ({
+          name: user.user_name, value: user.rate
+        }));
+      }
+
       res.json({
         status: { success: true },
         body: {
@@ -90,7 +97,8 @@ export const index = (req, res, next) => {
           folderCount,
           useRateFolder,
           useRateTag,
-          useRateMimeType
+          useRateMimeType,
+          useRateUser
         }
       });
     }
