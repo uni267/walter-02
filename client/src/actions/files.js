@@ -20,10 +20,6 @@ export const deleteDirTree = (dir) => ({
   type: actionTypes.DELETE_DIR_TREE, dir
 });
 
-export const editFileByIndex = (file) => ({
-  type: actionTypes.EDIT_FILE_BY_INDEX, file
-});
-
 export const toggleStar = (file) => ({
   type: actionTypes.TOGGLE_STAR, file
 });
@@ -259,10 +255,6 @@ export const requestAddTag = (file, tag) => ({
 
 export const requestDelTag = (file, tag) => ({
   type: actionTypes.REQUEST_DEL_TAG, file, tag
-});
-
-export const editFileByView = (file) => ({
-  type: actionTypes.EDIT_FILE_BY_VIEW, file
 });
 
 export const toggleRestoreFileDialog = (file) => ({
