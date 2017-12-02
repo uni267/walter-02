@@ -136,14 +136,14 @@ class AnalysisContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    useRateTotal: state.analysis.useRateTotal,
-    usages: state.analysis.usages,
-    useRateFolder: state.analysis.useRateFolder,
-    useRateUser: state.analysis.useRateUser,
-    useRateMimeType: state.analysis.useRateMimeType,
-    useRateTag: state.analysis.useRateTag,
-    fileCount: state.analysis.fileCount,
-    folderCount: state.analysis.folderCount
+    useRateTotal: state.analysis.daily.useRateTotal,
+    usages: state.analysis.daily.usages,
+    useRateFolder: state.analysis.daily.useRateFolder,
+    useRateUser: state.analysis.daily.useRateUser,
+    useRateMimeType: state.analysis.daily.useRateMimeType,
+    useRateTag: state.analysis.daily.useRateTag,
+    fileCount: state.analysis.daily.fileCount,
+    folderCount: state.analysis.daily.folderCount
   };
 };
 
