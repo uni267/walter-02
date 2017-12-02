@@ -337,6 +337,11 @@ export class API {
     return this.client.get(`/api/v1/analysis`, { params });
   };
 
+  fetchAnalysisPeriod = (start_date, end_date) => {
+    const params = { start_date, end_date };
+    return this.client.get(`/api/v1/analysis/periods`, { params });
+  };
+
   toggleStar = (file) => {
     return this.client.patch(`/api/v1/files/${file._id}/toggle_star`);
   };

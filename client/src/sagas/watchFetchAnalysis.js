@@ -17,7 +17,8 @@ function* watchFetchAnalysis() {
       yield put(actions.initAnalysis(payload.data.body));
     }      
     catch (e) {
-
+      const { message, errors } = e.response.data.status;
+      yield put(commons.openException(message, JSON.stringify(errors)));
     }
     finally {
       yield put(commons.loadingEnd());
