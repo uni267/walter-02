@@ -332,9 +332,9 @@ export class API {
     return this.client.delete(`/api/v1/tags/${tag_id}`);
   };
 
-  fetchAnalysis = (tenant_id) => {
-    const config = { tenant_id };
-    return this.client.get(`/api/v1/analysis`, config);
+  fetchAnalysis = (reported_at) => {
+    const params = { reported_at };
+    return this.client.get(`/api/v1/analysis`, { params });
   };
 
   toggleStar = (file) => {

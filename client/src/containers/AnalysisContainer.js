@@ -36,7 +36,11 @@ class AnalysisContainer extends Component {
           <CardText>
 
             <div style={{ marginBottom: 20, marginLeft: 20 }}>
-              <DatePicker hintText="該当日を指定" />
+              <DatePicker
+                onChange={(e, date) => {
+                  this.props.actions.requestFetchAnalysis(date);
+                }}
+                hintText="該当日を指定" />
             </div>
 
             <div style={{ display: "flex" }}>

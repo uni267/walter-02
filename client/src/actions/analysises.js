@@ -1,7 +1,7 @@
 import * as actionTypes from "../actionTypes";
 
-export const requestFetchAnalysis = (tenant_id) => ({
-  type: actionTypes.REQUEST_FETCH_ANALYSIS, tenant_id
+export const requestFetchAnalysis = (reported_at) => ({
+  type: actionTypes.REQUEST_FETCH_ANALYSIS, reported_at
 });
 
 export const initAnalysis = (analysis) => ({

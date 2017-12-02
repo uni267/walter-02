@@ -22,7 +22,7 @@ export const index = (req, res, next) => {
       if (reported_at === null || reported_at === undefined || reported_at === "") {
         conditions.reported_at = moment().format("YYYYMMDD");
       } else {
-        conditions.reported_at = reported_at;
+        conditions.reported_at = moment(reported_at).format("YYYYMMDD");
       }
 
       let [
