@@ -7,7 +7,7 @@ import {red900, grey50} from 'material-ui/styles/colors';
 const ErrorReport = ({
   open,
   message,
-  detail
+  detail = null
 }) => {
   const transform = message
         ? "translate3d(0, 0, 0)" : "translate3d(0px, -50px, 0px)";
