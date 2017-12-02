@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import log4js from "log4js";
 import co from "co";
 
 import * as tasks from "./tasks/index";
 import { SERVER_CONF } from "../configs/server";
 import * as constants from "../configs/constants";
+import logger from "../lib/logger";
 
 // 環境変数
 // 開発 => development、社内テスト => integration、本番 => production
@@ -30,9 +30,6 @@ default:
   db_name = SERVER_CONF.development.db_name;
   break;
 }
-
-log4js.configure(constants.LOGGER_CONFIG);
-export const logger = log4js.getLogger(mode);
 
 mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   const args = process.argv[2];
