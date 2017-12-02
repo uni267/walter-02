@@ -12,7 +12,7 @@ function* watchFetchAnalysis() {
     yield put(commons.loadingStart());
 
     try {
-      const _reported_at = moment(reported_at).format("YYYY-MM-DD");
+      const _reported_at = moment(reported_at).format("YYYYMMDD");
       const payload = yield call(api.fetchAnalysis, _reported_at);
       yield put(actions.initAnalysis(payload.data.body));
     }      
