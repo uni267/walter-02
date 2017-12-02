@@ -4,7 +4,7 @@ import moment from "moment";
 import util from "util";
 
 // logger
-import { logger } from "../index";
+import logger from "../../lib/logger";
 
 // models
 import Tenant from "../../lib/models/Tenant";
@@ -21,7 +21,7 @@ import AnalysisUseRateMimeType from "../../lib/models/AnalysisUseRateMimeType";
 const task = () => {
   co(function* () {
     try {
-      console.log("################# analyze start #################");
+      logger.info("################# analyze start #################");
 
       // 使用率、ファイル数、フォルダ数
       const fileFolderCounts = yield File.aggregate([
@@ -82,9 +82,7 @@ const task = () => {
         }
       ]);
 
-      // debug
-      // console.log(util.inspect(fileFolderCounts, false, null));
-      // debug
+      logger.info("fileFolderCounts summary: " + JSON.stringify(fileFolderCounts));
 
       // 2重集計防止
       yield AnalysisUseRateTotal.remove({
@@ -197,9 +195,7 @@ const task = () => {
 
       const folderRates = yield File.aggregate(folderRatesConditions);
 
-      // debug
-      // console.log(util.inspect(folderRates, false, null));
-      // debug      
+      logger.info("folderRates summary: " + JSON.stringify(folderRates));
 
       const folderRatesSum = yield File.aggregate([
         ...folderRatesConditions,
@@ -231,9 +227,7 @@ const task = () => {
         return f;
       });
 
-      // debug
-      // console.log(util.inspect(folderRatesCombined, false, null));
-      // debug      
+      logger.info("folderRatesCombined summary: " + JSON.stringify(folderRatesCombined));
 
       yield AnalysisUseRateFolder.insertMany(
         folderRatesCombined.map( r => ({
@@ -340,10 +334,8 @@ const task = () => {
         }
       ]);
 
-      // debug
-      // console.log(util.inspect(tagRates, false, null));
-      // console.log(util.inspect(tagRatesGroupByTenants, false, null));
-      // debug
+      logger.info("tagRates summary: " + JSON.stringify(tagRates));
+      logger.info("tagRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
 
       yield AnalysisUseRateTag.remove({
         reported_at: parseInt(moment().format("YYYYMMDD"), 10)
@@ -357,7 +349,7 @@ const task = () => {
         return t;
       });
 
-      // console.log(util.inspect(tagRatesCombined, false, null));
+      logger.info("tagRatesCombined summary: " + JSON.stringify(tagRatesCombined));
 
       yield AnalysisUseRateTag.insertMany(
         tagRatesCombined.map( t => ({
@@ -442,8 +434,8 @@ const task = () => {
         }
       ]);
 
-      // console.log(util.inspect(mimeRates, false, null));
-      // console.log(util.inspect(mimeRatesGroupByTenants, false, null));
+      logger.info("mimeRates summary: " + JSON.stringify(mimeRates));
+      logger.info("mimeRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
 
       const mimeRatesCombined = mimeRates.map( m => {
         const sum = mimeRatesGroupByTenants.filter( sum => (
@@ -454,7 +446,7 @@ const task = () => {
         return m;
       });
 
-      // console.log(util.inspect(mimeRatesCombined, false, null));
+      logger.info("mimeRatesCombined summary: " + JSON.stringify(mimeRatesCombined));
 
       yield AnalysisUseRateMimeType.remove({
         reported_at: parseInt(moment().format("YYYYMMDD"), 10)
@@ -475,13 +467,14 @@ const task = () => {
         }))
       );
 
+      logger.info("################# analyze end #################");
     }
     catch (e) {
-      console.log(e);
+      logger.error(e);
       process.exit();
     }
     finally {
-      console.log("################# analyze end #####################");
+      logger.info("################# analyze end #################");
       process.exit();
     }
   });
