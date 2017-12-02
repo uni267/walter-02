@@ -10,7 +10,7 @@ const UserSchema = Schema({
   password: String,
   enabled: Boolean,
   groups: Array,
-  tenant_id: Schema.Types.ObjectId,
+  tenant_id: Schema.Types.ObjectId
 });
 
 const User = mongoose.model("users", UserSchema, "users");
