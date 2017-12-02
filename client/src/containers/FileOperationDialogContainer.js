@@ -20,6 +20,7 @@ import HistoryFileDialog from "../components/File/HistoryFileDialog";
 import TagFileDialog from "../components/File/TagFileDialog";
 import MetaInfoDialog from "../components/File/MetaInfoDialog";
 import RestoreFileDialog from "../components/File/RestoreFileDialog";
+import ChangeFileNameDialog from "../components/File/ChangeFileNameDialog";
 
 class FileOperationDialogContainer extends Component {
   render() {
@@ -79,6 +80,12 @@ class FileOperationDialogContainer extends Component {
           open={this.props.restoreFileState.open}
           file={this.props.restoreFileState.file}
           />
+        <ChangeFileNameDialog
+          { ...this.props }
+          open={this.props.changeFileNameState.open}
+          file={this.props.changeFileNameTarget}
+          errors={this.props.changeFileNameState.errors}
+          />
       </div>
     );
   }
@@ -93,6 +100,16 @@ const mapStateToProps = (state, ownProps) => {
     ))[0];
   } else {
     authorityFileTarget = state.authorityFile.file;
+  }
+
+  let changeFileNameTarget;
+
+  if (state.changeFileName.file._id !== undefined) {
+    changeFileNameTarget = state.files.filter( file => (
+      file._id === state.changeFileName.file._id
+    ))[0];
+  } else {
+    changeFileNameTarget = state.changeFileName.file;
   }
 
   return {
@@ -112,7 +129,9 @@ const mapStateToProps = (state, ownProps) => {
     fileTagState: state.fileTag,
     fileMetaInfoState: state.fileMetaInfo,
     restoreFileState: state.restoreFile,
+    changeFileNameState: state.changeFileName,
     authorityFileTarget,
+    changeFileNameTarget,
     session: state.session
   };
 };

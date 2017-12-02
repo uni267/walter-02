@@ -56,6 +56,10 @@ export class API {
       `/api/v1/files/${file._id}/tags/${tag._id}`);
   };
 
+  changeFileName = (file, name) => {
+    return this.client.patch(`/api/v1/files/${file._id}/rename`, {...file, name});
+  };
+
   editFile = (file) => {
     return this.client.patch(`/api/v1/files/${file._id}/rename`, file);
   };

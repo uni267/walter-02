@@ -43,7 +43,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="ダウンロード"
           leftIcon={<FileFileDownload />}
-          onTouchTap={() => (actions.downloadFile(file) )}
+          onTouchTap={() => actions.downloadFile(file) }
           />
       )
     },
@@ -54,7 +54,7 @@ const FileDialogMenu = ({
           key={idx}
           primaryText="ファイル名変更"
           leftIcon={<EditorModeEdit />}
-          onTouchTap={() => this.setState({ editFile: { open: true } })} />
+          onTouchTap={() => actions.toggleChangeFileNameDialog(file)} />
       )
     },
     {

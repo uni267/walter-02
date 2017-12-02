@@ -328,3 +328,20 @@ export const requestFetchDisplayItems = () => ({
 export const initDisplayItems = (displayItems) => ({
   type: actionTypes.INIT_DISPLAY_ITEMS, displayItems
 });
+
+export const toggleChangeFileNameDialog = (file) => ({
+  type: actionTypes.TOGGLE_CHANGE_FILE_NAME_DIALOG, file
+});
+
+export const changeFileName = (file, name) => ({
+  type: actionTypes.CHANGE_FILE_NAME, file, name
+});
+
+export const changeFileNameError = (errors) => ({
+  type: actionTypes.CHANGE_FILE_NAME_ERROR, errors
+});
+
+// reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
+export const debugReduxLogger = () => ({
+  type: actionTypes.DEBUG_REDUX_LOGGER
+});

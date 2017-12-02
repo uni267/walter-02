@@ -50,6 +50,7 @@ import roleMenus from "./roleMenusReducer";
 import menus from "./menusReducer";
 import navigation from "./navigationReducer";
 import displayItems from "./displayItemsReducer";
+import changeFileName from "./changeFileNameReducer";
 
 const fileApp = combineReducers({
   files,
@@ -100,7 +101,8 @@ const fileApp = combineReducers({
   roleMenus,
   menus,
   navigation,
-  displayItems
+  displayItems,
+  changeFileName
 });
 
 export default fileApp;

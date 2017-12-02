@@ -28,6 +28,7 @@ import Tag from "../components/Tag";
 import MetaInfo from "../components/MetaInfo";
 import FileBasic from "../components/FileBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
+import ChangeFileNameDialog from "../components/File/ChangeFileNameDialog";
 
 // actions
 import * as FileActions from "../actions/files";
@@ -64,10 +65,6 @@ class FileDetailContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      editBasic: {
-        open: false,
-        fileName: ""
-      },
       editAuthority: {
         open: false
       },
@@ -94,18 +91,6 @@ class FileDetailContainer extends Component {
     }
   }
 
-  changeFileName = (ref) => {
-    const fileName = ref.getValue();
-
-    if ( fileName === "" ) {
-      this.setState({ editBasic: { open: false } });
-      return;
-    }
-
-    this.props.actions.editFileByView({ ...this.props.file, name: fileName });
-    this.setState({ editBasic: { open: false } });
-  }
-
   renderBasic = () => {
     const editable = this.props.file.actions.filter( act => (
       act.name === "change-name"
@@ -114,7 +99,9 @@ class FileDetailContainer extends Component {
     const editButton = editable
           ? (
             <RaisedButton
-              onTouchTap={() => this.setState({ editBasic: { open: true } })}
+              onTouchTap={() => {
+                this.props.actions.toggleChangeFileNameDialog(this.props.file);
+              }}
               label="編集" />
           ) : null;
 
@@ -122,13 +109,7 @@ class FileDetailContainer extends Component {
       <Card style={styles.innerCard}>
         <CardHeader title="基本情報" />
         <CardText>
-
-          <FileBasic
-            file={this.props.file}
-            open={this.state.editBasic.open}
-            changeFileName={this.changeFileName}
-            />
-
+          <FileBasic file={this.props.file} />
         </CardText>
         <CardActions>
           {editButton}
@@ -372,6 +353,14 @@ class FileDetailContainer extends Component {
           {this.renderMetaInfoDialog()}
 
         </Card>
+
+        <ChangeFileNameDialog
+          { ...this.props }
+          open={this.props.changeFileNameState.open}
+          file={this.props.file}
+          errors={this.props.changeFileNameState.errors}
+          />
+
       </div>
     );
   }
@@ -392,7 +381,8 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     fileMetaInfo: state.fileMetaInfo,
     filePreviewState: state.filePreview,
-    session: state.session
+    session: state.session,
+    changeFileNameState: state.changeFileName
   };
 };
 

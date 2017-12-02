@@ -15,36 +15,16 @@ const styles = {
   }
 };
 
-const FileBasic = ({
-  file,
-  open,
-  changeFileName
-}) => {
-  let fileNameText = null;
-
-  const form = (
-    <TextField
-      ref={(input) => fileNameText = input}
-      defaultValue={file.name}
-      onKeyDown={ e => e.key === "Enter" ? changeFileName(fileNameText) : null }
-      />
-  );
-
-  const view = (
-    <div>{file.name}</div>
-  );
-
-  const fileName = open ? form : view;
-
+const FileBasic = ({ file }) => {
   return (
     <div>
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>ファイル名</div>
-        {fileName}
+        {file.name}
       </div>
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>サイズ</div>
-        <div>10.0KB</div>
+        <div>{file.size}</div>
       </div>
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>最終更新</div>
@@ -55,9 +35,7 @@ const FileBasic = ({
 };
 
 FileBasic.propTypes = {
-  file: PropTypes.object.isRequired,
-  open: PropTypes.bool.isRequired,
-  changeFileName: PropTypes.func.isRequired
+  file: PropTypes.object.isRequired
 };
 
 export default FileBasic;
