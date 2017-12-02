@@ -34,10 +34,7 @@ class File extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      hover: false,
-      editFile: {
-        open: false
-      }
+      hover: false
     };
   }
 
