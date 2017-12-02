@@ -9,6 +9,7 @@ import AnalysisFolderCount from "../models/AnalysisFolderCount";
 import AnalysisUseRateFolder from "../models/AnalysisUseRateFolder";
 import AnalysisUseRateTag from "../models/AnalysisUseRateTag";
 import AnalysisUseRateMimeType from "../models/AnalysisUseRateMimeType";
+import AnalysisUseRateUser from "../models/AnalysisUseRateUser";
 
 export const index = (req, res, next) => {
   co(function* () {
@@ -37,7 +38,8 @@ export const index = (req, res, next) => {
         AnalysisFolderCount.find(conditions),
         AnalysisUseRateFolder.find(conditions),
         AnalysisUseRateTag.find(conditions),
-        AnalysisUseRateMimeType.find(conditions)
+        AnalysisUseRateMimeType.find(conditions),
+        AnalysisUseRateUser.find(conditions)
       ];
 
       if (useRateTotal.length > 0) {

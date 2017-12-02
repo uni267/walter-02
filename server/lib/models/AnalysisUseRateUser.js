@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 mongoose.Promise = global.Promise;
 
-const AnalysysUseRateUserSchema = Schema({
+const AnalysisUseRateUserSchema = Schema({
   reported_at: Number,
   tenant_id: Schema.Types.ObjectId,
   name: String,
@@ -16,10 +16,10 @@ const AnalysysUseRateUserSchema = Schema({
   created_at: { type: Date, default: Date.now }
 });
 
-const AnalysysUseRateUser = mongoose.model(
+const AnalysisUseRateUser = mongoose.model(
   "analysis_use_rate_users",
-  AnalysysUseRateUserSchema,
+  AnalysisUseRateUserSchema,
   "analysis_use_rate_users"
 );
 
-export default AnalysysUseRateUser;
+export default AnalysisUseRateUser;
