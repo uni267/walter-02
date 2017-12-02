@@ -23,7 +23,7 @@ function* watchRequestVerifyToken() {
     }
     catch (e) {
       const { message, errors } = e.response.data.status;
-      yield put(commons.openException(message, errors.token));
+      yield put(commons.openException(message, JSON.stringify(errors)));
       localStorage.removeItem("token");
       yield call(delay, 2000);
       window.location.href = "/login";
