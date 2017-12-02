@@ -17,6 +17,7 @@ import AnalysisFolderCount from "../../lib/models/AnalysisFolderCount";
 import AnalysisUseRateFolder from "../../lib/models/AnalysisUseRateFolder";
 import AnalysisUseRateTag from "../../lib/models/AnalysisUseRateTag";
 import AnalysisUseRateMimeType from "../../lib/models/AnalysisUseRateMimeType";
+import AnalysisUseRateUser from "../../lib/models/AnalysisUseRateUser";
 
 const task = () => {
   co(function* () {
@@ -242,11 +243,93 @@ const task = () => {
         }))
       );
 
-      // ユーザ、グループ毎の使用率
-      // @todo 権限周りが固まってから着手する
-      // const userGroupPropotions = yield File.aggregate([
-      // ]);
+      // ユーザ毎の使用率
+      const userRatesConditions = [
+        {
+          $match: {
+            is_display: true,
+            is_dir: false,
+            is_deleted: false
+          }
+        },
+        {
+          $lookup: {
+            from: "authority_files",
+            localField: "_id",
+            foreignField: "files",
+            as: "authority_files"
+          }
+        },
+        { $unwind: "$authority_files" },
+        {
+          $group: {
+            _id: "$_id",
+            size: { $first: "$size" },
+            authority_file: { $first: "$authority_files" }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "authority_file.users",
+            foreignField: "_id",
+            as: "authority_users"
+          }
+        },
+        { $unwind: "$authority_users" },
+        {
+          $group: {
+            _id: "$authority_users._id",
+            account_name: { $first: "$authority_users.account_name" },
+            user_name: { $first: "$authority_users.name" },
+            tenant_id: { $first: "$authority_users.tenant_id" },
+            size: { $sum: "$size" }
+          }
+        },
+      ];
 
+      const userRates = yield File.aggregate(userRatesConditions);
+
+      logger.info("userRates summary: " + JSON.stringify(userRates));
+
+      const userRatesSumConditions = [
+        ...userRatesConditions,
+        {
+          $group: {
+            _id: "$tenant_id",
+            size: { $sum: "$size" }
+          }
+        }
+      ];
+
+      const userRatesSum = yield File.aggregate(userRatesSumConditions);
+      logger.info("userGroupRatesSum summary: " + JSON.stringify(userRatesSum));
+
+      // 2重集計防止
+      yield AnalysisUseRateUser.remove({
+        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+      });
+
+      const userRatesRecords = userRates.map( user => {
+        const tenantSum = userRatesSum.filter( sum => (
+          user.tenant_id.toString() === sum._id.toString()
+        ))[0].size;
+
+        return {
+          reported_at: parseInt( moment().format("YYYYMMDD"), 10 ),
+          tenant_id: Types.ObjectId(user.tenant_id),
+          name: "useRateUser",
+          label: "ユーザ毎の使用率",
+          account_name: user.account_name,
+          user_name: user.user_name,
+          used: user.size,
+          used_total: tenantSum,
+          rate: (user.size / tenantSum * 100).toFixed(2)
+        };
+      });
+
+      logger.info("userRates + sum summary: " + JSON.stringify(userRatesSum));
+      yield AnalysisUseRateUser.insertMany(userRatesRecords);
 
       // タグ毎の使用率 ここから
       const tagRatesConditions = [
@@ -470,6 +553,7 @@ const task = () => {
       logger.info("################# analyze end #################");
     }
     catch (e) {
+      console.log(util.inspect(e, false, null));
       logger.error(e);
       process.exit();
     }
