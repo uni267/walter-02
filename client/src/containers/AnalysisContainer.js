@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 // store
 import { connect } from "react-redux";
@@ -22,7 +23,8 @@ import * as AnalysisActions from "../actions/analysises";
 
 class AnalysisContainer extends Component {
   componentWillMount() {
-    this.props.actions.requestFetchAnalysis();
+    const reported_at = moment().format();
+    this.props.actions.requestFetchAnalysis(reported_at);
   }
 
   render() {
@@ -40,6 +42,7 @@ class AnalysisContainer extends Component {
                 onChange={(e, date) => {
                   this.props.actions.requestFetchAnalysis(date);
                 }}
+                autoOk={true}
                 hintText="該当日を指定" />
             </div>
 
