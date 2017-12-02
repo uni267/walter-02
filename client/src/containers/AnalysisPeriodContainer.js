@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 // store
 import { connect } from "react-redux";
@@ -10,6 +11,7 @@ import DatePicker from "material-ui/DatePicker";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import Divider from "material-ui/Divider";
+import RaisedButton from "material-ui/RaisedButton";
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -18,8 +20,19 @@ import UsagesArea from "../components/Analysis/UsagesArea";
 import * as AnalysisActions from "../actions/analysises";
 
 class AnalysisPeriodContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      start_date: null,
+      end_date: null
+    };
+  }
+
   componentWillMount() {
-    this.props.actions.requestFetchAnalysis();
+    const start_date = moment().day(-30).format();
+    const end_date = moment().format();
+
+    this.props.actions.requestFetchAnalysisPeriod(start_date, end_date);
   }
 
   render() {
@@ -34,10 +47,30 @@ class AnalysisPeriodContainer extends Component {
 
             <div style={{ display: "flex", marginBottom: 20, marginLeft: 20 }}>
               <div>
-                <DatePicker hintText="開始年月日" />
+                <DatePicker
+                  hintText="開始年月日"
+                  autoOk={true}
+                  onChange={(e, date) => {
+                    this.setState({ start_date: date });
+                  }} />
               </div>
               <div style={{ marginLeft: 20 }}>
-                <DatePicker hintText="終了年月日" />
+                <DatePicker
+                  hintText="終了年月日"
+                  autoOk={true}
+                  onChange={(e, date) => {
+                    this.setState({ end_date: date });
+                  }} />
+              </div>
+              <div style={{ marginLeft: 20 }}>
+                <RaisedButton
+                  label="更新" primary={true}
+                  onClick={() => {
+                    this.props.actions.requestFetchAnalysisPeriod(
+                      this.state.start_date, this.state.end_date
+                    );
+                  }}
+                  />
               </div>
             </div>
 
@@ -70,7 +103,7 @@ class AnalysisPeriodContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    usages: state.analysis.usages
+    usages: state.analysis.period
   };
 };
 
