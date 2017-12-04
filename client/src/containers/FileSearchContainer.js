@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import AddFilterBtn from "../components/FileSearch/AddFilterBtn";
 import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
+import AddDownloadBtn from "../components/XlsxDownload/AddDownloadBtn";
 
 // actions
 import * as FileActions from "../actions/files";
@@ -45,6 +46,11 @@ class FileSearchContainer extends Component {
           <div>
             <AddFilterBtn { ...this.props } />
           </div>
+
+          <div style={{paddingRight: 10}} >
+            <AddDownloadBtn { ...this.props } />
+          </div>
+
         </div>
 
         <div style={styles.formContainer}>

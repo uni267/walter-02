@@ -465,5 +465,15 @@ export class API {
     const body = {notifications: readNotificaitons};
     return this.client.patch(`/api/v1/notifications/read`, body);
   }
+
+  downloadXlsxFile = (dir_id, page, sorted, desc) => {
+    const order = desc ? "desc" : "asc";
+    const config = {
+      responseType: "arraybuffer",
+      params: { dir_id, page, sort: sorted, order }
+    };
+
+    return this.client.get("/api/v1/excels", config);
+  };
 }
 

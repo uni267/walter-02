@@ -345,3 +345,6 @@ export const REQUEST_UPDATE_NOTIFICATIONS_READ = "REQUEST_UPDATE_NOTIFICATIONS_R
 
 // reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
 export const DEBUG_REDUX_LOGGER = "DEBUG_REDUX_LOGGER";
+
+// 一覧ダウンロード
+export const DOWNLOAD_XLSX_FILE = "DOWNLOAD_XLSX_FILE";

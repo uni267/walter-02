@@ -345,3 +345,7 @@ export const moveDir = (destinationDir, movingDir) => ({
 export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER
 });
+
+export const downloadXlsxFile = ( dir_id, page = 0, sorted = null, desc = null ) => ({
+  type: actionTypes.DOWNLOAD_XLSX_FILE, dir_id, page, sorted, desc
+});
