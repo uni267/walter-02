@@ -245,8 +245,8 @@ export const createDir = (dir_id, dir_name) => ({
   type: actionTypes.CREATE_DIR, dir_id, dir_name
 });
 
-export const requestFetchFile = (file_id) => ({
-  type: actionTypes.REQUEST_FETCH_FILE, file_id
+export const requestFetchFile = (file_id, history) => ({
+  type: actionTypes.REQUEST_FETCH_FILE, file_id, history
 });
 
 export const requestAddTag = (file, tag) => ({

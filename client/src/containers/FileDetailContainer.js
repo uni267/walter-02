@@ -75,7 +75,7 @@ class FileDetailContainer extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.requestFetchFile(this.props.match.params.id);
+    this.props.actions.requestFetchFile(this.props.match.params.id, this.props.history);
     this.props.actions.requestFetchTags();
     this.props.actions.requestFetchMetaInfos(this.props.tenant.tenant_id);
     this.props.actions.requestFetchFilePreview(this.props.match.params.id);
@@ -282,6 +282,7 @@ class FileDetailContainer extends Component {
 
   render() {
     if (this.props.file._id === undefined) return null;
+
     let previewImg;
 
     if (this.props.filePreviewState.loading) {

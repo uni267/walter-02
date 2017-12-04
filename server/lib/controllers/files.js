@@ -192,10 +192,6 @@ export const view = (req, res, next) => {
         throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
       }
 
-      if (file.is_dir) {
-        throw new RecordNotFoundException("フォルダを指定しているためファイルの取得に失敗しました");
-      }
-
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
       const actions = extractFileActions(file.authorities, res.user._id.toString());
