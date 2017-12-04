@@ -28,6 +28,7 @@ function* watchFetchFile() {
       else {
         const { message, name } = e.response.data.status.errors;
         yield put(commons.openException(name, message));
+        history.push("/home");
       }
     }
     finally {
