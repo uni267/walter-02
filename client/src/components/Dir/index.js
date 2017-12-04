@@ -42,7 +42,6 @@ class Dir extends Component {
     super(props);
     this.state = {
       hover: false,
-      editDir: { open: false },
       historiesDir: { open: false }
     };
 
@@ -50,19 +49,6 @@ class Dir extends Component {
 
   toggleHover = () => {
     this.setState({ hover: !this.state.hover });
-  };
-
-  changeDirName = () => {
-    const dirName = this.refs.dirName.getValue();
-    if ( dirName === "" ) {
-      this.setState({ editDir: { open: false } });
-      return;
-    }
-
-    this.props.actions.editFileByIndex({...this.props.dir, name: dirName});
-    this.setState({ editDir: { open: false } });
-    this.props.actions.triggerSnackbar("フォルダ名を変更しました");
-
   };
 
   renderMember = () => {
@@ -91,13 +77,6 @@ class Dir extends Component {
     const linkToDirRoute = () => {
       this.props.history.push(`/home/${this.props.dir.dir_route}`);
     };
-
-    const editable = (
-      <TextField
-        ref="dirName"
-        defaultValue={this.props.dir.name}
-        onKeyDown={e => e.key === "Enter" ? this.changeDirName() : null } />
-    );
 
     const style = {
       ...this.props.cellStyle,
@@ -143,7 +122,7 @@ class Dir extends Component {
       );
     }
 
-    return this.state.editDir.open ? editable : view;
+    return view;
   };
 
   render() {
@@ -213,7 +192,7 @@ class Dir extends Component {
             <MenuItem
               primaryText="フォルダ名変更"
               leftIcon={<EditorModeEdit />}
-              onTouchTap={() => this.setState({ editDir: { open: true } })} />
+              onTouchTap={() => this.props.actions.toggleChangeFileNameDialog(dir) } />
 
             <MenuItem
               primaryText="移動"
