@@ -119,140 +119,69 @@ describe(dir_url, () => {
       });
     });
 
+    describe("正常系 queryが空の場合", () => {
+      let payload;
+
+      before( done => {
+        request
+          .get(dir_url)
+          .end( (err, res) => {
+            payload = res;
+            done();
+          });
+      });
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+
+      it("返却されるデータは_id, nameカラムを含んでいる", done => {
+        const needle = ["_id", "name"];
+        const columns = payload.body.body.map( obj => (
+          intersection(Object.keys(obj), needle).length === 2
+        ));
+        expect(columns.every( col => col === true )).equal(true);
+        done();
+      });
+
+      it("2階層目のdir_id指定した場合、3つオブジェクトが返却される", done => {
+        request.get(dir_url)
+          .query({ dir_id: child_id })
+          .end( (err, res) => {
+            expect(res.body.body.length === 3).equal(true);
+            done();
+          });
+      });
+
+      it("配列間にはsepという文字列が挟まれている", done => {
+        request.get(dir_url)
+          .query({ dir_id: child_id })
+          .end( (err, res) => {
+            expect(res.body.body[1] === "sep").equal(true);
+            done();
+          });
+      });
+
+      it("最上位のフォルダidが配列先頭のオブジェクトに含まれている", done => {
+        request.get(dir_url)
+          .query({ dir_id: child_id })
+          .end( (err, res) => {
+            expect( head(res.body.body)._id === root_id ).equal(true);
+            done();
+          });
+      });
+
+      it("最下位のフォルダidが配列末尾のオブジェクトに含まれている", done => {
+        request.get(dir_url)
+          .query({ dir_id: child_id })
+          .end( (err, res) => {
+            expect(last(res.body.body)._id === child_id).equal(true);
+            done();
+          });
+      });
+    });
+
     describe("異常系", () => {
-      describe("queryを省略した場合", () => {
-        let expected = {
-          message: "フォルダ階層の取得に失敗しました",
-          detail: "フォルダIDが不正のためフォルダ階層の取得に失敗しました"
-        };
-
-        it("http(400)を返却する", done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.status).equal(400);
-              done();
-            });
-        });
-
-        it("statusはfalse", done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.body.status.success).equal(false);
-              done();
-            });
-        });
-
-        it(`エラーの概要は「${expected.message}」`, done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.body.status.message).equal(expected.message);
-              done();
-            });
-        });
-
-        it(`エラーの詳細は「${expected.detail}」`, done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
-        });
-      });
-
-      describe("queryがnullである場合", () => {
-        let expected = {
-          message: "フォルダ階層の取得に失敗しました",
-          detail: "フォルダIDが不正のためフォルダ階層の取得に失敗しました"
-        };
-
-        it("http(400)を返却する", done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.status).equal(400);
-              done();
-            });
-        });
-
-        it("statusはfalse", done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.body.status.success).equal(false);
-              done();
-            });
-        });
-
-        it(`エラーの概要は「${expected.message}」`, done => {
-          request
-            .get(dir_url)
-            .query({ dir_id: null })
-            .end( (err, res) => {
-              expect(res.body.status.message).equal(expected.message);
-              done();
-            });
-        });
-
-        it(`エラーの詳細は「${expected.detail}」`, done => {
-          request
-            .get(dir_url)
-            .query({ dir_id: null })
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
-        });
-      });
-
-      describe("queryが空文字である場合", () => {
-        let expected = {
-          message: "フォルダ階層の取得に失敗しました",
-          detail: "フォルダIDが不正のためフォルダ階層の取得に失敗しました"
-        };
-
-        it("http(400)を返却する", done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.status).equal(400);
-              done();
-            });
-        });
-
-        it("statusはfalse", done => {
-          request
-            .get(dir_url)
-            .end( (err, res) => {
-              expect(res.body.status.success).equal(false);
-              done();
-            });
-        });
-
-        it(`エラーの概要は「${expected.message}」`, done => {
-          request
-            .get(dir_url)
-            .query({ dir_id: "" })
-            .end( (err, res) => {
-              expect(res.body.status.message).equal(expected.message);
-              done();
-            });
-        });
-
-        it(`エラーの詳細は「${expected.detail}」`, done => {
-          request
-            .get(dir_url)
-            .query({ dir_id: "" })
-            .end( (err, res) => {
-              expect(res.body.status.errors.dir_id).equal(expected.detail);
-              done();
-            });
-        });
-      });
-
       describe("queryが存在しないidである場合", done => {
         let expected = {
           message: "フォルダ階層の取得に失敗しました",
