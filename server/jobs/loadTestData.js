@@ -200,7 +200,8 @@ var display_items = [
     is_display: true,
     is_excel: true,
     width: "20%",
-    order: 30
+    order: 30,
+    default_sort: { asc: false }
   },
   {
     tenant_id: tenant._id,

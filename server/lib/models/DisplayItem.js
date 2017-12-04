@@ -10,7 +10,8 @@ const DisplayItemSchema = Schema({
   search_value_type: String,
   is_display: Boolean,
   is_excel: Boolean,
-  order: Number
+  order: Number,
+  default_sort: Schema.Types.Mixed
 });
 
 const DisplayItem = mongoose.model(
