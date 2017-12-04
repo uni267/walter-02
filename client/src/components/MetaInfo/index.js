@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 // material ui
 import RaisedButton from "material-ui/RaisedButton";
@@ -42,10 +43,14 @@ class MetaInfo extends Component {
       this.props.deleteMetaInfoToFile(file, metaInfo);
     };
 
+    const value = meta.value_type === "Date"
+          ? moment(meta.value).format("YYYY-MM-DD hh:mm")
+          : meta.value;
+
     return (
       <div key={idx} style={styles.row}>
         <div style={{...styles.cell, width: "15%"}}>{meta.label}</div>
-        <div style={{...styles.cell, width: "25%"}}>{meta.value}</div>
+        <div style={{...styles.cell, width: "25%"}}>{value}</div>
         <div style={{...styles.cell, width: "10%"}}>
           <RaisedButton
             label="削除"

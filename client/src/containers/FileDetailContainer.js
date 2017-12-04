@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 // store
 import { bindActionCreators } from "redux";
@@ -218,10 +219,14 @@ class FileDetailContainer extends Component {
 
   renderMetaInfos = () => {
     const render = (meta, idx) => {
+      const value = meta.value_type === "Date"
+            ? moment(meta.value).format("YYYY-MM-DD hh:mm")
+            : meta.value;
+
       return (
         <div key={idx} style={styles.metaRow}>
           <div style={styles.metaCell}>{meta.label}</div>
-          <div style={styles.metaCell}>{meta.value}</div>
+          <div style={styles.metaCell}>{value}</div>
         </div>
       );
     };

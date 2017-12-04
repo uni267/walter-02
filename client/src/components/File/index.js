@@ -55,7 +55,12 @@ class File extends Component {
       if (meta.length === 0) {
         body = "未定義";
       } else {
-        body = meta[0].value;
+        if (meta[0].value_type === "Date") {
+          body = moment(meta[0].value).format("YYYY-MM-DD hh:mm");
+        }
+        else {
+          body = meta[0].value;
+        }
       }
     }
 

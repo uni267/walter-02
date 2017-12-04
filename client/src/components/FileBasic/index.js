@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import PropTypes from "prop-types";
 
 // material ui
@@ -28,7 +29,7 @@ const FileBasic = ({ file }) => {
       </div>
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>最終更新</div>
-        <div>{file.modified}</div>
+        <div>{moment(file.modified).format("YYYY-MM-DD hh:mm")}</div>
       </div>
     </div>
   );
