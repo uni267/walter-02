@@ -109,6 +109,16 @@ export const tree = (req, res, next) => {
             foreignField: "_id",
             as: "descendant"
           }
+        },
+        { $unwind: "$descendant" },
+        {
+          $match: {
+            // inゴミ箱、削除のフォルダは対象外
+            $nor: [
+              { "descendant.dir_id": res.user.tenant.trash_dir_id },
+              { "descendant.is_deleted": true }
+            ]
+          }
         }
       ]);
 
@@ -121,10 +131,10 @@ export const tree = (req, res, next) => {
       } else {
 
         const children = dirs.map(dir => {
-          if (dir.descendant[0].is_display) {
+          if (dir.descendant.is_display) {
             return {
-              _id: dir.descendant[0]._id,
-              name: dir.descendant[0].name
+              _id: dir.descendant._id,
+              name: dir.descendant.name
             };
           } else {
             return null;
