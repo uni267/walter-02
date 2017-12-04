@@ -196,11 +196,13 @@ class Dir extends Component {
         {this.renderDirName()}
 
         <div style={{...cellStyle, width: headers[2].width}}>
-          {moment(dir.modified).format("YYYY-MM-DD hh:mm:ss")}
+          {headers[2].name === "modified"
+          ? moment(dir.modified).format("YYYY-MM-DD hh:mm:ss") : null}
         </div>
 
         <div style={{...cellStyle, width: headers[3].width}}>
-          {this.renderMember()}
+          {headers[3].name === "authorities"
+          ? this.renderMember() : null}
         </div>
 
         <div style={{...cellStyle, width: headers[4].width}}>
