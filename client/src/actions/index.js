@@ -76,10 +76,6 @@ export const requestFetchDirTree = (root_id) => ({
   type: actionTypes.REQUEST_FETCH_DIR_TREE, root_id
 });
 
-export const moveDir = (destinationDir, movingDir) => ({
-  type: actionTypes.MOVE_DIR, destinationDir, movingDir
-});
-
 export const requestFetchMetaInfo = (meta_id) => ({
   type: actionTypes.REQUEST_FETCH_META_INFO, meta_id
 });

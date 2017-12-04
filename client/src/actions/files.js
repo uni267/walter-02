@@ -333,6 +333,10 @@ export const changeFileNameError = (errors) => ({
   type: actionTypes.CHANGE_FILE_NAME_ERROR, errors
 });
 
+export const moveDir = (destinationDir, movingDir) => ({
+  type: actionTypes.MOVE_DIR, destinationDir, movingDir
+});
+
 // reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
 export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER

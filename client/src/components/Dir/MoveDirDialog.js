@@ -23,7 +23,7 @@ class MoveDirDialog extends Component {
           onTouchTap={() => {
             const destinationDir = this.props.dirTree.selected;
             const movingDir = this.props.dirTree.move_dir;
-            this.props.moveDir(destinationDir, movingDir);
+            this.props.actions.moveDir(destinationDir, movingDir);
           }}
           primary={true}
           />
@@ -31,7 +31,7 @@ class MoveDirDialog extends Component {
       (
         <FlatButton
           label="close"
-          onTouchTap={this.props.toggleMoveDirDialog}
+          onTouchTap={this.props.actions.toggleMoveDirDialog}
           />
       )
     ];
