@@ -30,7 +30,7 @@ const DeleteAllFilesDialog = ({
 
   return (
     <Dialog
-      title={`選択された${files.length}個のファイルを削除しますか？`}
+      title={`選択された${files.length}個のアイテムを削除しますか？`}
       modal={false}
       actions={actions}
       open={open}
