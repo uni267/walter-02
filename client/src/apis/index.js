@@ -475,5 +475,26 @@ export class API {
 
     return this.client.get("/api/v1/excels", config);
   };
+
+  downloadXlsxFileSimple = (value, page, sorted, desc) => {
+    const order = desc ? "desc" : "asc";
+
+    const config = {
+      responseType: "arraybuffer",
+      params: { q: value, page, sort: sorted, order }
+    };
+
+    return this.client.get(`/api/v1/excels/search`, config);
+  };
+
+  downloadXlsxFileDetail = (params, page, sorted, desc) => {
+    const order = desc ? "desc" : "asc";
+
+    const config = {
+      responseType: "arraybuffer",
+      params: { ...params, page, sort: sorted, order }
+    };
+    return this.client.get(`/api/v1/excels/search_detail`, config);
+  };
 }
 

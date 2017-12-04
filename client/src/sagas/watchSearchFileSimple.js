@@ -17,6 +17,7 @@ function* watchSearchFileSimple() {
       const { sorted, desc } = yield select( state => state.fileSortTarget );
 
       const payload = yield call(api.searchFiles, value, page, sorted, desc);
+      yield put(actions.keepFileSimpleSearchValue({value, page, sorted, desc}));
 
       if (page === 0 || page === null) {
         yield put(actions.initFileTotal(payload.data.status.total));

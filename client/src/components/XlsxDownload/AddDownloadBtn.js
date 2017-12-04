@@ -5,18 +5,44 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 const AddDownloadBtn =({
   actions,
-  match
+  match,
+  isSimple
 }) => {
   const dir_id = match.params.id;
-  return (
-    <div>
-      <RaisedButton
-        label="一覧ダウンロード"
-        onTouchTap={() => {
-          actions.downloadXlsxFile(dir_id);
-        }} />
-    </div>
-  );
+
+  if( isSimple !== undefined){
+    return (
+      <div>
+        <RaisedButton
+          label="一覧ダウンロード."
+          onTouchTap={() => {
+            actions.downloadXlsxFileDetail();
+          }} />
+      </div>
+    );
+
+  }else if (match.path === "/files/search") {
+    return (
+      <div>
+        <RaisedButton
+          label="一覧ダウンロード.."
+          onTouchTap={() => {
+            actions.downloadXlsxFileSimple();
+          }} />
+      </div>
+    );
+
+  }else{
+    return (
+      <div>
+        <RaisedButton
+          label="一覧ダウンロード..."
+          onTouchTap={() => {
+            actions.downloadXlsxFile(dir_id);
+          }} />
+      </div>
+    );
+  }
 
 };
 

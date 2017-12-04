@@ -38,7 +38,8 @@ const fileDetailSearchReducer = (state = initialState, action) => {
       items: state.items.map( item => (
         item._id === action.item._id ? { ...item, picked: false } : item
       )),
-      searchValues: state.searchValues.filter(val => val._id !== action.item._id)
+      searchValues: state.searchValues.filter(val => val._id !== action.item._id),
+      searchedItems: state.searchValues.filter(val => val._id !== action.item._id)
     };
   case actionTypes.SEARCH_VALUE_CHANGE:
     let searchValues;
@@ -56,6 +57,8 @@ const fileDetailSearchReducer = (state = initialState, action) => {
       ...state,
       searchValues: searchValues
     };
+  case actionTypes.SEARCH_FILE_DETAIL:
+    return { ...state, searchedItems :action.items };
   default:
     return state;
   }

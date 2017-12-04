@@ -51,6 +51,7 @@ import menus from "./menusReducer";
 import navigation from "./navigationReducer";
 import displayItems from "./displayItemsReducer";
 import changeFileName from "./changeFileNameReducer";
+import fileSimpleSearch from "./fileSimpleSearchReducer";
 
 const fileApp = combineReducers({
   files,
@@ -102,7 +103,8 @@ const fileApp = combineReducers({
   menus,
   navigation,
   displayItems,
-  changeFileName
+  changeFileName,
+  fileSimpleSearch
 });
 
 export default fileApp;

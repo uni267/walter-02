@@ -7,17 +7,18 @@ import * as commons from "../actions/commons";
 
 import { saveAs } from "file-saver";
 
-function* watchDownloadXlsxFile() {
+function* watchDownloadXlsxFileDetail() {
   while (true) {
-    const { dir_id } = yield take(actions.downloadXlsxFile().type);
+    yield take(actions.downloadXlsxFileDetail().type);
     const api = new API();
 
     try {
+      const { searchedItems } = yield select( state => state.fileDetailSearch );
       const { page } = yield select( state => state.filePagination );
       const { sorted, desc } = yield select( state => state.fileSortTarget );
 
       yield put(commons.loadingStart());
-      const payload = yield call(api.downloadXlsxFile, dir_id, page, sorted, desc);
+      const payload = yield call(api.downloadXlsxFileDetail, searchedItems, page, sorted, desc);
 
       const download = new Blob(
         [ payload.data ]
@@ -34,4 +35,4 @@ function* watchDownloadXlsxFile() {
   }
 }
 
-export default watchDownloadXlsxFile;
+export default watchDownloadXlsxFileDetail;

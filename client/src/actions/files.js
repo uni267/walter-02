@@ -340,12 +340,23 @@ export const changeFileNameError = (errors) => ({
 export const moveDir = (destinationDir, movingDir) => ({
   type: actionTypes.MOVE_DIR, destinationDir, movingDir
 });
+export const downloadXlsxFile = ( dir_id, page = 0, sorted = null, desc = null ) => ({
+  type: actionTypes.DOWNLOAD_XLSX_FILE, dir_id, page, sorted, desc
+});
+
+export const downloadXlsxFileSimple = (value, history) => ({
+  type: actionTypes.DOWNLOAD_XLSX_FILE_SIMPLE, value, history
+});
+
+export const downloadXlsxFileDetail = (value, history) => ({
+  type: actionTypes.DOWNLOAD_XLSX_FILE_DETAIL, value, history
+});
+
+export const keepFileSimpleSearchValue = (value) => ({
+  type: actionTypes.KEEP_FILE_SIMPLE_SEARCH_VALUE, value
+});
 
 // reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
 export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER
-});
-
-export const downloadXlsxFile = ( dir_id, page = 0, sorted = null, desc = null ) => ({
-  type: actionTypes.DOWNLOAD_XLSX_FILE, dir_id, page, sorted, desc
 });

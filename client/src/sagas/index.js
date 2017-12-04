@@ -90,6 +90,8 @@ import watchChangeFileName from "./watchChangeFileName";
 import watchFetchAnalysisPeriod from "./watchFetchAnalysisPeriod";
 import watchDeleteDirs from "./watchDeleteDirs";
 import watchDownloadXlsxFile from "./watchDownloadXlsxFile";
+import watchDownloadXlsxFileSimple from "./watchDownloadXlsxFileSimple";
+import watchDownloadXlsxFileDetail from "./watchDownloadXlsxFileDetail";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -182,6 +184,8 @@ function* Saga() {
   yield fork(watchFetchAnalysisPeriod);
   yield fork(watchDeleteDirs);
   yield fork(watchDownloadXlsxFile);
+  yield fork(watchDownloadXlsxFileSimple);
+  yield fork(watchDownloadXlsxFileDetail);
 }
 
 export default Saga;
