@@ -2218,7 +2218,7 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
 return Promise.resolve(sort);
 });
 
-const getAllowedFileIds = (user_id, permission) => {
+export const getAllowedFileIds = (user_id, permission) => {
   return co(function*(){
 
     const action = yield Action.findOne({ name:permission });

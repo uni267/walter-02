@@ -1,3 +1,4 @@
+import util from "util";
 import co from "co";
 import moment from "moment";
 import jwt from "jsonwebtoken";
@@ -5,13 +6,18 @@ import mongoose from "mongoose";
 import logger from "../logger";
 
 import { SECURITY_CONF } from "../../configs/server";
+
 import Dir from "../models/Dir";
 import File from "../models/File";
 import Tenant from "../models/Tenant";
 import User from "../models/User";
 import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
-import { ILLIGAL_CHARACTERS } from "../../configs/constants";
+
+import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../../configs/constants";
+
+import { getAllowedFileIds } from "./files";
+
 const { ObjectId } = mongoose.Types;
 
 export const index = (req, res, next) => {
@@ -83,12 +89,19 @@ export const tree = (req, res, next) => {
 
       if (! ObjectId.isValid(root_id)) throw "root_id is invalid";
 
+      const permittionIds = yield getAllowedFileIds(res.user._id, PERMISSION_VIEW_LIST);
+
       const root = yield File.findById(root_id);
 
       if (root === null) throw "root is empty";
 
       const dirs = yield Dir.aggregate([
-        { $match: { ancestor: root._id, depth: 1 } },
+        {
+          $match: {
+            ancestor: root._id, depth: 1,
+            descendant: { $in: permittionIds }
+          }
+        },
         { $lookup:
           {
             from: "files",
