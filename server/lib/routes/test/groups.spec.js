@@ -182,7 +182,7 @@ describe(groups_url + "/:group_id", () => {
           done();
         });
 
-        it("belongs_toカラムが存在し配列", done => {
+        it.skip("belongs_toカラムが存在し配列", done => {
           expect(Array.isArray(payload.body.body.belongs_to)).equal(true);
           done();
         });

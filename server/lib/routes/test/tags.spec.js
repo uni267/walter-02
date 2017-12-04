@@ -47,8 +47,8 @@ describe(base_url,() => {
       expect( isArray(response.body.body)).equal(true);
       done();
     });
-    it('tagが1件登録されている',done => {
-      expect( response.body.body.length ).equal(1);
+    it('tagが1件以上登録されている',done => {
+      expect( response.body.body.length >= 1).equal(true);
       done();
     });
     it('tagsには_idが含まれる', done => {
