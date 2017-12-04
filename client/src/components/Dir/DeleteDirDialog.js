@@ -15,7 +15,7 @@ const DeleteDirDialog = ({
       <FlatButton
         label="Delete"
         primary={true}
-        onTouchTap={() => actions.deleteFile(dir)}
+        onTouchTap={() => actions.deleteDir(dir)}
         />
     ),
     (

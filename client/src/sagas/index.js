@@ -88,6 +88,7 @@ import watchUpdateNotificationsRead from "./watchUpdateNotificationsRead";
 import watchFetchMoreNotification from "./watchFetchMoreNotification";
 import watchChangeFileName from "./watchChangeFileName";
 import watchFetchAnalysisPeriod from "./watchFetchAnalysisPeriod";
+import watchDeleteDirs from "./watchDeleteDirs";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -178,6 +179,7 @@ function* Saga() {
   yield fork(watchFetchMoreNotification);
   yield fork(watchChangeFileName);
   yield fork(watchFetchAnalysisPeriod);
+  yield fork(watchDeleteDirs);
 }
 
 export default Saga;

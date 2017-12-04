@@ -16,6 +16,10 @@ export const deleteFile = (file) => ({
   type: actionTypes.DELETE_FILE, file
 });
 
+export const deleteDir = (dir) => ({
+  type: actionTypes.DELETE_DIR, dir
+});
+
 export const deleteDirTree = (dir) => ({
   type: actionTypes.DELETE_DIR_TREE, dir
 });
