@@ -36,7 +36,7 @@ class DirTreeContainer extends Component {
       const style = selected !== null && selected._id === node._id
             ? {
               display: "flex",
-              paddingTop: 5,
+              paddingTop: 10,
               paddingBottom: 5,
               paddingLeft: 10,
               paddingRight: 10,
@@ -44,7 +44,7 @@ class DirTreeContainer extends Component {
             }
             : {
               display: "flex",
-              paddingTop: 5,
+              paddingTop: 10,
               paddingBottom: 5,
               paddingLeft: 10,
               paddingRight: 10
@@ -54,7 +54,7 @@ class DirTreeContainer extends Component {
         <Card style={{ marginTop: 30, marginBottom: 30 }}>
           <CardText>
             <div style={{ display: "flex" }}>
-              <div style={{ paddingTop: 5, paddingBottom: 5 }}>
+              <div style={{ paddingTop: 10, paddingBottom: 5 }}>
                 <HardwareKeyboardArrowDown />
               </div>
               <div style={style}
@@ -62,10 +62,8 @@ class DirTreeContainer extends Component {
                 <div>
                   <FileFolderOpen />
                 </div>
-                <div style={{ marginLeft: 10 }}>
-                  <p style={{ margin: 0, padding: 0 }}>
-                    {node.name}
-                  </p>
+                <div style={{ marginLeft: 10, paddingTop: 3 }}>
+                  {node.name}
                 </div>
               </div>
             </div>
