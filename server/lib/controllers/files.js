@@ -91,7 +91,7 @@ export const index = (req, res, next, export_excel=false) => {
 
       const total = yield File.find(conditions).count();
 
-      const limit = export_excel ? total : constants.FILE_LIMITS_PER_PAGE;
+      const limit = ( export_excel && total !== 0 )  ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
 
       let files = yield File.searchFiles(conditions,offset,limit,sortOption);
@@ -297,7 +297,7 @@ export const search = (req, res, next, export_excel=false) => {
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
       const total = yield File.find(conditions).count();
-      const limit = export_excel ? total : constants.FILE_LIMITS_PER_PAGE;
+      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = _page * limit;
 
       if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
@@ -564,7 +564,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
       const total = yield File.find(query).count();
 
-      const limit = export_excel ? total : constants.FILE_LIMITS_PER_PAGE;
+      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
       let { page } = req.query;
       if (!page) page = 0;
       const offset = page * limit;
