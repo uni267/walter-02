@@ -33,7 +33,6 @@ class FileSearchContainer extends Component {
     this.props.actions.requestFetchTags();
   }
 
-  
   render() {
     const isSimple = this.props.isSimple === undefined ||
           this.props.isSimple.length === 0;

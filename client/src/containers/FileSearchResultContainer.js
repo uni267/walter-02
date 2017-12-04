@@ -83,7 +83,6 @@ const styles = {
 
 class FileSearchResultContainer extends Component {
   componentWillMount() {
-    this.fetchSearch(this.props);
     this.props.actions.requestFetchDisplayItems();
   }
 
@@ -104,22 +103,6 @@ class FileSearchResultContainer extends Component {
       this.fetchSearch(nextProps);
     }
   }
-
-  fetchSearch = (props) => {
-    const params = new URLSearchParams(props.location.search);
-    const query = params.get("q");
-    const { sorted, desc } = props.fileSortTarget;
-
-    if (query) {
-      this.props.actions.fetchSearchFileSimple(query, props.page, sorted, desc);
-    }
-    else {
-      const paramsObject = new YouAreI(props.location.search).query_get();
-      this.props.actions.fetchSearchFileDetail(
-        paramsObject, props.page, sorted, desc
-      );
-    }
-  };
 
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
