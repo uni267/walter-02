@@ -29,9 +29,7 @@ const GroupTableBody = ({ group, key, headers }) => {
         {group.description}
       </TableRowColumn>
       <TableRowColumn style={{ width: headers[2].width }}>
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {group.belongs_to.map( (user, idx) => renderUser(user, idx) )}
-        </div>
+        <div>{group.belongs_to.length}人のユーザ</div>
       </TableRowColumn>
       <TableRowColumn style={{ width: headers[3].width }}>
         <IconButton containerElement={<Link to={`/groups/${group._id}`} />}>
