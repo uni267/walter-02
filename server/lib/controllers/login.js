@@ -99,9 +99,18 @@ export const verifyToken = (req, res, next) => {
 
       if (decoded.enabled === false) throw "user is disabled";
 
+      let user = yield User.findById(decoded._id);
+
+      if (user === null) throw "user is empty";
+
+      const tenant = yield Tenant.findOne(user.tenant_id);
+
+      user = { ...user.toObject(), tenant, iat: decoded.iat };
+      delete user.password;
+
       res.json({
         status: { status: "success" },
-        body: { user: decoded }
+        body: { user }
       });
     }
     catch (e) {
@@ -113,6 +122,9 @@ export const verifyToken = (req, res, next) => {
         break;
       case "user is disabled":
         errors.token = "指定されたユーザは現在無効状態のためトークン認証に失敗しました";
+        break;
+      case "user is empty":
+        errors.token = "指定されたユーザ存在しないためトークン認証に失敗しました";
         break;
       default:
         if (e.name === "JsonWebTokenError") {
