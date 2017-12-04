@@ -488,7 +488,6 @@ describe(base_url, () => {
           .send(body)
           .end( (err, res) => {
             expect(res.body.body.user.iat * 2 > 1).equal(true);
-            // expect(res.body.body.user.exp * 2 > 1).equal(true); // expは含まれない？
             done();
           });
       });
