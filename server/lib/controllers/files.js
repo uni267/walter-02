@@ -347,14 +347,17 @@ export const search = (req, res, next, export_excel=false) => {
 
       let errors = {};
       switch (e.message) {
-        case "page is not number":
-          errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
-          break;
-        case "sort is empty":
-          errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
-          break;
-        default:
-          errors.unknown = e;
+      case "q is empty":
+        errors.q = "検索文字列が空のためファイル一覧の取得に失敗しました";
+        break;
+      case "page is not number":
+        errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
+        break;
+      case "sort is empty":
+        errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
       }
       logger.error(errors);
       res.status(400).json({
