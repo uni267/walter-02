@@ -73,7 +73,7 @@ class FileOperationDialogContainer extends Component {
         <MetaInfoDialog 
           { ...this.props }
           open={this.props.fileMetaInfoState.open}
-          file={this.props.fileMetaInfoState.file}
+          file={this.props.metainfoFileTarget}
           metaInfo={this.props.metaInfos} />
         <RestoreFileDialog
           { ...this.props }
@@ -122,6 +122,16 @@ const mapStateToProps = (state, ownProps) => {
     changeFileNameTarget = state.changeFileName.file;
   }
 
+  let metainfoFileTarget;
+
+  if (state.fileMetaInfo.file._id !== undefined) {
+    metainfoFileTarget = state.files.filter( file => (
+      file._id === state.fileMetaInfo.file._id
+    ))[0];
+  } else {
+    metainfoFileTarget = state.fileMetaInfo.file;
+  }
+
   return {
     users: state.users,
     roles: state.roles.data,
@@ -140,10 +150,11 @@ const mapStateToProps = (state, ownProps) => {
     fileMetaInfoState: state.fileMetaInfo,
     restoreFileState: state.restoreFile,
     changeFileNameState: state.changeFileName,
+    session: state.session,
     authorityFileTarget,
     authorityDirTarget,
     changeFileNameTarget,
-    session: state.session
+    metainfoFileTarget
   };
 };
 

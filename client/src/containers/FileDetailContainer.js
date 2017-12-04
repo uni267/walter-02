@@ -273,7 +273,7 @@ class FileDetailContainer extends Component {
           file={this.props.file}
           metaInfo={this.props.metaInfo.meta_infos}
           addMetaInfoToFile={this.props.actions.addMetaInfoToFile}
-          deleteMetaInfo={this.props.actions.deleteMetaInfo}
+          deleteMetaInfoToFile={this.props.actions.deleteMetaInfoToFile}
           triggerSnackbar={this.props.actions.triggerSnackbar} />
 
       </Dialog>

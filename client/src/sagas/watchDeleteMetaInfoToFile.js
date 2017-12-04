@@ -17,7 +17,7 @@ function* watchDeleteMetaInfoToFile() {
     try {
       yield call(api.deleteMetaInfoToFile, file, metaInfo);
       const payload = yield call(api.fetchFile, file._id);
-      yield put(actions.initFileMetaInfo(payload.data.body));
+      yield put(actions.initFile(payload.data.body));
       yield put(commons.triggerSnackbar("メタ情報を削除しました"));
     }
     catch (e) {
