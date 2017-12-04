@@ -122,7 +122,6 @@ const mapStateToProps = (state, ownProps) => {
     changeFileNameTarget = state.changeFileName.file;
   }
 
-
   return {
     users: state.users,
     roles: state.roles.data,
