@@ -40,7 +40,7 @@ class FileOperationDialogContainer extends Component {
           open={this.props.authorityDirState.open}
           roles={this.props.roles}
           users={this.props.users}
-          dir={this.props.authorityDirState.dir} />
+          dir={this.props.authorityDirTarget} />
         <AuthorityFileDialog
           { ...this.props }
           open={this.props.authorityFileState.open}
@@ -102,6 +102,16 @@ const mapStateToProps = (state, ownProps) => {
     authorityFileTarget = state.authorityFile.file;
   }
 
+  let authorityDirTarget;
+
+  if (state.authorityDir.dir._id !== undefined) {
+    authorityDirTarget = state.files.filter( dir => (
+      dir._id === state.authorityDir.dir._id
+    ))[0];
+  } else {
+    authorityDirTarget = state.authorityDir.dir;
+  }
+
   let changeFileNameTarget;
 
   if (state.changeFileName.file._id !== undefined) {
@@ -111,6 +121,7 @@ const mapStateToProps = (state, ownProps) => {
   } else {
     changeFileNameTarget = state.changeFileName.file;
   }
+
 
   return {
     users: state.users,
@@ -131,6 +142,7 @@ const mapStateToProps = (state, ownProps) => {
     restoreFileState: state.restoreFile,
     changeFileNameState: state.changeFileName,
     authorityFileTarget,
+    authorityDirTarget,
     changeFileNameTarget,
     session: state.session
   };
