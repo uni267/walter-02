@@ -160,6 +160,9 @@ class File extends Component {
   };
 
   render() {
+    // headersはインデックス決め打ちなのでjsonを取得できるまではrenderしない
+    if (this.props.headers.length === 0) return null;
+
     const { isDragging, connectDragSource, file } = this.props;
     const { rowStyle, cellStyle, headers } = this.props;
 
