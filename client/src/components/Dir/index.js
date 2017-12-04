@@ -216,11 +216,6 @@ class Dir extends Component {
               leftIcon={<ActionVerifiedUser />}
               onTouchTap={() => this.props.actions.toggleAuthorityDirDialog(dir)} />
 
-            <MenuItem
-              primaryText="履歴を閲覧"
-              leftIcon={<ActionHistory />}
-              onTouchTap={() => this.props.actions.toggleHistoryDirDialog(dir)} />
-
           </IconMenu>
         </div>
 
