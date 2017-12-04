@@ -64,7 +64,6 @@ import watchSearchGroupSimple from "./watchSearchGroupSimple";
 import watchFetchMetaInfo from "./watchFetchMetaInfo";
 import watchCreateMetaInfo from "./watchCreateMetaInfo";
 import watchSaveUserAccountName from "./watchSaveUserAccountName";
-import watchFetchSearchFileSimple from "./watchFetchSearchFileSimple";
 import watchCopyFile from "./watchCopyFile";
 import watchFetchSearchFileDetail from "./watchFetchSearchFileDetail";
 import watchSortFile from "./watchSortFile";
@@ -155,7 +154,6 @@ function* Saga() {
   yield fork(watchFetchMetaInfo);
   yield fork(watchCreateMetaInfo);
   yield fork(watchSaveUserAccountName);
-  yield fork(watchFetchSearchFileSimple);
   yield fork(watchCopyFile);
   yield fork(watchFetchSearchFileDetail);
   yield fork(watchSortFile);
