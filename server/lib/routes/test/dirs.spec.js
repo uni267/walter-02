@@ -42,18 +42,30 @@ describe(dir_url, () => {
 
     // 親のid, 1階層子のidを取得する
     before( done => {
-      request
-        .get(dir_url)
-        .query({ dir_id: user.tenant.home_dir_id })
-        .end( (err, res) => {
-          root_id = res.body.body[0]._id;
-          request.get(dir_url + "/tree")
-            .query({ root_id })
+      new Promise( (resolve, reject) => {
+
+        request
+          .post(dir_url)
+          .send({ dir_id: user.tenant.home_dir_id, dir_name: "create dir ok" })
+          .end( (err, res) => resolve(res));
+
+      }).then( res => {
+
+        return new Promise( (resolve, reject) => {
+          request
+            .get(dir_url)
+            .query({ dir_id: user.tenant.home_dir_id })
             .end( (err, res) => {
-              child_id = head(res.body.body.children)._id;
-              done();
+              root_id = res.body.body[0]._id;
+              request.get(dir_url + "/tree")
+                .query({ root_id })
+                .end( (err, res) => {
+                  child_id = head(res.body.body.children)._id;
+                  resolve(res);
+                });
             });
         });
+      }).then( res => done() );
     });
 
     describe("正常系", () => {
