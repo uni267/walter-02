@@ -27,7 +27,7 @@ class DirTree extends Component {
     api.fetchDirTree(this.props.node._id)
       .then( payload => {
         this.setState({
-          children: payload.data.children
+          children: payload.data.body.children
         });
       })
       .catch( err => {
@@ -46,8 +46,7 @@ class DirTree extends Component {
   };
 
   handleClick = () => {
-    console.log(this.state.children);
-    if (this.state.chilren === null ||
+    if (this.state.children === null ||
         this.state.children === undefined ||
         this.state.children.length === 0) {
       return false;
@@ -62,7 +61,7 @@ class DirTree extends Component {
           this.props.dirTree.selected._id === this.props.node._id
           ? {
             display: "flex",
-            paddingTop: 5,
+            paddingTop: 10,
             paddingBottom: 5,
             paddingLeft: 10,
             paddingRight: 10,
@@ -70,7 +69,7 @@ class DirTree extends Component {
           }
           : {
             display: "flex",
-            paddingTop: 5,
+            paddingTop: 10,
             paddingBottom: 5,
             paddingLeft: 10,
             paddingRight: 10
@@ -84,7 +83,7 @@ class DirTree extends Component {
           <div style={{ display: "flex" }} 
                onClick={() => this.props.selectDirTree(this.props.node)}>
 
-            <div style={{ paddingTop: 5, paddingBottom: 5 }}
+            <div style={{ paddingTop: 10, paddingBottom: 5 }}
               onClick={this.handleClick}>
               {this.state.viewChild
                 ? <HardwareKeyboardArrowDown />
@@ -96,7 +95,7 @@ class DirTree extends Component {
               <div>
                 {this.state.viewChild ? <FileFolderOpen /> : <FileFolder />}
               </div>
-              <div style={{ paddingLeft: 10 }}>
+              <div style={{ paddingLeft: 10, paddingTop: 3 }}>
                 {this.props.node.name}
               </div>
             </div>
