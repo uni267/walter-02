@@ -10,7 +10,7 @@ import * as actionTypes from "../actionTypes";
 
 function* watchFetchFiles() {
   while (true) {
-    const { dir_id, page, sorted, desc } = yield take(
+    let { dir_id, page, sorted, desc } = yield take(
       actionTypes.REQUEST_FETCH_FILES
     );
 
@@ -19,14 +19,32 @@ function* watchFetchFiles() {
 
     try {
       if (page === 0 || page === null) {
-        const [ files, dirs ] = yield all([
-          call(api.fetchFiles, dir_id, page, sorted, desc),
-          call(api.fetchDirs, dir_id)
-        ]);
+
+        let files, dirs;
+
+        if (sorted === null) {
+          let defaultSort = yield call(api.fetchDisplayItems);
+          defaultSort = defaultSort.data.body.filter( item => item.default_sort );
+
+          defaultSort = defaultSort.length > 0 ? defaultSort[0] : null;
+
+          [ files, dirs ] = yield all([
+            call(api.fetchFiles, dir_id, page, defaultSort.meta_info_id, defaultSort.default_sort.desc),
+            call(api.fetchDirs, dir_id),
+            put(actions.setSortTarget(defaultSort.meta_info_id))
+          ]);
+        }
+        else {
+          [ files, dirs ] = yield all([
+            call(api.fetchFiles, dir_id, page, sorted, desc),
+            call(api.fetchDirs, dir_id)
+          ]);
+        }
 
         yield put(actions.initFileTotal(files.data.status.total));
         yield put(actions.initFiles(files.data.body));
         yield put(actions.initDir(dirs.data.body));
+
       }
       else {
         const files = yield call(api.fetchFiles, dir_id, page, sorted, desc);

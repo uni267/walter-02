@@ -127,7 +127,12 @@ class FileListContainer extends Component {
 
   componentWillMount() {
     this.props.actions.requestFetchDisplayItems();
-    this.props.actions.requestFetchFiles(this.props.match.params.id);
+
+    // @fixme 引数大杉
+    this.props.actions.requestFetchFiles(
+      this.props.match.params.id
+    );
+
     this.props.actions.requestFetchMetaInfos();
     this.props.actions.requestFetchUsers();
     this.props.actions.requestFetchRoles();
