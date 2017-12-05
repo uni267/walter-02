@@ -54,7 +54,7 @@ class MetaInfo extends Component {
         <div style={{...styles.cell, width: "10%"}}>
           <RaisedButton
             label="削除"
-            onTouchTap={() => deleteMetaInfoToFile(this.props.file, meta) } />
+            onClick={() => deleteMetaInfoToFile(this.props.file, meta) } />
         </div>
       </div>
     );
@@ -101,6 +101,7 @@ class MetaInfo extends Component {
           <DatePicker
             onChange={ (e, value) => this.setState({ metaInfoValue: value }) }
             floatingLabelText="日付を入力"
+            autoOk={true}
             hintText="日付を入力"
             />
         );
@@ -145,7 +146,7 @@ class MetaInfo extends Component {
         <div style={{...styles.cell, width: "10%"}}>
           <RaisedButton
             label="作成"
-            onTouchTap={() => addMetaInfoToFile(this.props.file, {}) } />
+            onClick={() => addMetaInfoToFile(this.props.file, {}) } />
         </div>
       </div>
     );
@@ -163,8 +164,9 @@ class MetaInfo extends Component {
         <div style={{ marginTop: 20 }}>
 
           <RaisedButton
+            disabled={this.state.addable}
             label="追加"
-            onTouchTap={() => this.setState({ addable: true })} />
+            onClick={() => this.setState({ addable: true })} />
 
         </div>
       </div>
