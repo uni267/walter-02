@@ -225,8 +225,12 @@ class FileDetailContainer extends Component {
 
       return (
         <div key={idx} style={styles.metaRow}>
-          <div style={styles.metaCell}>{meta.label}</div>
-          <div style={styles.metaCell}>{value}</div>
+          <div style={{ ...styles.metaCell, width: "30%" }}>
+            {meta.label}
+          </div>
+          <div style={{ ...styles.metaCell, width: "70%", wordWrap: "break-word" }}>
+            {value}
+          </div>
         </div>
       );
     };
