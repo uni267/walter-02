@@ -115,6 +115,7 @@ export const create = (req, res, next) => {
 
       if (tag.label.length > constants.MAX_STRING_LENGTH) throw new ValidationError("label is too long");
 
+      if (tag.color === undefined || tag.color === null || tag.color === "") throw new ValidationError("color is empty");
       if( tag.color.match(/^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/) === null ) throw new ValidationError("color is not valid");
 
       const _tag = yield Tag.find(
@@ -141,6 +142,9 @@ export const create = (req, res, next) => {
       switch (e.message) {
       case "label is empty":
         errors.label = "タグ名が空です";
+        break;
+      case "color is empty":
+        errors.color = "色が空です";
         break;
       case "label is too long":
         errors.label = 'タグ名が長すぎます';

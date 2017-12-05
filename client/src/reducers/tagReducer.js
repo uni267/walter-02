@@ -2,7 +2,7 @@ import * as actionTypes from "../actionTypes";
 
 const initialState = {
   data: {},
-  changedTag: {},
+  changedTag: { color: "#aaa" },
   validationErrors: {},
   pickerOpen: false
 };
