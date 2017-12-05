@@ -79,7 +79,9 @@ const mapStateToProps = (state, ownProps) => {
     open: state.fileDetailSearch.open,
     anchorElement: state.fileDetailSearch.anchorElement,
     isSimple: state.fileDetailSearch.items.find(item => item.picked),
-    tags: state.tags
+    tags: state.tags,
+    disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,
+    disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined
   };
 };
 

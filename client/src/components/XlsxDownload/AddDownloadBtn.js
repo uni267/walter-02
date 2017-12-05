@@ -6,7 +6,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 const AddDownloadBtn =({
   actions,
   match,
-  isSimple
+  isSimple,
+  disableDownloadBtnSimple,
+  disableDownloadBtnDetail
 }) => {
   const dir_id = match.params.id;
 
@@ -14,8 +16,9 @@ const AddDownloadBtn =({
     return (
       <div>
         <RaisedButton
-          label="一覧ダウンロード."
-          onTouchTap={() => {
+          disabled={disableDownloadBtnDetail}
+          label="一覧ダウンロード"
+          onClick={() => {
             actions.downloadXlsxFileDetail();
           }} />
       </div>
@@ -25,8 +28,9 @@ const AddDownloadBtn =({
     return (
       <div>
         <RaisedButton
-          label="一覧ダウンロード.."
-          onTouchTap={() => {
+          disabled={disableDownloadBtnSimple}
+          label="一覧ダウンロード"
+          onClick={() => {
             actions.downloadXlsxFileSimple();
           }} />
       </div>
@@ -36,8 +40,8 @@ const AddDownloadBtn =({
     return (
       <div>
         <RaisedButton
-          label="一覧ダウンロード..."
-          onTouchTap={() => {
+          label="一覧ダウンロード"
+          onClick={() => {
             actions.downloadXlsxFile(dir_id);
           }} />
       </div>
