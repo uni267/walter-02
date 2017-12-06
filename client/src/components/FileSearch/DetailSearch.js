@@ -31,9 +31,24 @@ class DetailSearch extends Component {
           .filter(item => item._id === _item._id).length > 0;
 
     if (alreadyExists) {
-      const _items = this.state.items.map( item => (
-        item._id === _item._id ? _item : item
-      ));
+      const _items = this.state.items.map( item => {
+        if(item.between){
+
+          if( item._id === _item._id ){
+            const _value = {
+              lt: ( _item.value.lt === undefined ) ? item.value.lt : _item.value.lt,
+              gt: ( _item.value.gt === undefined ) ? item.value.gt : _item.value.gt
+            }
+            _item.value = _value;
+            return _item;
+          }else{
+            return item;
+          }
+
+        }else{
+          return item._id === _item._id ? _item : item;
+        }
+    });
 
       this.setState({ items: _items });
     }
@@ -77,14 +92,46 @@ class DetailSearch extends Component {
     );
   };
 
+  searchBetweenDateField = (item) => {
+    return (
+      <div style={{ display:"flex" }} >
+        <DatePicker
+          onChange={ (e, value) => {
+            new Promise( (resolve, reject) => {
+              const result = this.appendSearchValue(item, { gt:value });
+              resolve(result);
+            }).then( res => {
+              this.execSearch();
+            });
+          }}
+          floatingLabelText={`${item.label}(より大きい)`}
+          hintText={item.label}
+          style={{paddingRight:48}}
+          />
+
+        <DatePicker
+          onChange={ (e, value) => {
+            new Promise( (resolve, reject) => {
+              const result = this.appendSearchValue(item, { lt:value });
+              resolve(result);
+            }).then( res => {
+              this.execSearch();
+            });
+          }}
+          floatingLabelText={`${item.label}(より小さい)`}
+          hintText={item.label}
+          />
+      </div>
+    );
+  };
+
   renderField = (item) => {
     switch (item.value_type) {
-    case "String":
-      return this.searchTextField(item);
-    case "Date":
-      return this.searchDateField(item);
-    default:
-      return null;
+      case "Date":
+        return  item.between ? this.searchBetweenDateField(item) : this.searchDateField(item);
+      case "String":
+      default:
+        return this.searchTextField(item);
     }
   };
 

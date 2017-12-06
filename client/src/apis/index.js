@@ -289,10 +289,10 @@ export class API {
     const order = desc ? "desc" : "asc";
 
     const config = {
-      params: { ...params, page, sort: sorted, order }
+      ...params, page, sort: sorted, order
     };
 
-    return this.client.get("/api/v1/files/search_detail", config);
+    return this.client.post("/api/v1/files/search_detail", config);
   };
 
   fetchTag = (tag_id) => {

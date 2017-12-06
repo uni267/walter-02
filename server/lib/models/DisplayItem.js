@@ -7,7 +7,7 @@ const DisplayItemSchema = Schema({
   meta_info_id: Schema.Types.ObjectId,
   label: String,
   name: String,
-  search_value_type: String,
+  value_type: String,
   is_display: Boolean,
   is_excel: Boolean,
   order: Number,

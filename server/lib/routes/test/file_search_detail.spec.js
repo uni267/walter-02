@@ -47,7 +47,7 @@ describe(base_url,() => {
     });
   });
 
-  describe(`get /search_detail`,() => {
+  describe(`post /search_detail`,() => {
 
 
     before(done => {
@@ -119,8 +119,8 @@ describe(base_url,() => {
         describe('pageが""', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: ""
             })
@@ -149,8 +149,8 @@ describe(base_url,() => {
         describe('pageが不正文字列', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: '\/:*?<>|'
             })
@@ -179,8 +179,8 @@ describe(base_url,() => {
         describe('pageが数字以外の文字列', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: 'ichi'
             })
@@ -246,8 +246,8 @@ describe(base_url,() => {
         describe('sortが不正な文字列', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: 0,
               sort: '\/:*?<>|'
@@ -277,8 +277,8 @@ describe(base_url,() => {
         describe('sortが意図しない文字列', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: 0,
               sort: 'ichi'
@@ -308,8 +308,8 @@ describe(base_url,() => {
         describe('orderが""', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: 0,
               order: ''
@@ -339,8 +339,8 @@ describe(base_url,() => {
         describe('orderが不正文字列', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: 0,
               order: '\/:*?<>|'
@@ -370,8 +370,8 @@ describe(base_url,() => {
         describe('orderが意図しない文字列', () => {
           let response;
           before(done => {
-            request.get(`${base_url}/search_detail`)
-            .query({
+            request.post(`${base_url}/search_detail`)
+            .send({
               [find(meta_infos, {name:'receive_company_name'} )._id]:"受信会社名",
               page: 0,
               order: 'koujun'
@@ -399,8 +399,6 @@ describe(base_url,() => {
           });;
         });
       });
-
-
 
     });
     describe('正常系',() => {
@@ -512,20 +510,27 @@ describe(base_url,() => {
         describe('検索条件: text',() => {
           let response;
           before(done => {
-            const sendQuery = {
-              [find(search_items, {name:'name'} )._id]:"text",
-              // [meta._id]: meta.value,
-              // sort: find(search_items, {name:'name'} )._id,
-              page:0,
-              order: "asc"
-            };
+            try {
+              const sendQuery = {
+                [find(search_items, {name:'name'} )._id]:"text",
+                // [meta._id]: meta.value,
+                // sort: find(search_items, {name:'name'} )._id,
+                page:0,
+                order: "asc"
+              };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
-            .end( ( err, res ) => {
-              response = res;
+              request.post(`${base_url}/search_detail`)
+              .send(sendQuery)
+              .end( ( err, res ) => {
+                if(err) throw err;
+                response = res;
+                done();
+              });
+            } catch (error) {
+              console.error(error);
               done();
-            });
+            }
+
           });
 
           it('http(200)が返却される', done => {
@@ -845,8 +850,8 @@ describe(base_url,() => {
               page:0,
               order: "asc"
             };
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -888,8 +893,8 @@ describe(base_url,() => {
               page:0,
               order: "asc"
             };
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -931,8 +936,8 @@ describe(base_url,() => {
               page:0,
               order: "asc"
             };
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -973,8 +978,8 @@ describe(base_url,() => {
               page:0,
               order: "asc"
             };
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1008,8 +1013,8 @@ describe(base_url,() => {
               page:0,
               order: "asc"
             };
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1062,8 +1067,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1111,8 +1116,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1169,8 +1174,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1210,8 +1215,8 @@ describe(base_url,() => {
               page: 0,
               order: "asc"
             };
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1266,8 +1271,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1306,8 +1311,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1351,8 +1356,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1397,8 +1402,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1439,8 +1444,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1477,8 +1482,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1517,8 +1522,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1593,8 +1598,8 @@ describe(base_url,() => {
               order: "desc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();
@@ -1668,8 +1673,8 @@ describe(base_url,() => {
               order: "asc"
             };
 
-            request.get(`${base_url}/search_detail`)
-            .query(sendQuery)
+            request.post(`${base_url}/search_detail`)
+            .send(sendQuery)
             .end( ( err, res ) => {
               response = res;
               done();

@@ -405,11 +405,34 @@ export const searchItems = (req, res, next) => {
 
         const displayItems = yield DisplayItem.find({
           ...conditions,
-          meta_info_id: null,
+          // meta_info_id: null,
           name: { $nin: ["file_checkbox", "action"] }
         });
 
-        items = metaInfos.concat(displayItems);
+        items = displayItems.map(displayItem => {
+          const idx = findIndex(metaInfos, {_id: displayItem.meta_info_id} ) ;
+          if(idx>=0){
+            const displayItemObject = displayItem.toObject();
+            return {
+              _id: metaInfos[idx]._id,
+              tenant_id: metaInfos[idx].tenant_id,
+              meta_info_id: metaInfos[idx].meta_info_id,
+              label: metaInfos[idx].label,
+              name: metaInfos[idx].name,
+              value_type: metaInfos[idx].value_type,
+              meta_info_id: metaInfos[idx].meta_info_id,
+              is_display: displayItemObject.is_display,
+              is_excel: displayItemObject.is_excel,
+              is_search: displayItemObject.is_search,
+              width: displayItemObject.width,
+              order: displayItemObject.order,
+              between: displayItemObject.between
+            };
+          }else{
+            return displayItem;
+          }
+        });
+
       }
 
       res.json({
@@ -462,8 +485,8 @@ export const searchDetail = (req, res, next, export_excel=false) => {
     case "meta":
       return ({
         meta_info_id: mongoose.Types.ObjectId(item._id),
-        value: { $regex: escapeRegExp( item.value ) },
-        is_display: true
+        value: createMetaSearchValue(item),
+        // is_display: true
       });
     case "tag":
       return ({
@@ -483,9 +506,23 @@ export const searchDetail = (req, res, next, export_excel=false) => {
     }
   };
 
+  const createMetaSearchValue = (item) =>{
+    switch (item.value_type) {
+      case "Date":
+        return {
+          $gt: moment( item.value.gt ).format('YYYY-MM-DD HH:mm:ss Z') ,
+          $lt: moment( item.value.lt ).add("days",1).format('YYYY-MM-DD HH:mm:ss Z')
+        };
+      case "String":
+      default:
+        return { $regex: escapeRegExp( item.value ) };
+    }
+  };
+
   return co(function* () {
     try {
-      const params = req.query;
+
+      const params = req.body;
       if ( params.page === undefined || params.page === null ) page = 0;
       if ( params.page === "" || isNaN( parseInt(params.page) ) ) throw new ValidationError("page is not number");
 
@@ -534,23 +571,35 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         return q;
       });
 
-
       const base_queries = base_items[0] === undefined
             ? {}
             : Object.assign(...base_items.map(buildQuery));
 
       const meta_queries = meta_items[0] === undefined
-            ? {}
-            : Object.assign(...meta_items.map(buildQuery));
+            ? []
+            : meta_items.map(buildQuery);
 
       let file_metainfo_ids = [];
-      if(meta_items.length > 0){
-        const fileMetainfoConditions = {
-          meta_info_id: meta_queries.meta_info_id,
-          value: meta_queries.value
-        };
-        file_metainfo_ids = (yield FileMetaInfo.find( fileMetainfoConditions )).map(metainfo => metainfo.file_id );
 
+      if(meta_items.length > 0){
+        // メタ情報検索条件に一致するfile_idを取得する
+        for(const key in meta_queries){
+
+          const fileMetainfoConditions = {
+            meta_info_id: mongoose.Types.ObjectId(meta_queries[key].meta_info_id),
+            value: meta_queries[key].value
+          };
+          const file_metainfo_id = (yield FileMetaInfo.find( fileMetainfoConditions )).map(metainfo => metainfo.file_id.toString() );
+
+          if(file_metainfo_ids.length){
+            // 既に取得済みのIDと今回取得したIDのうち共通するもののみ残す
+            file_metainfo_ids = intersection(file_metainfo_ids, file_metainfo_id );
+          }else{
+            file_metainfo_ids = file_metainfo_id;
+          }
+        }
+        // intersectionするために文字列にしたIDをObjectIdに戻す
+        file_metainfo_ids = file_metainfo_ids.map(id => mongoose.Types.ObjectId(id));
       }
 
       const file_ids = authority_file_ids.concat(file_metainfo_ids);
@@ -565,7 +614,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       const total = yield File.find(query).count();
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-      let { page } = req.query;
+      let { page } = req.body;
       if (!page) page = 0;
       const offset = page * limit;
 
@@ -574,7 +623,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
       const files = yield File.searchFiles(query,offset,limit,_sort, mongoose.Types.ObjectId(sort));
 
-      const ret_files = files.map( file => {
+      const ret_files = yield files.map( file => {
         const route = file.dirs
                 .filter( dir => dir.ancestor.is_display )
                 .map( dir => dir.ancestor.name );
@@ -614,6 +663,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         default:
           errors.unknown = e;
       }
+console.log(errors);
       logger.error(errors);
       res.status(400).json({
         status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }

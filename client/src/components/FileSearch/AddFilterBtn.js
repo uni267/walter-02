@@ -32,7 +32,7 @@ const AddFilterBtn =({
           actions.toggleFileDetailSearchPopover();
         }} />
 
-      <Popover 
+      <Popover
         open={open}
         anchorEl={anchorElement}
         anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
@@ -41,12 +41,15 @@ const AddFilterBtn =({
         >
 
         <Menu>
-          {searchItems.map( (item, idx) => {
+          {searchItems.filter((item, idx) => {
+            return item.is_search;
+          })
+          .map( (item, idx) => {
             return !item.picked ? renderItem(item, idx) : null;
           })}
         </Menu>
       </Popover>
-      
+
     </div>
   );
 };

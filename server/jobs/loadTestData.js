@@ -169,6 +169,7 @@ var display_items = [
     search_value_type: null,
     is_display: true,
     is_excel: false,
+    is_search: false,
     width: "5%",
     order: 10
   },
@@ -179,6 +180,7 @@ var display_items = [
     name: "receive_file_name",
     is_display: true,
     is_excel: true,
+    is_search: true,
     width: "50%",
     order: 20
   },
@@ -190,6 +192,7 @@ var display_items = [
     search_value_type: "String",
     is_display: false,
     is_excel: true,
+    is_search: true,
     order: 25
   },
   {
@@ -199,6 +202,8 @@ var display_items = [
     name: "receive_date_time",
     is_display: true,
     is_excel: true,
+    is_search: true,
+    between: true,
     width: "20%",
     order: 30,
     default_sort: { desc: true }
@@ -210,6 +215,7 @@ var display_items = [
     name: "send_company_name",
     is_display: true,
     is_excel: true,
+    is_search: true,
     width: "15%",
     order: 40
   },
@@ -221,6 +227,7 @@ var display_items = [
     search_value_type: null,
     is_display: true,
     is_excel: false,
+    is_search: false,
     width: "10%",
     order: 50
   },
@@ -231,6 +238,8 @@ var display_items = [
     name: "send_date_time",
     is_display: false,
     is_excel: true,
+    is_search: true,
+    between: true,
     order: 60
   },
   {
@@ -240,6 +249,7 @@ var display_items = [
     name: "send_user_name",
     is_display: false,
     is_excel: true,
+    is_search: true,
     order: 70
   },
   {
@@ -249,6 +259,7 @@ var display_items = [
     name: "receive_company_name",
     is_display: false,
     is_excel: true,
+    is_search: true,
     order: 80
   },
   {
@@ -258,6 +269,7 @@ var display_items = [
     name: "receive_user_name",
     is_display: false,
     is_excel: true,
+    is_search: true,
     order: 90
   },
   {
@@ -268,6 +280,7 @@ var display_items = [
     search_value_type: "String",
     is_display: false,
     is_excel: false,
+    is_search: true,
     width: "50%",
     order: 100
   },
@@ -279,6 +292,8 @@ var display_items = [
     search_value_type: "Date",
     is_display: false,
     is_excel: false,
+    is_search: true,
+    between: true,
     width: "20%",
     order: 110
   },
@@ -291,6 +306,7 @@ var display_items = [
     value_type: "String",
     is_display: false,
     is_excel: true,
+    is_search: true,
     width: "15%",
     order: 120
   },
@@ -302,6 +318,7 @@ var display_items = [
     search_value_type: "Bool",
     is_display: false,
     is_excel: false,
+    is_search: false,
     order: 130
   },
   {
@@ -312,27 +329,8 @@ var display_items = [
     search_value_type: "Select",
     is_display: false,
     is_excel: true,
+    is_search: false,
     order: 140
-  },
-  {
-    tenant_id: tenant._id,
-    meta_info_id: null,
-    label: "更新日時(より小さい)",
-    name: "modified_less",
-    search_value_type: "Date",
-    is_display: false,
-    is_excel: false,
-    order: 150
-  },
-  {
-    tenant_id: tenant._id,
-    meta_info_id: null,
-    label: "更新日時(より大きい)",
-    name: "modified_greater",
-    search_value_type: "Date",
-    is_display: false,
-    is_excel: false,
-    order: 160
   }
 ];
 

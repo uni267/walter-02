@@ -17,7 +17,7 @@ router.route("/search").get(controller.search);
 router.route("/search_items").get(controller.searchItems);
 
 // 詳細検索
-router.route("/search_detail").get(controller.searchDetail);
+router.route("/search_detail").post(controller.searchDetail);
 
 // ファイルアップロード
 router.post("/", controller.upload);
