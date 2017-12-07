@@ -7,8 +7,9 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
+import AutoComplete from "material-ui/AutoComplete";
 
-import { find } from 'lodash';
+import { find, findIndex } from 'lodash';
 
 class DetailSearch extends Component {
   constructor(props) {
@@ -82,6 +83,74 @@ class DetailSearch extends Component {
     );
   };
 
+  searchAutoCompleteField = (item) => {
+    let data_source;
+    switch (item.name) {
+      case "tag":
+        data_source = this.props.tags.map(tag => tag.label );
+        break;
+      case "authorities":
+        data_source = this.props.users.map(user => user.name);
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <AutoComplete
+        filter={ (searchText, key) => {
+          if(searchText === '') return true
+          return searchText !== '' && key.indexOf(searchText) !== -1
+        }}
+        onNewRequest={e =>{
+          this.execSearch();
+        }}
+        onUpdateInput={(searchText, dataSource, params)=>{
+          let value;
+          switch (item.name) {
+            case "tag":
+              const tag = find(this.props.tags, { label:searchText });
+              value = tag === undefined ? "" : tag._id;
+              break;
+            case "authorities":
+              const user = find(this.props.users, { name:searchText });
+              value = user === undefined ? "" : user._id;
+              break;
+            default:
+              break;
+          }
+          if(value !== "") this.appendSearchValue(item, value);
+        }}
+        openOnFocus={true}
+        dataSource={data_source}
+        floatingLabelText={item.label}
+        hintText={item.label}
+      />
+    );
+  };
+
+  searchBoolField = (item) => {
+    const value = find(this.state.items, {_id: item._id } ) === undefined ? null : find(this.state.items, {_id: item._id } ).value;
+    return (
+      <SelectField
+        value={value}
+        floatingLabelText={item.label}
+        hintText={item.label}
+        onChange={ (e,val) =>{
+          new Promise((resolve,reject)=>{
+            this.appendSearchValue(item, val===0?true:false);
+            resolve();
+          }).then(() => {
+            this.execSearch();
+          })
+        }}
+      >
+        <MenuItem value={true} primaryText="お気に入り" />
+        <MenuItem value={false} primaryText="お気に入り以外" />
+      </SelectField>
+    );
+  }
+
   searchDateField = (item) => {
     return (
       <DatePicker
@@ -136,6 +205,10 @@ class DetailSearch extends Component {
     switch (item.value_type) {
       case "Date":
         return  item.between ? this.searchBetweenDateField(item) : this.searchDateField(item);
+      case "Select":
+        return this.searchAutoCompleteField(item);
+      case "Bool":
+        return this.searchBoolField(item);
       case "String":
       default:
         return this.searchTextField(item);

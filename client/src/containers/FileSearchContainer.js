@@ -81,6 +81,7 @@ const mapStateToProps = (state, ownProps) => {
     anchorElement: state.fileDetailSearch.anchorElement,
     isSimple: state.fileDetailSearch.items.find(item => item.picked),
     tags: state.tags,
+    users: state.users,
     disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,
     disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined
   };

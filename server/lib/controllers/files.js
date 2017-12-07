@@ -495,7 +495,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       });
     case "favorite":
       return ({
-        is_star: (item.value === "true"),
+        is_star: item.value,
         is_display: true
       });
     default:
@@ -509,9 +509,9 @@ export const searchDetail = (req, res, next, export_excel=false) => {
   const createMetaSearchValue = (item) =>{
     switch (item.value_type) {
       case "Date":
-        return {
-          $gt: moment( item.value.gt ).format('YYYY-MM-DD HH:mm:ss Z') ,
-          $lt: moment( item.value.lt ).add("days",1).format('YYYY-MM-DD HH:mm:ss Z')
+      return {
+          $gt: moment( item.value.gt ).format('YYYY-MM-DD 00:00:00Z') ,
+          $lt: moment( item.value.lt ).add("days",1).format('YYYY-MM-DD 00:00:00Z')
         };
       case "String":
       default:
