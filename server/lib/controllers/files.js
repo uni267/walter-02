@@ -977,7 +977,7 @@ export const upload = (req, res, next) => {
           };
         }
 
-        if (file.tags.length === intersection(file.tags, tags).length) {
+        if (uniq(file.tags).length === intersection(file.tags, tags).length) {
           // stringからBSONに変換
           file.tags = file.tags.map( tag => mongoose.Types.ObjectId(tag) );
           return file;
@@ -1034,7 +1034,7 @@ export const upload = (req, res, next) => {
           };
         }
 
-        if (roleIds.length !== intersection(roleIds, role_files).length) {
+        if (uniq(roleIds).length !== intersection(roleIds, role_files).length) {
           return {
             ...file,
             hasError: true,
