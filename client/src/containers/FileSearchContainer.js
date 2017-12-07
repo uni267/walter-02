@@ -76,6 +76,7 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     searchItems: state.fileDetailSearch.items,
     searchValues: state.fileDetailSearch.searchValues,
+    searchedItems: state.fileDetailSearch.searchedItems,
     open: state.fileDetailSearch.open,
     anchorElement: state.fileDetailSearch.anchorElement,
     isSimple: state.fileDetailSearch.items.find(item => item.picked),

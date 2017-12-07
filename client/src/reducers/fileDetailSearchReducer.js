@@ -1,4 +1,5 @@
 import * as actionTypes from "../actionTypes";
+import { unset } from "lodash";
 
 const initialState = {
   open: false,
@@ -33,13 +34,15 @@ const fileDetailSearchReducer = (state = initialState, action) => {
       })
     };
   case actionTypes.SEARCH_ITEM_NOT_PICK:
+    const searchedItems = state.searchedItems;
+    unset( searchedItems, action.item._id );
     return {
       ...state,
       items: state.items.map( item => (
         item._id === action.item._id ? { ...item, picked: false } : item
       )),
       searchValues: state.searchValues.filter(val => val._id !== action.item._id),
-      searchedItems: state.searchValues.filter(val => val._id !== action.item._id)
+      searchedItems: searchedItems
     };
   case actionTypes.SEARCH_VALUE_CHANGE:
     let searchValues;

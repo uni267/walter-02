@@ -8,6 +8,8 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 
+import { find } from 'lodash';
+
 class DetailSearch extends Component {
   constructor(props) {
     super(props);
@@ -16,9 +18,17 @@ class DetailSearch extends Component {
     };
   }
 
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.searchItems !== this.props.searchItems && this.state.items.length > 0){
+      this.execSearch();
+    }
+  }
+
   execSearch = () => {
     const queryItems = this.state.items.reduce( (prev, cur) => {
-      prev[cur._id] = cur.value;
+      if( find( this.props.searchItems , { _id:cur._id } ).picked  ){
+        prev[cur._id] = cur.value;
+      }
       return prev;
     }, {});
 
@@ -58,17 +68,14 @@ class DetailSearch extends Component {
   }
 
   searchTextField = (item) => {
-    let searchValue = "";
-
-    return (
+      return (
       <TextField
-        ref={(input) => searchValue = input }
         onKeyPress={ e => {
           if (e.key === "Enter") {
             this.execSearch();
           }
         }}
-        onChange={ e => this.appendSearchValue(item, searchValue.getValue()) }
+        onChange={ (e,val) => this.appendSearchValue(item, val) }
         floatingLabelText={item.label}
         hintText={item.label}
         />
@@ -137,7 +144,7 @@ class DetailSearch extends Component {
 
   renderForm = (item, idx) => {
     return (
-      <div key={idx} style={{display: "flex"}}>
+      <div key={idx} style={{display: item.picked ? "flex" :"none" }}>
         <IconButton
           style={{marginTop: 23}}
           onClick={() => this.props.actions.searchItemNotPick(item) } >
@@ -150,10 +157,9 @@ class DetailSearch extends Component {
   }
 
   render() {
-    const items = this.props.searchItems.filter(item => item.picked);
     return (
       <div style={{ display: "flex", flexDirection: "row-reverse", flexWrap: "wrap" }}>
-        {items.map( (item, idx) => this.renderForm(item) )}
+        {this.props.searchItems.map( (item, idx) => this.renderForm(item) )}
       </div>
     );
   }
