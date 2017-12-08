@@ -7,11 +7,10 @@ require "date"
 
 # initdb
 dbhost = "172.16.55.50"
-loadTestData = "/Users/y_wakayama/repos/react/walter-02/server/jobs/loadTestData.js"
+loadTestData File.expand_path("loadTestData.js", File.dirname(__FILE__))
 cmd = "/usr/local/bin/mongo #{dbhost}/walter #{loadTestData}"
-
-# o, e, s = Open3.capture3(cmd)
-# raise "mongo loadTestData error" if (e != "")
+o, e, s = Open3.capture3(cmd)
+raise "mongo loadTestData error" if (e != "")
 
 DATA_LENGTH = 100000
 INTERVAL = 0.5  # sec
@@ -71,7 +70,7 @@ str_range = ("a".."z").to_a
 
     file[:meta_infos] = metainfo
     file[:tags] = [ tag["_id"] ] if [true,false].shuffle.first
-    file = file.map { |k,v| [k.to_s, v] }.to_h
+    file = file.map{ |k,v| [k.to_s, v] }.to_h
     file
   end                      
 
