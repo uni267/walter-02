@@ -37,6 +37,9 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   case "analyze":
     tasks.AnalyzeTask();
     break;
+  case "perfTest":
+    tasks.PerfTest();
+    break;
   default:
     throw new Error("引数が不正です。");
   }
