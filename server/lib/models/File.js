@@ -277,7 +277,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             }
           }
         }
-      ]).skip(offset).sort(sortOption).limit(limit);
+      ]).sort(sortOption).skip(offset).limit(limit);
 
     } catch (error) {
       throw error;

@@ -1306,7 +1306,7 @@ describe(base_url,() => {
           let response;
           before(done => {
             const sendQuery = {
-              [find(search_items, {name:'favorite'} )._id]: "true",
+              [find(search_items, {name:'favorite'} )._id]: true,
               page:0,
               order: "asc"
             };
@@ -1351,7 +1351,7 @@ describe(base_url,() => {
           let response;
           before(done => {
             const sendQuery = {
-              [find(search_items, {name:'favorite'} )._id]: "false",
+              [find(search_items, {name:'favorite'} )._id]: false,
               page:0,
               order: "asc"
             };
