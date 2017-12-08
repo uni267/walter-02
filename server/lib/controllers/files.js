@@ -94,7 +94,7 @@ export const index = (req, res, next, export_excel=false) => {
       const limit = ( export_excel && total !== 0 )  ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
 
-      let files = yield File.searchFiles(conditions,offset,limit,sortOption);
+      let files = yield File.searchFiles(conditions,offset,limit,sortOption, mongoose.Types.ObjectId(sort));
 
       files = files.map( file => {
         file.actions = extractFileActions(file.authorities, res.user._id.toString());
@@ -305,7 +305,7 @@ export const search = (req, res, next, export_excel=false) => {
 
       const _sort = yield createSortOption(sort, order);
 
-      let files = yield File.searchFiles(conditions,offset,limit,_sort);
+      let files = yield File.searchFiles(conditions,offset,limit,_sort, mongoose.Types.ObjectId(sort));
 
       files = files.map( file => {
         const route = file.dirs
@@ -2248,16 +2248,14 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
       name: { $nin: ["file_checkbox", "action"] }
     })).map(items => items.toObject()) ;
 
-    const item = metaInfos.concat(displayItems);
-
+    const item = metaInfos.concat(displayItems)[0];
     if (item.meta_info_id === null) {
       // メタ情報以外でのソート
       sort[item.name] = order;
     } else if(item.meta_info_id !== null) {
       // メタ情報でのソート
       sort = {
-         "meta_infos.sort_target":"desc",
-         "meta_infos.value": order
+        "meta_infos.sort_target": order
       };
     } else {
       // @fixme

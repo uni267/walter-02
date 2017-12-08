@@ -245,7 +245,10 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
                 label: "$meta_info.label",
                 value_type: "$meta_info.value_type",
                 value: "$meta_infos.value",
-                sort_target: { $eq: ["$meta_infos.meta_info_id",meta_info_id ]}
+                meta_info_id: "$meta_infos.meta_info_id",
+                sort_target: { $cond: {
+                   if: {$eq: [ "$meta_infos.meta_info_id" , meta_info_id ]} , then:"$meta_infos.value", else: null
+                  }}
               }
             }
           }
