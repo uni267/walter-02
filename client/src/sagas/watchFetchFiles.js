@@ -10,9 +10,7 @@ import * as actionTypes from "../actionTypes";
 
 function* watchFetchFiles() {
   while (true) {
-    let { dir_id, page, sorted, desc } = yield take(
-      actionTypes.REQUEST_FETCH_FILES
-    );
+    let { dir_id, page, sorted, desc } = yield take( actions.requestFetchFiles().type );
 
     const api = new API();
     yield put(commons.loadingStart());

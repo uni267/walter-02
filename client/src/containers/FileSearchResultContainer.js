@@ -20,6 +20,7 @@ import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import * as FileActions from "../actions/files";
+import { LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants/index";
 
 const styles = {
   title: {
@@ -91,19 +92,28 @@ class FileSearchResultContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.page < nextProps.page) {
-      this.fetchSearch(nextProps);
+
+    // 簡易検索ページネーション実行
+    if (this.props.page < nextProps.page && this.props.fileListType.list_type === LIST_SEARCH_SIMPLE ) {
+      this.props.actions.fetchSearchFileSimple(
+        nextProps.page,
+        nextProps.fileSortTarget.sorted,
+        nextProps.fileSortTarget.desc
+      );
     }
 
-    if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
-      this.fetchSearch(nextProps);
-    }
-
-    if (this.props.location.search !== nextProps.location.search) {
-      this.fetchSearch(nextProps);
+    // 詳細検索ページネーション実行
+    if (this.props.page < nextProps.page && this.props.fileListType.list_type === LIST_SEARCH_DETAIL ) {
+      console.log("get next page!");
+      this.props.actions.fetchSearchFileDetail(
+        nextProps.page,
+        nextProps.fileSortTarget.sorted,
+        nextProps.fileSortTarget.desc
+      );
     }
   }
 
+  // onScroll pagination
   onScroll = (e) => {
     const nextPageThreshold = 100 + (this.props.page + 1) * 30 * 40;
 
@@ -111,6 +121,8 @@ class FileSearchResultContainer extends Component {
       window.pageYOffset > nextPageThreshold
       && this.props.files.length < this.props.total
     ) {
+      // yOffsetを記憶しておく
+      this.setState({ yOffset: window.pageYOffset });
       this.props.actions.fileNextPage();
     }
   };
@@ -142,7 +154,7 @@ class FileSearchResultContainer extends Component {
       <Dir
         { ...this.props }
         key={idx}
-        dir={file} 
+        dir={file}
         rowStyle={styles.table_row}
         cellStyle={styles.table_cell}
         headers={this.props.headers} />
@@ -213,7 +225,8 @@ const mapStateToProps = (state, ownProps) => {
     total: state.filePagination.total,
     page: state.filePagination.page,
     fileSortTarget: state.fileSortTarget,
-    headers: state.displayItems
+    headers: state.displayItems,
+    fileListType: state.fileListType
   };
 };
 

@@ -160,9 +160,9 @@ export const initFiles = (files) => ({
 });
 
 export const fetchSearchFileSimple = (
-  value, page = 0, sorted = null, desc = null
+  page = 0, sorted = null, desc = null
 ) => ({
-  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, value, page, sorted, desc
+  type: actionTypes.FETCH_SEARCH_FILE_SIMPLE, page, sorted, desc
 });
 
 export const searchFileSimple = (value, history) => ({
@@ -173,8 +173,8 @@ export const initFilePagination = () => ({
   type: actionTypes.INIT_FILE_PAGINATION
 });
 
-export const fetchSearchFileDetail = (params, page, sorted, desc) => ({
-  type: actionTypes.FETCH_SEARCH_FILE_DETAIL, params, page, sorted, desc
+export const fetchSearchFileDetail = (page, sorted, desc) => ({
+  type: actionTypes.FETCH_SEARCH_FILE_DETAIL, page, sorted, desc
 });
 
 export const requestFetchFileSearchItems = (tenant_id) => ({

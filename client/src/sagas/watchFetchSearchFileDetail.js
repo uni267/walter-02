@@ -1,4 +1,4 @@
-import { call, put, take } from "redux-saga/effects";
+import { call, put, take, select } from "redux-saga/effects";
 
 import { API } from "../apis";
 import * as actions from "../actions/files";
@@ -7,15 +7,14 @@ import * as actionTypes from "../actionTypes";
 
 function* watchFetchSearchFileDetail() {
   while (true) {
-    const { params, page, sorted, desc } = yield take(
-      actionTypes.FETCH_SEARCH_FILE_DETAIL
-    );
+    const { page, sorted, desc } = yield take(actions.fetchSearchFileDetail().type);
     const api = new API();
 
     yield put(commons.loadingStart());
 
     try {
-      const payload = yield call(api.searchFilesDetail, params, page, sorted, desc);
+      const { searchedItems } = yield select( state => state.fileDetailSearch );
+      const payload = yield call(api.searchFilesDetail, searchedItems, page, sorted, desc);
 
       if (page === 0 || page === null) {
         const { total } = payload.data.status;
