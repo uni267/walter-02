@@ -20,7 +20,7 @@ import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 
 // actions
 import * as FileActions from "../actions/files";
-import { LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants/index";
+import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants/index";
 
 const styles = {
   title: {
@@ -104,13 +104,45 @@ class FileSearchResultContainer extends Component {
 
     // 詳細検索ページネーション実行
     if (this.props.page < nextProps.page && this.props.fileListType.list_type === LIST_SEARCH_DETAIL ) {
-      console.log("get next page!");
       this.props.actions.fetchSearchFileDetail(
         nextProps.page,
         nextProps.fileSortTarget.sorted,
         nextProps.fileSortTarget.desc
       );
     }
+
+
+    if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
+
+      switch (this.props.fileListType.list_type) {
+        case LIST_SEARCH_SIMPLE:
+          case LIST_SEARCH_DETAIL:
+          this.props.actions.fetchSearchFileSimple(
+            0,
+            nextProps.fileSortTarget.sorted,
+            nextProps.fileSortTarget.desc
+          );
+        break;
+        case LIST_SEARCH_DETAIL:
+          this.props.actions.fetchSearchFileDetail(
+            0,
+            nextProps.fileSortTarget.sorted,
+            nextProps.fileSortTarget.desc
+          );
+        break;
+
+        case LIST_DEFAULT:
+        default:
+          this.props.actions.requestFetchFiles(
+            nextProps.match.params.id,
+            null,
+            nextProps.fileSortTarget.sorted,
+            nextProps.fileSortTarget.desc
+          );
+          break;
+      }
+    }
+
   }
 
   // onScroll pagination

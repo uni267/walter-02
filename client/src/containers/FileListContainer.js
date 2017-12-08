@@ -23,7 +23,7 @@ import FileOperationDialogContainer from "./FileOperationDialogContainer";
 
 // actions
 import * as FileActions from "../actions/files";
-import { LIST_DEFAULT } from "../constants/index";
+import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants/index";
 
 const styles = {
   row: {
@@ -159,12 +159,34 @@ class FileListContainer extends Component {
     }
 
     if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
-      this.props.actions.requestFetchFiles(
-        nextProps.match.params.id,
-        null,
-        nextProps.fileSortTarget.sorted,
-        nextProps.fileSortTarget.desc
-      );
+
+      switch (this.props.fileListType.list_type) {
+        case LIST_SEARCH_SIMPLE:
+          case LIST_SEARCH_DETAIL:
+          this.props.actions.fetchSearchFileSimple(
+            0,
+            nextProps.fileSortTarget.sorted,
+            nextProps.fileSortTarget.desc
+          );
+        break;
+        case LIST_SEARCH_DETAIL:
+          this.props.actions.fetchSearchFileDetail(
+            0,
+            nextProps.fileSortTarget.sorted,
+            nextProps.fileSortTarget.desc
+          );
+        break;
+
+        case LIST_DEFAULT:
+        default:
+          this.props.actions.requestFetchFiles(
+            nextProps.match.params.id,
+            null,
+            nextProps.fileSortTarget.sorted,
+            nextProps.fileSortTarget.desc
+          );
+          break;
+      }
     }
 
     // vdomのレンダリングが走る際、ページ上部にジャンプするため
@@ -282,7 +304,8 @@ const mapStateToProps = (state, ownProps) => {
     page: state.filePagination.page,
     downloadBlob: state.downloadFile,
     addAuthority: state.addAuthorityFile,
-    headers: state.displayItems
+    headers: state.displayItems,
+    fileListType: state.fileListType
   };
 };
 
