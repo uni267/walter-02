@@ -27,6 +27,9 @@ const filesReducer = (state = [], action) => {
       ? state.map( file => ({ ...file, checked: true }) )
       : state.map( file => ({ ...file, checked: false }) );
 
+  case actionTypes.CLEAR_FILES:
+    return [];
+
   default:
     return state;
   }

@@ -23,6 +23,7 @@ import FileOperationDialogContainer from "./FileOperationDialogContainer";
 
 // actions
 import * as FileActions from "../actions/files";
+import { LIST_DEFAULT } from "../constants/index";
 
 const styles = {
   row: {
@@ -132,7 +133,7 @@ class FileListContainer extends Component {
     this.props.actions.requestFetchFiles(
       this.props.match.params.id
     );
-
+    this.props.actions.setFileListType(LIST_DEFAULT);
     this.props.actions.requestFetchMetaInfos();
     this.props.actions.requestFetchUsers();
     this.props.actions.requestFetchRoles();
@@ -200,7 +201,7 @@ class FileListContainer extends Component {
     const dirComponent = (
       <DirDroppable
         { ...this.props }
-        key={idx} 
+        key={idx}
         dir={file}
         rowStyle={styles.row}
         cellStyle={styles.tableRow}
@@ -245,7 +246,7 @@ class FileListContainer extends Component {
         <div style={styles.row}>
           {this.props.headers.map( (header, idx) => (
             <FileListHeader
-              key={idx} 
+              key={idx}
               header={header}
               style={styles.tableHeader}
               { ...this.props } />

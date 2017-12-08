@@ -28,3 +28,8 @@ export const PERMISSION_TAGS = "tags";
 export const PERMISSION_ROLE_FILES = "role_files";
 export const PERMISSION_ROLE_MENUS = "role_menus";
 export const PERMISSION_ANALYSIS = "analysis";
+
+// 一覧の種類
+export const LIST_DEFAULT = "LIST_DEFAULT";
+export const LIST_SEARCH_SIMPLE = "LIST_SEARCH_SIMPLE";
+export const LIST_SEARCH_DETAIL = "LIST_SEARCH_DETAIL";

@@ -356,6 +356,18 @@ export const keepFileSimpleSearchValue = (value) => ({
   type: actionTypes.KEEP_FILE_SIMPLE_SEARCH_VALUE, value
 });
 
+export const setFileListType = (list_type) => ({
+  type: actionTypes.SET_FILE_LIST_TYPE, list_type
+});
+
+export const initFileListType = () => ({
+  type: actionTypes.INIT_FILE_LIST_TYPE
+});
+
+export const clearFiles = () => ({
+  type: actionTypes.CLEAR_FILES
+});
+
 // reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
 export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER

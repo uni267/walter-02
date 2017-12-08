@@ -4,10 +4,18 @@ import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 
 import { API } from "../apis";
+import { LIST_SEARCH_DETAIL } from "../constants/index";
 
 function* watchSearchFileDetail() {
   while (true) {
     try {
+
+      const { list_type } = yield select(state => state.fileListType);
+      if(list_type !== LIST_SEARCH_DETAIL ){
+        yield put(actions.initFilePagination());
+        yield put(actions.setFileListType(LIST_SEARCH_DETAIL));
+      }
+
       const { history, items } = yield take(actions.searchFileDetail().type);
 
       yield put(commons.loadingStart());
