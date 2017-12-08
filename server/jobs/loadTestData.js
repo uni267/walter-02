@@ -17,6 +17,7 @@ db.previews.drop();
 db.authority_files.drop();
 db.authority_menus.drop();
 db.notifications.drop();
+db.file_meta_infos.drop();
 
 // ===============================
 //  files collection
