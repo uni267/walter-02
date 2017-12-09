@@ -878,7 +878,7 @@ export const upload = (req, res, next) => {
         if (_file.mime_type === null || _file.mime_type === undefined ||
             _file.mime_type === "" || _file.mime_type === "undefined") {
           file.hasError = true;
-          file.errors = { mime_type: "mime_type is empty" };
+          file.errors = { mime_type: "mime_typeが空のためファイルのアップロードに失敗しました" };
           return file;
         }
 
@@ -892,14 +892,20 @@ export const upload = (req, res, next) => {
         if (_file.base64 === null || _file.base64 === undefined ||
             _file.base64 === "" || _file.base64 === "undefined") {
           file.hasError = true;
-          file.errors = { base64: "base64 is empty" };
+          file.errors = { base64: "base64が空のためファイルのアップロードに失敗しました" };
+          return file;
+        }
+
+        if (_file.base64.match(/;base64,(.*)$/) === null) {
+          file.hasError = true;
+          file.errors = { base64: "base64が不正のためファイルのアップロードに失敗しました" };
           return file;
         }
 
         if (_file.checksum === null || _file.checksum === undefined ||
             _file.checksum === "" ) {
           file.hasError = true;
-          file.errors = { checksum: "checksum is empty" };
+          file.errors = { checksum: "checksumが空のためファイルのアップロードに失敗しました" };
           return file;
         }
 
@@ -936,7 +942,7 @@ export const upload = (req, res, next) => {
             ...file,
             hasError: true,
             errors: {
-              checksum: "invalid checksum"
+              checksum: "checksumが不正のためファイルのアップロードに失敗しました"
             }
           };
         }
@@ -953,6 +959,7 @@ export const upload = (req, res, next) => {
         if (file.meta_infos === undefined ||
             file.meta_infos.length === 0) return file;
 
+        // 値の空チェック
         const valueCheck = file.meta_infos.filter( meta => (
           meta.value === undefined || meta.value === null ||
           meta.value === "" || meta.value === "undefined"
@@ -968,6 +975,7 @@ export const upload = (req, res, next) => {
           };
         }
 
+        // idのnullチェック
         const idIsEmpty = file.meta_infos.filter( meta => (
           meta._id === undefined || meta._id === null ||
           meta._id === "" || meta._id === "undefined"
@@ -997,7 +1005,7 @@ export const upload = (req, res, next) => {
           };
         }
 
-        // 積集合を取得したかったのでlodashからintersectionを拝借...
+        // メタ情報idが存在するかのチェック
         const intersec = intersection(
           file.meta_infos.map( meta => meta._id),
           metainfos.map( meta => meta._id.toString() )
@@ -1009,6 +1017,28 @@ export const upload = (req, res, next) => {
             hasError: true,
             errors: {
               meta_info_id: "指定されたメタ情報が存在しないためファイルのアップロードに失敗しました"
+            }
+          };
+        }
+
+        // 日付型チェック
+        const date_is_invalid = file.meta_infos.filter( meta => {
+          const _meta = metainfos.filter( m => m._id.toString() === meta._id )[0];
+
+          if (_meta.value_type === "Date") {
+            return ! moment(meta.value).isValid();
+          }
+          else {
+            return false;
+          }
+        });
+
+        if (date_is_invalid.length > 0) {
+          return {
+            ...file,
+            hasError: true,
+            errors: {
+              meta_info_value: "指定されたメタ情報の値が日付型ではないためファイルのアップロードに失敗しました"
             }
           };
         }

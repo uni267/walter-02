@@ -45,7 +45,7 @@ describe(files_url, () => {
   });
 
   describe("post /", () => {
-    describe("基本的な情報のみをアップロード(正常系)", () => {
+    describe("基本的な情報のみをアップロード(単数)(正常系)", () => {
       let payload;
       let body;
 
@@ -77,6 +77,81 @@ describe(files_url, () => {
         done();
       });
 
+      describe("アップロードしたファイルを取得した場合", () => {
+        let nextPayload;
+
+        before( done => {
+          const file_id = _.get(payload, ["body", "body", "0", "_id"]);
+
+          request
+            .get(files_url + `/${file_id}`)
+            .end( (err, res) => {
+              nextPayload = res;
+              done();
+            });
+        });
+
+        it("http(200)が返却される", done => {
+          expect(nextPayload.status).equal(200);
+          done();
+        });
+
+        it("nameが指定した値で保存されている", done => {
+          expect(nextPayload.body.body.name).equal(_.head(body.files).name);
+          done();
+        });
+
+        it("sizeが指定した値で保存されている", done => {
+          expect(nextPayload.body.body.size).equal(_.head(body.files).size);
+          done();
+        });
+
+        it("mime_typeが指定した値で保存されている", done => {
+          expect(nextPayload.body.body.mime_type).equal(_.head(body.files).mime_type);
+          done();
+        });
+      });
+    });
+
+    describe("基本的な情報のみをアップロード(複数)(正常系)", () => {
+      let payload;
+      let body;
+
+      before( done => {
+        body = {
+          dir_id: user.tenant.home_dir_id,
+          files: [
+            {
+              name: "multiple_files_01.txt",
+              size: 4,
+              mime_type: "text/plain",
+              base64: "data:text/plain;base64,Zm9vCg==",
+              checksum: "8f3bee6fbae63be812de5af39714824e"
+            },
+            {
+              name: "multiple_files_02.txt",
+              size: 4,
+              mime_type: "text/plain",
+              base64: "data:text/plain;base64,Zm9vCg==",
+              checksum: "8f3bee6fbae63be812de5af39714824e"
+            }
+          ]
+        };
+
+        request
+          .post(files_url)
+          .send(body)
+          .end( (err, res) => {
+            payload = res;
+            done();
+          });
+      });
+
+      it("http(200)が返却される", done => {
+        expect(payload.status).equal(200);
+        done();
+      });
+      
       describe("アップロードしたファイルを取得した場合", () => {
         let nextPayload;
 
@@ -708,47 +783,562 @@ describe(files_url, () => {
       });
 
       describe("sizeが", () => {
-        describe("数値以外の場合", () => {
-          let payload;
-          let body = {
-
-          };
-
+        describe.skip("数値以外の場合", () => {
         });
       });
 
       describe("mime_typeが", () => {
         describe("undefinedの場合", () => {
-          it("dummy");
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "mime_typeが空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "mime_type_is_undefined_01.txt",
+                  size: 4,
+                  // mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].mime_type)
+              .equal(expected.detail);
+            done();
+          });
         });
 
         describe("nullの場合", () => {
-          it("dummy");
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "mime_typeが空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "mime_type_is_null_01.txt",
+                  size: 4,
+                  // mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].mime_type)
+              .equal(expected.detail);
+            done();
+          });
         });
 
         describe("空文字の場合", () => {
-          it("dummy");
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "mime_typeが空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "mime_type_is_empty_01.txt",
+                  size: 4,
+                  // mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].mime_type)
+              .equal(expected.detail);
+            done();
+          });
         });
 
       });
 
       describe("checksumが", () => {
+        describe("undefinedの場合", () => {
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "checksumが空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg=="
+                  // checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].checksum)
+              .equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("nullの場合", () => {
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "checksumが空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: null
+                  // checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].checksum)
+              .equal(expected.detail);
+            done();
+          });
+        });
+
         describe("一致しない場合", () => {
-          it("dummy");
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "checksumが不正のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  base64: "data:text/plain;base64,Zm9vCg==",
+                  // checksum: "8f3bee6fbae63be812de5af39714824e"
+                  checksum: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].checksum)
+              .equal(expected.detail);
+            done();
+          });
         });
       });
 
       describe("base64が", () => {
         describe("undefinedの場合", () => {
-          it("dummy");
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "base64が空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  // base64: "data:text/plain;base64,Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].base64)
+              .equal(expected.detail);
+            done();
+          });
         });
 
         describe("nullの場合", () => {
-            it("dummy");
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "base64が空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  // base64: "data:text/plain;base64,Zm9vCg==",
+                  base64: null,
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].base64)
+              .equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("空の場合", () => {
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "base64が空のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  // base64: "data:text/plain;base64,Zm9vCg==",
+                  base64: "",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].base64)
+              .equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("DataURI形式ではない場合", () => {
+          let payload;
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "base64が不正のためファイルのアップロードに失敗しました"
+          };
+
+          let body;
+
+          before( done => {
+            body = {
+              dir_id: user.tenant.home_dir_id,
+              files: [
+                {
+                  name: "checksum_is_invalid_01.txt",
+                  size: 4,
+                  mime_type: "text/plain",
+                  // base64: "data:text/plain;base64,Zm9vCg==",
+                  base64: "Zm9vCg==",
+                  checksum: "8f3bee6fbae63be812de5af39714824e"
+                }
+              ]
+            };
+
+            request
+              .post(files_url)
+              .send(body)
+              .end( (err, res) => {
+                payload = res;
+                done();
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`メッセージの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`メッセージの詳細は「${expected.detail}」`, done => {
+            expect(payload.body.status.errors[0].base64)
+              .equal(expected.detail);
+            done();
+          });
         });
 
       });
-
     });
 
     describe("ファイル名が重複する場合", () => {
@@ -774,8 +1364,10 @@ describe(files_url, () => {
         request
           .get("/api/v1/meta_infos")
           .end( (err, res) => {
+            const _meta = _.find(res.body.body, { value_type: "String" });
+
             metainfo = {
-              _id: _.get(res, ["body", "body", "0", "_id"]),
+              _id: _meta._id,
               value: "metainfo value"
             };
 
@@ -939,7 +1531,6 @@ describe(files_url, () => {
           });
 
           it(`エラーの詳細は「${expected.detail}」`, done => {
-            console.log(util.inspect(payload.body, false, null));
             const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_id"]);
             expect(_err).equal(expected.detail);
             done();
@@ -1268,6 +1859,70 @@ describe(files_url, () => {
                   _id: _.get(res, ["body", "body", "0", ""]),
                   value: ""
                 };
+                body.files[0].meta_infos = [metainfo];
+
+                request
+                  .post(files_url)
+                  .send(body)
+                  .end( (err, res) => {
+                    payload = res;
+                    done();
+                  });
+              });
+          });
+
+          it("http(400)が返却される", done => {
+            expect(payload.status).equal(400);
+            done();
+          });
+
+          it("statusはfalse", done => {
+            expect(payload.body.status.success).equal(false);
+            done();
+          });
+
+          it(`エラーの概要は「${expected.message}」`, done => {
+            expect(payload.body.status.message).equal(expected.message);
+            done();
+          });
+
+          it(`エラーの詳細は「${expected.detail}」`, done => {
+            const _err = _.get(payload, ["body", "status", "errors", "0", "meta_info_value"]);
+            expect(_err).equal(expected.detail);
+            done();
+          });
+        });
+
+        describe("日付型ではない場合", () => {
+          let payload;
+          let metainfo;
+          let body = {
+            files: [{
+              name: "test.txt",
+              size: 4,
+              mime_type: "text/plain",
+              base64: "data:text/plain;base64,Zm9vCg==",
+              checksum: "8f3bee6fbae63be812de5af39714824e"
+            }]
+          };
+
+          let expected = {
+            message: "ファイルのアップロードに失敗しました",
+            detail: "指定されたメタ情報の値が日付型ではないためファイルのアップロードに失敗しました"
+          };
+
+          before( done => {
+            body.dir_id = user.tenant.home_dir_id;
+            request
+              .get("/api/v1/meta_infos")
+              .end( (err, res) => {
+                const date_meta = _.find(res.body.body, { value_type: "Date" });
+
+                metainfo = {
+                  _id: date_meta._id,
+                  value: "invalid_date"
+                };
+
                 body.files[0].meta_infos = [metainfo];
 
                 request
