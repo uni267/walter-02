@@ -275,14 +275,25 @@ export const search = (req, res, next, export_excel=false) => {
           .filter( s => s !== "" )
           .map( s => escapeRegExp(s) );
 
-      // meta_infos.valueから条件に該当するファイルのIDを取得
-      const meta_infos_value_conditions = {
-        $or: query_params.map( _q => ({ value: { $regex: _q } }))
-      };
+      // キーワード毎に検索しfile_idを取得
+      let search_result_on_meta_infos = yield (
+        query_params.map( _q => (
+          FileMetaInfo.find({ value: { $regex: _q } }, { file_id: 1 })
+        ))
+      );
 
-      const search_result_on_meta_infos_id = (
-        yield FileMetaInfo.find(meta_infos_value_conditions)
-      ).map(file => file.file_id);
+      // file_idを配列に
+      search_result_on_meta_infos = search_result_on_meta_infos.map( meta => meta.map( m => m.file_id ) );
+
+      // 各id配列の積集合を取得(and検索)
+      const search_result_on_meta_infos_id = search_result_on_meta_infos.reduce( (prev, cur, idx) => {
+        if (idx === 0) {
+          return cur.map( c => c.toString() );
+        }
+        else {
+          return intersection(prev.map( p => p.toString() ), cur.map( c => c.toString() ) );
+        }
+      }, []).map( id => mongoose.Types.ObjectId(id) );
 
       const file_ids = uniq([
         ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
