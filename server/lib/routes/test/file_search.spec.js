@@ -64,8 +64,10 @@ describe(base_url,() => {
         // メタ情報一覧を取得
         return new Promise((resolve, reject)=>{
           request.get('/api/v1/meta_infos').end((err,res) => {
+            const _meta = find(res.body.body, { value_type: "String" });
+
             meta = {
-              _id: first(res.body.body)._id,
+              _id: _meta._id,
               value: "meta_value"
             };
             resolve(res);
