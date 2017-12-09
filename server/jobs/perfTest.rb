@@ -7,8 +7,9 @@ require "date"
 
 # initdb
 dbhost = "172.16.55.50"
-loadTestData File.expand_path("loadTestData.js", File.dirname(__FILE__))
+loadTestData = File.expand_path("loadTestData.js", File.dirname(__FILE__))
 cmd = "/usr/local/bin/mongo #{dbhost}/walter #{loadTestData}"
+
 o, e, s = Open3.capture3(cmd)
 raise "mongo loadTestData error" if (e != "")
 
