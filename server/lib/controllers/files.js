@@ -269,10 +269,20 @@ export const search = (req, res, next, export_excel=false) => {
       if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
-      const query_param = escapeRegExp(q);
+      // スペース区切りの検索対応
+      let query_params = q.replace(new RegExp("\\u3000", "g"), " ")
+          .split(" ")
+          .filter( s => s !== "" )
+          .map( s => escapeRegExp(s) );
 
       // meta_infos.valueから条件に該当するファイルのIDを取得
-      const search_result_on_meta_infos_id = ( yield FileMetaInfo.find({ value:{ $regex: query_param } }) ).map(file => file.file_id);
+      const meta_infos_value_conditions = {
+        $or: query_params.map( _q => ({ value: { $regex: _q } }))
+      };
+
+      const search_result_on_meta_infos_id = (
+        yield FileMetaInfo.find(meta_infos_value_conditions)
+      ).map(file => file.file_id);
 
       const file_ids = uniq([
         ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
@@ -281,10 +291,14 @@ export const search = (req, res, next, export_excel=false) => {
         ...search_result_on_meta_infos_id
       ]);
 
+      const name_conditions = {
+        $or: query_params.map( _q => ({ name: { $regex: _q } }) )
+      };
+
       const conditions = {
         dir_id: { $ne: trash_dir_id },
         $or: [
-          { name: { $regex: query_param } },
+          name_conditions,
           { _id : { $in: search_result_on_meta_infos_id } }
         ],
         is_display: true,
