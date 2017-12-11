@@ -7,14 +7,6 @@ require "date"
 
 require "./base64_data"
 
-# initdb
-dbhost = "172.16.55.78" # host決め打ち
-loadTestData = File.expand_path("loadTestData.js", File.dirname(__FILE__))
-cmd = "/usr/local/bin/mongo #{dbhost}/walter #{loadTestData}"
-
-o, e, s = Open3.capture3(cmd)
-raise "mongo loadTestData error" if (e != "")
-
 # 登録件数
 DATA_LENGTH = 100
 
@@ -24,14 +16,24 @@ INTERVAL = 0.5
 # 1requestあたりに添付するファイル数
 POST_FILE_LENGTH = 20
 
-# post対象のサーバ
+# post対象のAPサーバ
 API_SERVER = "http://localhost:3333"
+
+# init対象のdbサーバ
+DB_SERVER = "172.16.55.78"
 
 # どのユーザでpostするか
 ACCOUNT_INFO = {
   account_name: "taro",
   password: "test"
 }
+
+# initdb
+loadTestData = File.expand_path("loadTestData.js", File.dirname(__FILE__))
+cmd = "/usr/local/bin/mongo #{DB_SERVER}/walter #{loadTestData}"
+
+o, e, s = Open3.capture3(cmd)
+raise "mongo loadTestData error" if (e != "")
 
 # tokkenを取得
 conn = Faraday.new( url: API_SERVER )
@@ -52,6 +54,9 @@ metainfos = JSON.parse(payload.body)["body"].select do |item|
     "send_date_time",
     "receive_date_time",
     "send_company_name",
+    "send_user_name",
+    "receive_company_name",
+    "receive_user_name",
     "display_file_name"
   ]
     
@@ -67,8 +72,7 @@ end
 tag = JSON.parse(payload.body)["body"].first
 
 # 送受信日付の配列
-receive_date_range = (Date.parse("2017-11-01")..Date.parse("2017-12-20")).to_a
-send_date_range = (Date.parse("2017-10-01")..Date.parse("2017-11-01")).to_a
+send_date_range = (Date.parse("2013-01-01")..Date.parse("2017-12-01")).to_a
 
 # 送信企業名の配列
 send_company_names = [
@@ -76,6 +80,12 @@ send_company_names = [
   ("d".."f").to_a.map{|s| (s * 3) + "ホールディングス"},
   ("g".."i").to_a.map{|s| (s * 3) + "ジャパン"}
 ].flatten
+
+# 送信ユーザ名の配列
+send_user_names = ["送信 太郎", "送信 次郎", "送信 花子"]
+
+# 受信ユーザ名の配列
+receive_user_names = ["受信 太郎", "受信 次郎", "受信 花子"]
 
 # upload main
 (1..(DATA_LENGTH / POST_FILE_LENGTH)).each do |i|
@@ -92,18 +102,25 @@ send_company_names = [
     }
 
     send_date = send_date_range.shuffle.first
+    receive_date = send_date.next_day
     company_name = send_company_names.shuffle.first
 
     metainfo = metainfos.map do |meta|
       res = { "_id" => meta["_id"] }
 
       case meta["name"]
-      when "receive_date_time"
-        res["value"] = receive_date_range.shuffle.first
       when "send_date_time"
         res["value"] = send_date
+      when "receive_date_time"
+        res["value"] = receive_date
       when "send_company_name"
         res["value"] = company_name
+      when "send_user_name"
+        res["value"] = send_user_names.shuffle.first
+      when "receive_company_name"
+        res["value"] = "AAA社"
+      when "receive_user_name"
+        res["value"] = receive_user_names.shuffle.first
       when "display_file_name"
         res["value"] = company_name + " " + send_date.strftime("%Y年%m月") + " 請求書"
       else
