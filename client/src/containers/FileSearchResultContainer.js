@@ -83,11 +83,19 @@ const styles = {
 };
 
 class FileSearchResultContainer extends Component {
+
   componentWillMount() {
+    this.props.actions.setPageYOffset(0);
     this.props.actions.requestFetchDisplayItems();
   }
 
+  componentWillUnmount() {
+    this.props.actions.setPageYOffset(0);
+    window.removeEventListener("scroll",this.onScroll);
+  }
+
   componentDidMount() {
+    this.props.actions.setPageYOffset(0);
     window.addEventListener("scroll", this.onScroll);
   }
 
@@ -113,7 +121,7 @@ class FileSearchResultContainer extends Component {
 
 
     if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
-
+      this.props.actions.setPageYOffset(0);
       switch (this.props.fileListType.list_type) {
         case LIST_SEARCH_SIMPLE:
           case LIST_SEARCH_DETAIL:
@@ -143,6 +151,9 @@ class FileSearchResultContainer extends Component {
       }
     }
 
+    // // vdomのレンダリングが走る際、ページ上部にジャンプするため
+    // // yOffsetを記憶しておき、レンダリング後にyOffsetにジャンプする
+    window.setTimeout(() => window.scrollTo(0, this.props.yOffset), 0);
   }
 
   // onScroll pagination
@@ -154,6 +165,7 @@ class FileSearchResultContainer extends Component {
       && this.props.files.length < this.props.total
     ) {
       // yOffsetを記憶しておく
+      this.props.actions.setPageYOffset(window.pageYOffset);
       this.setState({ yOffset: window.pageYOffset });
       this.props.actions.fileNextPage();
     }
@@ -256,6 +268,7 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     total: state.filePagination.total,
     page: state.filePagination.page,
+    yOffset: state.filePagination.yOffset,
     fileSortTarget: state.fileSortTarget,
     headers: state.displayItems,
     fileListType: state.fileListType

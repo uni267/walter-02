@@ -6,6 +6,8 @@ import * as commons from "../actions/commons";
 import { API } from "../apis";
 import { LIST_SEARCH_DETAIL } from "../constants/index";
 
+import { isMatch } from "lodash";
+
 function* watchSearchFileDetail() {
   while (true) {
     try {
@@ -16,7 +18,13 @@ function* watchSearchFileDetail() {
         yield put(actions.setFileListType(LIST_SEARCH_DETAIL));
       }
 
+      const { searchedItems:old_items } = yield select( state => state.fileDetailSearch );
       const { history, items } = yield take(actions.searchFileDetail().type);
+
+      if( !isMatch(old_items,items) ){
+        yield put(actions.initFilePagination());
+        yield put(actions.clearFiles());
+      }
 
       yield put(commons.loadingStart());
       const api = new API();

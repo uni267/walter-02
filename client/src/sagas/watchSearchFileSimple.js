@@ -15,10 +15,17 @@ function* watchSearchFileSimple() {
 
     try {
       const { list_type } = yield select(state => state.fileListType);
+
       if(list_type !== LIST_SEARCH_SIMPLE ){
         yield put(actions.initFilePagination());
         yield put(actions.clearFiles());
         yield put(actions.setFileListType(LIST_SEARCH_SIMPLE));
+      }
+
+      const { search_value:old_value } = yield select(state => state.fileSimpleSearch);
+      if(old_value !== undefined && old_value.value !== value) {
+        yield put(actions.initFilePagination());
+        yield put(actions.clearFiles());
       }
 
       const { page } = yield select( state => state.filePagination );

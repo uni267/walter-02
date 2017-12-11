@@ -118,13 +118,6 @@ const dropCollect = (connect, monitor) => {
 };
 
 class FileListContainer extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      yOffset: 0
-    };
-  }
 
   componentWillMount() {
     this.props.actions.requestFetchDisplayItems();
@@ -137,9 +130,16 @@ class FileListContainer extends Component {
     this.props.actions.requestFetchMetaInfos();
     this.props.actions.requestFetchUsers();
     this.props.actions.requestFetchRoles();
+    this.props.actions.initFilePagination();
+  }
+
+  componentWillUnmount() {
+    this.props.actions.setPageYOffset(0);
+    window.removeEventListener("scroll",this.onScroll);
   }
 
   componentDidMount() {
+    this.props.actions.setPageYOffset(0);
     window.addEventListener("scroll", this.onScroll);
   }
 
@@ -160,6 +160,7 @@ class FileListContainer extends Component {
 
     if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
 
+      this.props.actions.setPageYOffset(0);
       switch (this.props.fileListType.list_type) {
         case LIST_SEARCH_SIMPLE:
           case LIST_SEARCH_DETAIL:
@@ -191,7 +192,7 @@ class FileListContainer extends Component {
 
     // vdomのレンダリングが走る際、ページ上部にジャンプするため
     // yOffsetを記憶しておき、レンダリング後にyOffsetにジャンプする
-    window.setTimeout(() => window.scrollTo(0, this.state.yOffset), 0);
+    window.setTimeout(() => window.scrollTo(0, this.props.yOffset), 0);
   }
 
   // onScroll pagination
@@ -203,7 +204,8 @@ class FileListContainer extends Component {
       && this.props.files.length < this.props.total
     ) {
       // yOffsetを記憶しておく
-      this.setState({ yOffset: window.pageYOffset });
+
+      this.props.actions.setPageYOffset( window.pageYOffset );
       this.props.actions.fileNextPage();
     }
   };
@@ -241,7 +243,7 @@ class FileListContainer extends Component {
         cellStyle={styles.tableRow}
         headers={this.props.headers}
         file={file}
-        setYOffset={(y) => this.setState({ yOffset: y })}
+        setYOffset={(y) => this.props.actions.setPageYOffset(y)}
         />
     );
 
@@ -302,6 +304,7 @@ const mapStateToProps = (state, ownProps) => {
     tenant: state.tenant,
     total: state.filePagination.total,
     page: state.filePagination.page,
+    yOffset: state.filePagination.yOffset,
     downloadBlob: state.downloadFile,
     addAuthority: state.addAuthorityFile,
     headers: state.displayItems,

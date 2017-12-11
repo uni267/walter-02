@@ -2,7 +2,8 @@ import * as actionTypes from "../actionTypes";
 
 const initialState = {
   total: 0,
-  page: 0
+  page: 0,
+  yOffset: 0
 };
 
 const filePaginationReducer = (state = initialState, action) => {
@@ -16,6 +17,11 @@ const filePaginationReducer = (state = initialState, action) => {
     return {
       ...state,
       page: state.page + 1
+    };
+  case actionTypes.SET_PAGE_Y_OFFSET:
+    return {
+      ...state,
+      yOffset: action.yOffset
     };
   case actionTypes.INIT_FILE_PAGINATION:
     return initialState;

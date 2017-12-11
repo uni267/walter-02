@@ -173,6 +173,10 @@ export const initFilePagination = () => ({
   type: actionTypes.INIT_FILE_PAGINATION
 });
 
+export const setPageYOffset = ( yOffset ) => ({
+  type: actionTypes.SET_PAGE_Y_OFFSET, yOffset
+});
+
 export const fetchSearchFileDetail = (page, sorted, desc) => ({
   type: actionTypes.FETCH_SEARCH_FILE_DETAIL, page, sorted, desc
 });
