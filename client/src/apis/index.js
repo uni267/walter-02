@@ -492,9 +492,10 @@ export class API {
 
     const config = {
       responseType: "arraybuffer",
-      params: { ...params, page, sort: sorted, order }
     };
-    return this.client.get(`/api/v1/excels/search_detail`, config);
+    const data = { ...params, page, sort: sorted, order };
+
+    return this.client.post(`/api/v1/excels/search_detail`, data, config);
   };
 }
 

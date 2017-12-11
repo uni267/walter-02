@@ -7,6 +7,6 @@ const router = Router();
 // excel形式でダウンロード
 router.get("/", controller.index);
 router.get("/search", controller.search);
-router.get("/search_detail", controller.searchDetail);
+router.post("/search_detail", controller.searchDetail);
 
 export default router;

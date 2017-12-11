@@ -18,7 +18,6 @@ function* watchFetchSearchFileDetail() {
 
       if (page === 0 || page === null) {
         const { total } = payload.data.status;
-console.log("watchFetchSearchFileDetail -------- ",payload.data.status);
         yield put(actions.initFileTotal(total));
         yield put(actions.initFiles(payload.data.body));
       }
