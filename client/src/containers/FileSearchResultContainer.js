@@ -121,10 +121,10 @@ class FileSearchResultContainer extends Component {
 
 
     if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
+console.log(this.props.fileListType.list_type);
       this.props.actions.setPageYOffset(0);
       switch (this.props.fileListType.list_type) {
         case LIST_SEARCH_SIMPLE:
-          case LIST_SEARCH_DETAIL:
           this.props.actions.fetchSearchFileSimple(
             0,
             nextProps.fileSortTarget.sorted,
