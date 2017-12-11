@@ -334,7 +334,7 @@ var display_items = [
     value_type: "Select",
     is_display: false,
     is_excel: true,
-    is_search: false,
+    is_search: true,
     order: 140
   }
 ];
