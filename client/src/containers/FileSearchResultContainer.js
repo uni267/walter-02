@@ -90,6 +90,7 @@ class FileSearchResultContainer extends Component {
   }
 
   componentWillUnmount() {
+    window.scrollTo(0, 0);
     this.props.actions.setPageYOffset(0);
     window.removeEventListener("scroll",this.onScroll);
   }
@@ -121,7 +122,6 @@ class FileSearchResultContainer extends Component {
 
 
     if (this.props.fileSortTarget !== nextProps.fileSortTarget) {
-console.log(this.props.fileListType.list_type);
       this.props.actions.setPageYOffset(0);
       switch (this.props.fileListType.list_type) {
         case LIST_SEARCH_SIMPLE:

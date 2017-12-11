@@ -134,6 +134,7 @@ class FileListContainer extends Component {
   }
 
   componentWillUnmount() {
+    window.scrollTo(0, 0);
     this.props.actions.setPageYOffset(0);
     window.removeEventListener("scroll",this.onScroll);
   }
