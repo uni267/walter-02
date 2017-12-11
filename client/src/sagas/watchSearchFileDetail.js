@@ -13,10 +13,7 @@ function* watchSearchFileDetail() {
     try {
 
       const { list_type } = yield select(state => state.fileListType);
-      if(list_type !== LIST_SEARCH_DETAIL ){
-        yield put(actions.initFilePagination());
-        yield put(actions.setFileListType(LIST_SEARCH_DETAIL));
-      }
+      if(list_type !== LIST_SEARCH_DETAIL ) yield put(actions.setFileListType(LIST_SEARCH_DETAIL));
 
       const { searchedItems:old_items } = yield select( state => state.fileDetailSearch );
       const { history, items } = yield take(actions.searchFileDetail().type);
@@ -28,14 +25,14 @@ function* watchSearchFileDetail() {
 
       yield put(commons.loadingStart());
       const api = new API();
-      const { page } = yield select( state => state.filePagination );
+      const { page } = list_type !== LIST_SEARCH_DETAIL ? { page : 0 } : yield select( state => state.filePagination );
       const { sorted, desc } = yield select( state => state.fileSortTarget );
 
       const payload = yield call(api.searchFilesDetail, items, page, sorted, desc);
 
       if (page === 0 || page === null) {
-        const { total } = payload.data.status;
-        yield put(actions.initFileTotal(total));
+        yield put(actions.initFilePagination());
+        yield put(actions.initFileTotal(payload.data.status.total));
         yield put(actions.initFiles(payload.data.body));
       }
       else {

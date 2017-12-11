@@ -204,7 +204,6 @@ class FileListContainer extends Component {
       && this.props.files.length < this.props.total
     ) {
       // yOffsetを記憶しておく
-
       this.props.actions.setPageYOffset( window.pageYOffset );
       this.props.actions.fileNextPage();
     }
