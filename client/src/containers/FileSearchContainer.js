@@ -16,6 +16,9 @@ import AddDownloadBtn from "../components/XlsxDownload/AddDownloadBtn";
 // actions
 import * as FileActions from "../actions/files";
 
+// etc
+import { find } from "lodash";
+
 const styles = {
   buttonContainer: {
     display: "flex",
@@ -30,13 +33,14 @@ const styles = {
 
 class FileSearchContainer extends Component {
   componentWillMount() {
-    this.props.actions.requestFetchFileSearchItems();
+    if(this.props.isSimple){
+      this.props.actions.requestFetchFileSearchItems();
+    }
     this.props.actions.requestFetchTags();
   }
 
   render() {
-    const isSimple = this.props.isSimple === undefined ||
-          this.props.isSimple.length === 0;
+    const isSimple = this.props.isSimple;
 
     return (
       <div style={{marginTop: 10, marginRight: 25, marginBottom: 15}}>
@@ -79,7 +83,7 @@ const mapStateToProps = (state, ownProps) => {
     searchedItems: state.fileDetailSearch.searchedItems,
     open: state.fileDetailSearch.open,
     anchorElement: state.fileDetailSearch.anchorElement,
-    isSimple: state.fileDetailSearch.items.find(item => item.picked),
+    isSimple: find(state.fileDetailSearch.items,{ picked:true }) === undefined,
     tags: state.tags,
     users: state.users,
     disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,

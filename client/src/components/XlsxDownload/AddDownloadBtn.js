@@ -12,7 +12,7 @@ const AddDownloadBtn =({
 }) => {
   const dir_id = match.params.id;
 
-  if( isSimple !== undefined){
+  if( isSimple === false){
     return (
       <div>
         <RaisedButton
