@@ -11,14 +11,20 @@ const AddFilterBtn =({
   open,
   searchItems,
   anchorElement,
-  actions
+  actions,
+  history,
+  location
 }) => {
   const renderItem = (item, idx) => {
     return (
       <MenuItem
         key={idx}
         primaryText={item.label}
-        onTouchTap={() => actions.searchItemPick(item)}
+        onTouchTap={() => {
+          if( location.pathname !== "/files/search" ) history.push("/files/search");
+          actions.searchItemPick(item);
+          actions.toggleFileDetailSearchPopover();
+        }}
         />
     );
   };

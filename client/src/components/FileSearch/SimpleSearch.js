@@ -6,10 +6,12 @@ import TextField from "material-ui/TextField";
 const SimpleSearch = ({
   hintText,
   history,
-  actions
+  actions,
+  fileSimpleSearch
 }) => {
   let searchValue = "";
 
+  const defaultValue = fileSimpleSearch.search_value === undefined ? null : fileSimpleSearch.search_value.value;
   const handleKeyDown = (event) => {
     return event.key === "Enter"
       ? actions.searchFileSimple(searchValue.getValue(), history)
@@ -24,6 +26,7 @@ const SimpleSearch = ({
         onKeyDown={handleKeyDown}
         hintText={hintText}
         floatingLabelText="簡易検索"
+        defaultValue={defaultValue}
         />
     </div>
   );

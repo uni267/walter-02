@@ -281,6 +281,10 @@ export const searchItemNotPick = (item) => ({
   type: actionTypes.SEARCH_ITEM_NOT_PICK, item
 });
 
+export const searchItemNotPickAll = () => ({
+  type: actionTypes.SEARCH_ITEM_NOT_PICK_ALL
+});
+
 export const toggleFileDetailSearchPopover = () => ({
   type: actionTypes.TOGGLE_FILE_DETAIL_SEARCH_POPOVER
 });

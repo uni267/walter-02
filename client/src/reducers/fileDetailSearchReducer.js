@@ -33,6 +33,14 @@ const fileDetailSearchReducer = (state = initialState, action) => {
           { ...item, picked: true } : item;
       })
     };
+  case actionTypes.SEARCH_ITEM_NOT_PICK_ALL:
+    return {
+      ...state,
+      items: state.items.map( item => {
+        return { ...item, picked:false };
+      }),
+      searchedItems: {}
+    };
   case actionTypes.SEARCH_ITEM_NOT_PICK:
     const searchedItems = state.searchedItems;
     unset( searchedItems, action.item._id );

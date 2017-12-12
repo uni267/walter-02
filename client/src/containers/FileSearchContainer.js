@@ -87,7 +87,8 @@ const mapStateToProps = (state, ownProps) => {
     tags: state.tags,
     users: state.users,
     disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,
-    disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined
+    disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined,
+    fileSimpleSearch: state.fileSimpleSearch
   };
 };
 

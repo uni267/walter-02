@@ -9,7 +9,7 @@ import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 import AutoComplete from "material-ui/AutoComplete";
 
-import { find, findIndex } from 'lodash';
+import { find, findIndex, has } from 'lodash';
 
 class DetailSearch extends Component {
   constructor(props) {
@@ -164,6 +164,7 @@ class DetailSearch extends Component {
         }}
         floatingLabelText={item.label}
         hintText={item.label}
+        autoOk={true}
         />
     );
   };
@@ -183,6 +184,7 @@ class DetailSearch extends Component {
           floatingLabelText={`${item.label}(より大きい)`}
           hintText={item.label}
           style={{paddingRight:48}}
+          autoOk={true}
           />
 
         <DatePicker
@@ -196,6 +198,7 @@ class DetailSearch extends Component {
           }}
           floatingLabelText={`${item.label}(より小さい)`}
           hintText={item.label}
+          autoOk={true}
           />
       </div>
     );

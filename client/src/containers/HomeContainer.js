@@ -18,6 +18,12 @@ import FileListContainer from "./FileListContainer";
 import * as FileActions from "../actions/files";
 
 class HomeContainer extends Component {
+
+  componentWillMount(){
+    this.props.actions.keepFileSimpleSearchValue(undefined);
+    this.props.actions.searchItemNotPickAll();
+  }
+
   render() {
     const dirId = this.props.match.params.id;
 

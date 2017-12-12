@@ -39,7 +39,6 @@ function* watchSearchFileDetail() {
         yield put(actions.initNextFiles(payload.data.body));
       }
 
-      history.push("/files/search");
     }
     catch (e) {
       console.log(e);
