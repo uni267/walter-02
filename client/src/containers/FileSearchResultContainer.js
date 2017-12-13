@@ -228,7 +228,7 @@ class FileSearchResultContainer extends Component {
                 <TitleWithGoBack title="検索結果" />
               </div>
               <div style={styles.search_summary}>
-                ファイル、フォルダの検索結果 {this.props.files.length} 件
+                ファイル、フォルダの検索結果 {this.props.total} 件
               </div>
             </div>
 

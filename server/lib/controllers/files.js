@@ -485,50 +485,56 @@ export const searchItems = (req, res, next) => {
 
 export const searchDetail = (req, res, next, export_excel=false) => {
   const buildQuery = (item) => {
-    switch ( item.key_type ) {
-    case "name":
-      return ({
-        [item.key_type]: {
-          $regex: escapeRegExp( item.value )
-        },
-        is_display: true
-      });
-    case "modified_less":
-      return ({
-        modified: {
-          $lt: new Date(item.value)
-        },
-        is_display: true
-      });
-    case "modified_greater":
-      return ({
-        modified: {
-          $gt: new Date(item.value)
-        },
-        is_display: true
-      });
-    case "meta":
-      return ({
-        meta_info_id: mongoose.Types.ObjectId(item._id),
-        value: createMetaSearchValue(item),
-        // is_display: true
-      });
-    case "tag":
-      return ({
-        tags: mongoose.Types.ObjectId(item.value),
-        is_display: true
-      });
-    case "favorite":
-      return ({
-        is_star: item.value,
-        is_display: true
-      });
-    default:
-      return ({
-        [item.key_type]: item.value,
-        is_display: true
-      });
-    }
+    return co(function*(){
+      switch ( item.key_type ) {
+        case "name":
+          return ({
+            [item.key_type]: {
+              $regex: escapeRegExp( item.value )
+            },
+            is_display: true
+          });
+        case "modified_less":
+          return ({
+            modified: {
+              $lt: new Date(item.value)
+            },
+            is_display: true
+          });
+        case "modified_greater":
+          return ({
+            modified: {
+              $gt: new Date(item.value)
+            },
+            is_display: true
+          });
+        case "meta":
+          return ({
+            meta_info_id: mongoose.Types.ObjectId(item._id),
+            value: createMetaSearchValue(item),
+            // is_display: true
+          });
+        case "tag":
+          return ({
+            tags: mongoose.Types.ObjectId(item.value),
+            is_display: true
+          });
+        case "favorite":
+          return ({
+            is_star: item.value,
+            is_display: true
+          });
+        case "dir_route":
+            const files = yield File.find({is_dir:true, name:{ $regex: escapeRegExp( item.value ) } }).select({ _id:1,name:1 });
+            const ret = { dir_id: { $in : files.map(file => file._id ) } };
+          return ret;
+        default:
+          return ({
+            [item.key_type]: item.value,
+            is_display: true
+          });
+        }
+    });
   };
 
   const createMetaSearchValue = (item) =>{
@@ -596,13 +602,23 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         return q;
       });
 
-      const base_queries = base_items[0] === undefined
-            ? {}
-            : Object.assign(...base_items.map(buildQuery));
+      let base_queries;
+      if(base_items[0] === undefined){
+        base_queries = {};
+      }else{
+        const query = yield base_items.map( item =>{
+        const query = buildQuery(item);
+          return query;
+        });
+        base_queries = Object.assign(...query);
+      }
 
       const meta_queries = meta_items[0] === undefined
             ? []
-            : meta_items.map(buildQuery);
+            : yield (meta_items.map(item => {
+              const query  = buildQuery(item);
+              return query;
+            }));
 
       let file_metainfo_ids = [];
 
