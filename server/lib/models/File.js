@@ -254,6 +254,18 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
           }
         },
         {
+          $addFields: {
+            sort_target: {
+              $filter: {
+                input: "$meta_infos.sort_target",
+                as: "sort_target",
+                cond: { $ne: [ "$$sort_target", null ] }
+             }
+
+            }
+          },
+        },
+        {
           $project: {
             _id: 1,
             name: 1,
@@ -277,7 +289,8 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
                 as: "meta_infos",
                 cond: { $gte: [ "$$meta_infos._id", null ] }
               }
-            }
+            },
+            sort_target: 1
           }
         }
       ]).sort(sortOption).skip(offset).limit(limit);

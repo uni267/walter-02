@@ -535,8 +535,8 @@ export const searchDetail = (req, res, next, export_excel=false) => {
     switch (item.value_type) {
       case "Date":
       return {
-          $gt: moment( item.value.gt ).format('YYYY-MM-DD 00:00:00Z') ,
-          $lt: moment( item.value.lt ).add("days",1).format('YYYY-MM-DD 00:00:00Z')
+          $gt: moment( item.value.gt ).add("days",-1).utc().format() ,
+          $lt: moment( item.value.lt ).utc().format()
         };
       case "String":
       default:
@@ -688,7 +688,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         default:
           errors.unknown = e;
       }
-console.log(errors);
+
       logger.error(errors);
       res.status(400).json({
         status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }
@@ -2310,7 +2310,7 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
     } else if(item.meta_info_id !== null) {
       // メタ情報でのソート
       sort = {
-        "meta_infos.sort_target": order
+        "sort_target": order
       };
     } else {
       // @fixme
