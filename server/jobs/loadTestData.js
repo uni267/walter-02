@@ -191,6 +191,7 @@ var display_items = [
     label: "場所",
     name: "dir_route",
     search_value_type: "String",
+    value_type: "String",
     is_display: false,
     is_excel: true,
     is_search: true,

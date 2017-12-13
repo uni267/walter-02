@@ -12,13 +12,22 @@ const MoveFileDialog = ({
   open,
   file,
   dir,
-  actions
+  actions,
+  files
 }) => {
+
   const dialogActions = [
     (
       <FlatButton
         label="移動"
-        onTouchTap={() => actions.moveFile(dir, file)}
+        onTouchTap={() => {
+          if(file === undefined ){
+            const target = files.filter(file => file.checked);
+            actions.moveFiles(dir, target);
+          }else{
+            actions.moveFile(dir, file);
+          }
+        }}
         primary={true}
         />
     ),

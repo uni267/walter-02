@@ -189,7 +189,6 @@ class File extends Component {
             checked={file.checked}
             style={{ ...style.checkbox, opacity: checkOpacity }}
             onCheck={() => {
-              this.props.setYOffset(window.pageYOffset);
               this.props.actions.toggleFileCheck(file);
             }} />
 

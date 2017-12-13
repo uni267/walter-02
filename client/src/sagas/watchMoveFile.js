@@ -14,7 +14,8 @@ function* watchMoveFile() {
 
     try {
       yield call(api.moveFile, dir, file);
-      const payload = yield call(api.fetchFiles, file.dir_id);
+      const { sorted, desc } = yield select( state => state.fileSortTarget );
+      const payload = yield call(api.fetchFiles, file.dir_id , 0 , sorted, desc );
       yield put(actions.initFiles(payload.data.body));
 
       // DnDから呼ばれる場合もあるので
