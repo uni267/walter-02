@@ -40,8 +40,9 @@ class AnalysisContainer extends Component {
 
             <div style={{ marginBottom: 20, marginLeft: 20 }}>
               <DatePicker
-                formatDate={ new dateTimeFormatter().format }
+                formatDate={ new dateTimeFormatter("ja").format }
                 DateTimeFormat={ dateTimeFormatter }
+                locale={"ja"}
                 onChange={(e, date) => {
                   this.props.actions.requestFetchAnalysis(date);
                 }}

@@ -100,8 +100,9 @@ class MetaInfo extends Component {
       case "Date":
         return (
           <DatePicker
-            formatDate={ new dateTimeFormatter().format }
+            formatDate={ new dateTimeFormatter("ja").format }
             DateTimeFormat={ dateTimeFormatter }
+            locale={"ja"}
             onChange={ (e, value) => this.setState({ metaInfoValue: value }) }
             floatingLabelText="日付を入力"
             autoOk={true}

@@ -156,7 +156,7 @@ class DetailSearch extends Component {
   searchDateField = (item) => {
     return (
       <DatePicker
-        formatDate={ new dateTimeFormatter().format }
+        formatDate={ new dateTimeFormatter("ja").format }
         DateTimeFormat={ dateTimeFormatter }
         onChange={ (e, value) => {
           new Promise( (resolve, reject) => {
@@ -169,6 +169,7 @@ class DetailSearch extends Component {
         floatingLabelText={item.label}
         hintText={item.label}
         autoOk={true}
+        locale="ja"
         />
     );
   };
@@ -177,7 +178,7 @@ class DetailSearch extends Component {
     return (
       <div style={{ display:"flex" }} >
         <DatePicker
-          formatDate={ new dateTimeFormatter().format }
+          formatDate={ new dateTimeFormatter("ja").format }
           DateTimeFormat={ dateTimeFormatter }
           onChange={ (e, value) => {
             new Promise( (resolve, reject) => {
@@ -191,10 +192,11 @@ class DetailSearch extends Component {
           hintText={item.label}
           style={{paddingRight:48}}
           autoOk={true}
+          locale={"ja"}
           />
 
         <DatePicker
-          formatDate={ new dateTimeFormatter().format }
+          formatDate={ new dateTimeFormatter("ja").format }
           DateTimeFormat={ dateTimeFormatter }
           onChange={ (e, value) => {
             new Promise( (resolve, reject) => {
@@ -207,6 +209,7 @@ class DetailSearch extends Component {
           floatingLabelText={`${item.label}(より小さい)`}
           hintText={item.label}
           autoOk={true}
+          locale={"ja"}
           />
       </div>
     );
