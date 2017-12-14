@@ -11,7 +11,7 @@ const SimpleSearch = ({
 }) => {
   let searchValue = "";
 
-  const defaultValue = fileSimpleSearch.search_value === undefined ? null : fileSimpleSearch.search_value.value;
+  const defaultValue = ( fileSimpleSearch === undefined || fileSimpleSearch.search_value === undefined ) ? null : fileSimpleSearch.search_value.value;
   const handleKeyDown = (event) => {
     return event.key === "Enter"
       ? actions.searchFileSimple(searchValue.getValue(), history)
