@@ -18,6 +18,7 @@ import NavigationContainer from "./NavigationContainer";
 import UsagesArea from "../components/Analysis/UsagesArea";
 
 import * as AnalysisActions from "../actions/analysises";
+import dateTimeFormatter from '../helper/dateTimeFormatter';
 
 class AnalysisPeriodContainer extends Component {
   constructor(props) {
@@ -48,6 +49,8 @@ class AnalysisPeriodContainer extends Component {
             <div style={{ display: "flex", marginBottom: 20, marginLeft: 20 }}>
               <div>
                 <DatePicker
+                  formatDate={ new dateTimeFormatter().format }
+                  DateTimeFormat={ dateTimeFormatter }
                   hintText="開始年月日"
                   autoOk={true}
                   onChange={(e, date) => {
@@ -56,6 +59,8 @@ class AnalysisPeriodContainer extends Component {
               </div>
               <div style={{ marginLeft: 20 }}>
                 <DatePicker
+                  formatDate={ new dateTimeFormatter().format }
+                  DateTimeFormat={ dateTimeFormatter }
                   hintText="終了年月日"
                   autoOk={true}
                   onChange={(e, date) => {

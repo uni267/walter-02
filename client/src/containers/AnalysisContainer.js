@@ -20,6 +20,7 @@ import ShapePie from "../components/Analysis/ShapePie";
 
 // actions
 import * as AnalysisActions from "../actions/analysises";
+import dateTimeFormatter from '../helper/dateTimeFormatter';
 
 class AnalysisContainer extends Component {
   componentWillMount() {
@@ -39,6 +40,8 @@ class AnalysisContainer extends Component {
 
             <div style={{ marginBottom: 20, marginLeft: 20 }}>
               <DatePicker
+                formatDate={ new dateTimeFormatter().format }
+                DateTimeFormat={ dateTimeFormatter }
                 onChange={(e, date) => {
                   this.props.actions.requestFetchAnalysis(date);
                 }}
@@ -54,7 +57,7 @@ class AnalysisContainer extends Component {
                     <CardText>
                       <TotalPie { ...this.props } cardWidth={ rowWidth / 3 } />
                     </CardText>
-                  </Card>                                  
+                  </Card>
 
                   <Card style={{ width: rowWidth / 3, marginLeft: 10 }}>
                     <CardTitle subtitle="ファイル数" />
@@ -82,7 +85,7 @@ class AnalysisContainer extends Component {
                     <CardTitle subtitle="使用率(フォルダ毎)" />
                     <CardText>
                       <NoShapePie
-                        data={this.props.useRateFolder} 
+                        data={this.props.useRateFolder}
                         cardWidth={ rowWidth / 2 } />
                     </CardText>
                   </Card>
@@ -122,7 +125,7 @@ class AnalysisContainer extends Component {
                 <Divider />
                 <Menu>
                   <MenuItem primaryText="サマリー" />
-                  <MenuItem primaryText="使用容量推移" 
+                  <MenuItem primaryText="使用容量推移"
                             onTouchTap={() => this.props.history.push("/analysis/periods")} />
                 </Menu>
                 <Divider />

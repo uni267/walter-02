@@ -6,6 +6,7 @@ import RaisedButton from "material-ui/RaisedButton";
 import AutoComplete from "material-ui/AutoComplete";
 import TextField from "material-ui/TextField";
 import DatePicker from "material-ui/DatePicker";
+import dateTimeFormatter from '../../helper/dateTimeFormatter';
 
 const styles = {
   row: {
@@ -99,6 +100,8 @@ class MetaInfo extends Component {
       case "Date":
         return (
           <DatePicker
+            formatDate={ new dateTimeFormatter().format }
+            DateTimeFormat={ dateTimeFormatter }
             onChange={ (e, value) => this.setState({ metaInfoValue: value }) }
             floatingLabelText="日付を入力"
             autoOk={true}
@@ -136,7 +139,7 @@ class MetaInfo extends Component {
             dataSource={metaInfos}
             dataSourceConfig={dataSourceConfig}
             />
-            
+
         </div>
         <div style={{...styles.cell, width: "25%"}}>
 

@@ -10,6 +10,8 @@ import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-cir
 import AutoComplete from "material-ui/AutoComplete";
 
 import { find, findIndex, has } from 'lodash';
+import * as moment from 'moment';
+import dateTimeFormatter from '../../helper/dateTimeFormatter'
 
 class DetailSearch extends Component {
   constructor(props) {
@@ -154,6 +156,8 @@ class DetailSearch extends Component {
   searchDateField = (item) => {
     return (
       <DatePicker
+        formatDate={ new dateTimeFormatter().format }
+        DateTimeFormat={ dateTimeFormatter }
         onChange={ (e, value) => {
           new Promise( (resolve, reject) => {
             const result = this.appendSearchValue(item, value);
@@ -173,6 +177,8 @@ class DetailSearch extends Component {
     return (
       <div style={{ display:"flex" }} >
         <DatePicker
+          formatDate={ new dateTimeFormatter().format }
+          DateTimeFormat={ dateTimeFormatter }
           onChange={ (e, value) => {
             new Promise( (resolve, reject) => {
               const result = this.appendSearchValue(item, { gt:value });
@@ -188,6 +194,8 @@ class DetailSearch extends Component {
           />
 
         <DatePicker
+          formatDate={ new dateTimeFormatter().format }
+          DateTimeFormat={ dateTimeFormatter }
           onChange={ (e, value) => {
             new Promise( (resolve, reject) => {
               const result = this.appendSearchValue(item, { lt:value });
