@@ -16,7 +16,7 @@ import FileListHeader from "../components/FileListHeader";
 import Dir from "../components/Dir";
 import File from "../components/File";
 import FileOperationDialogContainer from "./FileOperationDialogContainer";
-import TitleWithGoBack from "../components/Common/TitleWithGoBack";
+import TitleWithGoHome from "../components/Common/TitleWithGoHome";
 
 // actions
 import * as FileActions from "../actions/files";
@@ -225,7 +225,7 @@ class FileSearchResultContainer extends Component {
           <div style={{ display: "flex" }}>
             <div style={{ width: "40%" }}>
               <div style={styles.title}>
-                <TitleWithGoBack title="検索結果" />
+                <TitleWithGoHome title="検索結果" />
               </div>
               <div style={styles.search_summary}>
                 ファイル、フォルダの検索結果 {this.props.total} 件
