@@ -256,7 +256,7 @@ class FileSearchResultContainer extends Component {
           </div>
         </Card>
 
-        <FileOperationDialogContainer />
+        <FileOperationDialogContainer { ...this.props } />
       </div>
     );
   }
