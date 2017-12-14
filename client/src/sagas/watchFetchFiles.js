@@ -1,4 +1,4 @@
-import { call, put, take, all } from "redux-saga/effects";
+import { call, put, take, all, select } from "redux-saga/effects";
 
 // api
 import { API } from "../apis";
@@ -19,6 +19,8 @@ function* watchFetchFiles() {
       if (page === 0 || page === null) {
 
         let files, dirs;
+
+        const { sorted, desc } = yield select( state => state.fileSortTarget );
 
         if (sorted === null) {
           let defaultSort = yield call(api.fetchDisplayItems);

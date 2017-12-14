@@ -63,7 +63,7 @@ const FileListHeader = ({
         sortIcon = <ContentSort />;
       }
       else {
-        sortIcon = <ContentSort style={{ transform: "rotate(180deg)" }} />;
+        sortIcon = <ContentSort style={{ transform: "scale(1, -1)" }} />;
       }
     }
 
