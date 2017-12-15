@@ -26,7 +26,7 @@ import SocialPersonAdd from "material-ui/svg-icons/social/person-add";
 
 // components
 import NavigationContainer from "./NavigationContainer";
-import SimpleSearch from "../components/FileSearch/SimpleSearch";
+// import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import UserTableHeader from "../components/User/UserTableHeader";
 import UserTableBody from "../components/User/UserTableBody";
 
@@ -67,7 +67,6 @@ class UserContainer extends Component {
 
               <div style={{width: "80%"}}>
                 <div style={{display: "flex", flexDirection: "row-reverse"}}>
-                  <SimpleSearch actions={actions} />
                 </div>
               </div>
             </div>
