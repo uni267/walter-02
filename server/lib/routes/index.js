@@ -25,8 +25,6 @@ import TestRouter from "./test";
 
 const router = Router();
 
-router.use("/",ClientRouter);
-
 router.use("/api/v1/*", BeforeRouter);
 router.use("/api/login", LoginRouter);
 router.use("/api/v1/users", UserRouter);
@@ -47,6 +45,7 @@ router.use("/api/v1/notifications", notificationRouter);
 router.use("/api/v1/display_items", DisplayItemRouter);
 router.use("/api/v1/excels", ExcelRouter);
 
+router.use("/*",ClientRouter);
 
 // debug
 router.use("/test", TestRouter);
