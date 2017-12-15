@@ -13,16 +13,33 @@ const MetaInfoDetailBasic = ({
   validationErrors,
   valueTypes,
   changeMetaInfoLabel,
+  changeMetaInfoName,
   changeMetaInfoValueType,
+  saveMetaInfoName,
+  saveMetaInfoLabel,
+  actions,
   displaySaveButton = true
 }) => {
+
+  const saveNameBtn = (
+    displaySaveButton
+      ? (
+        <FlatButton
+          label="保存"
+          primary={true}
+          onClick={() => saveMetaInfoName(changedMetaInfo)}
+        />
+      )
+    : null
+  );
+
   const saveLabelBtn = (
     displaySaveButton
       ? (
         <FlatButton
           label="保存"
           primary={true}
-          onClick={() => true}
+          onClick={() => saveMetaInfoLabel(changedMetaInfo)}
         />
       )
     : null
@@ -30,28 +47,44 @@ const MetaInfoDetailBasic = ({
 
   return (
     <div>
+      <div>
       <TextField
-        value={changedMetaInfo.label}
-        onChange={(e, value) => changeMetaInfoLabel(value)}
-        floatingLabelText="表示名"
-        errorText={validationErrors.label}
+        value={changedMetaInfo.name}
+        onChange={(e, value) => changeMetaInfoName(value)}
+        floatingLabelText="メタ情報名"
+        errorText={validationErrors.name}
         />
-      
-        {saveLabelBtn}
 
-      <SelectField
-        floatingLabelText="データ型"
-        disabled={displaySaveButton}
-        value={changedMetaInfo.value_type}
-        errorText={validationErrors.value_type}
-        onChange={(e, value) => changeMetaInfoValueType(valueTypes[value].name)}>
+        {saveNameBtn}
+      </div>
+      <div>
 
-        {valueTypes.map( (type, id) => (
-          <MenuItem value={type.name} primaryText={type.name} />
-        ))}
+        <TextField
+          value={changedMetaInfo.label}
+          onChange={(e, value) => changeMetaInfoLabel(value)}
+          floatingLabelText="表示名"
+          errorText={validationErrors.label}
+          />
 
-      </SelectField>
+          {saveLabelBtn}
 
+      </div>
+      <div>
+
+        <SelectField
+          floatingLabelText="データ型"
+          disabled={displaySaveButton}
+          value={changedMetaInfo.value_type}
+          errorText={validationErrors.value_type}
+          onChange={(e, value) => changeMetaInfoValueType(valueTypes[value].name)}>
+
+          {valueTypes.map( (type, id) => (
+            <MenuItem value={type.name} primaryText={type.name} />
+          ))}
+
+        </SelectField>
+
+      </div>
     </div>
   );
 };

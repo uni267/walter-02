@@ -48,7 +48,7 @@ class MetaInfoCreateContainer extends Component {
           </CardActions>
         </Card>
       </div>
-    );      
+    );
   }
 }
 
@@ -63,6 +63,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
   initChangedMetaInfo: () => dispatch(actions.initChangedMetaInfo()),
   changeMetaInfoLabel: (label) => dispatch(actions.changeMetaInfoLabel(label)),
+  changeMetaInfoName: (name) => dispatch(actions.changeMetaInfoName(name)),
+  saveMetaInfoName: (name) => dispatch(actions.saveMetaInfoName(name)),
+  saveMetaInfoLabel: (label) => dispatch(actions.saveMetaInfoLabel(label)),
   changeMetaInfoValueType: (value_type) => (
     dispatch(actions.changeMetaInfoValueType(value_type))
   ),
@@ -72,7 +75,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 MetaInfoCreateContainer = connect(
-  mapStateToProps, 
+  mapStateToProps,
   mapDispatchToProps
 )(MetaInfoCreateContainer);
 

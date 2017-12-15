@@ -120,8 +120,28 @@ export const requestVerifyToken = (token) => ({
   type: actionTypes.REQUEST_VERIFY_TOKEN, token
 });
 
+export const changeMetaInfoName = (name) => ({
+  type: actionTypes.CHANGE_META_INFO_NAME, name
+});
+
 export const changeMetaInfoLabel = (label) => ({
   type: actionTypes.CHANGE_META_INFO_LABEL, label
+});
+
+export const saveMetaInfoName = (changedMetaInfo) => ({
+  type: actionTypes.SAVE_METAINFO_NAME, changedMetaInfo
+});
+
+export const saveMetaInfoLabel = (changedMetaInfo) => ({
+  type: actionTypes.SAVE_METAINFO_LABEL, changedMetaInfo
+});
+
+export const saveMetaInfoValidationErrors = (errors) => ({
+  type: actionTypes.SAVE_META_INFO_VALIDATION_ERRORS, errors
+});
+
+export const clearMetaInfoValidationErrors = () => ({
+  type: actionTypes.CLEAR_META_INFO_VALIDATION_ERRORS
 });
 
 export const changeMetaInfoValueType = (value_type) => ({

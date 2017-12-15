@@ -42,6 +42,14 @@ const metaInfoReducer = (state = initialState, action) => {
       ...state,
       target_file: action.target_file
     };
+  case actionTypes.CHANGE_META_INFO_NAME:
+    return {
+      ...state,
+      changedMetaInfo: {
+        ...state.changedMetaInfo,
+        name: action.name
+      }
+    };
   case actionTypes.CHANGE_META_INFO_LABEL:
     return {
       ...state,
@@ -67,6 +75,11 @@ const metaInfoReducer = (state = initialState, action) => {
     return {
       ...state,
       validationErrors: action.errors
+    };
+  case actionTypes.CLEAR_META_INFO_VALIDATION_ERRORS:
+    return {
+      ...state,
+      validationErrors: {}
     };
   default:
     return state;

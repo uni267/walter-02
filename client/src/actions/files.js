@@ -241,6 +241,10 @@ export const saveMetaInfoValidationErrors = (errors) => ({
   type: actionTypes.SAVE_META_INFO_VALIDATION_ERRORS, errors
 });
 
+export const clearMetaInfoValidationErrors = () => ({
+  type: actionTypes.CLEAR_META_INFO_VALIDATION_ERRORS
+});
+
 export const clearFilesBuffer = () => ({
   type: actionTypes.CLEAR_FILES_BUFFER
 });

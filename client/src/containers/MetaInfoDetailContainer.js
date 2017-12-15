@@ -68,12 +68,13 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestFetchMetaInfo: (meta_id) => (
     dispatch(actions.requestFetchMetaInfo(meta_id))
   ),
-  changeMetaInfoLabel: (label) => (
-    dispatch(actions.changeMetaInfoLabel(label))
-  ),
+  changeMetaInfoLabel: (label) => (dispatch(actions.changeMetaInfoLabel(label))),
+  changeMetaInfoName: (name) => (dispatch(actions.changeMetaInfoName(name))),
   changeMetaInfoValueType: (value_type) => (
     dispatch(actions.changeMetaInfoValueType(value_type))
   ),
+  saveMetaInfoName: (changedMetaInfo) => dispatch(actions.saveMetaInfoName(changedMetaInfo)),
+  saveMetaInfoLabel: (changedMetaInfo) => dispatch(actions.saveMetaInfoLabel(changedMetaInfo)),
   initChangedMetaInfo: () => dispatch(actions.initChangedMetaInfo())
 });
 

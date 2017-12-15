@@ -139,6 +139,16 @@ export class API {
     return this.client.post(`/api/v1/files/${file._id}/meta`, body);
   };
 
+  saveMetainfoLabel = (meta) => {
+    const body = { label: meta.label };
+    return this.client.patch(`/api/v1/meta_infos/${meta._id}/label`, body );
+  }
+
+  saveMetainfoName = (meta) => {
+    const body = { name: meta.name };
+    return this.client.patch(`/api/v1/meta_infos/${meta._id}/name`, body );
+  }
+
   deleteMetaInfoToFile = (file, meta) => {
     return this.client.delete(
       `/api/v1/files/${file._id}/meta/${meta._id}`);
