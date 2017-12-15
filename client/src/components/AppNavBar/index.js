@@ -45,8 +45,10 @@ const AppNavBar = ({
       <IconButton
         iconStyle={{ color: "white" }}
         onClick={(e)=>{
-          openNotifications(e.currentTarget);
-          requestUpdateNotificationsRead(notifications);
+          if(notifications.length > 0){
+            openNotifications(e.currentTarget);
+            requestUpdateNotificationsRead(notifications);
+          }
         }}
       >
         <NotificationsIcon />
