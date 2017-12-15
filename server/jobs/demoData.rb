@@ -20,7 +20,7 @@ POST_FILE_LENGTH = 20
 API_SERVER = "http://localhost:3333"
 
 # init対象のdbサーバ
-DB_SERVER = "172.16.55.78"
+DB_SERVER = "192.168.56.10"
 
 # どのユーザでpostするか
 ACCOUNT_INFO = {
@@ -112,7 +112,7 @@ receive_user_names = ["受信 太郎", "受信 次郎", "受信 花子"]
       when "send_date_time"
         res["value"] = send_date
       when "receive_date_time"
-        res["value"] = receive_date
+        res["value"] = send_date
       when "send_company_name"
         res["value"] = company_name
       when "send_user_name"
