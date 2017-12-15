@@ -2234,9 +2234,24 @@ export const exists = (req, res, next) => {
         })
       ));
 
+      const exists = zipWith(records, files, (record, file) => {
+        if (record === null) {
+          return {
+            name: file.name,
+            is_exists: false
+          };
+        }
+        else {
+          return {
+            name: record.name,
+            is_exists: true
+          };
+        }
+      });
+
       res.json({
         status: { success: true },
-        body: records
+        body: exists
       });
 
     }
