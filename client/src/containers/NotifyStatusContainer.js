@@ -12,14 +12,18 @@ import ErrorReport from "../components/Common/ErrorReport";
 
 const styles = {
   circular: {
-    position: "absolute",
+    position: "fixed",
     paddingTop: "30%",
     width: "100%",
     height: "100%",
     zIndex: 2000,
     backgroundColor: "#ddd",
     opacity: 0.5,
-    textAlign: "center"
+    textAlign: "center",
+    top: 0,
+    bottom: 0,
+    right:0,
+    left:0
   }
 };
 
