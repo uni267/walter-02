@@ -16,7 +16,7 @@ function* watchDeleteRole() {
       yield call(api.deleteRole, task.role);
       const payload = yield call(api.fetchRoles);
       yield put(actions.initRoles(payload.data.body));
-      yield task.history.push("/roles");
+      yield task.history.push("/role_files");
       yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("ロールを削除しました"));
     }
