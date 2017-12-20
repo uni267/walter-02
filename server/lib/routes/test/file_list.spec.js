@@ -54,6 +54,7 @@ describe(base_url,() => {
         request.post('/api/v1/files')
         .send(requestPayload).
         end((err,res) => {
+          console.log(res.body.status.errors)
           // ファイルアップロードの成功をチェック
           expect(res.status).equal(200);
           expect(res.body.status.success).equal(true);

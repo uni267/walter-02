@@ -64,7 +64,7 @@ describe(base_url,() => {
         // メタ情報一覧を取得
         return new Promise((resolve, reject)=>{
           request.get('/api/v1/meta_infos').end((err,res) => {
-            const _meta = find(res.body.body, { value_type: "String" });
+            const _meta = find(res.body.body, { name: "display_file_name" });
 
             meta = {
               _id: _meta._id,
@@ -1374,7 +1374,7 @@ describe(base_url,() => {
                 expect(response.body.status.success).equal(true);
                 done();
               });
-              it("メタ情報の昇順である",done => {
+              it("メタ情報の降順である",done => {
                 expect(file_metainfo_values[0]).equal( 'meta_value_日本語' );
                 expect(file_metainfo_values[1]).equal( 'meta_value_alpha123' );
                 expect(file_metainfo_values[2]).equal( 'meta_value_alpha' );
@@ -1383,6 +1383,7 @@ describe(base_url,() => {
                 done();
               });
             });
+
             describe('メタ情報「表示ファイル名」の昇順',() => {
               let response;
               let file_metainfo_values;
@@ -1395,7 +1396,7 @@ describe(base_url,() => {
                   const display_item = res;
 
                   request.get(`${base_url}/search`)
-                  .query({ q:"txt", sort: display_item.meta_info_id , order:'asc' })
+                  .query({ q:"txt", sort: display_item.meta_info_id , order:'asc', page:1 }) // 30件以上ページがあるはずなので
                   .end( ( err, res ) => {
                     response = res;
                     file_metainfo_values = res.body.body.filter(file=> file.meta_infos.length > 0).map(file => file.meta_infos[0].value);
