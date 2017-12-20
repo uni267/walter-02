@@ -29,4 +29,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-!.gitkeep
+client/.vscode/settings.json
+server/.vscode/settings.json

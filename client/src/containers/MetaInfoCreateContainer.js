@@ -19,6 +19,11 @@ class MetaInfoCreateContainer extends Component {
     this.props.initChangedMetaInfo();
   }
 
+  componentWillUnmount() {
+    this.props.initChangedMetaInfo();
+    this.props.clearMetaInfoValidationErrors();
+  }
+
   render() {
     return (
       <div>
@@ -69,6 +74,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeMetaInfoValueType: (value_type) => (
     dispatch(actions.changeMetaInfoValueType(value_type))
   ),
+  clearMetaInfoValidationErrors: () => dispatch(actions.clearMetaInfoValidationErrors()) ,
   createMetaInfo: (metaInfo) => (
     dispatch(actions.createMetaInfo(metaInfo, ownProps.history))
   )

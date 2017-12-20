@@ -20,6 +20,7 @@ class MetaInfoDetailContainer extends Component {
 
   componentWillUnmount() {
     this.props.initChangedMetaInfo();
+    this.props.clearMetaInfoValidationErrors();
   }
 
   render() {
@@ -75,6 +76,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   ),
   saveMetaInfoName: (changedMetaInfo) => dispatch(actions.saveMetaInfoName(changedMetaInfo)),
   saveMetaInfoLabel: (changedMetaInfo) => dispatch(actions.saveMetaInfoLabel(changedMetaInfo)),
+  clearMetaInfoValidationErrors: () => dispatch(actions.clearMetaInfoValidationErrors()) ,
   initChangedMetaInfo: () => dispatch(actions.initChangedMetaInfo())
 });
 
