@@ -541,8 +541,8 @@ export const searchDetail = (req, res, next, export_excel=false) => {
     switch (item.value_type) {
       case "Date":
       return {
-          $gt: moment( item.value.gt ).add("days",-1).utc().format() ,
-          $lt: moment( item.value.lt ).utc().format()
+          $gte: moment( item.value.gt ).utc().format("YYYY-MM-DD 00:00:00") ,
+          $lt: moment( item.value.lt ).add(1,"days").utc().format("YYYY-MM-DD 00:00:00")
         };
       case "String":
       default:
@@ -619,7 +619,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
               const query  = buildQuery(item);
               return query;
             }));
-
+console.log(base_queries, meta_queries);
       let file_metainfo_ids = [];
 
       if(meta_items.length > 0){
