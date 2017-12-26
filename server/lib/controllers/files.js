@@ -9,6 +9,7 @@ import morgan from "morgan";
 import { exec } from "child_process";
 import util from "util";
 import crypto from "crypto";
+import esClient from "../elasticsearchclient";
 import {
   intersection,
   zipWith,
@@ -20,7 +21,8 @@ import {
   find,
   isNaN,
   first,
-  sortBy
+  sortBy,
+  max
 } from "lodash";
 
 // etc
@@ -265,10 +267,35 @@ export const search = (req, res, next, export_excel=false) => {
   return co(function* () {
     try {
       const { q, page, sort, order } = req.query;
-      const { tenant_id } = res.user.tenant_id;
+      const { tenant_id } = res.user;
+
       if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
+
+      const esQuely = {
+        index: tenant_id.toString(),
+        type: "files",
+        // q: `*${q.toString()}*`,
+        q: q.toString(),
+        defaultOperator: "AND",
+        size: 30,
+        body: {
+          // min_score: 0.1
+        }
+
+      };
+      const esResult = yield esClient.search(esQuely);
+      const scores = esResult.hits.hits.map(hit => hit._score) ;
+      const esResultIds = esResult.hits.hits
+      .map(hit => {
+        return mongoose.Types.ObjectId( hit._id );
+      });
+
+      const { total } = esResult.hits;
+
+      // console.log(esResultIds);
+/*
       // スペース区切りの検索対応
       let query_params = q.replace(new RegExp("\\u3000", "g"), " ")
           .split(" ")
@@ -294,14 +321,16 @@ export const search = (req, res, next, export_excel=false) => {
           return intersection(prev.map( p => p.toString() ), cur.map( c => c.toString() ) );
         }
       }, []).map( id => mongoose.Types.ObjectId(id) );
-
+*/
+      // 閲覧権限のあるファイルIDを取得
       const file_ids = uniq([
         ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
         res.user.tenant.home_dir_id,
         res.user.tenant.trash_dir_id,
-        ...search_result_on_meta_infos_id
+        // ...search_result_on_meta_infos_id
       ]);
-
+// console.log({file_ids});
+/*
       const name_conditions = {
         $or: query_params.map( _q => ({ name: { $regex: _q } }) )
       };
@@ -316,12 +345,22 @@ export const search = (req, res, next, export_excel=false) => {
         is_deleted: false,
         _id: {$in : file_ids}
       };
+*/
+      // TODO:　ファイル権限
+      // TODO:　スペース区切りでor検索
+      const conditions = {
+        dir_id: { $ne: trash_dir_id },
+        is_display: true,
+        is_deleted: false,
+        _id: {$in : esResultIds}
+      };
+// console.log(conditions);
 
       const _page = page === undefined || page === null
         ? 0 : page;
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const total = yield File.find(conditions).count();
+      // const total = yield File.find(conditions).count();
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = _page * limit;
 
@@ -331,7 +370,6 @@ export const search = (req, res, next, export_excel=false) => {
       const _sort = yield createSortOption(sort, order);
 
       let files = yield File.searchFiles(conditions,offset,limit,_sort, mongoose.Types.ObjectId(sort));
-
       files = files.map( file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
@@ -365,7 +403,6 @@ export const search = (req, res, next, export_excel=false) => {
       }
     }
     catch (e) {
-
       let errors = {};
       switch (e.message) {
       case "q is empty":
@@ -619,7 +656,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
               const query  = buildQuery(item);
               return query;
             }));
-console.log(base_queries, meta_queries);
+
       let file_metainfo_ids = [];
 
       if(meta_items.length > 0){
@@ -858,6 +895,7 @@ export const upload = (req, res, next) => {
     try {
       const myFiles  = req.body.files;
       let dir_id = req.body.dir_id;
+      const tenant_id  = res.user.tenant_id.toString();
 
       if (myFiles === null ||
           myFiles === undefined ||
@@ -1291,6 +1329,51 @@ export const upload = (req, res, next) => {
         model ? model.save() : false
       ));
 
+
+      // elasticsearchへ登録
+      // TODO: elasticsearch 登録処理の精査と共通化
+      const changedFileIds = changedFiles.map(file => file._id);
+      const sortOption = yield createSortOption();
+      const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+
+      const bulkBody = [];
+      indexingFile.forEach(file => {
+        bulkBody.push({
+            index:{
+              _index: tenant_id,
+              _type: "files",
+              _id: file._id
+            }
+        });
+
+        const esFile = {
+          _id: file._id,
+          name: file.name,
+          mime_type: file.mime_type,
+          size: file.size,
+          is_dir: file.is_dir,
+          dir_id: file.dir_id,
+          is_display: file.is_display,
+          is_star: file.is_star,
+          is_crypted: file.is_crypted,
+          // histories: file.histories,
+          is_deleted: file.is_deleted,
+          modified: file.modified,
+          preview_id: file.preview_id,
+          authorities: file.authorities,
+          dirs: file.dirs,
+          sort_target: file.sort_target
+        }
+        // fix me
+        const metas = file.meta_infos.map(meta => (esFile[meta._id] = meta.value ));
+        const tags = file.tags.map(tag => (esFile[tag._id]=tag.value ));
+console.log();
+        bulkBody.push({
+          file: esFile
+        });
+      });
+
+      yield esClient.bulk({body: bulkBody}).then((err,res) =>{ console.log( err.items[0].index.error ); });
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
         const _errors = files.map( f => {
@@ -1483,6 +1566,8 @@ export const addMeta = (req, res, next) => {
   co(function* () {
     try {
       const { file_id } = req.params;
+      const { tenant_id } = res.user;
+
       if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
       const { meta, value } = req.body;
@@ -1522,6 +1607,49 @@ export const addMeta = (req, res, next) => {
         changedMeta = yield addMeta.save();
       }
 
+
+
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+
+      const bulkBody = [];
+      bulkBody.push({
+          index:{
+            _index: tenant_id,
+            _type: "files",
+            _id: file._id
+          }
+      });
+      // bulkBody.push({
+      //   file: updatedFile
+      // });
+      const esFile = {
+        _id: updatedFile._id,
+        name: updatedFile.name,
+        mime_type: updatedFile.mime_type,
+        size: updatedFile.size,
+        is_dir: updatedFile.is_dir,
+        dir_id: updatedFile.dir_id,
+        is_display: updatedFile.is_display,
+        is_star: updatedFile.is_star,
+        is_crypted: updatedFile.is_crypted,
+        histories: updatedFile.histories,
+        is_deleted: updatedFile.is_deleted,
+        modified: updatedFile.modified,
+        preview_id: updatedFile.preview_id,
+        authorities: updatedFile.authorities,
+        dirs: updatedFile.dirs,
+        sort_target: updatedFile.sort_target
+      };
+      // meta_infosとtagsをフラットにする　TODO: fix
+      const metas = updatedFile.meta_infos.map(meta => (esFile[meta._id.toString()  ] = meta.value ));
+      const tags = updatedFile.tags.map(tag => ( esFile[tag._id.toString()] = tag.label ));
+
+      bulkBody.push({
+        file: esFile
+      });
+
+      yield esClient.bulk({ body:bulkBody });
+
       res.json({
         status: { success: true },
         body: changedMeta
@@ -1530,7 +1658,9 @@ export const addMeta = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-
+console.log("E! --------");
+console.log(e.body);
+console.log(e.body.error.caused_by);
       switch(e) {
       case "file_id is invalid":
         errors.file_id = "ファイルIDが不正のためメタ情報の追加に失敗しました";
