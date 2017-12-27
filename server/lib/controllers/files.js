@@ -272,21 +272,50 @@ export const search = (req, res, next, export_excel=false) => {
       if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
+      const _page = page === undefined || page === null
+        ? 0 : page;
+      if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
+
+      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
+      const offset = _page * limit;
+
+      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       const esQuely = {
         index: tenant_id.toString(),
         type: "files",
-        // q: `*${q.toString()}*`,
-        q: q.toString(),
-        defaultOperator: "AND",
-        size: 30,
-        body: {
-          // min_score: 0.1
+        // q: escapeRegExp( q.toString() ),
+        // defaultOperator: "AND",
+        explain: true,
+        from : offset,
+        size: offset + 30,
+        sort: `file.${sort}.raw:${order}`,
+        body:
+          {
+            "query" :{
+              "bool":{
+                "must": [
+                  {
+                  "query_string":{
+                    "query": escapeRegExp( q.toString() ),
+                    "default_operator": "AND"
+                    }
+                  },{
+                  "match" : {
+                    [`file.actions.${action_id}`]:
+                      {
+                        // "analyzer":"whitespace",
+                        "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+                        "operator": "and"         // operator の default は or なので and のする
+                      }
+                  }
+                  }
+                ]
+                }
+              }
         }
-
       };
       const esResult = yield esClient.search(esQuely);
-      const scores = esResult.hits.hits.map(hit => hit._score) ;
       const esResultIds = esResult.hits.hits
       .map(hit => {
         return mongoose.Types.ObjectId( hit._id );
@@ -352,17 +381,14 @@ export const search = (req, res, next, export_excel=false) => {
         dir_id: { $ne: trash_dir_id },
         is_display: true,
         is_deleted: false,
-        _id: {$in : esResultIds}
+        $and: [
+          {_id: {$in : esResultIds} },
+          // {_id: {$in : file_ids}}  // 権限での絞り込み結果
+        ]
       };
 // console.log(conditions);
 
-      const _page = page === undefined || page === null
-        ? 0 : page;
-      if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      // const total = yield File.find(conditions).count();
-      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-      const offset = _page * limit;
 
       if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
@@ -1331,49 +1357,11 @@ export const upload = (req, res, next) => {
 
 
       // elasticsearchへ登録
-      // TODO: elasticsearch 登録処理の精査と共通化
       const changedFileIds = changedFiles.map(file => file._id);
       const sortOption = yield createSortOption();
       const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+      yield createIndex(tenant_id, indexingFile);
 
-      const bulkBody = [];
-      indexingFile.forEach(file => {
-        bulkBody.push({
-            index:{
-              _index: tenant_id,
-              _type: "files",
-              _id: file._id
-            }
-        });
-
-        const esFile = {
-          _id: file._id,
-          name: file.name,
-          mime_type: file.mime_type,
-          size: file.size,
-          is_dir: file.is_dir,
-          dir_id: file.dir_id,
-          is_display: file.is_display,
-          is_star: file.is_star,
-          is_crypted: file.is_crypted,
-          // histories: file.histories,
-          is_deleted: file.is_deleted,
-          modified: file.modified,
-          preview_id: file.preview_id,
-          authorities: file.authorities,
-          dirs: file.dirs,
-          sort_target: file.sort_target
-        }
-        // fix me
-        const metas = file.meta_infos.map(meta => (esFile[meta._id] = meta.value ));
-        const tags = file.tags.map(tag => (esFile[tag._id]=tag.value ));
-console.log();
-        bulkBody.push({
-          file: esFile
-        });
-      });
-
-      yield esClient.bulk({body: bulkBody}).then((err,res) =>{ console.log( err.items[0].index.error ); });
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
         const _errors = files.map( f => {
@@ -1607,48 +1595,10 @@ export const addMeta = (req, res, next) => {
         changedMeta = yield addMeta.save();
       }
 
-
-
+      // elasticsearch index作成
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield createIndex(tenant_id,[updatedFile]);
 
-      const bulkBody = [];
-      bulkBody.push({
-          index:{
-            _index: tenant_id,
-            _type: "files",
-            _id: file._id
-          }
-      });
-      // bulkBody.push({
-      //   file: updatedFile
-      // });
-      const esFile = {
-        _id: updatedFile._id,
-        name: updatedFile.name,
-        mime_type: updatedFile.mime_type,
-        size: updatedFile.size,
-        is_dir: updatedFile.is_dir,
-        dir_id: updatedFile.dir_id,
-        is_display: updatedFile.is_display,
-        is_star: updatedFile.is_star,
-        is_crypted: updatedFile.is_crypted,
-        histories: updatedFile.histories,
-        is_deleted: updatedFile.is_deleted,
-        modified: updatedFile.modified,
-        preview_id: updatedFile.preview_id,
-        authorities: updatedFile.authorities,
-        dirs: updatedFile.dirs,
-        sort_target: updatedFile.sort_target
-      };
-      // meta_infosとtagsをフラットにする　TODO: fix
-      const metas = updatedFile.meta_infos.map(meta => (esFile[meta._id.toString()  ] = meta.value ));
-      const tags = updatedFile.tags.map(tag => ( esFile[tag._id.toString()] = tag.label ));
-
-      bulkBody.push({
-        file: esFile
-      });
-
-      yield esClient.bulk({ body:bulkBody });
 
       res.json({
         status: { success: true },
@@ -1658,9 +1608,6 @@ export const addMeta = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-console.log("E! --------");
-console.log(e.body);
-console.log(e.body.error.caused_by);
       switch(e) {
       case "file_id is invalid":
         errors.file_id = "ファイルIDが不正のためメタ情報の追加に失敗しました";
@@ -2443,6 +2390,63 @@ const moveFile = (file, dir_id, user, action) => {
     return changedFile;
 
 };
+
+const createIndex = co.wrap(
+  function* (tenant_id,files){
+    try {
+      const bulkBody = [];
+      files.forEach(file=>{
+        bulkBody.push({
+          index:{
+            _index: tenant_id,
+            _type: "files",
+            _id: file._id
+          }
+        });
+        const esFile = {
+          _id: file._id,
+          name: file.name,
+          mime_type: file.mime_type,
+          size: file.size,
+          is_dir: file.is_dir,
+          dir_id: file.dir_id,
+          is_display: file.is_display,
+          is_star: file.is_star,
+          is_crypted: file.is_crypted,
+          is_deleted: file.is_deleted,
+          modified: file.modified,
+          preview_id: file.preview_id,
+          dirs: file.dirs,
+          sort_target: file.sort_target
+        };
+
+        // meta_infosとtagsをフラットにする　TODO: fix
+        const metas = file.meta_infos.map(meta => (esFile[meta._id.toString()  ] = meta.value ));
+        const tags = file.tags.map(tag => ( esFile[tag._id.toString()] = tag.label ));
+
+        esFile.actions = {};
+        file.authorities.forEach((authority,index) => {
+          authority.actions.forEach((action, idx) => {
+            if(esFile.actions[action._id] === undefined ) esFile.actions[action._id] = [];
+            esFile.actions[action._id].push(authority.users._id);
+          });
+        });
+        bulkBody.push({
+          file: esFile
+        });
+
+      });
+
+      const result = yield esClient.bulk({ body:bulkBody });
+
+      return Promise.resolve(result);
+    } catch (error) {
+      console.log(e);
+      return Promise.reject();
+    }
+
+  }
+);
 
 const createSortOption = co.wrap( function* (_sort=null, _order=null) {
   let sort = {};
