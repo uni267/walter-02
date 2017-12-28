@@ -423,12 +423,22 @@ describe(base_url,() => {
         const url = `${base_url}/search`;
         let response;
         before(done => {
-          request.get(url)
-          .query({ q:"alpha" })
-          .end( ( err, res ) => {
-            response = res;
-            done();
+
+          console.log("wait....");
+          new Promise((resolve, reject) =>{
+            setTimeout(() => {
+              console.log("go!");
+              resolve();
+            }, 2000);
+          }).then(()=>{
+            request.get(url)
+            .query({ q:"alpha" })
+            .end( ( err, res ) => {
+              response = res;
+              done();
+            });
           });
+
         });
 
         it('http(200)が返却される', done => {
@@ -980,9 +990,15 @@ describe(base_url,() => {
                 resolve(res);
               });
             });
-
           }).then(res=>{
-
+            console.log("wait....");
+            return new Promise((resolve, reject) =>{
+              setTimeout(() => {
+                console.log("go!");
+                resolve();
+              }, 2000);
+            });
+          }).then(res=>{
             return new Promise((resolve,reject) => {
               request.post(login_url)
               .send({
@@ -1034,7 +1050,7 @@ describe(base_url,() => {
           expect( response.body.body instanceof Array ).equal(true);
           done();
         });
-        it('検査各結果は1件である',done => {
+        it('検索結果は1件である',done => {
           expect( response.body.body.length ).equal(1);
           done();
         });
@@ -1100,6 +1116,14 @@ describe(base_url,() => {
             .send(sendData)
             .end( ( err, res ) => {
               resolve(res);
+            });
+          }).then(res=>{
+            console.log("wait....");
+            return new Promise((resolve, reject) =>{
+              setTimeout(() => {
+                console.log("done!");
+                resolve();
+              }, 2000);
             });
           }).then(res => {
             done();
@@ -1396,7 +1420,7 @@ describe(base_url,() => {
                   const display_item = res;
 
                   request.get(`${base_url}/search`)
-                  .query({ q:"txt", sort: display_item.meta_info_id , order:'asc', page:1 }) // 30件以上ページがあるはずなので
+                  .query({ q:"meta_value", sort: display_item.meta_info_id , order:'asc', page:0 }) // 30件以上ページがあるはずなので
                   .end( ( err, res ) => {
                     response = res;
                     file_metainfo_values = res.body.body.filter(file=> file.meta_infos.length > 0).map(file => file.meta_infos[0].value);

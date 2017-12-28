@@ -4,6 +4,7 @@ import moment from "moment";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import logger from "../logger";
+import esClient from "../elasticsearchclient";
 
 import { SECURITY_CONF } from "../../configs/server";
 
@@ -246,6 +247,11 @@ export const create = (req, res, next) => {
 
       const { newDir, newAuthority} = yield { newDir: dir.save(), newAuthority: authority.save() };
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(newDir._id) });
+      yield createIndex(tenant_id,[updatedFile]);
+
       const descendantDirs = yield Dir.find({ descendant: dir.dir_id }).sort({ depth: 1 });
 
       const conditions = { _id: descendantDirs.map( dir => dir.ancestor ) };
@@ -368,3 +374,65 @@ export const move = (req, res, next) => {
 
     });
 };
+
+
+const createIndex = co.wrap(
+  function* (tenant_id,files){
+    try {
+      const bulkBody = [];
+      files.forEach(file=>{
+        bulkBody.push({
+          index:{
+            _index: tenant_id,
+            _type: "files",
+            _id: file._id
+          }
+        });
+        const esFile = {
+          _id: file._id,
+          name: file.name,
+          mime_type: file.mime_type,
+          size: file.size,
+          is_dir: file.is_dir,
+          dir_id: file.dir_id,
+          is_display: file.is_display,
+          is_star: file.is_star,
+          is_crypted: file.is_crypted,
+          is_deleted: file.is_deleted,
+          modified: file.modified,
+          preview_id: file.preview_id,
+          dirs: file.dirs,
+          sort_target: file.sort_target
+        };
+
+        file.meta_infos.forEach(meta =>{
+          esFile[meta._id.toString()  ] = meta.value;
+        });
+
+        file.tags.forEach(tag => {
+          esFile[tag._id.toString()] = tag.label;
+        });
+
+        esFile.actions = {};
+        file.authorities.forEach((authority,index) => {
+          authority.actions.forEach((action, idx) => {
+            if(esFile.actions[action._id] === undefined ) esFile.actions[action._id] = [];
+            esFile.actions[action._id].push(authority.users._id);
+          });
+        });
+        bulkBody.push({
+          file: esFile
+        });
+
+      });
+
+      const result = yield esClient.bulk({ body:bulkBody });
+
+      return Promise.resolve(result);
+    } catch (error) {
+      console.log(e);
+      return Promise.reject();
+    }
+
+  }
+);
