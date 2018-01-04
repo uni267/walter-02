@@ -8,13 +8,15 @@
     "build": "babel lib -d dist",
     "serve": "node dist/index.js",
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
-    "analyze": "babel-node batchs/index.js analyze"
+    "analyze": "babel-node batchs/index.js analyze",
+    "init-elasticsearch":"babel-node batchs/index.js initElasticsearch"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
     "co": "^4.6.0",
     "cookie-parser": "^1.4.3",
     "debug": "~2.6.3",
+    "elasticsearch": "^14.0.0",
     "exceljs": "^0.7.1",
     "express": "~4.15.2",
     "jade": "~1.11.0",

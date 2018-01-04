@@ -4,6 +4,7 @@ import moment from "moment";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import logger from "../logger";
+import esClient from "../elasticsearchclient";
 
 import { SECURITY_CONF } from "../../configs/server";
 
@@ -246,6 +247,11 @@ export const create = (req, res, next) => {
 
       const { newDir, newAuthority} = yield { newDir: dir.save(), newAuthority: authority.save() };
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(newDir._id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       const descendantDirs = yield Dir.find({ descendant: dir.dir_id }).sort({ depth: 1 });
 
       const conditions = { _id: descendantDirs.map( dir => dir.ancestor ) };
@@ -368,3 +374,5 @@ export const move = (req, res, next) => {
 
     });
 };
+
+

@@ -25,6 +25,14 @@ const initdbPromise = new Promise( (resolve, reject) => {
     if (err) return reject({ err, stderr });
     return resolve();
   });
+}).then(res =>{
+  // elasticsearchのmapping
+  return new Promise( (resolve, reject) => {
+    exec("npm run init-elasticsearch", (err, stdout, stderr) => {
+      if (err) return reject({ err, stderr });
+      return resolve();
+    });
+  });
 });
 
 // とりあえず

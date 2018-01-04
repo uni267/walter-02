@@ -40,6 +40,9 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   case "perfTest":
     tasks.PerfTest();
     break;
+  case "initElasticsearch":
+    tasks.initElasticsearchTask();
+    break;
   default:
     throw new Error("引数が不正です。");
   }

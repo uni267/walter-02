@@ -9,6 +9,7 @@ import morgan from "morgan";
 import { exec } from "child_process";
 import util from "util";
 import crypto from "crypto";
+import esClient from "../elasticsearchclient";
 import {
   intersection,
   zipWith,
@@ -20,7 +21,8 @@ import {
   find,
   isNaN,
   first,
-  sortBy
+  sortBy,
+  max
 } from "lodash";
 
 // etc
@@ -265,73 +267,81 @@ export const search = (req, res, next, export_excel=false) => {
   return co(function* () {
     try {
       const { q, page, sort, order } = req.query;
-      const { tenant_id } = res.user.tenant_id;
+      const { tenant_id } = res.user;
+
       if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
-
-      // スペース区切りの検索対応
-      let query_params = q.replace(new RegExp("\\u3000", "g"), " ")
-          .split(" ")
-          .filter( s => s !== "" )
-          .map( s => escapeRegExp(s) );
-
-      // キーワード毎に検索しfile_idを取得
-      let search_result_on_meta_infos = yield (
-        query_params.map( _q => (
-          FileMetaInfo.find({ value: { $regex: _q } }, { file_id: 1 })
-        ))
-      );
-
-      // file_idを配列に
-      search_result_on_meta_infos = search_result_on_meta_infos.map( meta => meta.map( m => m.file_id ) );
-
-      // 各id配列の積集合を取得(and検索)
-      const search_result_on_meta_infos_id = search_result_on_meta_infos.reduce( (prev, cur, idx) => {
-        if (idx === 0) {
-          return cur.map( c => c.toString() );
-        }
-        else {
-          return intersection(prev.map( p => p.toString() ), cur.map( c => c.toString() ) );
-        }
-      }, []).map( id => mongoose.Types.ObjectId(id) );
-
-      const file_ids = uniq([
-        ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
-        res.user.tenant.home_dir_id,
-        res.user.tenant.trash_dir_id,
-        ...search_result_on_meta_infos_id
-      ]);
-
-      const name_conditions = {
-        $or: query_params.map( _q => ({ name: { $regex: _q } }) )
-      };
-
-      const conditions = {
-        dir_id: { $ne: trash_dir_id },
-        $or: [
-          name_conditions,
-          { _id : { $in: search_result_on_meta_infos_id } }
-        ],
-        is_display: true,
-        is_deleted: false,
-        _id: {$in : file_ids}
-      };
 
       const _page = page === undefined || page === null
         ? 0 : page;
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const total = yield File.find(conditions).count();
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = _page * limit;
+
+      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+
+      const esQuely = {
+        index: tenant_id.toString(),
+        type: "files",
+        from : offset,
+        size: parseInt( offset ) + 30,
+        sort: (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`,
+        body:
+          {
+            "query" :{
+              "bool":{
+                "must_not": [{
+                  "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
+                }],
+                "must": [
+                  {
+                  "query_string":{
+                    "query": escapeRegExp( q.toString() ),
+                    "default_operator": "AND"
+                    }
+                  },{
+                  "match" : {
+                    [`file.actions.${action_id}`]:
+                      {
+                        "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+                        "operator": "and"         // operator の default は or なので and のする
+                      }
+                  }},{
+                    "match" : {
+                    "file.is_display": true
+                  }},{
+                    "match" : {
+                    "file.is_deleted": false
+                  }}
+                ]
+              }
+          }
+        }
+      };
+      const esResult = yield esClient.search(esQuely);
+      const esResultIds = esResult.hits.hits
+      .map(hit => {
+        return mongoose.Types.ObjectId( hit._id );
+      });
+
+      const { total } = esResult.hits;
+
+      const conditions = {
+        dir_id: { $ne: trash_dir_id },
+        is_display: true,
+        is_deleted: false,
+        $and: [
+          {_id: {$in : esResultIds} },
+        ]
+      };
 
       if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
       const _sort = yield createSortOption(sort, order);
 
-      let files = yield File.searchFiles(conditions,offset,limit,_sort, mongoose.Types.ObjectId(sort));
-
+      let files = yield File.searchFiles(conditions, 0, constants.FILE_LIMITS_PER_PAGE,_sort, mongoose.Types.ObjectId(sort));
       files = files.map( file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
@@ -365,7 +375,6 @@ export const search = (req, res, next, export_excel=false) => {
       }
     }
     catch (e) {
-
       let errors = {};
       switch (e.message) {
       case "q is empty":
@@ -619,7 +628,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
               const query  = buildQuery(item);
               return query;
             }));
-console.log(base_queries, meta_queries);
+
       let file_metainfo_ids = [];
 
       if(meta_items.length > 0){
@@ -739,6 +748,11 @@ export const rename = (req, res, next) => {
       file.name = changedFileName;
       const changedFile = yield file.save();
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: changedFile
@@ -810,6 +824,11 @@ export const move = (req, res, next) => {
 
       const changedFile = yield moveFile(file, dir._id, user, "移動");
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: changedFile
@@ -858,6 +877,7 @@ export const upload = (req, res, next) => {
     try {
       const myFiles  = req.body.files;
       let dir_id = req.body.dir_id;
+      const tenant_id  = res.user.tenant_id.toString();
 
       if (myFiles === null ||
           myFiles === undefined ||
@@ -1291,6 +1311,13 @@ export const upload = (req, res, next) => {
         model ? model.save() : false
       ));
 
+
+      // elasticsearchへ登録
+      const changedFileIds = changedFiles.map(file => file._id);
+      const sortOption = yield createSortOption();
+      const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+      yield esClient.createIndex(tenant_id, indexingFile);
+
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
         const _errors = files.map( f => {
@@ -1366,6 +1393,11 @@ export const addTag = (req, res, next) => {
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: { ...file.toObject(), tags }
@@ -1436,6 +1468,11 @@ export const removeTag = (req, res, next) => {
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: { ...file.toObject(), tags }
@@ -1483,6 +1520,8 @@ export const addMeta = (req, res, next) => {
   co(function* () {
     try {
       const { file_id } = req.params;
+      const { tenant_id } = res.user;
+
       if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
       const { meta, value } = req.body;
@@ -1522,6 +1561,11 @@ export const addMeta = (req, res, next) => {
         changedMeta = yield addMeta.save();
       }
 
+      // elasticsearch index作成
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
+
       res.json({
         status: { success: true },
         body: changedMeta
@@ -1530,7 +1574,6 @@ export const addMeta = (req, res, next) => {
     }
     catch (e) {
       let errors = {};
-
       switch(e) {
       case "file_id is invalid":
         errors.file_id = "ファイルIDが不正のためメタ情報の追加に失敗しました";
@@ -1602,6 +1645,11 @@ export const removeMeta = (req, res, next) => {
         throw "meta_id is not registered";
       }
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: removeMeta
@@ -1665,6 +1713,11 @@ export const toggleStar = (req, res, next) => {
       file.is_star = !file.is_star;
       const changedFile = yield file.save();
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: changedFile
@@ -1705,6 +1758,7 @@ export const addAuthority = (req, res, next) => {
     try {
       const { file_id } = req.params;
       const { user, role } = req.body;
+      const { tenant_id } = res.user;
 
       if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
 
@@ -1747,6 +1801,10 @@ export const addAuthority = (req, res, next) => {
       if (duplicated !== null) throw "role set is duplicate";
 
       const createdAuthority = yield authority.save();
+
+      // elasticsearch index作成
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1840,6 +1898,11 @@ export const removeAuthority = (req, res, next) => {
 
       if (removeResult.result.ok !== 1) throw "remove authority is failed";
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: { role_files: role_file, users: role_user, files: file }
@@ -1900,7 +1963,7 @@ export const moveTrash = (req, res, next) => {
     try {
       const file_id = req.params.file_id;
 
-      const { tenant_id } = res.user.tenant_id;
+      const { tenant_id } = res.user;
       const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
       if (file_id === undefined ||
@@ -1914,6 +1977,10 @@ export const moveTrash = (req, res, next) => {
       if (user === null) throw "user is empty";
 
       const changedFile = yield moveFile(file, trash_dir_id, user, "削除");
+
+      // elasticsearch index作成
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1963,6 +2030,11 @@ export const restore = (req, res, next) => {
 
       const changedFile = yield moveFile(file, dir_id, user, "復元");
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+
+      yield esClient.createIndex(tenant_id,[updatedFile]);
       res.json({
         status: { success: true },
         body: changedFile
@@ -2031,6 +2103,11 @@ export const deleteFileLogical = (req,res,next) => {
       file.is_deleted = true;
       const deletedFile = yield file.save();
 
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
         body: deletedFile
@@ -2082,6 +2159,10 @@ export const deleteFilePhysical = (req,res,next) => {
       const deletedFile = yield fileRecord.remove();
 
       const deletedAutholity = yield AuthorityFile.remove({files: fileRecord._id });
+
+      // elasticsearch index削除
+      const { tenant_id }= res.user;
+      yield esClient.delete({ index:tenant_id, type:"files", id:file_id });
 
       res.json({
         status:{ success: true },
@@ -2388,9 +2469,10 @@ const escapeRegExp = (input) => {
     '{': '\\{',
     '}': '\\}',
     '(': '\\(',
-    ')': '\\)'
+    ')': '\\)',
+    '/': '\\/'
    };
-  return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)]/g, function(m) { return replace_target[m]; });
+  return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)\/]/g, function(m) { return replace_target[m]; });
 };
 
 
