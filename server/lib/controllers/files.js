@@ -752,7 +752,7 @@ export const rename = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -828,7 +828,7 @@ export const move = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1317,7 +1317,7 @@ export const upload = (req, res, next) => {
       const changedFileIds = changedFiles.map(file => file._id);
       const sortOption = yield createSortOption();
       const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
-      yield createIndex(tenant_id, indexingFile);
+      yield esClient.createIndex(tenant_id, indexingFile);
 
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
@@ -1397,7 +1397,7 @@ export const addTag = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1472,7 +1472,7 @@ export const removeTag = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1564,7 +1564,7 @@ export const addMeta = (req, res, next) => {
 
       // elasticsearch index作成
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
 
       res.json({
@@ -1649,7 +1649,7 @@ export const removeMeta = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1717,7 +1717,7 @@ export const toggleStar = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1805,7 +1805,7 @@ export const addAuthority = (req, res, next) => {
 
       // elasticsearch index作成
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1902,7 +1902,7 @@ export const removeAuthority = (req, res, next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -1981,7 +1981,7 @@ export const moveTrash = (req, res, next) => {
 
       // elasticsearch index作成
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -2035,7 +2035,7 @@ export const restore = (req, res, next) => {
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
 
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
       res.json({
         status: { success: true },
         body: changedFile
@@ -2107,7 +2107,7 @@ export const deleteFileLogical = (req,res,next) => {
       // elasticsearch index作成
       const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield createIndex(tenant_id,[updatedFile]);
+      yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
@@ -2395,67 +2395,6 @@ const moveFile = (file, dir_id, user, action) => {
     return changedFile;
 
 };
-
-const createIndex = co.wrap(
-  function* (tenant_id,files){
-    try {
-      const bulkBody = [];
-      files.forEach(file=>{
-        bulkBody.push({
-          index:{
-            _index: tenant_id,
-            _type: "files",
-            _id: file._id
-          }
-        });
-        const esFile = {
-          _id: file._id,
-          name: file.name,
-          mime_type: file.mime_type,
-          size: file.size,
-          is_dir: file.is_dir,
-          dir_id: file.dir_id,
-          is_display: file.is_display,
-          is_star: file.is_star,
-          is_crypted: file.is_crypted,
-          is_deleted: file.is_deleted,
-          modified: file.modified,
-          preview_id: file.preview_id,
-          dirs: file.dirs,
-          sort_target: file.sort_target
-        };
-
-        file.meta_infos.forEach(meta =>{
-          esFile[meta._id.toString()  ] = meta.value;
-        });
-
-        file.tags.forEach(tag => {
-          esFile[tag._id.toString()] = tag.label;
-        });
-
-        esFile.actions = {};
-        file.authorities.forEach((authority,index) => {
-          authority.actions.forEach((action, idx) => {
-            if(esFile.actions[action._id] === undefined ) esFile.actions[action._id] = [];
-            esFile.actions[action._id].push(authority.users._id);
-          });
-        });
-        bulkBody.push({
-          file: esFile
-        });
-
-      });
-
-      const result = yield esClient.bulk({ body:bulkBody });
-
-      return Promise.resolve(result);
-    } catch (error) {
-      console.log(e);
-      return Promise.reject();
-    }
-
-  }
-);
 
 const createSortOption = co.wrap( function* (_sort=null, _order=null) {
   let sort = {};
