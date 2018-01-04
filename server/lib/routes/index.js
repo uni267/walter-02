@@ -19,6 +19,7 @@ import MenuRouter from "./menus";
 import notificationRouter from "./notifications";
 import DisplayItemRouter from "./displayItems";
 import ExcelRouter from "./excels";
+import ElasticsearchRouter from "./elasticsearches";
 
 // debug
 import TestRouter from "./test";
@@ -29,6 +30,7 @@ router.use("/api/v1/*", BeforeRouter);
 router.use("/api/login", LoginRouter);
 router.use("/api/v1/users", UserRouter);
 router.use("/api/v1/files", FileRouter);
+router.use("/api/v1/elasticsearch", ElasticsearchRouter);
 router.use("/api/v1/dirs", DirRouter);
 router.use("/api/v1/tags", TagRouter);
 router.use("/api/v1/meta_infos", MetaInfoRouter);
