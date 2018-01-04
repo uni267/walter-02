@@ -55,7 +55,6 @@ esClient.createIndex = co.wrap(
           is_deleted: file.is_deleted,
           modified: file.modified,
           preview_id: file.preview_id,
-          dirs: file.dirs,
           sort_target: file.sort_target
         };
 
@@ -85,12 +84,11 @@ esClient.createIndex = co.wrap(
         });
 
       });
-
       const result = yield esClient.bulk({ body:bulkBody });
+      if(result.errors) throw result.items[0].index;
 
       return Promise.resolve(result);
     } catch (e) {
-      console.log(e);
       return Promise.reject(e);
     }
 
