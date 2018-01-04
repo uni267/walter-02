@@ -284,7 +284,6 @@ export const search = (req, res, next, export_excel=false) => {
       const esQuely = {
         index: tenant_id.toString(),
         type: "files",
-        explain: true,
         from : offset,
         size: parseInt( offset ) + 30,
         sort: (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`,
@@ -2470,9 +2469,10 @@ const escapeRegExp = (input) => {
     '{': '\\{',
     '}': '\\}',
     '(': '\\(',
-    ')': '\\)'
+    ')': '\\)',
+    '/': '\\/'
    };
-  return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)]/g, function(m) { return replace_target[m]; });
+  return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)\/]/g, function(m) { return replace_target[m]; });
 };
 
 
