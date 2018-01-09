@@ -40,7 +40,8 @@ const authData = {
   account_name: "taro",
   name: "taro",
   email: "taro",
-  password: "test"
+  password: "test",
+  tenant_name: "test"
 };
 
 export { app, mongoUrl, initdbPromise, authData };
