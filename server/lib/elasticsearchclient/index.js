@@ -53,7 +53,7 @@ esClient.createIndex = co.wrap(
           is_star: file.is_star,
           is_crypted: file.is_crypted,
           is_deleted: file.is_deleted,
-          modified: file.modified,
+          // modified: file.modified,
           preview_id: file.preview_id,
           sort_target: file.sort_target
         };
@@ -62,14 +62,15 @@ esClient.createIndex = co.wrap(
           esFile[ meta._id.toString() ] = meta.value;
         });
 
-        file.tags.forEach(tag => {
-          esFile[tag._id.toString()] = tag.label;
-        });
+        // タグ検索(2018-01-05:マスタ更新に対応できないのでコメントアウト)
+        // file.tags.forEach(tag => {
+        //   esFile[tag._id.toString()] = tag.label;
+        // });
 
         esFile.actions = {};
 
-        // 簡易検索でユーザ名で検索するためユーザ名を文字列として保持する
-        esFile.users = "";
+        // 簡易検索でユーザ名で検索するためユーザ名を文字列として保持する(2018-01-05:マスタ更新に対応できないのでコメントアウト)
+        // esFile.users = "";
 
         // 詳細検索ではuser._idで引き当てたい
         file.authorities.forEach((authority,index) => {
@@ -77,7 +78,7 @@ esClient.createIndex = co.wrap(
             if(esFile.actions[action._id] === undefined ) esFile.actions[action._id] = [];
             esFile.actions[action._id].push(authority.users._id);
           });
-          esFile.users += (esFile.users==="" ? "": " ") + authority.users.name;
+          // esFile.users += (esFile.users==="" ? "": " ") + authority.users.name;
         });
         bulkBody.push({
           file: esFile

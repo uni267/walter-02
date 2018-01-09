@@ -106,3 +106,57 @@ export const reIndexSearchResult = (req, res, next) => {
 
   });
 };
+
+export const reIndexAll = (req, res, next) => {
+  co(function*(){
+    try {
+      // 検索
+      logger.info(process.memoryUsage());
+      const { tenant_id }= res.user;
+
+      const total = yield File.find().count();
+      logger.info({total});
+
+
+      // mongoからデータを取得
+      let ct = 0;
+      const sortOption = { _id: "asc" };
+      for(let i= 0; i < total; i = i + constants.FILE_LIMITS_PER_PAGE ){
+
+        const fileIds = (yield File.find().select({_id:1}).sort(sortOption).skip(i).limit(constants.FILE_LIMITS_PER_PAGE)   ).map(file => file._id);
+        const conditions = { _id: { $in:fileIds } };
+        const files = yield File.searchFiles(conditions, 0, constants.FILE_LIMITS_PER_PAGE, sortOption);
+        if(files.length <= 0) break;
+
+        ct += files.length;
+        yield esClient.createIndex(tenant_id, files);
+        logger.info(`reindex ${ct}件目 memory usage:`,process.memoryUsage().rss);
+
+      }
+      logger.info("reindex complete!");
+      res.json({
+        status: { success: true },
+        body: {}
+      });
+    } catch (e) {
+      let errors = {};
+
+      switch (e.name) {
+        case "Error":
+          errors = commons.errorParser(e);
+          break;
+        case "record not found":
+          errors = commons.errorParser(e);
+          break;
+        default:
+          errors.unknown = e;
+          break;
+      }
+      logger.error(errors);
+
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};

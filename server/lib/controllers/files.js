@@ -54,7 +54,7 @@ import FileMetaInfo from "../models/FileMetaInfo";
 import DisplayItem from "../models/DisplayItem";
 import { Swift } from "../storages/Swift";
 
-export const index = (req, res, next, export_excel=false) => {
+export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
     try {
       let { dir_id, page ,sort ,order} = req.query;
@@ -93,7 +93,7 @@ export const index = (req, res, next, export_excel=false) => {
 
       const total = yield File.find(conditions).count();
 
-      const limit = ( export_excel && total !== 0 )  ? total : constants.FILE_LIMITS_PER_PAGE;
+      const limit = ( no_limit && total !== 0 )  ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
 
       let files = yield File.searchFiles(conditions,offset,limit,sortOption, mongoose.Types.ObjectId(sort));
@@ -297,7 +297,7 @@ export const search = (req, res, next, export_excel=false) => {
                 "must": [
                   {
                   "query_string":{
-                    "query": escapeRegExp( q.toString() ),
+                    "query": escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
                     "default_operator": "AND"
                     }
                   },{
@@ -2471,7 +2471,7 @@ const escapeRegExp = (input) => {
     '(': '\\(',
     ')': '\\)',
     '/': '\\/'
-   };
+  };
   return input.replace(/[\^\$\.\*\+\?\[\]\{\}\(\)\/]/g, function(m) { return replace_target[m]; });
 };
 

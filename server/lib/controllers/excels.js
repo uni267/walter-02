@@ -19,7 +19,7 @@ const router = Router();
 export const index = (req, res, next) => {
   co(function* () {
     try {
-      const files = yield filesController.index(req, res, next, true);
+      const files = yield filesController.index(req, res, next, true, true);
       const displayItems = yield displayItemsController.excel(req, res, next, true);
 
       const tags = yield Tag.find({
