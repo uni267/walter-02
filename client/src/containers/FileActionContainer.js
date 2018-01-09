@@ -37,8 +37,27 @@ class FileActionContainer extends Component {
     this.state = {
       addFile: {
         open: false
-      }
+      },
+      containerYOffset: 0
     };
+  }
+  componentWillUnmount() {
+    window.removeEventListener("scroll",this.onScroll);
+  }
+
+  componentDidMount() {
+    const fileAction = document.getElementById("fileAction");
+    this.state.containerYOffset = fileAction.getBoundingClientRect().top;
+    window.addEventListener("scroll", this.onScroll);
+  }
+
+  onScroll = (e) => {
+    const fileAction = document.getElementById("fileAction");
+    if(window.pageYOffset > this.state.containerYOffset){
+      fileAction.style.position="fixed";
+    }else{
+      fileAction.style.position="relative";
+    }
   }
 
   moveFiles = (files) => {
@@ -135,7 +154,7 @@ class FileActionContainer extends Component {
 
   render() {
     return (
-      <div style={{marginRight: 30}}>
+      <div style={{marginRight: 30,position:"relative"  , top: 0}} id="fileAction">
         <Menu>
           {this.renderMenuItems()}
         </Menu>
