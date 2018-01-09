@@ -26,7 +26,7 @@ function* watchRequestVerifyToken() {
       yield put(commons.openException(message, JSON.stringify(errors)));
       localStorage.removeItem("token");
       yield call(delay, 2000);
-      window.location.href = "/login";
+      window.location.href = localStorage.getItem("tenant_name") + "/login";
     }
   }
 }

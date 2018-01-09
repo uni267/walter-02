@@ -30,11 +30,13 @@ class AuthenticationContainer extends Component {
   }
 
   render() {
+    const tenant_name = localStorage.getItem("tenant_name");
+
     return (
       this.haveToken() ? (
         <Route children={this.props.children} />
       ) : (
-        <Redirect to={'/login'} />
+        <Redirect to={`/${tenant_name}/login`} />
       )
     );
   }

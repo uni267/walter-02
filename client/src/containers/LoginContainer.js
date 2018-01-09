@@ -47,6 +47,7 @@ class LoginContainer extends Component {
   }
 
   userWillTransfer() {
+    localStorage.setItem("tenant_name", this.props.match.params.tenant_name);
     const token = localStorage.getItem("token");
 
     if (token) {

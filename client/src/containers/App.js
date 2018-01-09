@@ -38,7 +38,7 @@ class App extends Component {
         <Switch>
           <NotifyStatusContainer>
             <Switch>
-              <Route exact path="/login" component={LoginContainer} />
+              <Route exact path="/:tenant_name/login" component={LoginContainer} />
               <AuthenticationContainer>
                 <Switch>
                   <Route exact path="/users" component={UserContainer} />
