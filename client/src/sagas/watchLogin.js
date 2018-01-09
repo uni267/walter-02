@@ -14,7 +14,8 @@ function* watchLogin() {
     yield put(actions.loadingStart());
 
     try {
-      const payload = yield call(api.login, account_name, password);
+      const tenant_name = localStorage.getItem("tenant_name");
+      const payload = yield call(api.login, account_name, password, tenant_name);
       const { user, token } = payload.data.body;
       localStorage.setItem("token", token);
       const { _id, name, home_dir_id, trash_dir_id } = user.tenant;

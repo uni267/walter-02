@@ -10,7 +10,7 @@ import Tenant from "../models/Tenant";
 export const authentication = (req, res, next) => {
   co(function* () {
     try {
-      const { account_name, password } = req.body;
+      const { account_name, password, tenant_name } = req.body;
 
       if (account_name === undefined ||
           account_name === null ||
@@ -19,6 +19,14 @@ export const authentication = (req, res, next) => {
       if (password === undefined ||
           password === null ||
           password === "") throw "password is empty";
+
+      if (tenant_name === undefined ||
+          tenant_name === null ||
+          tenant_name === "") throw "tenant_name is empty";
+
+      const tenant = yield Tenant.findOne({ name: tenant_name });
+
+      if (tenant === null) throw "tenant is empty";
 
       const user = yield User.findOne({ account_name });
 
@@ -29,8 +37,6 @@ export const authentication = (req, res, next) => {
       const hash = crypto.createHash("sha512").update(password).digest("hex");
 
       if (user.password !== hash) throw "password is invalid";
-
-      const tenant = yield Tenant.findOne(user.tenant_id);
 
       const _user = { ...user.toObject(), tenant };
       delete _user.password;
@@ -61,6 +67,12 @@ export const authentication = (req, res, next) => {
         break;
       case "user is disabled":
         errors.account_name = "指定されたユーザは現在無効状態のためユーザ認証に失敗しました";
+        break;
+      case "tenant_name is empty":
+        errors.tenant_name = "テナント名が空のためユーザ認証に失敗しました";
+        break;
+      case "tenant is empty":
+        errors.tenant_name = "指定されたテナントが存在しないためユーザ認証に失敗しました";
         break;
       default:
         errors.unknown = commons.errorParser(e);
