@@ -96,7 +96,7 @@ const AddFileDialog = ({
   const dialogActions = [
     (
       <FlatButton
-        label="Close"
+        label="閉じる"
         primary={true}
         onTouchTap={() => {
           actions.clearFilesBuffer();

@@ -28,7 +28,7 @@ const ChangeFileNameDialog = ({
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         primary={false}
         onTouchTap={actions.toggleChangeFileNameDialog}
         />

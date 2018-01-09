@@ -13,13 +13,13 @@ const DeleteFileDialog = ({
   const dialogActions = [
     (
       <FlatButton
-        label="Delete"
+        label="削除"
         primary={true}
         onTouchTap={(e) => actions.deleteFile(file)} />
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         primary={false}
         onTouchTap={actions.toggleDeleteFileDialog}
         />

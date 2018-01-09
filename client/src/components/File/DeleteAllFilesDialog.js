@@ -14,14 +14,14 @@ const DeleteAllFilesDialog = ({
   const actions = [
     (
       <FlatButton
-        label="Delete"
+        label="削除"
         primary={true}
         onTouchTap={(e) => deleteFiles(files)}
         />
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         primary={false}
         onTouchTap={handleClose}
         />

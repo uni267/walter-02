@@ -15,7 +15,7 @@ const HistoryFileDialog = ({
 }) => {
   const dialogActions = (
     <FlatButton
-      label="close"
+      label="閉じる"
       primary={true}
       onTouchTap={() => actions.toggleHistoryFileDialog() }
       />
@@ -23,7 +23,7 @@ const HistoryFileDialog = ({
 
   const render = (history, idx) => {
     return (
-      <History key={idx} history={history} />        
+      <History key={idx} history={history} />
     );
   };
 
@@ -38,7 +38,7 @@ const HistoryFileDialog = ({
       {file.histories.map( (history, idx) => render(history, idx))}
 
     </Dialog>
-    
+
   );
 };
 

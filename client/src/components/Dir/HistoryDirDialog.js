@@ -15,7 +15,7 @@ const HistoryDirDialog = ({
 }) => {
   const actions = (
     <FlatButton
-      label="close"
+      label="閉じる"
       primary={false}
       onTouchTap={handleClose}
       />
@@ -23,7 +23,7 @@ const HistoryDirDialog = ({
 
   const renderHistory = (idx, history) => {
     return (
-      <History key={idx} history={history} />        
+      <History key={idx} history={history} />
     );
   };
 

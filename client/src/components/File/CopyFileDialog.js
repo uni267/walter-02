@@ -24,7 +24,7 @@ const CopyFileDialog = ({
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         onTouchTap={() => actions.toggleCopyFileDialog() }
         />
     )

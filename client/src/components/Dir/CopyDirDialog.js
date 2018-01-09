@@ -21,7 +21,7 @@ const CopyDirDialog = ({
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         onTouchTap={actions.toggleCopyDirDialog}
         />
     )

@@ -33,7 +33,7 @@ const MoveFileDialog = ({
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         onTouchTap={() => actions.toggleMoveFileDialog()}
         />
     )

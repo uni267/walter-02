@@ -27,13 +27,13 @@ const AccountDialog = ({
   const actions = [
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         onTouchTap={handleClose}
         />
     ),
     (
       <FlatButton
-        label="save"
+        label="保存"
         primary={true}
         onTouchTap={handleSaveClick} />
     )
@@ -57,7 +57,7 @@ const AccountDialog = ({
         />
 
       <br />
-      
+
       <TextField
         ref={(input) => newPassword = input}
         hintText=""

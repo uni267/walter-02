@@ -18,11 +18,11 @@ const AuthorityDirDialog = ({
 }) => {
   const dialogActions = (
     <FlatButton
-      label="close"
+      label="閉じる"
       onTouchTap={actions.toggleAuthorityDirDialog}
       />
   );
-  
+
   return (
     <Dialog
       title="権限を変更"

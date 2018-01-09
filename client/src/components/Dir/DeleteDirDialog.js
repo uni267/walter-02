@@ -13,14 +13,14 @@ const DeleteDirDialog = ({
   const dialogActions = [
     (
       <FlatButton
-        label="Delete"
+        label="削除"
         primary={true}
         onTouchTap={() => actions.deleteDir(dir)}
         />
     ),
     (
       <FlatButton
-        label="close"
+        label="閉じる"
         primary={false}
         onTouchTap={actions.toggleDeleteDirDialog}
         />

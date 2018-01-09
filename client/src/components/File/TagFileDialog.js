@@ -20,7 +20,7 @@ const TagFileDialog = ({
 }) => {
   const btnActions = (
     <FlatButton
-      label="close"
+      label="閉じる"
       primary={true}
       onTouchTap={actions.toggleFileTagDialog}
       />

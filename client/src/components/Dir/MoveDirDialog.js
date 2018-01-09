@@ -30,7 +30,7 @@ class MoveDirDialog extends Component {
       ),
       (
         <FlatButton
-          label="close"
+          label="閉じる"
           onTouchTap={this.props.actions.toggleMoveDirDialog}
           />
       )
