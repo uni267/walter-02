@@ -171,12 +171,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   toggleChangePasswordDialog: () => { dispatch(toggleChangePasswordDialog()); },
   logout: () => { dispatch(logout()); },
-  triggerSnackbar: (message) => { dispatch(triggerSnackbar(message)); },
+  triggerSnackbar: message => { dispatch(triggerSnackbar(message)); },
   requestFetchAuthorityMenus: () => { dispatch(requestFetchAuthorityMenus()); },
-  requestUpdateNotificationsRead: (notifications) => { dispatch(requestUpdateNotificationsRead(notifications)) },
-  requestFetchMoreNotification: () => { dispatch(requestFetchMoreNotification()) },
-  openNotifications: (anchorEl) => { dispatch(openNotifications(anchorEl)) },
-  closeNotifications: () => { dispatch(closeNotifications()) }
+  requestUpdateNotificationsRead: notifications => dispatch(requestUpdateNotificationsRead(notifications)),
+  requestFetchMoreNotification: () => dispatch(requestFetchMoreNotification()),
+  openNotifications: anchorEl => dispatch(openNotifications(anchorEl)),
+  closeNotifications: () => dispatch(closeNotifications())
 });
 
 NavigationContainer = connect(
