@@ -18,7 +18,7 @@ const dateTimeFormatter = function(locale,options){
     } else if( options.weekday === "narrow" ){
       return m.format("dd");
     }else if (options.year === "numeric" && options.month === "long") {
-      return m.format("YYYY年D月");
+      return m.format("YYYY年M月");
     }else if (options.year === "numeric" ) {
       return m.format("YYYY");
     }else if (options.day === "numeric" ) {
