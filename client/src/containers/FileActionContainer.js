@@ -25,6 +25,8 @@ import ContentContentCut from "material-ui/svg-icons/content/content-cut";
 import AddFileDialog from "../components/AddFileDialog";
 import AddDirDialog from "../components/AddDirDialog";
 import DeleteAllFilesDialog from "../components/File/DeleteAllFilesDialog";
+import DownloadFilesDialog from "../components/File/DownloadFilesDialog";
+import FileFileDownload from "material-ui/svg-icons/file/file-download";
 
 import * as FileActions from "../actions/files";
 import * as constants from "../constants";
@@ -77,6 +79,17 @@ class FileActionContainer extends Component {
     }
 
     const allActions = [
+      {
+        name: constants.PERMISSION_DOWNLOAD,
+        component: idx => (
+          <MenuItem
+            key={idx}
+            leftIcon={<FileFileDownload />}
+            primaryText="ダウンロード"
+            onTouchTap={() => this.props.actions.toggleDownloadFilesDialog()}
+          />
+        )
+      },
       {
         name: constants.PERMISSION_MOVE,
         component: idx => (
@@ -145,6 +158,13 @@ class FileActionContainer extends Component {
             deleteFiles={this.props.actions.deleteFiles}
             files={this.props.checkedFiles}
             />
+
+          <DownloadFilesDialog
+            open={this.props.downloadFilesDialog.open}
+            handleClose={this.props.actions.toggleDownloadFilesDialog}
+            downloadFiles={this.props.actions.downloadFiles}
+            files={this.props.checkedFiles}
+            />
       </div>
     );
   }
@@ -160,7 +180,8 @@ const mapStateToProps = (state) => {
     tenant: state.tenant,
     selectedDir: state.dirTree.selected,
     moveFilesState: state.moveFilesState,
-    deleteFilesDialog: state.deleteFiles
+    deleteFilesDialog: state.deleteFiles,
+    downloadFilesDialog: state.downloadFiles
   };
 };
 

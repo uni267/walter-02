@@ -21,6 +21,7 @@ import createDir from "./createDirReducer";
 import fileUpload from "./fileUploadReducer";
 import deleteFile from "./deleteFileReducer";
 import deleteFiles from "./deleteFilesReducer";
+import downloadFiles from "./downloadFilesReducer";
 import dirTree from "./dirTreeReducer";
 import metaInfo from "./metaInfoReducer";
 import user from "./userReducer";
@@ -75,6 +76,7 @@ const fileApp = combineReducers({
   fileUpload,
   deleteFile,
   deleteFiles,
+  downloadFiles,
   dirTree,
   metaInfo,
   user,

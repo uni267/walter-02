@@ -57,6 +57,7 @@ import watchFetchAnalysis from "./watchFetchAnalysis";
 import watchToggleStar from "./watchToggleStar";
 import watchDeleteFileBuffer from "./watchDeleteFileBuffer";
 import watchDownloadFile from "./watchDownloadFile";
+import watchDownloadFiles from "./watchDownloadFiles";
 import watchAddAuthorityToFile from "./watchAddAuthorityToFile";
 import watchDeleteAuthorityToFile from "./watchDeleteAuthorityToFile";
 import watchRequestVerifyToken from "./watchRequestVerifyToken";
@@ -154,6 +155,7 @@ function* Saga() {
   yield fork(watchToggleStar);
   yield fork(watchDeleteFileBuffer);
   yield fork(watchDownloadFile);
+  yield fork(watchDownloadFiles);
   yield fork(watchAddAuthorityToFile);
   yield fork(watchDeleteAuthorityToFile);
   yield fork(watchRequestVerifyToken);

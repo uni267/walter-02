@@ -66,6 +66,9 @@ export const toggleDeleteFilesDialog = () => ({
   type: actionTypes.TOGGLE_DELETE_FILES_DIALOG
 });
 
+export const toggleDownloadFilesDialog = () => ({
+  type: actionTypes.TOGGLE_DOWNLOAD_FILES_DIALOG
+});
 
 export const toggleMoveDirDialog = (dir) => ({
   type: actionTypes.TOGGLE_MOVE_DIR_DIALOG, dir
@@ -101,6 +104,10 @@ export const fileNextPage = () => ({
 
 export const downloadFile = (file) => ({
   type: actionTypes.DOWNLOAD_FILE, file
+});
+
+export const downloadFiles = (files) => ({
+  type: actionTypes.DOWNLOAD_FILES, files
 });
 
 export const requestFetchRoles = () => ({
