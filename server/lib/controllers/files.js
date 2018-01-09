@@ -58,6 +58,8 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
     try {
       let { dir_id, page ,sort ,order} = req.query;
+      const { tenant_id } = res.user;
+
       // デフォルトはテナントのホーム
       if (dir_id === null || dir_id === undefined || dir_id === "") {
         dir_id = res.user.tenant.home_dir_id;
@@ -68,6 +70,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       if(_dir === null) throw new RecordNotFoundException("dir is not found");
 
+      // 権限チェック
       const file_ids = [
         ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
         res.user.tenant.home_dir_id,
@@ -75,12 +78,6 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       ];
 
       if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
-
-      const conditions = {
-        dir_id: mongoose.Types.ObjectId(dir_id),
-        is_deleted: false,
-        _id: {$in : file_ids}
-      };
 
       if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
@@ -90,13 +87,59 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       if ( page === undefined || page === null ) page = 0;
       if ( page === "" || isNaN( parseInt(page) ) ) throw new ValidationError("page is not number");
 
-
-      const total = yield File.find(conditions).count();
-
-      const limit = ( no_limit && total !== 0 )  ? total : constants.FILE_LIMITS_PER_PAGE;
+      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
       const offset = page * limit;
 
-      let files = yield File.searchFiles(conditions,offset,limit,sortOption, mongoose.Types.ObjectId(sort));
+      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+
+      const esQuely = {
+        index: tenant_id.toString(),
+        type: "files",
+        from : offset,
+        size: parseInt( offset ) + 30,
+        sort: (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`,
+        body:
+          {
+            "query" :{
+              "bool":{
+                "must": [
+                  {
+                    "match": {"file.dir_id":{ "query":dir_id, "operator": "and" }
+                  }},{
+                    "match" : {
+                    [`file.actions.${action_id}`]:
+                      {
+                        "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+                        "operator": "and"         // operator の default は or なので and のする
+                      }
+                  }},{
+                    "match" : {
+                    "file.is_display": true
+                  }},{
+                    "match" : {
+                    "file.is_deleted": false
+                  }}
+                ]
+              }
+          }
+        }
+      };
+      const esResult = yield esClient.search(esQuely);
+      const esResultIds = esResult.hits.hits
+      .map(hit => {
+        return mongoose.Types.ObjectId( hit._id );
+      });
+
+      const conditions = {
+        is_display: true,
+        is_deleted: false,
+        $and: [
+          {_id: {$in : esResultIds} },
+        ]
+      };
+
+      const { total } = esResult.hits;
+      let files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
 
       files = files.map( file => {
         file.actions = extractFileActions(file.authorities, res.user._id.toString());
@@ -266,6 +309,7 @@ export const download = (req, res, next) => {
 export const search = (req, res, next, export_excel=false) => {
   return co(function* () {
     try {
+const _starttime = moment();
       const { q, page, sort, order } = req.query;
       const { tenant_id } = res.user;
 
@@ -368,6 +412,7 @@ export const search = (req, res, next, export_excel=false) => {
       if(export_excel){
         return files;
       }else{
+console.log({processtime:(moment() - _starttime)});
         res.json({
           status: { success: true, total },
           body: files
