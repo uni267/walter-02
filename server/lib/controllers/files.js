@@ -97,7 +97,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
         type: "files",
         from : offset,
         size: parseInt( offset ) + 30,
-        sort: (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`,
+        sort: [ "file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`],
         body:
           {
             "query" :{
@@ -309,7 +309,7 @@ export const download = (req, res, next) => {
 export const search = (req, res, next, export_excel=false) => {
   return co(function* () {
     try {
-const _starttime = moment();
+
       const { q, page, sort, order } = req.query;
       const { tenant_id } = res.user;
 
@@ -330,7 +330,7 @@ const _starttime = moment();
         type: "files",
         from : offset,
         size: parseInt( offset ) + 30,
-        sort: (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`,
+        sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`],
         body:
           {
             "query" :{
@@ -412,7 +412,7 @@ const _starttime = moment();
       if(export_excel){
         return files;
       }else{
-console.log({processtime:(moment() - _starttime)});
+
         res.json({
           status: { success: true, total },
           body: files
@@ -2441,7 +2441,7 @@ const moveFile = (file, dir_id, user, action) => {
 };
 
 const createSortOption = co.wrap( function* (_sort=null, _order=null) {
-  let sort = {};
+  let sort = {"is_dir":"desc"};
   const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
 
   if ( _sort === undefined || _sort === null || _sort === "" ) {
@@ -2467,6 +2467,7 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
     } else if(item.meta_info_id !== null) {
       // メタ情報でのソート
       sort = {
+        "is_dir":"desc",
         "sort_target": order
       };
     } else {
