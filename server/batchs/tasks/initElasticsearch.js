@@ -42,7 +42,7 @@ const task = () => {
         name: { type:"text", fielddata:true },
         mime_type: { type:"text", index: false },
         size: { type:"long", index: false },
-        is_dir: { type:"text" },
+        is_dir: { type:"boolean" },
         dir_id: { type:"keyword" },
         is_display: { type:"boolean" },
         is_star: { type:"boolean" },
