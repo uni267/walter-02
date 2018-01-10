@@ -35,6 +35,11 @@ cmd = "/usr/local/bin/mongo #{DB_SERVER}/walter #{loadTestData}"
 o, e, s = Open3.capture3(cmd)
 raise "mongo loadTestData error" if (e != "")
 
+# init elasticsearch
+cmd = "cd /webapp/walter-02/server && npm run init-elasticsearch"
+o, e, s = Open3.capture3(cmd)
+raise "elasticsearch error" if (e != "")
+
 # tokkenを取得
 conn = Faraday.new( url: API_SERVER )
 payload = conn.post "/api/login", ACCOUNT_INFO
