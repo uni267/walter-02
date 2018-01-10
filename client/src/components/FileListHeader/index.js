@@ -35,7 +35,10 @@ const FileListHeader = ({
     return (
       <div key={idx} style={checkboxStyle}>
         <Checkbox
-          onCheck={(e, value) => actions.toggleFileCheckAll(value) }
+          onCheck={(e, value) => {
+            actions.setPageYOffset(window.yOffset);
+            actions.toggleFileCheckAll(value);
+          }}
           style={{ opacity: 0.7 }}
           />
       </div>

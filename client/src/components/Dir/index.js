@@ -99,7 +99,7 @@ class Dir extends Component {
                 {this.props.dir.name}
               </div>
             </div>
-            <div 
+            <div
               onClick={linkToDirRoute}
               style={{ fontSize: 12, color: "#aaa" }}>
               場所: {this.props.dir.dir_route}
@@ -131,7 +131,7 @@ class Dir extends Component {
     const { rowStyle, cellStyle, headers } = this.props;
 
     const isActive = canDrop && isOver;
-    const backgroundColor = isActive || dir.checked 
+    const backgroundColor = isActive || dir.checked
         ? "rgb(232, 232, 232)" : "inherit";
 
     const favorite_icon = (
@@ -163,7 +163,10 @@ class Dir extends Component {
           <Checkbox
             checked={dir.checked}
             style={{...style.checkbox, opacity: checkOpacity}}
-            onCheck={() => this.props.actions.toggleFileCheck(dir)} />
+            onCheck={() => {
+              this.props.actions.setPageYOffset(window.pageYOffset)
+              this.props.actions.toggleFileCheck(dir)
+            }} />
 
           <Checkbox
             disabled={true}
@@ -207,7 +210,7 @@ class Dir extends Component {
               onTouchTap={this.props.actions.toggleCopyDirDialog} />
 
             <MenuItem
-              primaryText="削除" 
+              primaryText="削除"
               leftIcon={<ActionDelete />}
               onTouchTap={() => this.props.actions.toggleDeleteDirDialog(dir)} />
 
