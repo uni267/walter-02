@@ -716,25 +716,31 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       const { sort, order } = params;
       const _sort = yield createSortOption(sort, order);
 
-      const files = yield File.searchFiles(query,offset,limit,_sort, mongoose.Types.ObjectId(sort));
+      let files = {};
+      let ret_files = {};
+      if(Object.keys(query).length !== 0){
+        // 権限チェックおよび検索条件作成段階で対象となるファイルがある場合のみ検索
+        files = yield File.searchFiles(query,offset,limit,_sort, mongoose.Types.ObjectId(sort));
 
-      const ret_files = yield files.map( file => {
-        const route = file.dirs
-                .filter( dir => dir.ancestor.is_display )
-                .map( dir => dir.ancestor.name );
+        ret_files = yield files.map( file => {
+          const route = file.dirs
+                  .filter( dir => dir.ancestor.is_display )
+                  .map( dir => dir.ancestor.name );
 
-        file.dir_route = route.length > 0
-          ? route.reverse().join("/")
-          : "";
+          file.dir_route = route.length > 0
+            ? route.reverse().join("/")
+            : "";
 
-        file.actions = chain(file.authorities)
-          .filter( auth => auth.users._id.toString() === res.user._id.toString() )
-          .map( auth => auth.actions )
-          .flattenDeep()
-          .uniq();
+          file.actions = chain(file.authorities)
+            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
+            .map( auth => auth.actions )
+            .flattenDeep()
+            .uniq();
 
-        return file;
-      });
+          return file;
+        });
+      }
+
 
       if(export_excel){
         return ret_files;
@@ -746,7 +752,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       }
     }
     catch (e) {
-
+console.log(e);
       let errors = {};
       switch (e.message) {
         case "page is not number":
