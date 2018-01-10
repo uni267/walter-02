@@ -47,7 +47,7 @@ const ChangeFileNameDialog = ({
           ref={(input) => changedFileName = input}
           floatingLabelText="ファイル名を入力"
           errorText={errors.file_name}
-          defaultValue={file.name}
+          defaultValue={file.name === undefined ? "" : file.name}
           onKeyDown={ e => {
             return e.key === "Enter"
               ? actions.changeFileName(file, changedFileName.getValue())
