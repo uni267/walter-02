@@ -14,8 +14,8 @@ export const SERVER_CONF = {
     port: 3333
   },
   production: {
-    url: "mongodb://192.168.56.10",  // とりあえず
-    db_host: "172.16.55.74",
+    url: "mongodb://mongos_01",
+    db_host: "mongos_01",
     db_name: "walter",
     port: 3333
   }
@@ -38,6 +38,14 @@ export const STORAGE_CONF = {
     username: "test:tester",
     password: "testing",
     authUrl: "http://172.16.55.75:8080/auth/v1.0",
+    version: 1
+  },
+
+  production: {
+    provider: "openstack",
+    username: "test:tester",
+    password: "testing",
+    authUrl: "http://swift_01:8080/auth/v1.0",
     version: 1
   }
 };
@@ -67,7 +75,7 @@ export const ELASTICSEARCH_CONF = {
     logLevel: "error"
   },
   production: {
-    host: "192.168.99.100",
+    host: "elastic_01",
     port: "9200",
     logLevel: "error"
   }
