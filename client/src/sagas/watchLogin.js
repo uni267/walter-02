@@ -6,6 +6,7 @@ import { API } from "../apis";
 // action
 import * as actions from "../actions";
 import * as actionTypes from "../actionTypes";
+import * as commons from "../actions/commons";
 
 function* watchLogin() {
   while (true) {
@@ -24,7 +25,12 @@ function* watchLogin() {
     }
     catch (e) {
       const { message, errors } = e.response.data.status;
-      yield put(actions.requestLoginFailed(message, errors));
+      if (errors.tenant_name) {
+        yield put(commons.openException(message, JSON.stringify(errors)));
+      }
+      else {
+        yield put(actions.requestLoginFailed(message, errors));
+      }
     }
     finally {
       yield put(actions.loadingEnd());
