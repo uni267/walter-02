@@ -660,4 +660,46 @@ var addAuthFiles = [
   }
 ];
 
+// ===============================
+//  外部キーのindex
+// ===============================
+
 db.authority_files.insert(addAuthFiles);
+
+db.files.ensureIndex({ dir_id: 1 });
+db.files.ensureIndex({ preview_id: 1 });
+
+db.authority_files.ensureIndex({ files: 1 });
+db.authority_files.ensureIndex({ role_files: 1 });
+db.authority_files.ensureIndex({ users: 1 });
+db.authority_files.ensureIndex({ groups: 1 });
+
+db.authority_menus.ensureIndex({ role_menus: 1 });
+db.authority_menus.ensureIndex({ users: 1 });
+db.authority_menus.ensureIndex({ groups: 1 });
+
+db.dirs.ensureIndex({ ancestor: 1 });
+db.dirs.ensureIndex({ descendant: 1 });
+
+db.display_items.ensureIndex({ tenant_id: 1 });
+db.display_items.ensureIndex({ meta_info_id: 1 });
+
+db.file_meta_infos.ensureIndex({ file_id: 1 });
+db.file_meta_infos.ensureIndex({ meta_info_id: 1 });
+
+db.groups.ensureIndex({ tenant_id: 1 });
+
+db.meta_infos.ensureIndex({ tenant_id: 1 });
+
+db.notifications.ensureIndex({ users: 1 });
+
+db.role_files.ensureIndex({ tenant_id: 1 });
+
+db.role_menus.ensureIndex({ tenant_id: 1 });
+
+db.tags.ensureIndex({ tenant_id: 1 });
+
+db.tenants.ensureIndex({ home_dir_id: 1 });
+db.tenants.ensureIndex({ trash_dir_id: 1 });
+
+db.users.ensureIndex({ tenant_id: 1 });
