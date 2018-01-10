@@ -17,7 +17,7 @@ INTERVAL = 0.5
 POST_FILE_LENGTH = 20
 
 # post対象のAPサーバ
-API_SERVER = "http://localhost:3333"
+API_SERVER = "http://192.168.56.10:3000"
 
 # init対象のdbサーバ
 DB_SERVER = "192.168.56.10"
@@ -25,7 +25,8 @@ DB_SERVER = "192.168.56.10"
 # どのユーザでpostするか
 ACCOUNT_INFO = {
   account_name: "taro",
-  password: "test"
+  password: "test",
+  tenant_name: "test"
 }
 
 # initdb
@@ -36,7 +37,7 @@ o, e, s = Open3.capture3(cmd)
 raise "mongo loadTestData error" if (e != "")
 
 # init elasticsearch
-cmd = "cd /webapp/walter-02/server && npm run init-elasticsearch"
+cmd = "cd ~/repos/react/walter-02/server && npm run init-elasticsearch"
 o, e, s = Open3.capture3(cmd)
 raise "elasticsearch error" if (e != "")
 
