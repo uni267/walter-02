@@ -1369,6 +1369,11 @@ export const upload = (req, res, next) => {
       const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       yield esClient.createIndex(tenant_id, indexingFile);
 
+      const returnfiles = indexingFile.map( file => {
+        file.actions = extractFileActions(file.authorities, res.user._id.toString());
+        return file;
+      });
+
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
         const _errors = files.map( f => {
@@ -1387,7 +1392,7 @@ export const upload = (req, res, next) => {
       } else {
         res.json({
           status: { success: true },
-          body: changedFiles
+          body: returnfiles
         });
       }
     }

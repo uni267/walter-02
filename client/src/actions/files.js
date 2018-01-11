@@ -340,6 +340,14 @@ export const initFile = (file) => ({
   type: actionTypes.INIT_FILE, file
 });
 
+export const updateFileRow = (file) => ({
+  type: actionTypes.UPDATE_FILE_ROW, file
+});
+
+export const insertFileRow = (file) => ({
+  type: actionTypes.INSERT_FILE_ROW, file
+});
+
 export const requestFetchDisplayItems = () => ({
   type: actionTypes.REQUEST_FETCH_DISPLAY_ITEMS
 });

@@ -17,7 +17,7 @@ function* watchAddMetaInfoToFile() {
     try {
       yield call(api.addMetaInfoToFile, file, metaInfo, value);
       const payload = yield call(api.fetchFile, file._id);
-      yield put(actions.initFile(payload.data.body));
+      yield put(actions.updateFileRow(payload.data.body));
       yield put(commons.triggerSnackbar("メタ情報を追加しました"));
     }
     catch (e) {

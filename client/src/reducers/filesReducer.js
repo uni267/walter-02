@@ -33,6 +33,18 @@ const filesReducer = (state = [], action) => {
         ? { ...file, is_star: !action.file.is_star } : file;
     });
 
+  case actionTypes.INSERT_FILE_ROW:
+    return [
+      ...action.file,
+      ...state
+    ];
+
+  case actionTypes.UPDATE_FILE_ROW:
+    return state.map(file => {
+      return file._id === action.file._id
+        ? action.file : file;
+    });
+
   case actionTypes.CLEAR_FILES:
     return [];
 

@@ -36,20 +36,17 @@ function* watchUploadFiles() {
       const _files = yield all(files.map( f => readFile(f) ));
       const uploadPayload = yield call(api.filesUploadBlob, dir_id, _files);
 
+      // アップロードダイアログの一覧を更新
       const buffers = uploadPayload.data.body.map( body => (
         put(actions.pushFileToBuffer(body))
       ));
 
       yield all(buffers);
 
-      const uploadFileIds = uploadPayload.data.body.map( body => body._id );
+      // ファイル一覧の先頭に追加
+      yield put(actions.insertFileRow(uploadPayload.data.body));
 
-      const filesPayload = yield call(api.fetchFiles, dir_id);
-      yield put(actions.initFiles(filesPayload.data.body));
-
-      const toggleCheckTasks = filesPayload.data.body.filter( file => (
-        uploadFileIds.includes(file._id)
-      )).map( file => put(actions.toggleFileCheck(file)) );
+      const toggleCheckTasks = uploadPayload.data.body.map( file => put(actions.toggleFileCheck(file)) );
 
       yield all(toggleCheckTasks);
       yield put(commons.triggerSnackbar("ファイルをアップロードしました"));
