@@ -49,6 +49,6 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
 }).catch(err => {
 
   logger.info(err);
-  throw new Error(err);
+  process.exit();
 
 });

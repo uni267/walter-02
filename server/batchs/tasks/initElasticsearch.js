@@ -17,7 +17,14 @@ import Action from "../../lib/models/Action";
 const task = () => {
   co(function* () {
     try {
-      const tenant_id = (yield Tenant.findOne({"name":"test"}))._id.toString();
+      if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
+
+      const tenant_name = process.argv[3];
+      const tenant = yield Tenant.findOne({"name": tenant_name});
+      if (tenant === null) throw new Error(`指定されたテナントは存在しません ${tenant_name}`);
+
+      const tenant_id = tenant._id.toString();
+
       const type = "files";
 
       const settings = {
