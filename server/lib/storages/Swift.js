@@ -8,25 +8,19 @@ import * as constants from "../../configs/constants";
 
 class Swift {
   constructor(params) {
-    // const { tenant_name } = params;
-
-    // if (tenant_name === undefined ||
-    //     tenant_name === null ||
-    //     tenant_name === "") throw "params.tenant_name not defined";
-
-    // this.tenant_name = tenant_name;
-
     const mode = process.env.NODE_ENV;
     let config;
 
     switch (mode) {
+    case "integration":
+      config = STORAGE_CONF.integration;
+      break;
+    case "production":
+      config = STORAGE_CONF.productin;
+      break;
     default:
       config = STORAGE_CONF.development;
       break;
-    }
-
-    if (config === undefined || config === null) {
-      throw "NODE_ENV in 'development' or 'integration' or 'production'??";
     }
 
     this.client = pkgcloud.storage.createClient(config);
