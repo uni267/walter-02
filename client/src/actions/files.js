@@ -28,6 +28,10 @@ export const toggleStar = (file) => ({
   type: actionTypes.TOGGLE_STAR, file
 });
 
+export const toggleStarSuccessful = (file) => ({
+  type: actionTypes.TOGGLE_STAR_SUCCESSFUL, file
+});
+
 export const addAuthorityToFile = (file, user, role) => ({
   type: actionTypes.ADD_AUTHORITY_TO_FILE, file, user, role
 });

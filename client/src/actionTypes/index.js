@@ -84,6 +84,7 @@ export const INIT_FILE_META_INFO = "INIT_FILE_META_INFO";
 
 // お気に入りファイル
 export const TOGGLE_STAR = "TOGGLE_STAR";
+export const TOGGLE_STAR_SUCCESSFUL = "TOGGLE_STAR_SUCCESSFUL"; // お気に入り切替の後続処理
 
 // ファイル名変更
 export const TOGGLE_CHANGE_FILE_NAME_DIALOG = "TOGGLE_CHANGE_FILE_NAME_DIALOG";

@@ -27,6 +27,12 @@ const filesReducer = (state = [], action) => {
       ? state.map( file => ({ ...file, checked: true }) )
       : state.map( file => ({ ...file, checked: false }) );
 
+  case actionTypes.TOGGLE_STAR_SUCCESSFUL:
+    return state.map(file => {
+      return file._id === action.file._id
+        ? { ...file, is_star: !action.file.is_star } : file;
+    });
+
   case actionTypes.CLEAR_FILES:
     return [];
 

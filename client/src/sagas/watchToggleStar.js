@@ -12,13 +12,18 @@ function* watchToggleStar() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(api.toggleStar, task.file);
-      const payload = yield call(api.fetchFiles, task.file.dir_id);
-      yield put(actions.initFiles(payload.data.body));
-      const message = yield task.file.is_star === false
-            ? "お気に入りに設定しました"
-            : "お気に入りを解除しました";
-      yield put(commons.triggerSnackbar(message));
+      const payload = yield call(api.toggleStar, task.file);
+
+      // 一覧・簡易検索・詳細検索・ページングと再取得の条件が複雑なため表示を切り替えで対応
+      if(payload.status){
+        // 成功した場合、stateを更新
+        yield put(actions.toggleStarSuccessful( task.file ));
+
+        const message = yield task.file.is_star === false
+          ? "お気に入りに設定しました"
+          : "お気に入りを解除しました";
+        yield put(commons.triggerSnackbar(message));
+      }
     }
     catch (e) {
       console.log(e);
