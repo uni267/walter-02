@@ -144,6 +144,12 @@ class FileListContainer extends Component {
     window.addEventListener("scroll", this.onScroll);
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if(this.props.dir_id !== nextProps.dir_id){
+      this.props.actions.initFilePagination();
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.match.params.id !== nextProps.match.params.id) {
       this.props.actions.requestFetchFiles(nextProps.match.params.id);
