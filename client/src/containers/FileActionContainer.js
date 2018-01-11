@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
 // lodash
-import { intersectionBy } from "lodash";
+import { intersectionBy, findIndex } from "lodash";
 
 // material
 import Menu from "material-ui/Menu";
@@ -97,8 +97,10 @@ class FileActionContainer extends Component {
       ];
     }
 
-    const allActions = [
-      {
+    const hasDir = (findIndex(this.props.checkedFiles,{"is_dir":true}) >= 0 )
+
+    // フォルダを選択した場合はダウンロードさせない
+    let allActions = hasDir ? [] : [{
         name: constants.PERMISSION_DOWNLOAD,
         component: idx => (
           <MenuItem
@@ -108,7 +110,10 @@ class FileActionContainer extends Component {
             onTouchTap={() => this.props.actions.toggleDownloadFilesDialog()}
           />
         )
-      },
+      }];
+      // フォルダ・ファイル共通アクション
+      allActions = [
+        ...allActions,
       {
         name: constants.PERMISSION_MOVE,
         component: idx => (
@@ -142,7 +147,7 @@ class FileActionContainer extends Component {
 
     // チェックされた単数/複数ファイルのactionsから積集合を算出
     let permitActions = this.props.checkedFiles.map( file => file.actions )
-        .reduce( (prev, next, idx) => {
+    .reduce( (prev, next, idx) => {
           if (idx === 0) return next;
           return intersectionBy(prev, next, "_id");
         }, []);
