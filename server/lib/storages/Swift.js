@@ -16,7 +16,7 @@ class Swift {
       config = STORAGE_CONF.integration;
       break;
     case "production":
-      config = STORAGE_CONF.productin;
+      config = STORAGE_CONF.production;
       break;
     default:
       config = STORAGE_CONF.development;
