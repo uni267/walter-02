@@ -198,7 +198,10 @@ class File extends Component {
             checkedIcon={<ActionFavorite />}
             uncheckedIcon={<ActionFavoriteBorder />}
             checked={file.is_star}
-            onCheck={() => this.props.actions.toggleStar(file)} />
+            onCheck={() => {
+              this.props.actions.setPageYOffset(window.pageYOffset)
+              this.props.actions.toggleStar(file)
+            }} />
         </div>
 
         {headers.filter( header => (
