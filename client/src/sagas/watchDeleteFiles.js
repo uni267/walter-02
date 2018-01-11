@@ -15,20 +15,21 @@ function* watchDeleteFiles() {
       const tenant = yield select( state => state.tenant );
       let message;
 
+      let response;
       if ( files[0].dir_id === tenant.trashDirId ) {
         const tasks = files.map ( file => call(api.deleteFile, file) );
-        yield all(tasks);
+        response = yield all(tasks);
         message = "ファイルをごみ箱から削除しました";
       }
       else {
         const tasks = files.map( file => call(api.moveFileTrash, file) );
-        yield all(tasks);
+        response = yield all(tasks);
         message = "ファイルをごみ箱へ移動しました";
       }
 
-      const payload = yield call(api.fetchFiles, files[0].dir_id, 0);
-      yield put(actions.initFiles(payload.data.body));
-      yield put(actions.initFileTotal(payload.data.status.total));
+      const deletedFileIds = response.filter(res => res.status == 200 ).map(res => res.data.body._id);
+      yield put(actions.deleteFileRows(deletedFileIds));
+
       yield put(actions.toggleDeleteFilesDialog());
       yield put(commons.triggerSnackbar(message));
     }

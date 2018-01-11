@@ -348,6 +348,10 @@ export const insertFileRow = (file) => ({
   type: actionTypes.INSERT_FILE_ROW, file
 });
 
+export const deleteFileRows = (delete_file_ids) => ({
+  type: actionTypes.DELETE_FILE_ROWS, delete_file_ids
+});
+
 export const requestFetchDisplayItems = () => ({
   type: actionTypes.REQUEST_FETCH_DISPLAY_ITEMS
 });

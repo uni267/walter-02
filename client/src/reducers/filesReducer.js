@@ -45,6 +45,11 @@ const filesReducer = (state = [], action) => {
         ? action.file : file;
     });
 
+  case actionTypes.DELETE_FILE_ROWS:
+    return state.filter(file => {
+      return !action.delete_file_ids.includes(file._id);
+    });
+
   case actionTypes.CLEAR_FILES:
     return [];
 
