@@ -4,12 +4,13 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import path from "path";
 import log4js from "log4js";
+import { EventEmitter } from "events";
 import logger from "./logger";
-
 import { SERVER_CONF } from "../configs/server"; // mongoのipなど
 import router from "./routes";
 import * as constants from "../configs/constants";
-
+import { Swift } from "./storages/Swift";
+import esClient from "./elasticsearchclient";
 const app = express();
 
 app.use( (req, res, next) => {
@@ -39,7 +40,6 @@ let db_name;
 let port;
 
 switch (mode) {
-
 case "integration":
   url = SERVER_CONF.integration.url;
   db_name = SERVER_CONF.integration.db_name;
@@ -59,18 +59,90 @@ default:
   break;
 }
 
-mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
+const event = new EventEmitter;
+const status = {};
 
-  const server = app.listen(port, () => {
-    console.log(`start server port: ${port}`);
-    logger.info(`start server port: ${port}`);
-  });
+// mongo, swift, elasticsearchのヘルスチェックが完了通知を受け取ったらappを起動する
+event.on("success", middleware_name => {
+  status[middleware_name] = true;
 
-  app.use("/", router);
+  if (status.mongo && status.swift && status.elastic) {
+    const server = app.listen(port, () => {
+      console.log(`start server port: ${port}`);
+      logger.info(`start server port: ${port}`);
+    });
 
-}).catch(err => {
-
-  logger.info(err);
-  throw new Error(err);
-
+    app.use("/", router);
+  }
 });
+
+mongoose.Promise = global.Promise;
+
+const checkMongo = (count = 0) => {
+  mongoose.connect(`${url}/${db_name}`, {useMongoClient: true});
+
+  setTimeout( () => {
+    if (mongoose.connection.readyState === 1) {
+      console.log("mongo connection success");
+      logger.info("mongo connection success");
+      event.emit("success", "mongo");
+    }
+    else {
+      console.log("mongo connection failed", count + 1);
+      logger.info("mongo connection failed", count + 1);
+
+      if (constants.MONGO_CONNECTION_RETRY <= count) throw new Error("mongodb connection failed");
+      checkMongo(count + 1);
+    }
+  }, constants.MONGO_CONNECTION_INTERVAL);
+};
+
+const checkSwift = (count = 0) => {
+  const swift = new Swift();
+
+  swift.getContainers().then( res => {
+    console.log("swift connection success");
+    logger.info("swift connection success");
+    event.emit("success", "swift");
+  }).catch( e => {
+    console.log("swift connection failed", count + 1);
+    logger.info("swift connection failed", count + 1);
+
+    if (constants.SWIFT_CONNECTION_RETRY <= count) throw new Error("swift connection failed");
+
+    setTimeout( () => {
+      checkSwift(count + 1);
+    }, constants.SWIFT_CONNECTION_INTERVAL);
+
+  });
+};
+
+const checkElastic = (count = 0) => {
+  esClient.ping({ requestTimeout: constants.ELASTIC_CONNECTION_TIMEOUT }, err => {
+    if (err) {
+      console.log("elasticsearch connection failed", count + 1);
+      logger.info("elasticsearch connection failed", count + 1);
+
+      if (constants.ELASTIC_CONNECTION_RETRY <= count) throw new Error("elasticsearch connection failed");
+
+      setTimeout( () => {
+        checkElastic(count + 1);
+      }, constants.ELASTIC_CONNECTION_INTERVAL );
+
+    }
+    else {
+      console.log("elasticsearch connection success");
+      logger.info("elasticsearch connection success");
+      event.emit("success", "elastic");
+    }
+  });
+};
+
+try {
+  checkMongo();
+  checkSwift();
+  checkElastic();
+} catch (e) {
+  logger.error(e);
+  process.exit();
+}
