@@ -162,10 +162,10 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
         return files;
       }else{
-        res.json({
-          status: { success: true, total },
-          body: files
-        });
+          res.json({
+            status: { success: true, total },
+            body: files
+          });
       }
     }
     catch (e) {
@@ -330,7 +330,7 @@ export const search = (req, res, next, export_excel=false) => {
         type: "files",
         from : offset,
         size: parseInt( offset ) + 30,
-        sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`],
+        sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
         body:
           {
             "query" :{
@@ -412,7 +412,6 @@ export const search = (req, res, next, export_excel=false) => {
       if(export_excel){
         return files;
       }else{
-
         res.json({
           status: { success: true, total },
           body: files
@@ -752,7 +751,6 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       }
     }
     catch (e) {
-console.log(e);
       let errors = {};
       switch (e.message) {
         case "page is not number":
@@ -2486,7 +2484,8 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
       sort["id"] = order;
     }
   }
-return Promise.resolve(sort);
+  sort["name"] = order;
+  return Promise.resolve(sort);
 });
 
 export const getAllowedFileIds = (user_id, permission) => {
