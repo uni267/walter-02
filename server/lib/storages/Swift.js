@@ -16,6 +16,7 @@ class Swift {
       config = STORAGE_CONF.integration;
       break;
     case "production":
+      if (! process.env.SWIFT_HOST_NAME) throw new Error("env.SWIFT_HOST_NAME is not set");
       config = STORAGE_CONF.production;
       break;
     default:

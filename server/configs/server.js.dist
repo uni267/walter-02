@@ -14,7 +14,7 @@ export const SERVER_CONF = {
     port: 3333
   },
   production: {
-    url: "mongodb://mongos_1",
+    url: process.env.MONGO_HOSTNAME
     db_host: "mongos_1",
     db_name: "walter",
     port: 3333
@@ -45,7 +45,7 @@ export const STORAGE_CONF = {
     provider: "openstack",
     username: "test:tester",
     password: "testing",
-    authUrl: "http://swift_01:8080/auth/v1.0",
+    authUrl: `http://${process.env.SWIFT_HOST_NAME}:8080/auth/v1.0`,
     version: 1
   }
 };
@@ -75,7 +75,7 @@ export const ELASTICSEARCH_CONF = {
     logLevel: "error"
   },
   production: {
-    host: "elastic_01",
+    host: process.env.ELASTIC_HOST_NAME,
     port: "9200",
     logLevel: "error"
   }

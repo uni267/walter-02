@@ -15,6 +15,8 @@ switch (mode) {
     break;
 
   case "production":
+    if (! process.env.ELASTIC_HOST_NAME) throw new Error("env.ELASTIC_HOST_NAME is not set");
+
     erasticsearchUrl = `${ELASTICSEARCH_CONF.production.host}:${ELASTICSEARCH_CONF.production.port}`;
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.production.logLevel;
     break;

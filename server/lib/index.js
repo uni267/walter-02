@@ -46,6 +46,8 @@ case "integration":
   break;
 
 case "production":
+  if (! process.env.MONGO_HOST_NAME) throw new Error("env.MONGO_HOST_NAME is not set");
+
   url = SERVER_CONF.production.url;
   db_name = SERVER_CONF.production.db_name;
   port = SERVER_CONF.production.port;
