@@ -80,22 +80,19 @@ event.on("success", middleware_name => {
 mongoose.Promise = global.Promise;
 
 const checkMongo = (count = 0) => {
-  mongoose.connect(`${url}/${db_name}`, {useMongoClient: true});
+  mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( res => {
+    console.log("mongo connection success");
+    logger.info("mongo connection success");
+    event.emit("success", "mongo");
+  }).catch( e => {
+    console.log("mongo connection failed", count + 1);
+    logger.info("mongo connection failed", count + 1);
 
-  setTimeout( () => {
-    if (mongoose.connection.readyState === 1) {
-      console.log("mongo connection success");
-      logger.info("mongo connection success");
-      event.emit("success", "mongo");
-    }
-    else {
-      console.log("mongo connection failed", count + 1);
-      logger.info("mongo connection failed", count + 1);
-
+    setTimeout( () => {
       if (constants.MONGO_CONNECTION_RETRY <= count) throw new Error("mongodb connection failed");
       checkMongo(count + 1);
-    }
-  }, constants.MONGO_CONNECTION_INTERVAL);
+    }, constants.MONGO_CONNECTION_INTERVAL);
+  });
 };
 
 const checkSwift = (count = 0) => {
