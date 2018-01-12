@@ -85,19 +85,19 @@ export const PERMISSION_ANALYSIS = "analysis";
 export const MONGO_CONNECTION_INTERVAL = 5 * 1000;
 
 // mongoの接続を何回試行するか
-export const MONGO_CONNECTION_RETRY = 5;
+export const MONGO_CONNECTION_RETRY = 20;
 
 // swiftの接続に失敗した場合、リトライに何m秒待つか
 export const SWIFT_CONNECTION_INTERVAL = 5 * 1000;
 
 // swiftの接続を何回試行するか
-export const SWIFT_CONNECTION_RETRY = 5;
+export const SWIFT_CONNECTION_RETRY = 20;
 
 // elasticsearchの接続に失敗した場合、リトライに何m秒待つか
 export const ELASTIC_CONNECTION_INTERVAL = 5 * 1000;
 
 // elasticsearchの接続を何回試行するか
-export const ELASTIC_CONNECTION_RETRY = 5;
+export const ELASTIC_CONNECTION_RETRY = 20;
 
 // elasticsearchのタイムアウトm秒
 export const ELASTIC_CONNECTION_TIMEOUT = 10 * 1000;
