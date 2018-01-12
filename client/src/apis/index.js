@@ -1,11 +1,13 @@
 import axios from "axios";
+import { API_TIMEOUT } from "../constants/index";
 
 export class API {
   constructor() {
     this.client = axios.create({
       headers: {
-        "X-Auth-Cloud-Storage": localStorage.getItem("token")
-      }
+        "X-Auth-Cloud-Storage": localStorage.getItem("token"),
+      },
+      timeout: API_TIMEOUT
     });
   }
 
