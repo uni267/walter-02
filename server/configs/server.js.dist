@@ -14,8 +14,8 @@ export const SERVER_CONF = {
     port: 3333
   },
   production: {
-    url: process.env.MONGO_HOSTNAME,
-    db_host: "mongos_1",
+    url: `mongodb://${process.env.MONGO_HOST_NAME}`,
+    db_host: process.env.MONGO_HOST_NAME,
     db_name: "walter",
     port: 3333
   }
