@@ -87,16 +87,11 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       if ( page === undefined || page === null ) page = 0;
       if ( page === "" || isNaN( parseInt(page) ) ) throw new ValidationError("page is not number");
 
-      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-      const offset = page * limit;
-
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       const esQuely = {
         index: tenant_id.toString(),
         type: "files",
-        from : offset,
-        size: parseInt( offset ) + 30,
         sort: [ "file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`],
         body:
           {
@@ -124,7 +119,25 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
           }
         }
       };
-      const esResult = yield esClient.search(esQuely);
+
+      const offset = page * constants.FILE_LIMITS_PER_PAGE;
+      if(!export_excel){
+        esQuely["from"] = offset;
+        esQuely["size"] = parseInt( offset ) + 30;
+      }else{
+        esQuely["from"] = 0;
+        esQuely["size"] = 0;
+      }
+
+      let esResult = yield esClient.search(esQuely);
+      const { total } = esResult.hits;
+
+      if(export_excel){
+        // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
+        esQuely["size"] = total;
+        esResult = yield esClient.search(esQuely);
+      }
+
       const esResultIds = esResult.hits.hits
       .map(hit => {
         return mongoose.Types.ObjectId( hit._id );
@@ -138,7 +151,8 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
         ]
       };
 
-      const { total } = esResult.hits;
+      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
+
       let files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
 
       files = files.map( file => {
@@ -262,12 +276,12 @@ export const download = (req, res, next) => {
     try {
       const { file_id }  = req.query;
 
-      if ( file_id === null || file_id === undefined || file_id === "") throw "file_id is empty";
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+      if ( file_id === null || file_id === undefined || file_id === "") throw new ValidationError( "file_id is empty" );
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw new ValidationError( "file_id is invalid" );
 
       const fileRecord = yield File.findById(file_id);
-      if (fileRecord === null) throw "file is empty";
-      if (fileRecord.is_deleted) throw "file is deleted";
+      if (fileRecord === null) throw new ValidationError( "file is empty" );
+      if (fileRecord.is_deleted) throw new ValidationError( "file is deleted" );
 
       const tenant_name = res.user.tenant.name;
 
@@ -279,7 +293,7 @@ export const download = (req, res, next) => {
     catch (e) {
       let errors = {};
 
-      switch(e) {
+      switch(e.message) {
       case "file_id is empty":
         errors.file_id = "ファイルIDが空のためファイルのダウンロードに失敗しました";
         break;
@@ -299,7 +313,7 @@ export const download = (req, res, next) => {
         status: {
           success: false,
           message: "ファイルのダウンロードに失敗しました",
-          errors
+          errors: e
         }
       });
     }
@@ -320,16 +334,12 @@ export const search = (req, res, next, export_excel=false) => {
         ? 0 : page;
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-      const offset = _page * limit;
 
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       const esQuely = {
         index: tenant_id.toString(),
         type: "files",
-        from : offset,
-        size: parseInt( offset ) + 30,
         sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
         body:
           {
@@ -363,13 +373,29 @@ export const search = (req, res, next, export_excel=false) => {
           }
         }
       };
-      const esResult = yield esClient.search(esQuely);
+
+      const offset = _page * constants.FILE_LIMITS_PER_PAGE;
+      if(!export_excel){
+        esQuely["from"] = offset;
+        esQuely["size"] = parseInt( offset ) + 30;
+      }else{
+        esQuely["from"] = 0;
+        esQuely["size"] = 0;
+      }
+
+      let esResult = yield esClient.search(esQuely);
+      const { total } = esResult.hits;
+
+      if(export_excel){
+        // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
+        esQuely["size"] = total;
+        esResult = yield esClient.search(esQuely);
+      }
+
       const esResultIds = esResult.hits.hits
       .map(hit => {
         return mongoose.Types.ObjectId( hit._id );
       });
-
-      const { total } = esResult.hits;
 
       const conditions = {
         dir_id: { $ne: trash_dir_id },
@@ -380,12 +406,14 @@ export const search = (req, res, next, export_excel=false) => {
         ]
       };
 
+      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
+
       if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
       const _sort = yield createSortOption(sort, order);
 
-      let files = yield File.searchFiles(conditions, 0, constants.FILE_LIMITS_PER_PAGE,_sort, mongoose.Types.ObjectId(sort));
+      let files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
       files = files.map( file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
