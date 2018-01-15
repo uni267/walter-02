@@ -41,7 +41,15 @@ function* watchSearchFileDetail() {
 
     }
     catch (e) {
-      console.log(e);
+      if(e.response === undefined){
+        yield put(commons.openException("一覧の取得に失敗しました"));
+      }else{
+        const { message, errors } = e.response.data.status;
+
+        if (!errors.q) {
+          yield put(commons.openException(message, JSON.stringify(errors)));
+        }
+      }
     }
     finally {
       yield put(commons.loadingEnd());

@@ -5,6 +5,7 @@ import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
 import { LIST_SEARCH_SIMPLE } from "../constants/index";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchSearchFileSimple() {
   while (true) {
@@ -35,9 +36,12 @@ function* watchFetchSearchFileSimple() {
 
     }
     catch(e) {
-      const { message, errors } = e.response.data.status;
-      if (! errors.q) {
+      const { message, errors } = errorParser(e,"ファイル一覧の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
         yield put(commons.openException(message, JSON.stringify(errors)));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
       }
     }
     finally {

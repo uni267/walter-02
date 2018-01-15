@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/menus";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchRoleMenus() {
   while (true) {
@@ -15,7 +16,12 @@ function* watchFetchRoleMenus() {
       yield put(actions.initRoleMenus(payload.data.body));
     }
     catch(e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"一覧の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

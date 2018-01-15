@@ -27,7 +27,7 @@ function* watchDownloadXlsxFileDetail() {
         yield saveAs(download, "list.xlsx");
       }
     catch (e) {
-      console.log(e);
+      yield put(commons.openException("ファイルのダウンロードに失敗しました"));
     }
     finally {
       yield put(commons.loadingEnd());

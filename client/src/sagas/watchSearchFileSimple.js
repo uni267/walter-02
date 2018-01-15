@@ -1,4 +1,5 @@
-import { put, take, call, select } from "redux-saga/effects";
+import { put, take, call, select, race } from "redux-saga/effects";
+import { delay } from "redux-saga";
 
 import { API } from "../apis";
 import * as actions from "../actions/files";
@@ -30,7 +31,9 @@ function* watchSearchFileSimple() {
 
       const { page } = yield select( state => state.filePagination );
       const { sorted, desc } = yield select( state => state.fileSortTarget );
+
       const payload = yield call(api.searchFiles, value, page, sorted, desc);
+
       yield put(actions.keepFileSimpleSearchValue({value, page, sorted, desc}));
 
       if (page === 0 || page === null ) {
@@ -44,9 +47,14 @@ function* watchSearchFileSimple() {
       history.push("/files/search");
     }
     catch(e) {
-      const { message, errors } = e.response.data.status;
-      if (! errors.q) {
-        yield put(commons.openException(message, JSON.stringify(errors)));
+      if(e.response === undefined){
+        yield put(commons.openException("一覧の取得に失敗しました"));
+      }else{
+        const { message, errors } = e.response.data.status;
+
+        if (!errors.q) {
+          yield put(commons.openException(message, JSON.stringify(errors)));
+        }
       }
     }
     finally {

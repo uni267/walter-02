@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchDeleteDir() {
   while (true) {
@@ -31,7 +32,12 @@ function* watchDeleteDir() {
       yield put(commons.triggerSnackbar(message));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"フォルダの削除に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, JSON.stringify(errors)));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

@@ -4,6 +4,7 @@ import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 
 import { API } from "../apis";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchFileSearchItems() {
   while (true) {
@@ -16,6 +17,12 @@ function* watchFetchFileSearchItems() {
       yield put(actions.initFileDetailSearchItems(payload.data.body));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"検索項目の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

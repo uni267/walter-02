@@ -11,7 +11,8 @@ const RoleOfMenu = ({
   menus,
   searchMenu,
   clearSearchMenuText,
-  roleMenuActions
+  roleMenuActions,
+  validationErrors
 }) => {
 
   const renderMenus = (menus) => {
@@ -57,6 +58,7 @@ const RoleOfMenu = ({
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}
           dataSource={_menus}
+          errorText={validationErrors.menu}
         />
       </div>
     </div>

@@ -6,6 +6,7 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/users";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchAddGroupOfUser() {
   while (true) {
@@ -22,17 +23,23 @@ function* watchAddGroupOfUser() {
       ];
 
       const payloads = yield all(fetchJobs);
-      
+
       const putJobs = [
         put(actions.initUser(payloads[0].data.body)),
         put(actions.initGroup(payloads[1].data.body))
       ];
 
       yield all(putJobs);
-      yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("ユーザをグループに追加しました"));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"ユーザーの追加に失敗しました");
+      if(!errors.unknown){
+        yield put(commonActions.openException(message, JSON.stringify(errors)));
+      }else{
+        yield put(commonActions.openException(message, errors.unknown ));
+      }
+    } finally {
       yield put(commonActions.loadingEnd());
     }
   }

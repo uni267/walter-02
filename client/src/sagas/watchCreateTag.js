@@ -7,6 +7,8 @@ import { API } from "../apis";
 import * as actions from "../actions/tags";
 import * as commonActions from "../actions/commons";
 
+import errorParser from "../helper/errorParser";
+
 function* watchCreateTag() {
   while (true) {
     const task = yield take(actions.createTag().type);
@@ -17,14 +19,18 @@ function* watchCreateTag() {
       yield call(api.createTag, task.tag);
       const payload = yield call(api.fetchTags);
       yield put(actions.initTags(payload.data.body));
-      yield put(commonActions.loadingEnd());
       yield put(actions.initTag());
       yield task.history.push("/tags");
       yield put(commonActions.triggerSnackbar("タグを作成しました"));
     }
     catch (e) {
-      const { errors } = e.response.data.status;
-      yield put(actions.saveTagValidationError(errors));
+      const { message, errors } = errorParser(e,"タグの作成に失敗しました");
+      if(!errors.unknown){
+        yield put(actions.saveTagValidationError(errors));
+      }else{
+        yield put(commonActions.openException(message, errors.unknown ));
+      }
+    } finally {
       yield put(commonActions.loadingEnd());
     }
   }

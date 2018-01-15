@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/index";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchMoreNotification(){
   while(true) {
@@ -21,7 +22,12 @@ function* watchFetchMoreNotification(){
       };
       yield put(actions.initMoreNotificaiton(payload.data.body, status));
     } catch (e) {
-
+      const { message, errors } = errorParser(e,"お知らせの取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally{
       yield put(commons.loadingEnd());

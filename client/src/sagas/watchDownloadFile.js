@@ -22,7 +22,7 @@ function* watchDownloadFile() {
       yield saveAs(download, file.name);
     }
     catch (e) {
-      console.log(e);
+      yield put(commons.openException("ファイルのダウンロードに失敗しました" ));
     }
     finally {
       yield put(commons.loadingEnd());

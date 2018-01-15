@@ -16,12 +16,12 @@ function* watchSaveUserAccountName() {
       yield call(api.saveUserAccountName, user);
       const payload = yield call(api.fetchUser, user._id);
       yield put(actions.initUser(payload.data.body));
-      yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("アカウント名を変更しました"));
     }
     catch (e) {
       const { errors } = e.response.data.status;
       yield put(actions.changeUserValidationError(errors));
+    } finally {
       yield put(commonActions.loadingEnd());
     }
   }

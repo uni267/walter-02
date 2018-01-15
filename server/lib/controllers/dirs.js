@@ -283,7 +283,7 @@ export const create = (req, res, next) => {
 
       res.json({
         status: { success: true },
-        body: savedDirs.dir
+        body: dir
       });
 
     } catch (e) {

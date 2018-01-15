@@ -7,6 +7,7 @@ import { API } from "../apis";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchFiles() {
   while (true) {
@@ -52,7 +53,12 @@ function* watchFetchFiles() {
       }
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"一覧の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

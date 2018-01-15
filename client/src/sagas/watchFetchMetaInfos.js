@@ -2,6 +2,7 @@ import { call, put, take } from "redux-saga/effects";
 
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 import { API } from "../apis";
 
@@ -17,6 +18,12 @@ function* watchFetchMetaInfos() {
       yield put(actions.initMetaInfos(payload.data.body));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"メタ情報の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
 
     }
     finally {

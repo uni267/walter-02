@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/index";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchSaveMetaInfoLabel() {
   while (true) {
@@ -15,12 +16,16 @@ function* watchSaveMetaInfoLabel() {
       yield call(api.saveMetainfoLabel, changedMetaInfo);
 
       yield put(actions.clearMetaInfoValidationErrors());
-      yield put(commons.loadingEnd());
       yield put(commons.triggerSnackbar("メタ情報名を変更しました"));
     }
     catch (e) {
-      const { errors } = e.response.data.status;
-      yield put(actions.saveMetaInfoValidationErrors(errors));
+      const { message, errors } = errorParser(e,"メタ情報名の変更に失敗しました");
+      if(!errors.unknown){
+        yield put(actions.saveMetaInfoValidationErrors(errors));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
+    } finally{
       yield put(commons.loadingEnd());
     }
   }

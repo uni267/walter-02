@@ -26,7 +26,7 @@ function* watchDownloadFiles() {
       yield put(actions.toggleDownloadFilesDialog());
     }
     catch (e) {
-      console.log(e);
+      yield put(commons.openException("ファイルのダウンロードに失敗しました" ));
     }
     finally {
       yield put(commons.loadingEnd());

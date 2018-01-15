@@ -4,6 +4,7 @@ import * as commons from "../actions/commons";
 
 // api
 import { API } from "../apis";
+import errorParser from "../helper/errorParser";
 
 function* watchChangePassword() {
 
@@ -19,9 +20,13 @@ function* watchChangePassword() {
       yield put({ type: "TRIGGER_SNACK", message: "パスワードを変更しました" });
     }
     catch (e) {
-      const { message, errors } = e.response.data.status;
-      yield put(commons.openException(message));
-      yield put({ type: "CHANGE_PASSWORD_FAILED", errors });
+      const { message, errors } = errorParser(e,"パスワードの変更に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message));
+        yield put({ type: "CHANGE_PASSWORD_FAILED", errors });
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put({ type: "LOADING_END" });

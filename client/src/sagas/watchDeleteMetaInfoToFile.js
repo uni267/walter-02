@@ -7,6 +7,7 @@ import { API } from "../apis";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
+import errorParser from "../helper/errorParser";
 
 function* watchDeleteMetaInfoToFile() {
   while (true) {
@@ -21,7 +22,12 @@ function* watchDeleteMetaInfoToFile() {
       yield put(commons.triggerSnackbar("メタ情報を削除しました"));
     }
     catch (e) {
-
+      const { message, errors } = errorParser(e,"メタ情報の削除に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, JSON.stringify(errors)));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

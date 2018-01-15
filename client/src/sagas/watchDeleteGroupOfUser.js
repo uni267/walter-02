@@ -6,6 +6,7 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/users";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchDeleteGroupOfUser() {
   while (true) {
@@ -29,10 +30,16 @@ function* watchDeleteGroupOfUser() {
       ];
 
       yield all(putJobs);
-      yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("ユーザをグループから削除しました"));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"グループからユーザの削除に失敗しました");
+      if(!errors.unknown){
+        yield put(commonActions.openException(message, JSON.stringify(errors)));
+      }else{
+        yield put(commonActions.openException(message, errors.unknown ));
+      }
+    } finally {
       yield put(commonActions.loadingEnd());
     }
   }

@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/tags";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchDeleteTag() {
   while (true) {
@@ -21,7 +22,12 @@ function* watchDeleteTag() {
       yield put(commonActions.triggerSnackbar("タグを削除しました"));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"タグの削除に失敗しました");
+      if(!errors.unknown){
+        yield put(commonActions.openException(message, errors[Object.keys(errors)[0]]));
+      }else{
+        yield put(commonActions.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commonActions.loadingEnd());

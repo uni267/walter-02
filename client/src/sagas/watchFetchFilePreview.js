@@ -4,12 +4,14 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 
 import * as actions from "../actions/files";
+import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* fetchFilePreview(file_id) {
   const api = new API();
   const payload = yield call(api.fetchFilePreview, file_id);
   const { preview_id } = payload.data.body;
-  
+
   return preview_id === null ? false : preview_id;
 }
 
@@ -33,10 +35,13 @@ function* watchFetchFilePreview() {
       yield put(actions.toggleLoadingFilePreview());
     }
     catch (e) {
-      console.log(e);
-      const { errors } = e.response.data.status;
-      yield put(actions.filePreviewError(errors));
-      yield put(actions.toggleLoadingFilePreview());
+      const { message, errors } = errorParser(e,"プレビュー画像の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(actions.filePreviewError(errors));
+        yield put(actions.toggleLoadingFilePreview());
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
   }
 }

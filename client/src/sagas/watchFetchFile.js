@@ -4,6 +4,7 @@ import { call, put, take } from "redux-saga/effects";
 import { API } from "../apis";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchFile() {
 
@@ -21,15 +22,13 @@ function* watchFetchFile() {
       yield put(actions.initFile(payload.data.body));
     }
     catch (e) {
-      if (e === "id is not file") {
-        yield put(commons.openException("指定されたファイルIDが不正です", "トップページにジャンプします"));
-        history.push("/home");
+      const { message, errors } = errorParser(e,"ファイルの取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
       }
-      else {
-        const { message, name } = e.response.data.status.errors;
-        yield put(commons.openException(name, message));
-        history.push("/home");
-      }
+      history.push("/home");
     }
     finally {
       yield put(commons.loadingEnd());

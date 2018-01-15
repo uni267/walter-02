@@ -6,6 +6,7 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/menus";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 
 function* watchCreateRoleMenu() {
@@ -21,14 +22,17 @@ function* watchCreateRoleMenu() {
       const payload = yield call(api.fetchRoleMenus);
       yield put(actions.initRoleMenus(payload.data.body));
 
-      yield put(commons.loadingEnd());
       yield task.history.push("/role_menus");
       yield put(commons.triggerSnackbar("ロールを作成しました"));
     }
     catch (e) {
-      console.log(e);
-      const { errors } = e.response.data.status;
-      yield put(actions.saveRoleMenuValidationError(errors));
+      const { message, errors } = errorParser(e,"ロールの作成に失敗しました");
+      if(!errors.unknown){
+        yield put(actions.saveRoleMenuValidationError(errors));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
+    } finally {
       yield put(commons.loadingEnd());
     }
   }

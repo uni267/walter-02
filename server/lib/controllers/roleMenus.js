@@ -330,6 +330,7 @@ export const addMenuToRoleMenu = (req, res, next) => {
           break;
         case "menu is duplicate":
           errors.menu = "指定されたメニューが既に登録されているため追加に失敗しました";
+          break;
         default:
           errors.unknown = commons.errorParser(e);
           break;

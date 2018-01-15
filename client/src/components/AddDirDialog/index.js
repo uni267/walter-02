@@ -39,7 +39,7 @@ class AddDirDialog extends Component {
           />
       )
     ];
-    
+
     return (
       <Dialog
         title="フォルダを作成"
@@ -51,7 +51,7 @@ class AddDirDialog extends Component {
         <TextField
           ref="dirName"
           hintText=""
-          errorText={this.props.createDirState.errors.dirName}
+          errorText={this.props.createDirState.errors.dir_name}
           onKeyDown={e => e.key === "Enter" ? this.handleCreate() : null }
           floatingLabelText="フォルダ名" />
 

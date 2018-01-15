@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/groups";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchGroups() {
   while (true) {
@@ -16,6 +17,12 @@ function* watchFetchGroups() {
       yield put(actions.initGroups(payload.data.body));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"グループの取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

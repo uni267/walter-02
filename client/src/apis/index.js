@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_TIMEOUT } from "../constants/index";
+import { DEFAULT_API_TIMEOUT, PREVIEW_API_TIMEOUT } from "../constants/index";
 
 export class API {
   constructor() {
@@ -7,7 +7,7 @@ export class API {
       headers: {
         "X-Auth-Cloud-Storage": localStorage.getItem("token"),
       },
-      timeout: API_TIMEOUT
+      timeout: DEFAULT_API_TIMEOUT
     });
   }
 
@@ -410,7 +410,7 @@ export class API {
   };
 
   fetchFilePreview = (file_id) => {
-    return this.client.get(`/api/v1/files/${file_id}/preview_exists`);
+    return this.client.get(`/api/v1/files/${file_id}/preview_exists`,{ timeout : PREVIEW_API_TIMEOUT });
   };
 
   fetchFilePreviewBody = (preview_id) => {

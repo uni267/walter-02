@@ -4,6 +4,7 @@ import { put, take } from "redux-saga/effects";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
+import errorParser from "../helper/errorParser";
 
 function* watchCopyFile() {
   while (true) {
@@ -15,6 +16,12 @@ function* watchCopyFile() {
       yield put(actions.toggleCopyFileDialog());
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"ファイルのコピーに失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors.menu));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

@@ -7,6 +7,7 @@ import { API } from "../apis";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
+import errorParser from "../helper/errorParser";
 
 function* watchAddMetaInfoToFile() {
   while (true) {
@@ -21,6 +22,8 @@ function* watchAddMetaInfoToFile() {
       yield put(commons.triggerSnackbar("メタ情報を追加しました"));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"メタ情報の追加に失敗しました");
+      yield put(commons.openException(message, JSON.stringify(errors)));
     }
     finally {
       yield put(commons.loadingEnd());

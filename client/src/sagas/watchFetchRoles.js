@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/roles";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchRoles() {
   while (true) {
@@ -16,7 +17,12 @@ function* watchFetchRoles() {
       yield put(actions.initRoles(payload.data.body));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"ロールの取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

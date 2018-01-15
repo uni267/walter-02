@@ -35,4 +35,5 @@ export const LIST_SEARCH_SIMPLE = "LIST_SEARCH_SIMPLE";
 export const LIST_SEARCH_DETAIL = "LIST_SEARCH_DETAIL";
 
 // apiのタイムアウト時間(ミリsec)
-export const API_TIMEOUT = 5000;
+export const DEFAULT_API_TIMEOUT = 2000;
+export const PREVIEW_API_TIMEOUT = 20000;

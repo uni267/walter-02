@@ -6,6 +6,7 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/menus";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchDeleteRoleOfAction() {
   while (true) {
@@ -21,7 +22,13 @@ function* watchDeleteRoleOfAction() {
       yield put(commons.triggerSnackbar("ロールからメニューを削除しました"));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"ロールからメニューの削除に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[Object.keys(errors)[0]]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
+    } finally {
       yield put(commons.loadingEnd());
     }
   }
