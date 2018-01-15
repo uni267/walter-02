@@ -11,16 +11,16 @@ require "./base64_data"
 DATA_LENGTH = 100
 
 # 1requestあたりに何秒waitするか
-INTERVAL = 0.5
+INTERVAL = 0.1
 
 # 1requestあたりに添付するファイル数
 POST_FILE_LENGTH = 20
 
 # post対象のAPサーバ
-API_SERVER = "http://192.168.56.10:3000"
+API_SERVER = "http://10.30.88.70"
 
 # init対象のdbサーバ
-DB_SERVER = "192.168.56.10"
+DB_SERVER = "mongos_1 "
 
 # どのユーザでpostするか
 ACCOUNT_INFO = {
@@ -31,17 +31,21 @@ ACCOUNT_INFO = {
 
 # initdb
 loadTestData = File.expand_path("loadTestData.js", File.dirname(__FILE__))
-cmd = "/usr/local/bin/mongo #{DB_SERVER}/walter #{loadTestData}"
+cmd = "/usr/bin/mongo #{DB_SERVER}/walter #{loadTestData}"
 
 o, e, s = Open3.capture3(cmd)
 raise "mongo loadTestData error" if (e != "")
 
+sleep 30
+
 # init elasticsearch
-cmd = "cd ~/repos/react/walter-02/server && npm run init-elasticsearch"
+cmd = "cd /webapp/server && npm run init-elasticsearch"
 o, e, s = Open3.capture3(cmd)
 raise "elasticsearch error" if (e != "")
 
-# tokkenを取得
+sleep 30
+
+# tokenを取得
 conn = Faraday.new( url: API_SERVER )
 payload = conn.post "/api/login", ACCOUNT_INFO
 body = JSON.parse(payload.body)
@@ -153,6 +157,7 @@ receive_user_names = ["受信 太郎", "受信 次郎", "受信 花子"]
     req.body = body.to_json
   end
 
+  pp JSON.parse(payload.body)["body"]
   sleep(INTERVAL)
 
 end
