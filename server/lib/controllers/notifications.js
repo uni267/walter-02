@@ -7,7 +7,7 @@ import User from "../models/User";
 import Notification from "../models/Notification";
 
 // constants
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 // etc
 import { isEmpty } from "lodash";

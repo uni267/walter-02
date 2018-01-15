@@ -3,7 +3,7 @@ import co from "co";
 
 import MetaInfo from "../models/MetaInfo";
 import Tenant from "../models/Tenant";
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 const KEY_TYPE_META = "meta";
 const VALUE_TYPES = [

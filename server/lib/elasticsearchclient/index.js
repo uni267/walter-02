@@ -1,5 +1,5 @@
 import elasticsearch from "elasticsearch";
-import { ELASTICSEARCH_CONF } from "../../configs/server";
+import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
 
 const mode = process.env.NODE_ENV;

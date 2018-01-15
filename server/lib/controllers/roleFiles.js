@@ -8,7 +8,7 @@ import { findIndex } from "lodash";
 import { ValidationError, RecordNotFoundException } from "../errors/AppError";
 
 // constants
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 

@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import co from "co";
 
 import * as tasks from "./tasks/index";
-import { SERVER_CONF } from "../configs/server";
-import * as constants from "../configs/constants";
+import { SERVER_CONF } from "../lib/configs/server";
+import * as constants from "../lib/configs/constants";
 import logger from "../lib/logger";
 
 // 環境変数

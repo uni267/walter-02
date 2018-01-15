@@ -9,7 +9,7 @@ import AuthorityMenu from "../models/AuthorityMenu";
 import RoleMenu from "../models/RoleMenu";
 import { concat,first } from "lodash";
 import logger from "../logger";
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 

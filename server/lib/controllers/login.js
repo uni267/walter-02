@@ -3,7 +3,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import util from "util";
 import * as commons from "./commons";
-import { SECURITY_CONF } from "../../configs/server";
+import { SECURITY_CONF } from "../configs/server";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
 

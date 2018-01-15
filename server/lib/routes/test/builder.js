@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import path from "path";
 import { exec } from "child_process";
-import { SERVER_CONF } from "../../../configs/server";
+import { SERVER_CONF } from "../../configs/server";
 
 // express初期化
 const app = express();

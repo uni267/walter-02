@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import logger from "../logger";
 import esClient from "../elasticsearchclient";
 
-import { SECURITY_CONF } from "../../configs/server";
+import { SECURITY_CONF } from "../configs/server";
 
 import Dir from "../models/Dir";
 import File from "../models/File";
@@ -15,7 +15,7 @@ import User from "../models/User";
 import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
 
-import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../../configs/constants";
+import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
 import { getAllowedFileIds } from "./files";
 

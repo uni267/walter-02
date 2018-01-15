@@ -3,7 +3,7 @@ import co from "co";
 import morgan from "morgan";
 import logger from "../logger";
 
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 import AuthorityFile from "../models/AuthorityFile";
 import Role from "../models/RoleFile";

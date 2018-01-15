@@ -3,8 +3,8 @@ import pkgcloud from "pkgcloud";
 import crypto from "crypto";
 import stream from "stream";
 
-import { STORAGE_CONF } from "../../configs/server";
-import * as constants from "../../configs/constants";
+import { STORAGE_CONF } from "../configs/server";
+import * as constants from "../configs/constants";
 
 class Swift {
   constructor(params) {

@@ -6,9 +6,9 @@ import path from "path";
 import log4js from "log4js";
 import { EventEmitter } from "events";
 import logger from "./logger";
-import { SERVER_CONF } from "../configs/server"; // mongoのipなど
+import { SERVER_CONF } from "./configs/server"; // mongoのipなど
 import router from "./routes";
-import * as constants from "../configs/constants";
+import * as constants from "./configs/constants";
 import { Swift } from "./storages/Swift";
 import esClient from "./elasticsearchclient";
 const app = express();

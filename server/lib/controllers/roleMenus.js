@@ -7,7 +7,7 @@ import * as commons from "./commons";
 import { ValidationError, RecordNotFoundException } from "../errors/AppError";
 
 // constants
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 

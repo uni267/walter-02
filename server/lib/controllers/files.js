@@ -35,8 +35,8 @@ import {
 } from "../errors/AppError";
 
 // constants
-import { SECURITY_CONF } from "../../configs/server";
-import * as constants from "../../configs/constants";
+import { SECURITY_CONF } from "../configs/server";
+import * as constants from "../configs/constants";
 
 // models
 import Dir from "../models/Dir";

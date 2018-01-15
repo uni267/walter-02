@@ -8,7 +8,7 @@ import AuthorityMenu from "../models/AuthorityMenu";
 // etc
 import logger from "../logger";
 import { first } from "lodash";
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 

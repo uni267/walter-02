@@ -3,7 +3,7 @@ import co from "co";
 import Tag from "../models/Tag";
 
 // constants
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 // etc
 import {

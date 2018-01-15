@@ -1,7 +1,7 @@
 import co from "co";
 import jwt from "jsonwebtoken";
 import * as commons from "./commons";
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 import url from "url";
 
 // models
@@ -9,7 +9,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 import AuthorityMenu from "../models/AuthorityMenu";
 
-import { SECURITY_CONF } from "../../configs/server";
+import { SECURITY_CONF } from "../configs/server";
 
 export const verifyToken = (req, res, next) => {
   // jwt.vefifyはasyncかつpromiseを返却しない

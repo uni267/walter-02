@@ -10,7 +10,7 @@ import {
   PermisstionDeniedException
 } from "../errors/AppError";
 import * as commons from "./commons";
-import * as constants from "../../configs/constants";
+import * as constants from "../configs/constants";
 
 // models
 import File from "../models/File";
