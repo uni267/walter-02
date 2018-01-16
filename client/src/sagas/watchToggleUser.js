@@ -6,6 +6,7 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/users";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchToggleUser() {
   while (true) {
@@ -24,7 +25,8 @@ function* watchToggleUser() {
       yield put(commonActions.triggerSnackbar(message));
     }
     catch (e) {
-
+      const { message, errors } = errorParser(e,"ユーザの有効化/無効化に失敗しました");
+      yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {
       yield put(commonActions.loadingEnd());

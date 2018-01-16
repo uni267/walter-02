@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchRestoreFile() {
   while (true) {
@@ -17,10 +18,16 @@ function* watchRestoreFile() {
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.initFileTotal(payload.data.status.total));
       yield put(actions.toggleRestoreFileDialog());
-      yield put(commons.loadingEnd());
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"ファイルの復元に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
+    }finally{
+      yield put(commons.loadingEnd());
     }
   }
 }

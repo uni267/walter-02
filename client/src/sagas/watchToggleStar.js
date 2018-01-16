@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchToggleStar() {
   while (true) {
@@ -26,7 +27,8 @@ function* watchToggleStar() {
       }
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"お気に入りの設定に失敗しました");
+      yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {
       yield put(commons.loadingEnd());

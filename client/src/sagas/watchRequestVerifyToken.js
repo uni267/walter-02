@@ -5,6 +5,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchRequestVerifyToken() {
   while (true) {
@@ -22,8 +23,12 @@ function* watchRequestVerifyToken() {
       yield put(actions.loadingEnd());
     }
     catch (e) {
-      const { message, errors } = e.response.data.status;
-      yield put(commons.openException(message, JSON.stringify(errors)));
+      const { message, errors } = errorParser(e,"トークン認証に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
       localStorage.removeItem("token");
       yield call(delay, 2000);
       window.location.href = localStorage.getItem("tenant_name") + "/login";

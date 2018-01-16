@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/users";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchSaveUserEmail() {
   while (true) {
@@ -16,12 +17,16 @@ function* watchSaveUserEmail() {
       yield call(api.saveUserEmail, task.user);
       const payload = yield call(api.fetchUser, task.user._id);
       yield put(actions.initUser(payload.data.body));
-      yield put(commonActions.loadingEnd());
       yield put(commonActions.triggerSnackbar("メールアドレスを変更しました"));
     }
     catch (e) {
-      const { errors } = e.response.data.status;
-      yield put(actions.changeUserValidationError(errors));
+      const { message, errors } = errorParser(e,"メールアドレスの変更に失敗しました");
+      if(errors.email !== undefined){
+        yield put(actions.changeUserValidationError(errors));
+      }else{
+        yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
+      }
+    }finally {
       yield put(commonActions.loadingEnd());
     }
   }

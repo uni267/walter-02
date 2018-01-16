@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/tags";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchTag() {
   while (true) {
@@ -16,6 +17,12 @@ function* watchFetchTag() {
       yield put(actions.initTag(payload.data.body));
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"タグの取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commonActions.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commonActions.loadingEnd());

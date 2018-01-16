@@ -347,16 +347,12 @@ export const updatePasswordForce = (req, res, next) => {
 
       switch (e) {
       case "user_id is invalid":
-        errors.user_id = "ユーザIDが不正のためパスワードの変更に失敗しました";
-        break;
       case "user_id is empty":
-        errors.user_id = e;
+      case "user is empty":
+        errors.user_id = "ユーザIDが不正のためパスワードの変更に失敗しました";
         break;
       case "password is empty":
         errors.password = "パスワードが空のため変更に失敗しました";
-        break;
-      case "user is empty":
-        errors.user = e;
         break;
       default:
         errors.unknown = e;
@@ -664,7 +660,7 @@ export const updateAccountName = (req, res, next) => {
       if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
 
       const user = yield User.findById(user_id);
-      if (user === null) throw "user not found";
+      if ( user === null) throw "user not found";
 
       user.account_name = account_name;
       const changedUser = yield user.save();
@@ -804,10 +800,10 @@ export const updateRoleMenus = (req, res, next ) => {
         errors.user = "存在しないユーザです";
         break;
       case "role_menu_id is empty":
-        errors.role_menu_id = "メニュー権限IDが空のためメニュー権限の変更に失敗しました";
+        errors.role_id = "メニュー権限IDが空のためメニュー権限の変更に失敗しました";
         break;
       case "role_menu_id is invalid":
-        errors.role_menu_id = "メニュー権限IDが不正のためメニュー権限の変更に失敗しました";
+        errors.role_id = "メニュー権限IDが不正のためメニュー権限の変更に失敗しました";
         break;
       case "role is empty":
         errors.role = "存在しないユーザタイプです";

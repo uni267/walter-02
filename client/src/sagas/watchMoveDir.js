@@ -2,6 +2,8 @@ import { call, put, take } from "redux-saga/effects";
 
 import { API } from "../apis";
 
+import errorParser from "../helper/errorParser";
+import * as commons from "../actions/commons";
 
 function* watchMoveDir() {
   while (true) {
@@ -17,12 +19,17 @@ function* watchMoveDir() {
       yield put({ type: "TOGGLE_MOVE_DIR_DIALOG" });
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"フォルダの移動に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put({ type: "LOADING_END" });
     }
-    
+
   }
 }
 

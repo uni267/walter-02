@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/tags";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchSaveTagColor() {
   while (true) {
@@ -19,8 +20,9 @@ function* watchSaveTagColor() {
       yield put(commonActions.triggerSnackbar("タグの色を保存しました"));
     }
     catch (e) {
-      const { errors } = e.response.data.status;
-      yield put(actions.saveTagValidationError(errors));
+      const { message, errors } = errorParser(e,"タグの色の変更に失敗しました");
+      yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
+    } finally {
       yield put(commonActions.loadingEnd());
     }
   }

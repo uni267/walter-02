@@ -2,6 +2,7 @@ import { call, put, take, all } from "redux-saga/effects";
 import MD5 from "crypto-js/md5";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 import { API } from "../apis";
 
@@ -52,7 +53,8 @@ function* watchUploadFiles() {
       yield put(commons.triggerSnackbar("ファイルをアップロードしました"));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"タグ名の保存に失敗しました");
+      yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {
       yield put(commons.loadingEnd());

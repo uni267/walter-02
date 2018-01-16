@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/groups";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchSearchGroupSimple() {
   while (true) {
@@ -16,7 +17,8 @@ function* watchSearchGroupSimple() {
       yield put(actions.initGroups(payload.data.body));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"一覧の取得に失敗しました");
+      yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {
       yield put(commons.loadingEnd());

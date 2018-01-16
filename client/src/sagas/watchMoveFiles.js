@@ -5,6 +5,7 @@ import { API } from "../apis";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants";
+import errorParser from "../helper/errorParser";
 
 function* watchMoveFiles() {
   while (true) {
@@ -51,6 +52,12 @@ function* watchMoveFiles() {
 
     }
     catch (e) {
+      const { message, errors } = errorParser(e,"ファイルの移動に失敗しました");
+      if(!errors.unknown){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commons.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commons.loadingEnd());

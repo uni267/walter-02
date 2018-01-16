@@ -6,6 +6,7 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/users";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchSearchUsersSimple() {
   while (true) {
@@ -18,7 +19,8 @@ function* watchSearchUsersSimple() {
       yield put(actions.initUsers(payload.data.body));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"一覧の取得に失敗しました");
+      yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {
       yield put(commonActions.loadingEnd());

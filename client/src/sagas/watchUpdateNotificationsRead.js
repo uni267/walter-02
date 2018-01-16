@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/index";
 import * as commons from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchUpdateNotificationsRead() {
   while(true){
@@ -18,6 +19,8 @@ function* watchUpdateNotificationsRead() {
         yield put(actions.initNotificaiton(payload.data.body, payload.data.status));
       }
     } catch (e) {
+      const { message, errors } = errorParser(e,"タグ名の保存に失敗しました");
+      yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally{
       yield put(commons.loadingEnd());

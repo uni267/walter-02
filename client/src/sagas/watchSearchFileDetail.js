@@ -7,6 +7,7 @@ import { API } from "../apis";
 import { LIST_SEARCH_DETAIL } from "../constants/index";
 
 import { isMatch } from "lodash";
+import errorParser from "../helper/errorParser";
 
 function* watchSearchFileDetail() {
   while (true) {
@@ -41,15 +42,8 @@ function* watchSearchFileDetail() {
 
     }
     catch (e) {
-      if(e.response === undefined){
-        yield put(commons.openException("一覧の取得に失敗しました"));
-      }else{
-        const { message, errors } = e.response.data.status;
-
-        if (!errors.q) {
-          yield put(commons.openException(message, JSON.stringify(errors)));
-        }
-      }
+      const { message, errors } = errorParser(e,"一覧の取得に失敗しました");
+      yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {
       yield put(commons.loadingEnd());

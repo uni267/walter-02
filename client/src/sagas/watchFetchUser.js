@@ -4,6 +4,7 @@ import { API } from "../apis";
 
 import * as actions from "../actions/users";
 import * as commonActions from "../actions/commons";
+import errorParser from "../helper/errorParser";
 
 function* watchFetchUser() {
   while (true) {
@@ -21,7 +22,12 @@ function* watchFetchUser() {
       yield put(actions.initGroups(group.data.body));
     }
     catch (e) {
-      console.log(e);
+      const { message, errors } = errorParser(e,"ユーザ情報の取得に失敗しました");
+      if(!errors.unknown){
+        yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
+      }else{
+        yield put(commonActions.openException(message, errors.unknown ));
+      }
     }
     finally {
       yield put(commonActions.loadingEnd());

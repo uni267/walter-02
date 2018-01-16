@@ -16,16 +16,16 @@ function* watchSaveMetaInfoLabel() {
       yield call(api.saveMetainfoLabel, changedMetaInfo);
 
       yield put(actions.clearMetaInfoValidationErrors());
-      yield put(commons.triggerSnackbar("メタ情報名を変更しました"));
+      yield put(commons.triggerSnackbar("メタ情報表示名を変更しました"));
     }
     catch (e) {
-      const { message, errors } = errorParser(e,"メタ情報名の変更に失敗しました");
+      const { message, errors } = errorParser(e,"メタ情報表示名の変更に失敗しました");
       if(!errors.unknown){
         yield put(actions.saveMetaInfoValidationErrors(errors));
       }else{
         yield put(commons.openException(message, errors.unknown ));
       }
-    } finally{
+    } finally {
       yield put(commons.loadingEnd());
     }
   }
