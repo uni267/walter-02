@@ -1318,16 +1318,32 @@ export const upload = (req, res, next) => {
       ));
 
       // swift
-      yield zipWith(files, fileModels, (file, model) => {
-        if (file.hasError) return;
+      const swift = new Swift();
+      const zipFiles = zipWith(files, fileModels, (file, model) => ({ file: file, model: model }));
+
+      for ( let i = 0; i < zipFiles.length; i++ ) {
+        const { file, model } = zipFiles[i];
+
+        if (file.hasError) continue;
 
         const regex = /;base64,(.*)$/;
         const matches = file.base64.match(regex);
         const data = matches[1];
 
-        const swift = new Swift();
-        return swift.upload( new Buffer(data, 'base64'), model._id.toString());
-      });
+        try {
+          yield swift.upload( new Buffer(data, 'base64'), model._id.toString());
+        } catch (e) {
+          logger.info(e);
+          fileModels[i] = false;
+          files[i] = {
+            ...files[i],
+            hasError: true,
+            errors: {
+              data: "ファイル本体の保存に失敗しました"
+            }
+          };
+        }
+      }
 
       // 権限
       const role = yield RoleFile.findOne({
@@ -1387,7 +1403,6 @@ export const upload = (req, res, next) => {
       const changedFiles = yield fileModels.map( model => (
         model ? model.save() : false
       ));
-
 
       // elasticsearchへ登録
       const changedFileIds = changedFiles.map(file => file._id);
