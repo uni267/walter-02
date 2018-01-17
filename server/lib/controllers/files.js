@@ -54,6 +54,8 @@ import FileMetaInfo from "../models/FileMetaInfo";
 import DisplayItem from "../models/DisplayItem";
 import { Swift } from "../storages/Swift";
 
+import { moveDir } from "./dirs";
+
 export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
     try {
@@ -178,7 +180,8 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       }else{
           res.json({
             status: { success: true, total },
-            body: files
+            body: files,
+            esResult
           });
       }
     }
@@ -367,6 +370,9 @@ export const search = (req, res, next, export_excel=false) => {
                   }},{
                     "match" : {
                     "file.is_deleted": false
+                  }},{
+                    "match" : {
+                    "file.is_trash": false
                   }}
                 ]
               }
@@ -2119,7 +2125,23 @@ export const moveTrash = (req, res, next) => {
       if (file === null) throw "file is empty";
       if (user === null) throw "user is empty";
 
-      const changedFile = yield moveFile(file, trash_dir_id, user, "削除");
+      // is_dir で分岐
+      let changedFile;
+      if( file.is_dir ){
+        const movedDirs = ( yield moveDir(file._id, trash_dir_id)).map(dir=>dir._id );
+        const deletedFiles = yield File.find({dir_id:{$in: movedDirs }});
+        for(let i in deletedFiles ){
+          deletedFiles[i].is_trash = true;
+          yield deletedFiles[i].save();
+          // elasticsearch index作成
+          const updatedFile = yield File.searchFileOne({_id: deletedFiles[i]._id });
+          yield esClient.createIndex(tenant_id,[updatedFile]);
+        }
+
+      } else {
+        file.is_trash = true;
+        changedFile = yield moveFile(file, trash_dir_id, user, "削除");
+      }
 
       // elasticsearch index作成
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
@@ -2139,7 +2161,10 @@ export const moveTrash = (req, res, next) => {
         errors.file = "削除対象のファイルが見つかりません";
         break;
       case "user is empty":
-        errors.user = "実行ユーザーが見つかりません";
+      errors.user = "実行ユーザーが見つかりません";
+      break;
+      case "file is dir":
+        errors.file = "削除対象がフォルダです";
         break;
       default:
         errors.unknown = e;
@@ -2506,6 +2531,8 @@ const _exec = command => {
 };
 
 const moveFile = (file, dir_id, user, action) => {
+    if(file.is_dir) throw "file is dir";
+
     const history = {
       modified: moment().format("YYYY-MM-DD hh:mm:ss"),
       user: user,

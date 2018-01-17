@@ -53,6 +53,7 @@ const task = () => {
         dir_id: { type:"keyword" },
         is_display: { type:"boolean" },
         is_star: { type:"boolean" },
+        is_trash: { type:"boolean" },
         is_crypted: { type:"boolean", index: false },
         is_deleted: { type:"boolean" },
         modified: { type:"date", index: false },
@@ -97,7 +98,7 @@ const task = () => {
           }
         }
       };
-
+    console.log(`check old indedices:${tenant_id}`);
     const isExists = yield esClient.indices.exists( { index: tenant_id } );
 
     if( isExists ){

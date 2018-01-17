@@ -323,60 +323,16 @@ export const create = (req, res, next) => {
 };
 
 export const move = (req, res, next) => {
-  const _move = (moving_id, destination_id) => {
-    return co(function* (){
-      console.log(`${moving_id} --> ${destination_id}`);
-      if(destination_id === undefined) throw "dir_id is invalid";
-      yield Dir.find({
-        depth: { $gt: 0 },
-        descendant: moving_id
-      }).remove();
-
-      const dirs = (yield Dir.find({ descendant: destination_id, depth: { $gt: 0 } }))
-        .map( dir => {
-          return {
-            ancestor: dir.ancestor,
-            descendant: moving_id,
-            depth: dir.depth + 1
-          };
-        });
-
-      const insert_dirs = dirs.concat({
-          ancestor: destination_id,
-          descendant: moving_id,
-          depth: 1
-        });
-
-      yield Dir.collection.insert(insert_dirs);
-
-      const _moving = yield File.findById(moving_id);
-
-      _moving.dir_id = destination_id;
-      const moved_dir = yield _moving.save();
-      return moved_dir;
-    });
-  };
   co(function* () {
     try {
       const moving_id = mongoose.Types.ObjectId(req.params.moving_id);  // 対象
       const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);  // 行き先
 
-      // 子のIDを取得する
-      const childrenIds = (yield Dir.find({ancestor: moving_id, depth: { $gt: 0 }}).sort({"depth":1})).map(dir => dir.descendant)  ;
-      // 子の現在位置を取得する
-      const childrenDirs = yield File.find({_id: {$in: childrenIds }}).select({_id:1,dir_id:1});
-      // 対象を移動する
-      const moved_dir = yield _move(moving_id, destination_id);
+      const moved_dir = yield moveDir(moving_id, destination_id);
 
-      // 子を同じ位置に移動し直す
-      for( const idx in childrenIds ){
-        let child = find(childrenDirs, {_id:childrenIds[idx]});
-        yield _move(child._id, child.dir_id );
-      }
-
-      // 指定したフォルダについて elasticsearch index更新
+      // 移動したフォルダについて elasticsearch index更新
       const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(moved_dir._id) });
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(moving_id) });
       yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
@@ -409,4 +365,58 @@ export const move = (req, res, next) => {
   });
 };
 
+export const moveDir = (moving, destination) =>{
+  const _move = (moving_id, destination_id) => {
+    return co(function* (){
+      if(destination_id === undefined) throw "dir_id is invalid";
+      yield Dir.find({
+        depth: { $gt: 0 },
+        descendant: moving_id
+      }).remove();
 
+      const dirs = (yield Dir.find({ descendant: destination_id, depth: { $gt: 0 } }))
+        .map( dir => {
+          return {
+            ancestor: dir.ancestor,
+            descendant: moving_id,
+            depth: dir.depth + 1
+          };
+        });
+
+      const insert_dirs = dirs.concat({
+          ancestor: destination_id,
+          descendant: moving_id,
+          depth: 1
+        });
+
+      yield Dir.collection.insert(insert_dirs);
+
+      const _moving = yield File.findById(moving_id);
+
+      _moving.dir_id = destination_id;
+      const moved_dir = yield _moving.save();
+      return moved_dir;
+    });
+  };
+  return co(function* () {
+    // 子のIDを取得する
+    const childrenIds = (yield Dir.find({ancestor: moving, depth: { $gt: 0 }}).sort({"depth":1})).map(dir => dir.descendant)  ;
+    // 子の現在位置を取得する
+    const childrenDirs = yield File.find({_id: {$in: childrenIds }}).select({_id:1,dir_id:1});
+    // 対象を移動する
+    const moved_dir = yield _move(moving, destination);
+
+    // 子を同じ位置に移動し直す
+    let moved_dirs = [moved_dir];
+    for( const idx in childrenIds ){
+      let child = find(childrenDirs, {_id:childrenIds[idx]});
+      moved_dirs.push( yield _move(child._id, child.dir_id ) );
+    }
+
+    return moved_dirs;
+  });
+};
+
+export const getDescendants = (dir_id) => {
+
+}
