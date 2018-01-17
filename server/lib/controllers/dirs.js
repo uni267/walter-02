@@ -322,57 +322,75 @@ export const create = (req, res, next) => {
 };
 
 export const move = (req, res, next) => {
-  const moving_id = mongoose.Types.ObjectId(req.params.moving_id);
-  const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);
+  co(function* () {
+    try {
 
-  Dir.find({
-    depth: { $gt: 0 },
-    $or: [
-      { ancestor: moving_id },
-      { descendant: moving_id }
-    ]
-  })
-    .then( routes => {
-      routes.forEach( route => route.remove() );
-    })
-    .then( () => {
-      return Dir.find({ descendant: destination_id, depth: { $gt: 0 } });
-    })
-    .then( dirs => {
-      return dirs.map( dir => {
-        return {
-          ancestor: dir.ancestor,
+      const moving_id = mongoose.Types.ObjectId(req.params.moving_id);
+      const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);
+
+      yield Dir.find({
+        depth: { $gt: 0 },
+        $or: [
+          { ancestor: moving_id },
+          { descendant: moving_id }
+        ]
+      }).remove();
+
+      const dirs = (yield Dir.find({ descendant: destination_id, depth: { $gt: 0 } }))
+        .map( dir => {
+          return {
+            ancestor: dir.ancestor,
+            descendant: moving_id,
+            depth: dir.depth + 1
+          };
+        });
+
+      const insert_dirs = dirs.concat({
+          ancestor: destination_id,
           descendant: moving_id,
-          depth: dir.depth + 1
-        };
-      });
-    })
-    .then( dirs => {
-      return dirs.concat({
-        ancestor: destination_id,
-        descendant: moving_id,
-        depth: 1
-      });
-    })
-    .then( dirs => {
-      return Dir.collection.insert(dirs);
-    })
-    .then( () => {
-      return File.findById(moving_id);
-    })
-    .then( _moving => {
+          depth: 1
+        });
+
+      yield Dir.collection.insert(insert_dirs);
+
+      const _moving = yield File.findById(moving_id);
+
       _moving.dir_id = destination_id;
-      return _moving.save();
-    })
-    .then( _moving => {
+      const moved_dir = yield _moving.save();
+
+      // elasticsearch index作成
+      const { tenant_id }= res.user;
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(_moving._id) });
+      yield esClient.createIndex(tenant_id,[updatedFile]);
+
       res.json({
         status: { success: true },
-        body: _moving
+        body: moved_dir
       });
-    })
-    .catch( err => {
 
-    });
+    } catch(e){
+      let errors = {};
+      switch (e) {
+        case "dir_id is invalid":
+          errors.dir_id = "指定されたフォルダが存在しないため移動に失敗しました";
+          break;
+        case "dir_id is empty":
+          errors.dir_id = "フォルダIDが不正のため移動に失敗しました";
+          break;
+        default:
+          errors.unknown = e;
+          break;
+      }
+
+      res.status(400).json({
+        status: {
+          success: false,
+          status: false,
+          message: "フォルダの移動に失敗しました",
+          errors }
+      });
+    }
+  });
 };
 
 
