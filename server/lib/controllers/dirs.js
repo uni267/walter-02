@@ -18,6 +18,7 @@ import AuthorityFile from "../models/AuthorityFile";
 import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
 import { getAllowedFileIds } from "./files";
+import { find } from "lodash";
 
 const { ObjectId } = mongoose.Types;
 
@@ -322,18 +323,13 @@ export const create = (req, res, next) => {
 };
 
 export const move = (req, res, next) => {
-  co(function* () {
-    try {
-
-      const moving_id = mongoose.Types.ObjectId(req.params.moving_id);
-      const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);
-
+  const _move = (moving_id, destination_id) => {
+    return co(function* (){
+      console.log(`${moving_id} --> ${destination_id}`);
+      if(destination_id === undefined) throw "dir_id is invalid";
       yield Dir.find({
         depth: { $gt: 0 },
-        $or: [
-          { ancestor: moving_id },
-          { descendant: moving_id }
-        ]
+        descendant: moving_id
       }).remove();
 
       const dirs = (yield Dir.find({ descendant: destination_id, depth: { $gt: 0 } }))
@@ -357,10 +353,30 @@ export const move = (req, res, next) => {
 
       _moving.dir_id = destination_id;
       const moved_dir = yield _moving.save();
+      return moved_dir;
+    });
+  };
+  co(function* () {
+    try {
+      const moving_id = mongoose.Types.ObjectId(req.params.moving_id);  // 対象
+      const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);  // 行き先
 
-      // elasticsearch index作成
+      // 子のIDを取得する
+      const childrenIds = (yield Dir.find({ancestor: moving_id, depth: { $gt: 0 }}).sort({"depth":1})).map(dir => dir.descendant)  ;
+      // 子の現在位置を取得する
+      const childrenDirs = yield File.find({_id: {$in: childrenIds }}).select({_id:1,dir_id:1});
+      // 対象を移動する
+      const moved_dir = yield _move(moving_id, destination_id);
+
+      // 子を同じ位置に移動し直す
+      for( const idx in childrenIds ){
+        let child = find(childrenDirs, {_id:childrenIds[idx]});
+        yield _move(child._id, child.dir_id );
+      }
+
+      // 指定したフォルダについて elasticsearch index更新
       const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(_moving._id) });
+      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(moved_dir._id) });
       yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
