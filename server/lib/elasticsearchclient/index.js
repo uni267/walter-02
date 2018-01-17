@@ -1,6 +1,7 @@
 import elasticsearch from "elasticsearch";
 import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
+import { ELASTIC_INDEXING_TIMEOUT } from "../configs/constants";
 
 const mode = process.env.NODE_ENV;
 
@@ -29,7 +30,8 @@ switch (mode) {
 
 const esClient = new elasticsearch.Client({
   host: erasticsearchUrl,
-  log: erasticsearchErrorLevel
+  log: erasticsearchErrorLevel,
+  timeout: ELASTIC_INDEXING_TIMEOUT
 });
 
 esClient.createIndex = co.wrap(
@@ -87,7 +89,8 @@ esClient.createIndex = co.wrap(
         });
 
       });
-      const result = yield esClient.bulk({ body:bulkBody });
+
+      const result = yield esClient.bulk({ refresh:"true", body:bulkBody });
       if(result.errors) throw result.items[0].index;
 
       return Promise.resolve(result);

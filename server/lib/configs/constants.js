@@ -101,3 +101,4 @@ export const ELASTIC_CONNECTION_RETRY = 20;
 
 // elasticsearchのタイムアウトm秒
 export const ELASTIC_CONNECTION_TIMEOUT = 10 * 1000;
+export const ELASTIC_INDEXING_TIMEOUT = 60 * 1000;
