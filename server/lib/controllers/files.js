@@ -1359,24 +1359,18 @@ export const upload = (req, res, next) => {
         authorityFile.files = model;
         authorityFile.role_files = role._id;
 
-        if (file.authorities.length === 0) {
+        if (file.authorities.length === 0) return [ authorityFile ];
+
+        const authorityFiles = file.authorities.map( auth => {
+          const authorityFile = new AuthorityFile();
+          authorityFile.users = mongoose.Types.ObjectId(auth.users);
+          authorityFile.files = model;
+          authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
           return authorityFile;
-        } else {
-          const authorityFiles = file.authorities.map( auth => {
-            const authorityFile = new AuthorityFile();
-            authorityFile.users = mongoose.Types.ObjectId(auth.users);
-            authorityFile.files = model;
-            authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
-            return authorityFile;
-          });
+        });
 
-          return authorityFiles.concat(authorityFile);
-        }
+        return authorityFiles.concat(authorityFile);
       });
-
-      // 権限の保存
-      yield flattenDeep(authorityFiles)
-        .map( file => file ? file.save() : false );
 
       // メタ情報
       const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
@@ -1394,26 +1388,78 @@ export const upload = (req, res, next) => {
         ));
       });
 
-      // fileMetaInfoの保存
-      yield flattenDeep(fileMetaInfos).map( fileMeta => (
-        fileMeta ? fileMeta.save() : false
-      ));
+      // mongoへの保存開始
+      let changedFiles = [];
 
-      // fileの保存
-      const changedFiles = yield fileModels.map( model => (
-        model ? model.save() : false
-      ));
+      for ( let i = 0; i < fileModels.length; i++ ) {
+
+        // ファイル本体(files)の保存
+        if (! fileModels[i]) continue;
+
+        const saveFileModel = yield fileModels[i].save();
+        changedFiles.push(saveFileModel);
+
+        if (! saveFileModel) {
+          files[i] = {
+            ...files[i],
+            hasError: true,
+            errors: {
+              body: "基本情報の書き込みに失敗しました"
+            }
+          };
+          continue;  // 保存に失敗した場合、メタ情報や権限の書き込みは行わない
+        }
+
+        // メタ情報の保存
+        if (fileMetaInfos[i].length > 0) {
+          for ( let j = 0; j < fileMetaInfos[i].length; j++ ) {
+            if (fileMetaInfos[i][j]) {
+              const saveFileMetaInfo = yield fileMetaInfos[i][j].save();
+              if (! saveFileMetaInfo) {
+
+                files[i] = {
+                  ...files[i],
+                  hasError: true,
+                  errors: {
+                    meta_infos: "メタ情報の書き込みに失敗しました"
+                  }
+                };
+              }
+            }
+          }
+        }
+
+        // 権限の保存
+        if (authorityFiles[i].length > 0) {
+          for ( let j = 0; j < authorityFiles[i].length; j++ ) {
+            const saveAuthorityFile = yield authorityFiles[i][j].save();
+            if (! saveAuthorityFile) {
+              files[i] = {
+                ...files[i],
+                hasError: true,
+                errors: {
+                  authority_files: "権限の書き込みに失敗しました"
+                }
+              };
+            }
+          }
+        }
+      }
 
       // elasticsearchへ登録
-      const changedFileIds = changedFiles.map(file => file._id);
-      const sortOption = yield createSortOption();
-      const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
-      yield esClient.createIndex(tenant_id, indexingFile);
+      let returnfiles;
 
-      const returnfiles = indexingFile.map( file => {
-        file.actions = extractFileActions(file.authorities, res.user._id.toString());
-        return file;
-      });
+      if (changedFiles.length > 0) {
+        const changedFileIds = changedFiles.map(file => file._id);
+        const sortOption = yield createSortOption();
+        const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+        yield esClient.createIndex(tenant_id, indexingFile);
+
+        returnfiles = indexingFile.map( file => {
+          file.actions = extractFileActions(file.authorities, res.user._id.toString());
+          return file;
+        });
+      }
 
       // validationErrors
       if (files.filter( f => f.hasError ).length > 0) {
