@@ -1,3 +1,5 @@
+import fs from "fs";
+
 // ファイル一覧 1pageあたりの件数
 export const FILE_LIMITS_PER_PAGE = 30;
 export const SWIFT_CONTAINER_NAME = "walter";
@@ -102,3 +104,23 @@ export const ELASTIC_CONNECTION_RETRY = 20;
 // elasticsearchのタイムアウトm秒
 export const ELASTIC_CONNECTION_TIMEOUT = 10 * 1000;
 export const ELASTIC_INDEXING_TIMEOUT = 60 * 1000;
+
+// libreOfficeのパス
+export const LIBRE_OFFICE_PATH = () => {
+  let librePath;
+
+  switch (process.env.NODE_ENV) {
+  case "integration":
+    librePath = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+    break;
+  case "production":
+    librePath = "/usr/bin/soffice";
+    break;
+  default:
+    librePath = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+    break;
+  }
+
+  fs.statSync(librePath); // 存在しなければ例外をスローする
+  return librePath;
+};

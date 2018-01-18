@@ -2405,7 +2405,7 @@ export const previewExists = (req, res, next) => {
           case "text/csv":
           case "text/plain":
             // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
-            command = `cd ${tmpDirPath} && nkf -w ${file.name} > buf.txt && /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf ${file.name}.png && rm ${file.name} buf.*`;
+            command = `cd ${tmpDirPath} && nkf -w ${file.name} > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf ${file.name}.png && rm ${file.name} buf.*`;
             break;
           case "application/msword":
           case "application/vnd.ms-excel":
@@ -2417,7 +2417,7 @@ export const previewExists = (req, res, next) => {
           case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
           case "application/vnd.openxmlformats-officedocument.presentationml.template":
             const pdfFileName = file.name.replace(path.extname(file.name),".pdf" );
-            command = `cd ${tmpDirPath} && /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
+            command = `cd ${tmpDirPath} && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
           break;
           case "application/pdf":
             command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
