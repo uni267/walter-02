@@ -27,7 +27,7 @@ const task = () => {
 
       const type = "files";
 
-      const settings = {
+      let settings = {
         "analysis": {
           "tokenizer": {
             "kuromoji_search": {
@@ -43,6 +43,11 @@ const task = () => {
           }
         }
       };
+
+      if (process.env.NODE_ENV === "production") {
+        const index = { number_of_replicas: 2 };
+        settings = { ...settings, index };
+      }
 
       const file_prperties={
         _id: { type:"text", },
