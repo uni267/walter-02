@@ -2,7 +2,6 @@ import fs from "fs";
 
 // ファイル一覧 1pageあたりの件数
 export const FILE_LIMITS_PER_PAGE = 30;
-export const SWIFT_CONTAINER_NAME = "walter";
 
 // ファイル暗号化設定
 export const CRYPTO_PASSWORD = "mGjQB5F57C+W";

@@ -288,7 +288,7 @@ export const download = (req, res, next) => {
       const tenant_name = res.user.tenant.name;
 
       const swift = new Swift();
-      const readStream = yield swift.downloadFile(constants.SWIFT_CONTAINER_NAME, fileRecord);
+      const readStream = yield swift.downloadFile(tenant_name, fileRecord);
       readStream.on("data", data => res.write(data) );
       readStream.on("end", () => res.end() );
     }
@@ -1355,9 +1355,10 @@ export const upload = (req, res, next) => {
         const regex = /;base64,(.*)$/;
         const matches = file.base64.match(regex);
         const data = matches[1];
+        const tenant_name = res.user.tenant.name;
 
         try {
-          yield swift.upload( new Buffer(data, 'base64'), model._id.toString());
+          yield swift.upload(tenant_name, new Buffer(data, 'base64'), model._id.toString());
         } catch (e) {
           logger.info(e);
           fileModels[i] = false;
@@ -2348,7 +2349,8 @@ export const deleteFilePhysical = (req,res,next) => {
       if (fileRecord === null) throw "file not found";
       if (fileRecord.is_deleted !== true) throw "file is not deleted";
 
-      const readStream = yield swift.remove(constants.SWIFT_CONTAINER_NAME, fileRecord);
+      const tenant_name = res.user.tenant.name;
+      const readStream = yield swift.remove(tenant_name, fileRecord);
 
       const deletedFile = yield fileRecord.remove();
 
@@ -2396,8 +2398,9 @@ export const previewExists = (req, res, next) => {
           if(err && err.code !== "EEXIST") logger.info(err);
         });
 
+        const tenant_name = res.user.tenant.name;
         const swift = new Swift();
-        const downloadFile = yield swift.exportFile(constants.SWIFT_CONTAINER_NAME, file, tmpFileName);
+        const downloadFile = yield swift.exportFile(tenant_name, file, tmpFileName);
 
         let command = '';
 

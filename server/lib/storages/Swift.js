@@ -81,7 +81,7 @@ class Swift {
     });
   }
 
-  upload(srcFilePath, dstFileName) {
+  upload(container_name, srcFilePath, dstFileName) {
 
     return new Promise( (resolve, reject) => {
 
@@ -89,7 +89,7 @@ class Swift {
       readStream.end(srcFilePath);
 
       const writeStream = this.client.upload({
-        container: "walter",
+        container: container_name,
         remote: dstFileName
       });
 
