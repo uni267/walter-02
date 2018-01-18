@@ -407,13 +407,13 @@ export const moveDir = (moving, destination) =>{
     const moved_dir = yield _move(moving, destination);
 
     // 子を同じ位置に移動し直す
-    let moved_dirs = [moved_dir];
+    let moved_dirs = [];
     for( const idx in childrenIds ){
       let child = find(childrenDirs, {_id:childrenIds[idx]});
       moved_dirs.push( yield _move(child._id, child.dir_id ) );
     }
 
-    return moved_dirs;
+    return [ moved_dir, ...moved_dirs];
   });
 };
 

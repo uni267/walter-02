@@ -180,8 +180,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       }else{
           res.json({
             status: { success: true, total },
-            body: files,
-            esResult
+            body: files
           });
       }
     }
@@ -881,6 +880,8 @@ export const move = (req, res, next) => {
   co(function* () {
     try {
       const file_id = req.params.file_id;
+      const { tenant_id }= res.user;
+      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
 
       if (file_id === undefined ||
           file_id === null ||
@@ -905,10 +906,29 @@ export const move = (req, res, next) => {
       if (file === null) throw "file is empty";
       if (dir === null) throw "dir is empty";
 
-      const changedFile = yield moveFile(file, dir._id, user, "移動");
+      let changedFile;
+      if( file.is_dir ){
+        const movedDirs = ( yield moveDir(file._id, dir._id) ).map(dir=>dir._id );
+        // 移動フォルダ自身と子を取得
+        const movedFiles = yield File.find({
+          $or: [
+            { _id: { $in: movedDirs }},
+            { dir_id:{ $in: movedDirs }}
+          ]
+        });
+        for(let i in movedFiles ){
+          movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
+          yield movedFiles[i].save();
+          // フォルダ内のファイルについて elasticsearch index更新
+          const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
+          yield esClient.createIndex(tenant_id,[updatedFile]);
+        }
 
+      } else {
+        file.is_trash = dir._id.toString() === trash_dir_id;
+        changedFile = yield moveFile(file, dir._id, user, "移動");
+      }
       // elasticsearch index作成
-      const { tenant_id }= res.user;
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
       yield esClient.createIndex(tenant_id,[updatedFile]);
 
@@ -2125,16 +2145,22 @@ export const moveTrash = (req, res, next) => {
       if (file === null) throw "file is empty";
       if (user === null) throw "user is empty";
 
-      // is_dir で分岐
       let changedFile;
       if( file.is_dir ){
-        const movedDirs = ( yield moveDir(file._id, trash_dir_id)).map(dir=>dir._id );
-        const deletedFiles = yield File.find({dir_id:{$in: movedDirs }});
-        for(let i in deletedFiles ){
-          deletedFiles[i].is_trash = true;
-          yield deletedFiles[i].save();
-          // elasticsearch index作成
-          const updatedFile = yield File.searchFileOne({_id: deletedFiles[i]._id });
+        const changedFiles = yield moveDir(file._id, trash_dir_id);
+        changedFile = changedFiles[0];  // response用。指定されたフォルダを返す
+        const movedDirs = changedFiles.map(dir=>dir._id );
+        const movedFiles = yield File.find({
+          $or: [
+            { _id: { $in: movedDirs }},
+            { dir_id:{ $in: movedDirs }}
+          ]
+        });
+        for(let i in movedFiles ){
+          movedFiles[i].is_trash = true;
+          yield movedFiles[i].save();
+          // フォルダ内のファイルについて elasticsearch index更新
+          const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
           yield esClient.createIndex(tenant_id,[updatedFile]);
         }
 
@@ -2143,7 +2169,7 @@ export const moveTrash = (req, res, next) => {
         changedFile = yield moveFile(file, trash_dir_id, user, "削除");
       }
 
-      // elasticsearch index作成
+      // 選択したファイルについて elasticsearchのindex更新
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
       yield esClient.createIndex(tenant_id,[updatedFile]);
 
