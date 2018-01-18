@@ -328,7 +328,9 @@ export const move = (req, res, next) => {
       const moving_id = mongoose.Types.ObjectId(req.params.moving_id);  // 対象
       const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);  // 行き先
 
-      const moved_dir = yield moveDir(moving_id, destination_id);
+      const user = yield User.findById(res.user._id);
+
+      const moved_dir = yield moveDir(moving_id, destination_id, user, "移動");
 
       // 移動したフォルダについて elasticsearch index更新
       const { tenant_id }= res.user;
@@ -365,8 +367,8 @@ export const move = (req, res, next) => {
   });
 };
 
-export const moveDir = (moving, destination) =>{
-  const _move = (moving_id, destination_id) => {
+export const moveDir = (moving, destination, user, action) =>{
+  const _move = (moving_id, destination_id, user, action) => {
     return co(function* (){
       if(destination_id === undefined) throw "dir_id is invalid";
       yield Dir.find({
@@ -394,6 +396,31 @@ export const moveDir = (moving, destination) =>{
       const _moving = yield File.findById(moving_id);
 
       _moving.dir_id = destination_id;
+
+      const history = {
+        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+        user: user,
+        action: action,
+        body: {
+          _id: _moving._id,
+          is_star: _moving.is_star,
+          is_display: _moving.is_display,
+          dir_id: _moving.dir_id,
+          is_dir: _moving.is_dir,
+          size: _moving.size,
+          mime_type: _moving.mime_type,
+          blob_path: _moving.blob_path,
+          name: _moving.name,
+          meta_infos: _moving.meta_infos,
+          tags: _moving.tags,
+          is_deleted: _moving.is_deleted,
+          modified: _moving.modified,
+          __v: _moving.__v
+        }
+      };
+
+      _moving.histories = _moving.histories.concat(history);
+
       const moved_dir = yield _moving.save();
       return moved_dir;
     });
@@ -404,13 +431,13 @@ export const moveDir = (moving, destination) =>{
     // 子の現在位置を取得する
     const childrenDirs = yield File.find({_id: {$in: childrenIds }}).select({_id:1,dir_id:1});
     // 対象を移動する
-    const moved_dir = yield _move(moving, destination);
+    const moved_dir = yield _move(moving, destination, user, action);
 
     // 子を同じ位置に移動し直す
     let moved_dirs = [];
     for( const idx in childrenIds ){
       let child = find(childrenDirs, {_id:childrenIds[idx]});
-      moved_dirs.push( yield _move(child._id, child.dir_id ) );
+      moved_dirs.push( yield _move(child._id, child.dir_id , user, action) );
     }
 
     return [ moved_dir, ...moved_dirs];

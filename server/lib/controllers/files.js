@@ -908,7 +908,7 @@ export const move = (req, res, next) => {
 
       let changedFile;
       if( file.is_dir ){
-        const movedDirs = ( yield moveDir(file._id, dir._id) ).map(dir=>dir._id );
+        const movedDirs = ( yield moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
         // 移動フォルダ自身と子を取得
         const movedFiles = yield File.find({
           $or: [
@@ -2147,7 +2147,7 @@ export const moveTrash = (req, res, next) => {
 
       let changedFile;
       if( file.is_dir ){
-        const changedFiles = yield moveDir(file._id, trash_dir_id);
+        const changedFiles = yield moveDir(file._id, trash_dir_id, user, "削除");
         changedFile = changedFiles[0];  // response用。指定されたフォルダを返す
         const movedDirs = changedFiles.map(dir=>dir._id );
         const movedFiles = yield File.find({
