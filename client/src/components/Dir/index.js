@@ -20,6 +20,7 @@ import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
 import ActionHistory from "material-ui/svg-icons/action/history";
+import DirDialogMenu from "./DirDialogMenu";
 
 const style = {
   dir: {
@@ -188,38 +189,11 @@ class Dir extends Component {
         </div>
 
         <div style={{...cellStyle, width: headers[4].width}}>
-          <IconMenu
-            iconButtonElement={action_menu_icon()}
-            anchorOrigin={{horizontal: "left", vertical: "bottom"}}>
-
-            <MenuItem
-              primaryText="フォルダ名変更"
-              leftIcon={<EditorModeEdit />}
-              onTouchTap={() => this.props.actions.toggleChangeFileNameDialog(dir) } />
-
-            <MenuItem
-              primaryText="移動"
-              leftIcon={<ContentForward />}
-              onTouchTap={() => (
-                this.props.actions.toggleMoveDirDialog(this.props.dir)
-              )} />
-
-            <MenuItem
-              primaryText="コピー"
-              leftIcon={<ContentContentCopy />}
-              onTouchTap={this.props.actions.toggleCopyDirDialog} />
-
-            <MenuItem
-              primaryText="削除"
-              leftIcon={<ActionDelete />}
-              onTouchTap={() => this.props.actions.toggleDeleteDirDialog(dir)} />
-
-            <MenuItem
-              primaryText="権限を変更"
-              leftIcon={<ActionVerifiedUser />}
-              onTouchTap={() => this.props.actions.toggleAuthorityDirDialog(dir)} />
-
-          </IconMenu>
+          <DirDialogMenu
+            dir={this.props.dir}
+            actions={this.props.actions}
+            hover={this.state.hover}
+            trashDirId={this.props.tenant.trashDirId} />
         </div>
 
       </div>

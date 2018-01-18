@@ -145,9 +145,10 @@ const FileDialogMenu = ({
         component: idx => (
           <MenuItem
             key={idx}
-            primaryText="ゴミ箱から戻す"
+            primaryText="ゴミ箱から取り出す"
             leftIcon={<ActionRestore />}
-            onTouchTap={() => actions.toggleRestoreFileDialog(file)} />
+            // onTouchTap={() => actions.toggleRestoreFileDialog(file)}
+            onTouchTap={() => actions.toggleMoveFileDialog(file)} />
         )
       })
     : menuItems;
