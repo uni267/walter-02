@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import morgan from "morgan";
+// import morgan from "morgan";
 import path from "path";
 import log4js from "log4js";
 import { EventEmitter } from "events";
@@ -26,7 +26,7 @@ app.use( (req, res, next) => {
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({limit: '100mb'}));
-app.use(morgan({ format: "dev", immediate: true }));
+// app.use(morgan({ format: "dev", immediate: true }));
 app.use(express.static(path.join(__dirname, '../../client/build')));
 app.use(log4js.connectLogger(logger));
 

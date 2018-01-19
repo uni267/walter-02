@@ -45,7 +45,7 @@ export const LOGGER_CONFIG = {
     },
     production: {
       appenders:['production'],
-      level: 'error'
+      level: 'ALL'
     }
   }
 };
