@@ -5,7 +5,7 @@ export const FILE_LIMITS_PER_PAGE = 30;
 
 // ファイル暗号化設定
 export const CRYPTO_PASSWORD = "mGjQB5F57C+W";
-export const USE_CRYPTO = true;
+export const USE_CRYPTO = false;
 
 // お知らせの取得件数
 export const INFOMATION_LIMITS_PER_PAGE = 5;
