@@ -2408,11 +2408,10 @@ export const previewExists = (req, res, next) => {
 
         const tenant_name = res.user.tenant.name;
         const swift = new Swift();
-  logger.info("2414");
         const downloadFile = yield swift.exportFile(tenant_name, file, tmpFileName);
 
         let command = '';
-logger.info("create file");
+
         switch(file.mime_type){
           case "text/csv":
           case "text/plain":
@@ -2457,7 +2456,6 @@ logger.info("create file");
 
           try {
             const execResult = yield _exec(command);
-logger.info("create file success!");
             preview.image = fs.readFileSync(`${tmpFileName}.png`);
           }catch(error){
             throw error;
