@@ -2387,10 +2387,18 @@ export const previewExists = (req, res, next) => {
 
       const file = yield File.findById(file_id);
 
+      if(file.size > constants.MAX_CREATE_PREVIEW_FILE_SIZE) throw "file size is too large";
+
       let { preview_id } = file;
 
-      if(preview_id === null || preview_id === undefined || preview_id === "" ){
+      let preview;
+      if(preview_id === null || preview_id === undefined || preview_id === ""){
+        preview = new Preview();
+      }else{
+        preview = yield Preview.findById(preview_id);
+      }
 
+      if(preview.image === undefined && preview.creating === false){
         const tmpDirPath = path.join(__dirname,'../../tmp');
         const tmpFileName = path.join(tmpDirPath,file.name);
 
@@ -2400,15 +2408,16 @@ export const previewExists = (req, res, next) => {
 
         const tenant_name = res.user.tenant.name;
         const swift = new Swift();
+  logger.info("2414");
         const downloadFile = yield swift.exportFile(tenant_name, file, tmpFileName);
 
         let command = '';
-
+logger.info("create file");
         switch(file.mime_type){
           case "text/csv":
           case "text/plain":
             // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
-            command = `cd ${tmpDirPath} && nkf -w ${file.name} > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf ${file.name}.png && rm ${file.name} buf.*`;
+            command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf "${file.name}.png" && rm "${file.name}" buf.*`;
             break;
           case "application/msword":
           case "application/vnd.ms-excel":
@@ -2425,30 +2434,41 @@ export const previewExists = (req, res, next) => {
           case "application/pdf":
             command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
             break;
+          // case "image/jpeg":
+          // case "image/png":
+          // case "image/gif":
+          // case "image/x-icon":
+          // case "image/svg+xml":
+          // case "image/tiff":
+          // case "image/webp":
+          //   command = `cd ${tmpDirPath} && convert -resize 1024x> "${file.name}" > "${file.name}.png" && rm "${file.name}"`;
+          //   break;
           default:
             throw "this mime_type is not supported yet";
             break;
         }
 
         if(command !== ""){
-          const preview = new Preview();
+          preview.creating = true;
           // 大きいファイルの場合、タイムアウトするので一度idだけ登録してコマンドの再実行を防止する
           yield preview.save();
           file.preview_id = preview._id;
           const changedFile = yield file.save();
 
-          const execResult = yield _exec(command);
-
-          preview.image = fs.readFileSync(`${tmpFileName}.png`);
-
-          const previewImage = yield preview.save();
-
-
+          try {
+            const execResult = yield _exec(command);
+logger.info("create file success!");
+            preview.image = fs.readFileSync(`${tmpFileName}.png`);
+          }catch(error){
+            throw error;
+          }finally{
+            preview.creating = false;
+            const previewImage = yield preview.save();
+          }
           preview_id = file.preview_id;
           fs.unlink(path.join(`${tmpFileName}.png`));
         }
       }else{
-        const preview = yield Preview.findById(preview_id);
         if(preview.image === undefined) preview_id = null;
       }
 
@@ -2467,6 +2487,9 @@ export const previewExists = (req, res, next) => {
       switch(e){
         case "this mime_type is not supported yet":
           errors.mime_type = "このファイルはプレビュー画像を表示できません";
+          break;
+        case "file size is too large":
+          errors.file_size = "このファイルはプレビュー画像を表示できません";
           break;
         default:
           errors.unknown = e;

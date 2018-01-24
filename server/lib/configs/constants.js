@@ -16,6 +16,9 @@ export const MAX_STRING_LENGTH = 255;
 // email addressの制限文字数
 export const MAX_EMAIL_LENGTH = 64;
 
+// preview 画像作成の最大ファイルサイズ
+export const MAX_CREATE_PREVIEW_FILE_SIZE = 32212254720;
+
 // loggerの設定
 export const LOGGER_CONFIG = {
   appenders: {
