@@ -2433,15 +2433,12 @@ export const previewExists = (req, res, next) => {
           case "application/pdf":
             command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
             break;
-          // case "image/jpeg":
-          // case "image/png":
-          // case "image/gif":
-          // case "image/x-icon":
-          // case "image/svg+xml":
-          // case "image/tiff":
-          // case "image/webp":
-          //   command = `cd ${tmpDirPath} && convert -resize 1024x> "${file.name}" > "${file.name}.png" && rm "${file.name}"`;
-          //   break;
+          case "image/jpeg":
+          case "image/png":
+          case "image/gif":
+          case "image/tiff":
+            command = `cd ${tmpDirPath} && convert "${file.name}" -resize 1024x\\> "${file.name}.png" && rm "${file.name}"`;
+            break;
           default:
             throw "this mime_type is not supported yet";
             break;
