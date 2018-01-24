@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 // material ui
 import { Card, CardTitle, CardText } from "material-ui/Card";
 import {
-  Table, 
+  Table,
   TableBody,
   TableHeader,
   TableRow,
@@ -20,7 +20,6 @@ import Divider from "material-ui/Divider";
 
 // components
 import NavigationContainer from "./NavigationContainer";
-import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import MetaInfoTableHeader from "../components/MetaInfo/MetaInfoTableHeader";
 import MetaInfoTableBody from "../components/MetaInfo/MetaInfoTableBody";
 

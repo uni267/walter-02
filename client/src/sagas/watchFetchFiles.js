@@ -6,7 +6,6 @@ import { API } from "../apis";
 // actions
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
-import * as actionTypes from "../actionTypes";
 import errorParser from "../helper/errorParser";
 
 function* watchFetchFiles() {

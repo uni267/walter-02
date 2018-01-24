@@ -8,9 +8,9 @@ import { bindActionCreators } from "redux";
 import { withRouter } from "react-router-dom";
 
 // material
-import { 
-  Card, 
-  CardTitle, 
+import {
+  Card,
+  CardTitle,
   CardText
 } from 'material-ui/Card';
 
@@ -48,11 +48,6 @@ class UserContainer extends Component {
       { name: "編集", width: "10%" }
     ];
 
-    const actions = {
-      searchFileSimple: (keyword) => this.props.actions.searchUsersSimple(
-        this.props.tenant.tenant_id, keyword
-      )
-    };
 
     return (
       <div>

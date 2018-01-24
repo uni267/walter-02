@@ -5,9 +5,9 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material
-import { 
-  Card, 
-  CardTitle, 
+import {
+  Card,
+  CardTitle,
   CardText
 } from 'material-ui/Card';
 
@@ -28,7 +28,6 @@ import Divider from "material-ui/Divider";
 import NavigationContainer from "./NavigationContainer";
 import GroupTableHeader from "../components/Group/GroupTableHeader";
 import GroupTableBody from "../components/Group/GroupTableBody";
-import SimpleSearch from "../components/FileSearch/SimpleSearch";
 
 // actions
 import * as GroupActions from "../actions/groups";
@@ -82,15 +81,15 @@ class GroupContainer extends Component {
                   </TableBody>
                 </Table>
               </div>
-              
+
               <div style={{ width: "20%", paddingLeft: 15 }}>
                 <Divider />
                 <Menu>
-                  <MenuItem 
+                  <MenuItem
                     primaryText="グループ作成"
                     leftIcon={<SocialGroupAdd />}
                     onTouchTap={() => this.props.history.push("/groups/create")} />
-                </Menu>                  
+                </Menu>
               </div>
             </div>
 

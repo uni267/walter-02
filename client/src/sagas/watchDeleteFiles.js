@@ -29,7 +29,7 @@ function* watchDeleteFiles() {
         message = "ファイルをごみ箱へ移動しました";
       }
 
-      const deletedFileIds = response.filter(res => res.status == 200 ).map(res => res.data.body._id);
+      const deletedFileIds = response.filter(res => res.status === 200).map(res => res.data.body._id);
       yield put(actions.deleteFileRows(deletedFileIds));
 
       yield put(actions.toggleDeleteFilesDialog());

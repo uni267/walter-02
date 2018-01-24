@@ -5,17 +5,17 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
 // material
-import { 
-  Card, 
-  CardTitle, 
+import {
+  Card,
+  CardTitle,
   CardText
 } from 'material-ui/Card';
 
 import {
-  Table, 
+  Table,
   TableBody,
   TableHeader,
-  TableRow, 
+  TableRow,
   TableRowColumn
 } from 'material-ui/Table';
 
@@ -28,7 +28,6 @@ import Divider from "material-ui/Divider";
 import NavigationContainer from "./NavigationContainer";
 import TagTableHeader from "../components/Tag/TagTableHeader";
 import TagTableBody from "../components/Tag/TagTableBody";
-import SimpleSearch from "../components/FileSearch/SimpleSearch";
 
 // actions
 import * as TagActions from "../actions/tags";

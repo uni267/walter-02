@@ -79,7 +79,7 @@ const MetaInfoDetailBasic = ({
           onChange={(e, value) => changeMetaInfoValueType(valueTypes[value].name)}>
 
           {valueTypes.map( (type, id) => (
-            <MenuItem value={type.name} primaryText={type.name} />
+            <MenuItem key={id} value={type.name} primaryText={type.name} />
           ))}
 
         </SelectField>

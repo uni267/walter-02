@@ -17,7 +17,7 @@ function* watchSearchFileDetail() {
       if(list_type !== LIST_SEARCH_DETAIL ) yield put(actions.setFileListType(LIST_SEARCH_DETAIL));
 
       const { searchedItems:old_items } = yield select( state => state.fileDetailSearch );
-      const { history, items } = yield take(actions.searchFileDetail().type);
+      const { items } = yield take(actions.searchFileDetail().type);
 
       if( !isMatch(old_items,items) ){
         yield put(actions.initFilePagination());
