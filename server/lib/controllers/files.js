@@ -2463,7 +2463,10 @@ export const previewExists = (req, res, next) => {
           case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
           case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
           case "application/vnd.openxmlformats-officedocument.presentationml.template":
-            const pdfFileName = file.name.replace(path.extname(file.name),".pdf" );
+          const pdfFileName = path.extname(file.name) === ""
+            ? file.name + ".pdf"
+            : file.name.replace(path.extname(file.name),".pdf" );
+
             command = `cd ${tmpDirPath} && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
           break;
           case "application/pdf":
