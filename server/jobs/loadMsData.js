@@ -18,6 +18,7 @@ db.authority_files.drop();
 db.authority_menus.drop();
 db.notifications.drop();
 db.file_meta_infos.drop();
+db.download_infos.drop();
 
 // ===============================
 //  files collection
@@ -546,6 +547,18 @@ var authority_files = {
 };
 
 db.authority_files.insert(authority_files);
+
+// ===============================
+//  ダウンロードファイルの命名規則
+// ===============================
+var display_file_name_id = db.meta_infos.findOne({name: "display_file_name"})._id.str;
+var send_date_time_id = db.meta_infos.findOne({name: "send_date_time"})._id.str;
+var downloadInfo = {
+  type: "file",
+  value:`{${display_file_name_id}}{${send_date_time_id}:YYYYMMDD}{extension}`,
+  tenant_id: tenant._id
+};
+db.download_infos.insert(downloadInfo);
 
 // ===============================
 //  外部キーのindex

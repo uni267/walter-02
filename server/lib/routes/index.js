@@ -20,6 +20,7 @@ import notificationRouter from "./notifications";
 import DisplayItemRouter from "./displayItems";
 import ExcelRouter from "./excels";
 import ElasticsearchRouter from "./elasticsearches";
+import DownloadInfoRouter from "./downloadInfos";
 
 // debug
 import TestRouter from "./test";
@@ -46,6 +47,7 @@ router.use("/api/v1/menus", MenuRouter);
 router.use("/api/v1/notifications", notificationRouter);
 router.use("/api/v1/display_items", DisplayItemRouter);
 router.use("/api/v1/excels", ExcelRouter);
+router.use("/api/v1/download_info", DownloadInfoRouter);
 
 router.use("/*",ClientRouter);
 

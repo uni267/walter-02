@@ -7,6 +7,8 @@ import * as commons from "../actions/commons";
 
 import { saveAs } from "file-saver";
 
+import { createFileName } from "../helper/fileNameParser";
+
 function* watchDownloadFile() {
   while (true) {
     const { file } = yield take(actions.downloadFile().type);
@@ -14,12 +16,15 @@ function* watchDownloadFile() {
 
     try {
       yield put(commons.loadingStart());
+      const format = (yield call(api.downloadInfoFile)).data.body.value;
+      const file_name = createFileName(file, format);
+
       const payload = yield call(api.downloadFile, file);
 
       const download = new Blob(
         [ payload.data ], { type: file.mime_type });
 
-      yield saveAs(download, file.name);
+      yield saveAs(download, file_name);
     }
     catch (e) {
       yield put(commons.openException("ファイルのダウンロードに失敗しました" ));

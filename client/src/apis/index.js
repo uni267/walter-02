@@ -509,5 +509,9 @@ export class API {
 
     return this.client.post(`/api/v1/excels/search_detail`, data, config);
   };
+
+  downloadInfoFile = () => {
+    return this.client.get(`/api/v1/download_info/file`);
+  };
 }
 
