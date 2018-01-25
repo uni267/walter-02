@@ -199,16 +199,27 @@ var display_items = [
   },
   {
     tenant_id: tenant._id,
-    meta_info_id: db.meta_infos.findOne({ name: "receive_date_time" })._id,
-    label: "受信日時",
-    name: "receive_date_time",
+    meta_info_id: db.meta_infos.findOne({ name: "send_date_time" })._id,
+    label: "送信日時",
+    name: "send_date_time",
     is_display: true,
     is_excel: true,
     is_search: true,
     between: true,
     width: "20%",
-    order: 30,
-    default_sort: { desc: true }
+    default_sort: { desc: true },
+    order: 30
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "receive_date_time" })._id,
+    label: "受信日時",
+    name: "receive_date_time",
+    is_display: false,
+    is_excel: true,
+    is_search: true,
+    between: true,
+    order: 35
   },
   {
     tenant_id: tenant._id,
@@ -232,17 +243,6 @@ var display_items = [
     is_search: false,
     width: "10%",
     order: 50
-  },
-  {
-    tenant_id: tenant._id,
-    meta_info_id: db.meta_infos.findOne({ name: "send_date_time" })._id,
-    label: "送信日時",
-    name: "send_date_time",
-    is_display: false,
-    is_excel: true,
-    is_search: true,
-    between: true,
-    order: 60
   },
   {
     tenant_id: tenant._id,
