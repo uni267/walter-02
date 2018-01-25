@@ -339,6 +339,37 @@ export const search = (req, res, next, export_excel=false) => {
 
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
+      // 閲覧できるフォルダの一覧を取得する
+      const esQuelyDir = {
+        index: tenant_id.toString(),
+        type: "files",
+        body:{
+          "query": {
+            "bool":{
+              "must_not": [{
+                "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
+              }],
+              "must": [{
+                "match" : {
+                  [`file.actions.${action_id}`]:
+                    {
+                      "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+                      "operator": "and"         // operator の default は or なので and のする
+                    }
+                }},{
+                  "match" : {
+                  "file.is_dir": true
+                }}
+              ]
+            }
+          }
+        }
+      };
+      let esResultDir = yield esClient.search(esQuelyDir);
+
+      // 取得した一覧とTopが閲覧可能なフォルダとなる
+      const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
+
       const esQuely = {
         index: tenant_id.toString(),
         type: "files",
@@ -372,7 +403,12 @@ export const search = (req, res, next, export_excel=false) => {
                   }},{
                     "match" : {
                     "file.is_trash": false
-                  }}
+                  }},{
+                    "terms" : {
+                      "file.dir_id": authorizedDirIds
+                    }
+                  }
+
                 ]
               }
           }
