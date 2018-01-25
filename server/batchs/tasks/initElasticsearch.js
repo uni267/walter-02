@@ -49,7 +49,7 @@ const task = () => {
         settings = { ...settings, index };
       }
 
-      const file_prperties={
+      const file_properties={
         _id: { type:"text", },
         name: { type:"text", fielddata:true },
         mime_type: { type:"text", index: false },
@@ -66,6 +66,7 @@ const task = () => {
         authorities: { type:"nested",  },
         dirs: { type:"nested" },
         sort_target: { type:"text", index: false },
+        actions:{ properties:{}}
       };
 
       // meta_infoのマッピング
@@ -74,7 +75,7 @@ const task = () => {
       });
 
       meta_infos.forEach((item,index)=>{
-        file_prperties[item._id] = {
+        file_properties[item._id] = {
           type: item.value_type === "Date" ? "date" : "text",
           "fields": { // sort用のフィールドを持つ
             "raw": {
@@ -87,7 +88,7 @@ const task = () => {
 
       const actions = yield Action.find();
       actions.forEach((item,index)=>{
-        file_prperties[item._id] = {
+        file_properties["actions"]["properties"][item._id] = {
           "type":  "keyword"
         };
       });
@@ -98,11 +99,12 @@ const task = () => {
         body:{
           properties: {
             file:{
-              properties: file_prperties
+              properties: file_properties
             }
           }
         }
       };
+
     console.log(`check old indedices:${tenant_id}`);
     const isExists = yield esClient.indices.exists( { index: tenant_id } );
 
