@@ -2452,7 +2452,7 @@ export const previewExists = (req, res, next) => {
           case "text/csv":
           case "text/plain":
             // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
-            command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf "${file.name}.png" && rm "${file.name}" buf.*`;
+            command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf[0] "${file.name}.png" && rm "${file.name}" buf.*`;
             break;
           case "application/msword":
           case "application/vnd.ms-excel":
