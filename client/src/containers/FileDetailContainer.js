@@ -9,12 +9,12 @@ import { connect } from "react-redux";
 import NavigationContainer from "./NavigationContainer";
 
 // material
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardText, 
-  CardMedia, 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardText,
+  CardMedia,
   CardActions
 } from 'material-ui/Card';
 import RaisedButton from "material-ui/RaisedButton";
@@ -193,7 +193,7 @@ class FileDetailContainer extends Component {
         onTouchTap={() => this.setState({ editAuthority: { open: false } })}
         />
     );
-    
+
     return (
       <Dialog
         title="権限を変更"
@@ -214,7 +214,7 @@ class FileDetailContainer extends Component {
 
       </Dialog>
     );
-    
+
   };
 
   renderMetaInfos = () => {
@@ -311,7 +311,7 @@ class FileDetailContainer extends Component {
     else {
       previewImg = (
         <img
-          src={`data:image/jpeg;base64,${this.props.filePreviewState.body}`}
+          src={`data:image/png;base64,${this.props.filePreviewState.body}`}
           alt="filepreview" />
       );
     }

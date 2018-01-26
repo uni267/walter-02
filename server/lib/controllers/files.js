@@ -91,7 +91,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
-      const esQuely = {
+      const esQuery = {
         index: tenant_id.toString(),
         type: "files",
         sort: [ "file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`],
@@ -124,20 +124,20 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       const offset = page * constants.FILE_LIMITS_PER_PAGE;
       if(!export_excel){
-        esQuely["from"] = offset;
-        esQuely["size"] = parseInt( offset ) + 30;
+        esQuery["from"] = offset;
+        esQuery["size"] = parseInt( offset ) + 30;
       }else{
-        esQuely["from"] = 0;
-        esQuely["size"] = 0;
+        esQuery["from"] = 0;
+        esQuery["size"] = 0;
       }
 
-      let esResult = yield esClient.search(esQuely);
+      let esResult = yield esClient.search(esQuery);
       const { total } = esResult.hits;
 
       if(export_excel){
         // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
-        esQuely["size"] = total;
-        esResult = yield esClient.search(esQuely);
+        esQuery["size"] = total;
+        esResult = yield esClient.search(esQuery);
       }
 
       const esResultIds = esResult.hits.hits
@@ -340,7 +340,7 @@ export const search = (req, res, next, export_excel=false) => {
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       // 閲覧できるフォルダの一覧を取得する
-      const esQuelyDir = {
+      const esQueryDir = {
         index: tenant_id.toString(),
         type: "files",
         body:{
@@ -365,12 +365,12 @@ export const search = (req, res, next, export_excel=false) => {
           }
         }
       };
-      let esResultDir = yield esClient.search(esQuelyDir);
+      let esResultDir = yield esClient.search(esQueryDir);
 
       // 取得した一覧とTopが閲覧可能なフォルダとなる
       const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
 
-      const esQuely = {
+      const esQuery = {
         index: tenant_id.toString(),
         type: "files",
         sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
@@ -417,20 +417,20 @@ export const search = (req, res, next, export_excel=false) => {
 
       const offset = _page * constants.FILE_LIMITS_PER_PAGE;
       if(!export_excel){
-        esQuely["from"] = offset;
-        esQuely["size"] = parseInt( offset ) + 30;
+        esQuery["from"] = offset;
+        esQuery["size"] = parseInt( offset ) + 30;
       }else{
-        esQuely["from"] = 0;
-        esQuely["size"] = 0;
+        esQuery["from"] = 0;
+        esQuery["size"] = 0;
       }
 
-      let esResult = yield esClient.search(esQuely);
+      let esResult = yield esClient.search(esQuery);
       const { total } = esResult.hits;
 
       if(export_excel){
         // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
-        esQuely["size"] = total;
-        esResult = yield esClient.search(esQuely);
+        esQuery["size"] = total;
+        esResult = yield esClient.search(esQuery);
       }
 
       const esResultIds = esResult.hits.hits
@@ -2452,7 +2452,7 @@ export const previewExists = (req, res, next) => {
           case "text/csv":
           case "text/plain":
             // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
-            command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove buf.pdf[0] "${file.name}.png" && rm "${file.name}" buf.*`;
+            command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png buf.pdf[0] "${file.name}.png" && rm "${file.name}" buf.*`;
             break;
           case "application/msword":
           case "application/vnd.ms-excel":
@@ -2467,16 +2467,16 @@ export const previewExists = (req, res, next) => {
             ? file.name + ".pdf"
             : file.name.replace(path.extname(file.name),".pdf" );
 
-            command = `cd ${tmpDirPath} && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
+            command = `cd ${tmpDirPath} && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
           break;
           case "application/pdf":
-            command = `cd ${tmpDirPath} && convert -background white -alpha remove "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
+            command = `cd ${tmpDirPath} && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
             break;
           case "image/jpeg":
           case "image/png":
           case "image/gif":
           case "image/tiff":
-            command = `cd ${tmpDirPath} && convert "${file.name}" -resize 1024x\\> "${file.name}.png" && rm "${file.name}"`;
+            command = `cd ${tmpDirPath} && convert -density ${constants.CONVERT_DPI} -antialias -format png "${file.name}" -resize 1024x\\> "${file.name}.png" && rm "${file.name}"`;
             break;
           default:
             throw "this mime_type is not supported yet";
