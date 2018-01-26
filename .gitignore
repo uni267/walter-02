@@ -29,5 +29,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-client/.vscode/settings.json
-server/.vscode/settings.json
+client/.vscode/*
+server/.vscode/*
+*.code-workspace

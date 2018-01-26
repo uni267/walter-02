@@ -126,9 +126,12 @@ export const tree = (req, res, next) => {
 
       if (dirs.length === 0) {
         res.json({
-          _id: root._id,
-          name: root.name,
-          children: []
+          status: { success: true },
+          body: {
+            _id: root._id,
+            name: root.name,
+            children: []
+          }
         });
       } else {
 

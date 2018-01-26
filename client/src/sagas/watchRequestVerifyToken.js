@@ -7,19 +7,25 @@ import * as actions from "../actions";
 import * as commons from "../actions/commons";
 import errorParser from "../helper/errorParser";
 
-function* watchRequestVerifyToken() {
+export const verify = function* (token){
+  const api = new API();
+  const payload = yield call(api.verifyToken, token);
+  const { user } = payload.data.body;
+  const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
+  yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
+  yield put(actions.requestFetchAuthorityMenus());
+  yield put(actions.requestLoginSuccess("success", user));
+
+};
+
+export const watchRequestVerifyToken = function* () {
   while (true) {
     const { token } = yield take(actions.requestVerifyToken().type);
-    const api = new API();
     yield put(actions.loadingStart());
 
     try {
-      const payload = yield call(api.verifyToken, token);
-      const { user } = payload.data.body;
-      const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
-      yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
-      yield put(actions.requestFetchAuthorityMenus());
-      yield put(actions.requestLoginSuccess("success", user));
+      yield verify ( token );
+
       yield put(actions.loadingEnd());
     }
     catch (e) {
@@ -34,6 +40,5 @@ function* watchRequestVerifyToken() {
       window.location.href = localStorage.getItem("tenant_name") + "/login";
     }
   }
-}
+};
 
-export default watchRequestVerifyToken;

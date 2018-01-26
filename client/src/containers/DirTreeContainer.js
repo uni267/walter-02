@@ -16,7 +16,7 @@ import { requestFetchDirTree, selectDirTree } from "../actions";
 
 class DirTreeContainer extends Component {
   componentWillMount() {
-    this.props.requestFetchDirTree(this.props.tenant.dirId);    
+    this.props.requestFetchDirTree(this.props.tenant.dirId);
   }
 
   renderDirTree = (node, idx) => {
@@ -49,7 +49,7 @@ class DirTreeContainer extends Component {
               paddingLeft: 10,
               paddingRight: 10
             };
-
+console.log({node});
       return (
         <Card style={{ marginTop: 30, marginBottom: 30 }}>
           <CardText>
