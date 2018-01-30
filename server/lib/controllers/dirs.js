@@ -204,6 +204,12 @@ export const create = (req, res, next) => {
 
       if (dir_name.match( new RegExp(ILLIGAL_CHARACTERS.join("|") ))) throw "dir_name is invalid";
 
+      const user = yield User.findById(res.user._id);
+
+      const isPermitted = yield checkFilePermission( dir_id ,user._id , constants.PERMISSION_MAKE_DIR);
+
+      if( isPermitted === false ) throw "permission denied";
+
       // フォルダ情報を構築
       const dir = new File();
       dir.name = dir_name;
@@ -220,8 +226,6 @@ export const create = (req, res, next) => {
         tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
         name: "フルコントロール" // @fixme
       });
-
-      const user = yield User.findById(res.user._id);
 
       // 作成したユーザが所有者となる
       const authority = new AuthorityFile();
@@ -309,6 +313,9 @@ export const create = (req, res, next) => {
         break;
       case "name is duplication":
         errors.dir_name = "同名のフォルダが存在するためフォルダの作成に失敗しました";
+        break;
+      case "permission denied":
+        errors.dir_id = "フォルダ作成権限がないためフォルダの作成に失敗しました";
         break;
       default:
         errors.unknown = e;

@@ -27,10 +27,10 @@ function* watchCreateDir() {
     }
     catch (e) {
       const { message, errors } = errorParser(e,"フォルダの作成に失敗しました");
-      if(!errors.unknown){
-        yield put({ type: "CREATE_DIR_ERROR", errors });
+      if(!errors.dir_name){
+        yield put(commons.openException(message, errors[ Object.keys(errors)[0] ] ));
       }else{
-        yield put(commons.openException(message, errors.unknown ));
+        yield put({ type: "CREATE_DIR_ERROR", errors });
       }
 
 

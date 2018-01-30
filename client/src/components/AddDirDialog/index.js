@@ -52,7 +52,7 @@ class AddDirDialog extends Component {
           ref="dirName"
           hintText=""
           errorText={this.props.createDirState.errors.dir_name}
-          onKeyDown={e => e.key === "Enter" ? this.handleCreate() : null }
+          onKeyPress={e => e.key === "Enter" ? this.handleCreate() : null }
           floatingLabelText="フォルダ名" />
 
       </Dialog>
