@@ -937,6 +937,10 @@ export const move = (req, res, next) => {
 
       if (user === null) throw "user is empty";
 
+      const isPermitted = yield checkFilePermission(file_id, user._id, constants.PERMISSION_MOVE);
+
+      if( !isPermitted ) throw "permission denied";
+
       const [ file, dir ] = yield [ File.findById(file_id), File.findById(dir_id) ];
 
       if (file === null) throw "file is empty";
@@ -998,7 +1002,10 @@ export const move = (req, res, next) => {
         errors.dir_id = "指定されたフォルダが存在しないためファイルの移動に失敗しました";
         break;
       case "target is the same as folder":
-        errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました。";
+        errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました";
+        break;
+      case "permission denied":
+        errors.file_id = "指定されたファイルを移動する権限がないため移動に失敗しました";
         break;
       default:
         errors.unknown = e;
@@ -2714,6 +2721,28 @@ export const getAllowedFileIds = (user_id, permission) => {
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
     return new Promise((resolve, reject) => resolve(file_ids) );
+
+  });
+};
+
+export const checkFilePermission = (file_id, user_id, permission) => {
+  return co(function*(){
+
+    const action = yield Action.findOne({ name:permission });
+    const role = (yield RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+
+    const user = yield User.findById(user_id);
+
+    const authorities = yield AuthorityFile.find(
+      {
+        $or : [
+          { users: mongoose.Types.ObjectId(user_id) },
+          { groups: {$in: user.groups } }],
+        role_files: {$in: role },
+        files: file_id
+      });
+
+    return new Promise((resolve, reject) => resolve( authorities.length > 0 ) );
 
   });
 };

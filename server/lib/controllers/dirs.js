@@ -17,8 +17,9 @@ import AuthorityFile from "../models/AuthorityFile";
 
 import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
-import { getAllowedFileIds } from "./files";
+import { getAllowedFileIds, checkFilePermission } from "./files";
 import { find } from "lodash";
+import * as constants from "../configs/constants";
 
 const { ObjectId } = mongoose.Types;
 
@@ -335,6 +336,9 @@ export const move = (req, res, next) => {
 
       const user = yield User.findById(res.user._id);
 
+      const isPermitted =  yield checkFilePermission(moving_id, user._id, constants.PERMISSION_MOVE );
+      if( !isPermitted ) throw "permission denied";
+
       const moved_dir = yield moveDir(moving_id, destination_id, user, "移動");
 
       // 移動したフォルダについて elasticsearch index更新
@@ -358,6 +362,9 @@ export const move = (req, res, next) => {
           break;
         case "target is the same as folder":
           errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました。";
+          break;
+        case "permission denied":
+          errors.dir_id = "指定されたフォルダを移動する権限がないため移動に失敗しました";
           break;
         default:
           errors.unknown = e;
