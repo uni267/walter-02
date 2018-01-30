@@ -167,7 +167,7 @@ class Authority extends Component {
             label="追加"
             primary={addClickable}
             disabled={!addClickable}
-            onTouchTap={() => {
+            onClick={() => {
               this.props.addAuthorityToFile(
                 this.props.file,
                 this.state.user.user,
