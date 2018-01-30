@@ -3,6 +3,7 @@ import React, { Component } from "react";
 // material-uis
 import AutoComplete from "material-ui/AutoComplete";
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import MenuItem from "material-ui/MenuItem";
 import Dialog from "material-ui/Dialog";
 
@@ -113,8 +114,8 @@ class Authority extends Component {
 
     const deleteDialogActions = [
       (
-        <RaisedButton
-          label="OK"
+        <FlatButton
+          label="削除"
           primary={true}
           onTouchTap={() => {
             this.props.deleteAuthorityToFile(
@@ -128,8 +129,8 @@ class Authority extends Component {
           />
       ),
       (
-        <RaisedButton
-          label="cancel"
+        <FlatButton
+          label="閉じる"
           primary={false}
           onTouchTap={() => this.setState({ deleteDialog: { open: false } })}
           />
