@@ -944,6 +944,8 @@ export const move = (req, res, next) => {
 
       let changedFile;
       if( file.is_dir ){
+        if(file._id.toString() === dir._id.toString()) throw "target is the same as folder";
+
         const movedDirs = ( yield moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
         // 移動フォルダ自身と子を取得
         const movedFiles = yield File.find({
@@ -994,6 +996,9 @@ export const move = (req, res, next) => {
         break;
       case "dir is empty":
         errors.dir_id = "指定されたフォルダが存在しないためファイルの移動に失敗しました";
+        break;
+      case "target is the same as folder":
+        errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました。";
         break;
       default:
         errors.unknown = e;

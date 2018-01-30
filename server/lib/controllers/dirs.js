@@ -331,6 +331,8 @@ export const move = (req, res, next) => {
       const moving_id = mongoose.Types.ObjectId(req.params.moving_id);  // 対象
       const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);  // 行き先
 
+      if(moving_id.toString() === destination_id.toString()) throw "target is the same as folder";
+
       const user = yield User.findById(res.user._id);
 
       const moved_dir = yield moveDir(moving_id, destination_id, user, "移動");
@@ -353,6 +355,9 @@ export const move = (req, res, next) => {
           break;
         case "dir_id is empty":
           errors.dir_id = "フォルダIDが不正のため移動に失敗しました";
+          break;
+        case "target is the same as folder":
+          errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました。";
           break;
         default:
           errors.unknown = e;
