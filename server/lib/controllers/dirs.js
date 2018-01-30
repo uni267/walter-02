@@ -17,9 +17,14 @@ import AuthorityFile from "../models/AuthorityFile";
 
 import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
-import { getAllowedFileIds, checkFilePermission } from "./files";
+import { getAllowedFileIds, checkFilePermission, extractFileActions } from "./files";
 import { find } from "lodash";
 import * as constants from "../configs/constants";
+import {
+  ValidationError,
+  RecordNotFoundException,
+  PermisstionDeniedException
+} from "../errors/AppError";
 
 const { ObjectId } = mongoose.Types;
 
@@ -469,3 +474,60 @@ export const moveDir = (moving, destination, user, action) =>{
 export const getDescendants = (dir_id) => {
 
 }
+
+
+export const view = (req, res, next) => {
+  co(function* () {
+    try {
+      // TODO: 詳細の取得処理はfiles.viewとほぼ同じなので共通化する
+      const { dir_id } = req.params;
+
+      if (dir_id === undefined ||
+          dir_id === null ||
+          dir_id === "") {
+        throw new ValidationError("file_idが空です");
+      }
+      if( !mongoose.Types.ObjectId.isValid( dir_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
+
+      const file_ids = yield getAllowedFileIds(
+        res.user._id, constants.PERMISSION_VIEW_DETAIL
+      );
+
+      if (!file_ids.map( f => f.toString() ).includes(dir_id)) {
+        throw new PermisstionDeniedException("指定されたファイルが見つかりません");
+      }
+
+      const conditions = {
+        $and:[
+          {_id: mongoose.Types.ObjectId(dir_id)},
+          {_id: {$in : file_ids}}
+        ]
+      };
+
+      const file = yield File.searchFileOne(conditions);
+
+      if (file === null || file === "" || file === undefined) {
+        throw new RecordNotFoundException("指定されたファイルが見つかりません");
+      }
+
+      if (file.is_deleted) {
+        throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
+      }
+
+      const actions = extractFileActions(file.authorities, res.user._id.toString());
+
+      res.json({
+        status: { success: true },
+        body: { ...file, actions }
+      });
+
+    }
+    catch (e) {
+      logger.error(e);
+
+      res.status(400).json({
+        status: { success: false,message:"ファイルの取得に失敗しました", errors: e }
+      });
+    }
+  });
+};

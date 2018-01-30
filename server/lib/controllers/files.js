@@ -2774,7 +2774,7 @@ const escapeRegExp = (input) => {
 };
 
 
-const extractFileActions = (authorities, user_id) => {
+export const extractFileActions = (authorities, user_id) => {
   return chain(authorities)
     .filter( auth => auth.users._id.toString() == user_id )
     .map( auth => auth.actions )
