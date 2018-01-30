@@ -23,7 +23,7 @@ const SimpleSearch = ({
       <TextField
         ref={(input) => searchValue = input}
         style={{width: 270}}
-        onKeyDown={handleKeyDown}
+        onKeyPress={handleKeyDown}
         hintText={hintText}
         floatingLabelText="簡易検索"
         defaultValue={defaultValue}
