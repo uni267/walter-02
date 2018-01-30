@@ -1051,6 +1051,9 @@ export const upload = (req, res, next) => {
 
       if (user === null) throw "user is not found";
 
+      const isPermitted = yield checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD );
+      if(isPermitted === false ) throw "permission denied";
+
       // ファイルの基本情報
       // Modelで定義されていないプロパティを使いたいので
       // オブジェクトで作成し、後でModelObjectに一括変換する
@@ -1568,6 +1571,9 @@ export const upload = (req, res, next) => {
         break;
       case "dir_id is empty":
         errors.dir_id = "フォルダIDが空のためファイルのアップロードに失敗しました";
+        break;
+      case "permission denied":
+        errors.dir_id = "フォルダにアップロード権限が無いためファイルのアップロードに失敗しました";
         break;
       default:
         errors.unknown = e;
