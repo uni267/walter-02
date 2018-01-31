@@ -22,7 +22,8 @@ import {
   isNaN,
   first,
   sortBy,
-  max
+  max,
+  indexOf
 } from "lodash";
 
 // etc
@@ -158,7 +159,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       let files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
 
       files = files.map( file => {
-        file.actions = extractFileActions(file.authorities, res.user._id.toString());
+        file.actions = extractFileActions(file.authorities, res.user);
         return file;
       });
 
@@ -255,7 +256,7 @@ export const view = (req, res, next) => {
 
       const tags = yield Tag.find({ _id: { $in: file.tags } });
 
-      const actions = extractFileActions(file.authorities, res.user._id.toString());
+      const actions = extractFileActions(file.authorities, res.user);
 
       res.json({
         status: { success: true },
@@ -1534,7 +1535,7 @@ export const upload = (req, res, next) => {
         yield esClient.createIndex(tenant_id, indexingFile);
 
         returnfiles = indexingFile.map( file => {
-          file.actions = extractFileActions(file.authorities, res.user._id.toString());
+          file.actions = extractFileActions(file.authorities, res.user);
           return file;
         });
       }
@@ -2774,10 +2775,26 @@ const escapeRegExp = (input) => {
 };
 
 
-export const extractFileActions = (authorities, user_id) => {
-  return chain(authorities)
-    .filter( auth => auth.users._id.toString() == user_id )
+export const extractFileActions = (authorities, user) => {
+
+  const user_id = user._id.toString();
+
+  const user_actions = chain(authorities)
+    .filter( auth => {
+      return ( auth.users !== undefined && auth.users._id.toString() == user_id );
+    } )
     .map( auth => auth.actions )
     .flattenDeep()
-    .uniq();
+    .uniq().value();
+
+  const group_ids = user.groups.map(group => group.toString());
+  const group_actuions = chain(authorities)
+    .filter( auth => {
+      return ( auth.groups !== undefined && indexOf(group_ids, auth.groups._id.toString()) >= 0 );
+    } )
+    .map( auth => auth.actions )
+    .flattenDeep()
+    .uniq().value();
+
+  return user_actions.concat(group_actuions);
 };

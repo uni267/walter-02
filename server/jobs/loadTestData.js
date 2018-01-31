@@ -563,21 +563,23 @@ db.previews.insert(preview);
 
 
 var role_file_full_controll = db.role_files.findOne({name:"フルコントロール"});
+var role_file_read_only = db.role_files.findOne({name:"読み取りのみ"});
 var top_dir = db.files.findOne({name:"Top"});
 var trash_dir = db.files.findOne({name:"Trash"});
-var user1 = db.users.findOne(user1);
-var user2 = db.users.findOne(user2);
+// var user1 = db.users.findOne(user1); // hanako
+var user2 = db.users.findOne(user2);  // taro
+var group1 = db.groups.findOne({name:"全社"});
 
 var authority_files1 = [{
   files: top_dir._id,
-  role_files : role_file_full_controll._id,
-  users : user1._id,
-  groups : null
+  role_files : role_file_read_only._id,
+  users : null,
+  groups : group1._id
 },{
   files: trash_dir._id,
-  role_files : role_file_full_controll._id,
-  users : user1._id,
-  groups : null
+  role_files : role_file_read_only._id,
+  users : null,
+  groups : group1._id
 }];
 
 var authority_files2 = [{

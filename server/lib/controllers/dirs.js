@@ -514,7 +514,7 @@ export const view = (req, res, next) => {
         throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
       }
 
-      const actions = extractFileActions(file.authorities, res.user._id.toString());
+      const actions = extractFileActions(file.authorities, res.user);
 
       res.json({
         status: { success: true },
