@@ -21,11 +21,11 @@ export class API {
     this.client.get(`/api/v1/users/${user_id}`);
   };
 
-  fetchFiles = (dir_id, page, sorted, desc) => {
+  fetchFiles = (dir_id, page, sorted, desc, isDisplayUnvisible) => {
     const order = desc ? "desc" : "asc";
 
     const config = {
-      params: { dir_id, page, sort: sorted, order }
+      params: { dir_id, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible }
     };
 
     return this.client.get("/api/v1/files", config);
@@ -516,6 +516,10 @@ export class API {
 
   fetchDir = (dir_id) => {
     return this.client.get(`/api/v1/dirs/${dir_id}`);
-  }
+  };
+
+  fetchAppSettings = () => {
+    return this.client.get("/api/v1/app_settings");
+  };
 }
 

@@ -2,7 +2,7 @@ import { fork } from "redux-saga/effects";
 
 import watchLogin from "./watchLogin";
 import watchLogout from "./watchLogout";
-import watchFetchFiles from "./watchFetchFiles";
+import { watchFetchFiles } from "./watchFetchFiles";
 import watchFetchFile from "./watchFetchFile";
 import watchFetchTags from "./watchFetchTags";
 import watchAddTag from "./watchAddTag";
@@ -97,6 +97,8 @@ import watchDownloadXlsxFileDetail from "./watchDownloadXlsxFileDetail";
 import watchSaveMetaInfoName from "./watchSaveMetaInfoName";
 import watchSaveMetaInfoLabel from "./watchSaveMetaInfoLabel";
 import watchRequestFetchDir from "./watchRequestFetchDIr";
+import watchFetchAppSettings from "./watchFetchAppSettings";
+import watchToggleDisplayUnvisibleFiles from "./watchToggleDisplayUnvisibleFiles";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -196,6 +198,8 @@ function* Saga() {
   yield fork(watchSaveMetaInfoName);
   yield fork(watchSaveMetaInfoLabel);
   yield fork(watchRequestFetchDir);
+  yield fork(watchFetchAppSettings);
+  yield fork(watchToggleDisplayUnvisibleFiles);
 }
 
 export default Saga;

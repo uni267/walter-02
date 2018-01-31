@@ -60,7 +60,7 @@ import { moveDir } from "./dirs";
 export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
     try {
-      let { dir_id, page ,sort ,order} = req.query;
+      let { dir_id, page ,sort ,order, is_display_unvisible } = req.query;
       const { tenant_id } = res.user;
 
       // デフォルトはテナントのホーム
@@ -92,6 +92,9 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
+      // デフォルト表示させたくないファイル
+      const isDisplayUnvisible = is_display_unvisible.toLowerCase() === "true";
+
       const esQuery = {
         index: tenant_id.toString(),
         type: "files",
@@ -112,10 +115,14 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
                       }
                   }},{
                     "match" : {
-                    "file.is_display": true
+                      "file.is_display": true
                   }},{
                     "match" : {
                     "file.is_deleted": false
+                  }}
+                  ,{
+                    "match": {
+                      "file.unvisible": isDisplayUnvisible
                   }}
                 ]
               }
@@ -149,6 +156,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       const conditions = {
         is_display: true,
         is_deleted: false,
+        unvisible: isDisplayUnvisible,
         $and: [
           {_id: {$in : esResultIds} },
         ]
@@ -327,7 +335,7 @@ export const search = (req, res, next, export_excel=false) => {
   return co(function* () {
     try {
 
-      const { q, page, sort, order } = req.query;
+      const { q, page, sort, order, is_display_unvisible } = req.query;
       const { tenant_id } = res.user;
 
       if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
@@ -337,8 +345,9 @@ export const search = (req, res, next, export_excel=false) => {
         ? 0 : page;
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+
+      const isDisplayUnvisible = is_display_unvisible.toLowerCase() === "true";
 
       // 閲覧できるフォルダの一覧を取得する
       const esQueryDir = {
@@ -360,6 +369,9 @@ export const search = (req, res, next, export_excel=false) => {
                 }},{
                   "match" : {
                   "file.is_dir": true
+                }},{
+                  "match": {
+                    "file.unvisible": isDisplayUnvisible
                 }}
               ]
             }
@@ -405,11 +417,12 @@ export const search = (req, res, next, export_excel=false) => {
                     "match" : {
                     "file.is_trash": false
                   }},{
+                    "match": {
+                      "file.unvisible": isDisplayUnvisible
+                  }},{
                     "terms" : {
                       "file.dir_id": authorizedDirIds
-                    }
-                  }
-
+                  }}
                 ]
               }
           }
@@ -443,6 +456,7 @@ export const search = (req, res, next, export_excel=false) => {
         dir_id: { $ne: trash_dir_id },
         is_display: true,
         is_deleted: false,
+        unvisible: isDisplayUnvisible,
         $and: [
           {_id: {$in : esResultIds} },
         ]

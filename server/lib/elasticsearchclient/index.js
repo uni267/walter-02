@@ -1,3 +1,4 @@
+import util from "util";
 import elasticsearch from "elasticsearch";
 import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
@@ -60,7 +61,8 @@ esClient.createIndex = co.wrap(
           is_deleted: file.is_deleted,
           // modified: file.modified,
           preview_id: file.preview_id,
-          sort_target: file.sort_target
+          sort_target: file.sort_target,
+          unvisible: file.unvisible
         };
 
         file.meta_infos.forEach(meta =>{

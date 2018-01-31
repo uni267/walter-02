@@ -63,8 +63,9 @@ const task = () => {
         is_deleted: { type:"boolean" },
         modified: { type:"date", index: false },
         preview_id: { type:"text", index: false },
-        authorities: { type:"nested",  },
+        authorities: { type:"nested" },
         dirs: { type:"nested" },
+        unvisible: { type: "boolean" },
         sort_target: { type:"text", index: false },
         actions:{ properties:{}}
       };

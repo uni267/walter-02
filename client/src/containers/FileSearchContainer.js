@@ -13,6 +13,8 @@ import SimpleSearch from "../components/FileSearch/SimpleSearch";
 import DetailSearch from "../components/FileSearch/DetailSearch";
 import AddDownloadBtn from "../components/XlsxDownload/AddDownloadBtn";
 
+import Toggle from 'material-ui/Toggle';
+
 // actions
 import * as FileActions from "../actions/files";
 
@@ -37,7 +39,32 @@ class FileSearchContainer extends Component {
       this.props.actions.requestFetchFileSearchItems();
     }
     this.props.actions.requestFetchTags();
+    this.props.actions.requestFetchAppSettings();
   }
+
+  unvisibleToggle = () => {
+    let element = null;
+
+    if (this.props.appSettings) {
+      element = this.props.appSettings.enable
+          ? (
+            <div style={{ ...styles.buttonContainer, marginTop: 20 }}>
+              <Toggle
+                label="非表示ファイルを表示する"
+                toggled={this.props.appSettings.value}
+                thumbStyle={{ backgroundColor: "#ffcccc" }}
+                trackStyle={{ backgroundColor: "#ff9d9d" }}
+                style={{ maxWidth: 270 }}
+                onToggle={ (event, checked) => {
+                  this.props.actions.toggleDisplayUnvisibleFiles(checked);
+                }}
+                />
+            </div>
+          )
+          : null;
+    }
+    return element;
+  };
 
   render() {
     const isSimple = this.props.isSimple;
@@ -57,6 +84,7 @@ class FileSearchContainer extends Component {
 
         </div>
 
+        {this.unvisibleToggle()}
         <div style={styles.formContainer}>
           {/* 簡易検索 or 詳細検索 */}
           { isSimple
@@ -88,7 +116,8 @@ const mapStateToProps = (state, ownProps) => {
     users: state.users,
     disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,
     disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined,
-    fileSimpleSearch: state.fileSimpleSearch
+    fileSimpleSearch: state.fileSimpleSearch,
+    appSettings: state.appSettings.find( s => s.name === "unvisible_files_toggle" )
   };
 };
 

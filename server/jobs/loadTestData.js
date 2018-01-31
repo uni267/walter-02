@@ -19,6 +19,7 @@ db.authority_menus.drop();
 db.notifications.drop();
 db.file_meta_infos.drop();
 db.download_infos.drop();
+db.app_settings.drop();
 
 // ===============================
 //  files collection
@@ -607,6 +608,22 @@ var downloadInfo = {
   tenant_id: tenant._id
 };
 db.download_infos.insert(downloadInfo);
+
+// ===============================
+//  テナント毎のグローバル設定(app_settings)
+// ===============================
+var settings = [
+  {
+    tenant_id: db.tenants.findOne({ name: "test"})._id,
+    // ファイル一覧の設定項目
+    name: "unvisible_files_toggle",
+    description: "非表示属性のファイルを表示/非表示するトグルを表示するか",
+    enable: true,
+    default_value: false
+  }
+];
+
+db.app_settings.insert(settings);
 
 // ===============================
 //  ユニットテスト用(dirs)

@@ -16,14 +16,15 @@ const FileSchema = Schema({
   modified: { type: Date, default: Date.now },
   is_dir: Boolean,
   dir_id: Schema.Types.ObjectId,
-  is_display: Boolean,
+  is_display: Boolean,  // ごみ箱、ルートフォルダなど見せたくないフラグ
   is_star: Boolean,
   is_trash: {type:Boolean,default:false },
   is_deleted: {type:Boolean, default: false}, // 完全削除フラグ。ゴミ箱移動時はfalseのまま
   tags: Array,
   histories: Array,
   preview_id: Schema.Types.ObjectId,
-  is_crypted: {type:Boolean, default: false}
+  is_crypted: {type:Boolean, default: false},
+  unvisible: { type: Boolean, default: false } // デフォルト表示させたくないファイル
 });
 
 FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_id=null) => {
@@ -111,6 +112,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             is_deleted: { $first: "$is_deleted" },
             modified: { $first: "$modified" },
             preview_id: { $first: "$preview_id" },
+            unvisible: { $first: "$unvisible" },
             authorities: {
               $push: {
                 role_files: "$authorities_role_files",
@@ -148,6 +150,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             is_deleted: { $first: "$is_deleted" },
             modified: { $first: "$modified" },
             preview_id: { $first: "$preview_id" },
+            unvisible: { $first: "$unvisible" },
             authorities: { $first: "$authorities" }
           }
         },
@@ -193,6 +196,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             is_deleted: { $first: "$is_deleted" },
             modified: { $first: "$modified" },
             preview_id: { $first: "$preview_id" },
+            unvisible: { $first: "$unvisible" },
             authorities: { $first: "$authorities" },
             dirs: {
               $push: {
@@ -250,6 +254,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             modified: { $first: "$modified" },
             preview_id: { $first: "$preview_id" },
             authorities: { $first: "$authorities" },
+            unvisible: { $first: "$unvisible" },
             dirs: { $first: "$dirs" },
             meta_infos: {
               $push: {
@@ -296,6 +301,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             dirs: 1,
             preview_id: 1,
             authorities: 1,
+            unvisible: 1,
             meta_infos: {
               $filter: {
                 input: "$meta_infos",

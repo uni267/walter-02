@@ -21,6 +21,7 @@ import DisplayItemRouter from "./displayItems";
 import ExcelRouter from "./excels";
 import ElasticsearchRouter from "./elasticsearches";
 import DownloadInfoRouter from "./downloadInfos";
+import AppSettingRouter from "./appSettings";
 
 // debug
 import TestRouter from "./test";
@@ -48,6 +49,7 @@ router.use("/api/v1/notifications", notificationRouter);
 router.use("/api/v1/display_items", DisplayItemRouter);
 router.use("/api/v1/excels", ExcelRouter);
 router.use("/api/v1/download_info", DownloadInfoRouter);
+router.use("/api/v1/app_settings", AppSettingRouter);
 
 router.use("/*",ClientRouter);
 

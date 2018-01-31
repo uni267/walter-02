@@ -411,7 +411,20 @@ export const setDirAction = (dir) => ({
   type:actionTypes.SET_DIR_ACTION, actions: dir.actions
 });
 
+export const requestFetchAppSettings = () => ({
+  type: actionTypes.REQUEST_FETCH_APP_SETTINGS
+});
+
+export const initAppSettings = (settings) => ({
+  type: actionTypes.INIT_APP_SETTINGS, settings
+});
+
+export const toggleDisplayUnvisibleFiles = (checked) => ({
+  type: actionTypes.TOGGLE_DISPLAY_UNVISIBLE_FILES, checked
+});
+
 // reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
 export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER
 });
+
