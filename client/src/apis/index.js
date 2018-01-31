@@ -113,11 +113,11 @@ export class API {
     return this.client.patch(`/api/v1/dirs/${movingDir._id}/move`, body);
   };
 
-  searchFiles = (value, page, sorted, desc) => {
+  searchFiles = (value, page, sorted, desc, isDisplayUnvisible) => {
     const order = desc ? "desc" : "asc";
 
     const config = {
-      params: { q: value, page, sort: sorted, order }
+      params: { q: value, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible }
     };
 
     return this.client.get(`/api/v1/files/search`, config);

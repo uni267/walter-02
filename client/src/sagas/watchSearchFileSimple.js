@@ -28,10 +28,25 @@ function* watchSearchFileSimple() {
         yield put(actions.clearFiles());
       }
 
+      // 非表示ファイルを取得するか
+      const isDisplayUnvisibleSetting = yield select( state => {
+        return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
+      });
+
+      let isDisplayUnvisible;
+
+      if (isDisplayUnvisibleSetting) {
+        isDisplayUnvisible = isDisplayUnvisibleSetting.value;
+      } else {
+        const settingsPayload = yield call(api.fetchAppSettings);
+        const settings = settingsPayload.data.body;
+        isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
+      }
+
       const { page } = yield select( state => state.filePagination );
       const { sorted, desc } = yield select( state => state.fileSortTarget );
 
-      const payload = yield call(api.searchFiles, value, page, sorted, desc);
+      const payload = yield call(api.searchFiles, value, page, sorted, desc, isDisplayUnvisible);
 
       yield put(actions.keepFileSimpleSearchValue({value, page, sorted, desc}));
 
