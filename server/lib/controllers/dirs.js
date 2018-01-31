@@ -479,7 +479,7 @@ export const getDescendants = (dir_id) => {
 export const view = (req, res, next) => {
   co(function* () {
     try {
-      // TODO: 詳細の取得処理はfiles.viewとほぼ同じなので共通化する
+      // TODO: 詳細の取得処理はfiles.viewとほぼ同じなので共通化する.返却値に差があるので注意
       const { dir_id } = req.params;
 
       if (dir_id === undefined ||

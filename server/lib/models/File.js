@@ -159,7 +159,10 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             as: "dirs"
           }
         },
-        { $unwind: "$dirs" },
+        { $unwind:{
+            path: "$dirs" ,
+            preserveNullAndEmptyArrays: true}
+        },
         {
           $lookup: {
             from: "files",
@@ -168,7 +171,11 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
             as: "dirs.ancestor"
           }
         },
-        { $unwind: "$dirs.ancestor" },
+        { $unwind: {
+            path:"$dirs.ancestor",
+            preserveNullAndEmptyArrays: true
+          }
+        },
         {
           $group: {
             _id: "$_id",

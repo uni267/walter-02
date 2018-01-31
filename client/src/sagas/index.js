@@ -96,6 +96,7 @@ import watchDownloadXlsxFileSimple from "./watchDownloadXlsxFileSimple";
 import watchDownloadXlsxFileDetail from "./watchDownloadXlsxFileDetail";
 import watchSaveMetaInfoName from "./watchSaveMetaInfoName";
 import watchSaveMetaInfoLabel from "./watchSaveMetaInfoLabel";
+import watchRequestFetchDir from "./watchRequestFetchDIr";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -194,6 +195,7 @@ function* Saga() {
   yield fork(watchDownloadXlsxFileDetail);
   yield fork(watchSaveMetaInfoName);
   yield fork(watchSaveMetaInfoLabel);
+  yield fork(watchRequestFetchDir);
 }
 
 export default Saga;

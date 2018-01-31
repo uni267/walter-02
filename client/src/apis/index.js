@@ -513,5 +513,9 @@ export class API {
   downloadInfoFile = () => {
     return this.client.get(`/api/v1/download_info/file`);
   };
+
+  fetchDir = (dir_id) => {
+    return this.client.get(`/api/v1/dirs/${dir_id}`);
+  }
 }
 

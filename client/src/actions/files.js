@@ -403,6 +403,14 @@ export const clearFiles = () => ({
   type: actionTypes.CLEAR_FILES
 });
 
+export const requestFetchDir = (dir_id) => ({
+  type: actionTypes.REQUEST_FETCH_DIR, dir_id
+});
+
+export const setDirAction = (dir) => ({
+  type:actionTypes.SET_DIR_ACTION, actions: dir.actions
+});
+
 // reduxのデバッグ用(空のイベントをdispatchするだけでredux-loggerがフックされるので)
 export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER

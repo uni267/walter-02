@@ -562,13 +562,37 @@ var preview = {
 db.previews.insert(preview);
 
 
-var authority_files = {
-  role_files : null,
-  users : null,
-  groups : null
-};
+var role_file_full_controll = db.role_files.findOne({name:"フルコントロール"});
+var top_dir = db.files.findOne({name:"Top"});
+var trash_dir = db.files.findOne({name:"Trash"});
+var user1 = db.users.findOne(user1);
+var user2 = db.users.findOne(user2);
 
-db.authority_files.insert(authority_files);
+var authority_files1 = [{
+  files: top_dir._id,
+  role_files : role_file_full_controll._id,
+  users : user1._id,
+  groups : null
+},{
+  files: trash_dir._id,
+  role_files : role_file_full_controll._id,
+  users : user1._id,
+  groups : null
+}];
+
+var authority_files2 = [{
+  files: top_dir._id,
+  role_files : role_file_full_controll._id,
+  users : user2._id,
+  groups : null
+},{
+  files: trash_dir._id,
+  role_files : role_file_full_controll._id,
+  users : user2._id,
+  groups : null
+}];
+db.authority_files.insert(authority_files1);
+db.authority_files.insert(authority_files2);
 
 // ===============================
 //  ダウンロードファイルの命名規則

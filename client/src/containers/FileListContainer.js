@@ -131,6 +131,7 @@ class FileListContainer extends Component {
     this.props.actions.requestFetchUsers();
     this.props.actions.requestFetchRoles();
     this.props.actions.initFilePagination();
+    this.props.actions.requestFetchDir(this.props.dir_id);
   }
 
   componentWillUnmount() {
@@ -146,6 +147,7 @@ class FileListContainer extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     if(this.props.dir_id !== nextProps.dir_id){
+      this.props.actions.requestFetchDir(nextProps.dir_id);
       this.props.actions.initFilePagination();
     }
   }

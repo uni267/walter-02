@@ -30,6 +30,7 @@ import FileFileDownload from "material-ui/svg-icons/file/file-download";
 
 import * as FileActions from "../actions/files";
 import * as constants from "../constants";
+import { find } from "lodash";
 
 class FileActionContainer extends Component {
   constructor(props) {
@@ -67,34 +68,39 @@ class FileActionContainer extends Component {
   renderMenuItems = () => {
     // カレントフォルダに依存するmenuなので検索結果では表示することができない
     if (!this.props.isSearch && this.props.checkedFiles.length === 0) {
-      return [
-        (
+      const dirActions = [{
+        name: constants.PERMISSION_UPLOAD,
+        component: idx => (
           <MenuItem
-            key={0}
+            key={idx}
             primaryText="アップロード"
             leftIcon={<FileCloudUpload />}
             onTouchTap={() => this.setState({ addFile: { open: true } })}
             />
-        ),
-        (
+        )},{
+          name: constants.PERMISSION_MAKE_DIR,
+          component: idx => (
           <MenuItem
-            key={1}
+            key={idx}
             primaryText="新しいフォルダ"
             leftIcon={<FileCreateNewFolder />}
             onTouchTap={() => this.props.actions.toggleCreateDir() }
             />
-        ),
-        (
+        )},{
+          name: constants.PERMISSION_MAKE_DIR,
+          component: idx => (
           <MenuItem
-            key={2}
+            key={idx}
             primaryText="ごみ箱"
             leftIcon={<ActionDelete />}
             onTouchTap={() => {
               this.props.history.push(`/home/${this.props.tenant.trashDirId}`);
             }}
             />
-        )
+        )}
       ];
+
+      return dirActions.filter(action => (find( this.props.dirAction.actions , {"name":action.name}) !== undefined )).map((actions,idx) => actions.component());
     }
 
     const hasDir = (findIndex(this.props.checkedFiles,{"is_dir":true}) >= 0 )
@@ -205,7 +211,8 @@ const mapStateToProps = (state) => {
     selectedDir: state.dirTree.selected,
     moveFilesState: state.moveFilesState,
     deleteFilesDialog: state.deleteFiles,
-    downloadFilesDialog: state.downloadFiles
+    downloadFilesDialog: state.downloadFiles,
+    dirAction: state.dirAction
   };
 };
 
