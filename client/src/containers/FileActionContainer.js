@@ -86,8 +86,9 @@ class FileActionContainer extends Component {
             leftIcon={<FileCreateNewFolder />}
             onTouchTap={() => this.props.actions.toggleCreateDir() }
             />
-        )},{
-          name: constants.PERMISSION_MAKE_DIR,
+        )}
+        ,{
+          name: constants.PERMISSION_DELETE,
           component: idx => (
           <MenuItem
             key={idx}
@@ -99,7 +100,6 @@ class FileActionContainer extends Component {
             />
         )}
       ];
-
       return dirActions.filter(action => (find( this.props.dirAction.actions , {"name":action.name}) !== undefined )).map((actions,idx) => actions.component());
     }
 
