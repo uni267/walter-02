@@ -338,7 +338,6 @@ class FileDetailContainer extends Component {
 
   render() {
     if (this.props.file === undefined || this.props.file._id === undefined) {
-      this.props.history.push(`/home/${this.props.tenant.dirId}`);
       return null;
     }
 
