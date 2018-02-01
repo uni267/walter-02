@@ -2640,6 +2640,44 @@ export const exists = (req, res, next) => {
   });
 };
 
+export const toggleUnvisible = (req, res, next) => {
+  co(function* () {
+    const { file_id } = req.params;
+
+    try {
+      if (file_id === undefined || file_id === null || file_id === "") throw new Error("ファイルが存在しないため非表示状態の変更に失敗しました");
+
+      const { tenant_id } = res.user;
+
+      const tenant = yield Tenant.findById(tenant_id);
+
+      if (tenant === null) throw new Error("指定されたテナントが存在しないため非表示状態の変更に失敗しました");
+
+      const file = yield File.findById(file_id);
+      file.unvisible = !file.unvisible;
+
+      const result = yield file.save();
+
+      if (! result) throw new Error("ファイルの非表示状態の変更に失敗しました");
+
+      const esFile = yield File.searchFileOne({ _id: result._id });
+      yield esClient.createIndex(tenant_id, [ esFile ] );
+      res.json({
+        status: { success: true },
+        body: result
+      });
+      
+    }
+    catch (e) {
+      let errors;
+
+      res.status(400).json({
+        status: { success: false }
+      });
+    }
+  });
+};
+
 // ここからプライベート的なメソッド
 const _exec = command => {
   return new Promise((resolve, reject)=>{

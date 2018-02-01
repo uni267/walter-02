@@ -69,5 +69,8 @@ router.route("/:file_id/authorities").delete(controller.removeAuthority);
 // お気に入りのトグル
 router.route("/:file_id/toggle_star").patch(controller.toggleStar);
 
+// 非表示状態のトグル
+router.route("/:file_id/toggle_unvisible").patch(controller.toggleUnvisible);
+
 export default router;
 
