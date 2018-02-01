@@ -120,7 +120,7 @@ const mapStateToProps = (state, ownProps) => {
     disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,
     disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined,
     fileSimpleSearch: state.fileSimpleSearch,
-    appSettings: state.appSettings.find( s => s.name === "unvisible_files_toggle" )
+    appSettings: find(state.appSettings, setting => setting.name === "unvisible_files_toggle" )
   };
 };
 
