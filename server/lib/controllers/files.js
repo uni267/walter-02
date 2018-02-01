@@ -93,7 +93,7 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       // デフォルト表示させたくないファイル
-      const isDisplayUnvisible = is_display_unvisible.toLowerCase() === "true";
+      const isDisplayUnvisible = is_display_unvisible === "true";
       const isDisplayUnvisibleCondition = isDisplayUnvisible
             ? {} : { "match": { "file.unvisible": false } };
 
@@ -354,7 +354,7 @@ export const search = (req, res, next, export_excel=false) => {
 
       const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
-      const isDisplayUnvisible = is_display_unvisible.toLowerCase() === "true";
+      const isDisplayUnvisible = is_display_unvisible === "true";
       const isDisplayUnvisibleCondition = isDisplayUnvisible
             ? {} : { "match": { "file.unvisible": false } };
 
