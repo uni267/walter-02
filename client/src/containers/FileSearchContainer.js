@@ -39,7 +39,10 @@ class FileSearchContainer extends Component {
       this.props.actions.requestFetchFileSearchItems();
     }
     this.props.actions.requestFetchTags();
-    this.props.actions.requestFetchAppSettings();
+
+    if (! this.props.appSettings) {
+      this.props.actions.requestFetchAppSettings();
+    }
   }
 
   unvisibleToggle = () => {
