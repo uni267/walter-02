@@ -30,7 +30,7 @@ export const reIndex = (req, res, next) => {
       if(targetIds.length === 0) throw new ValidationError("Error");
 
       // mongoからデータを取得
-      const conditions = { _id: { $in:targetIds } };
+      const conditions = { _id: { $in:targetIds }, is_display: true };
       const files = yield File.searchFiles(conditions, 0, constants.FILE_LIMITS_PER_PAGE, sortOption);
       if(files.length === 0) throw new RecordNotFoundException("record not found");
 
@@ -124,7 +124,7 @@ export const reIndexAll = (req, res, next) => {
       for(let i= 0; i < total; i = i + constants.FILE_LIMITS_PER_PAGE ){
 
         const fileIds = (yield File.find().select({_id:1}).sort(sortOption).skip(i).limit(constants.FILE_LIMITS_PER_PAGE)   ).map(file => file._id);
-        const conditions = { _id: { $in:fileIds } };
+        const conditions = { _id: { $in:fileIds }, is_display: true };
         const files = yield File.searchFiles(conditions, 0, constants.FILE_LIMITS_PER_PAGE, sortOption);
         if(files.length <= 0) break;
 
