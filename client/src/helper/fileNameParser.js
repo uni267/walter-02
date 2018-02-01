@@ -1,7 +1,6 @@
 import * as moment from "moment";
 
 export const createFileName = (file,pattern) => {
-  console.log(pattern);
   let rep = [];
   // 置換用文字列を生成(meta_info)
   for(var idx in file.meta_infos){
