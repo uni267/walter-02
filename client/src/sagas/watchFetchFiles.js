@@ -11,45 +11,43 @@ import * as commons from "../actions/commons";
 import errorParser from "../helper/errorParser";
 
 export function* fetchFiles(dir_id, page, sorted, desc) {
-  const api = new API();
+  // // 非表示ファイルを取得するか
+  // const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
 
-  // 非表示ファイルを取得するか
-  const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
+  // if (page === 0 || page === null) {
 
-  if (page === 0 || page === null) {
+  //   let files, dirs;
 
-    let files, dirs;
+  //   const { sorted, desc } = yield select( state => state.fileSortTarget );
 
-    const { sorted, desc } = yield select( state => state.fileSortTarget );
+  //   if (sorted === null) {
+  //     let defaultSort = yield call(api.fetchDisplayItems);
+  //     defaultSort = defaultSort.data.body.filter( item => item.default_sort );
 
-    if (sorted === null) {
-      let defaultSort = yield call(api.fetchDisplayItems);
-      defaultSort = defaultSort.data.body.filter( item => item.default_sort );
+  //     defaultSort = defaultSort.length > 0 ? defaultSort[0] : null;
 
-      defaultSort = defaultSort.length > 0 ? defaultSort[0] : null;
+  //     [ files, dirs ] = yield all([
+  //       call(api.fetchFiles, dir_id, page, defaultSort.meta_info_id, defaultSort.default_sort.desc, isDisplayUnvisible),
+  //       call(api.fetchDirs, dir_id),
+  //       put(actions.setSortTarget(defaultSort.meta_info_id))
+  //     ]);
+  //   }
+  //   else {
+  //     [ files, dirs ] = yield all([
+  //       call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible),
+  //       call(api.fetchDirs, dir_id)
+  //     ]);
+  //   }
 
-      [ files, dirs ] = yield all([
-        call(api.fetchFiles, dir_id, page, defaultSort.meta_info_id, defaultSort.default_sort.desc, isDisplayUnvisible),
-        call(api.fetchDirs, dir_id),
-        put(actions.setSortTarget(defaultSort.meta_info_id))
-      ]);
-    }
-    else {
-      [ files, dirs ] = yield all([
-        call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible),
-        call(api.fetchDirs, dir_id)
-      ]);
-    }
+  //   yield put(actions.initFileTotal(files.data.status.total));
+  //   yield put(actions.initFiles(files.data.body));
+  //   yield put(actions.initDir(dirs.data.body));
 
-    yield put(actions.initFileTotal(files.data.status.total));
-    yield put(actions.initFiles(files.data.body));
-    yield put(actions.initDir(dirs.data.body));
-
-  }
-  else {
-    const files = yield call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible);
-    yield put(actions.initNextFiles(files.data.body));
-  }
+  // }
+  // else {
+  //   const files = yield call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible);
+  //   yield put(actions.initNextFiles(files.data.body));
+  // }
 }
 
 export function* watchFetchFiles() {
@@ -57,9 +55,45 @@ export function* watchFetchFiles() {
     let { dir_id, page, sorted, desc } = yield take( actions.requestFetchFiles().type );
 
     yield put(commons.loadingStart());
+    const api = new API();
 
     try {
-      yield call(fetchFiles, dir_id, page, sorted, desc);
+      // 非表示ファイルを取得するか
+      const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
+      if (page === 0 || page === null) {
+
+        let files, dirs;
+
+        const { sorted, desc } = yield select( state => state.fileSortTarget );
+
+        if (sorted === null) {
+          let defaultSort = yield call(api.fetchDisplayItems);
+          defaultSort = defaultSort.data.body.filter( item => item.default_sort );
+
+          defaultSort = defaultSort.length > 0 ? defaultSort[0] : null;
+          
+          [ files, dirs ] = yield all([
+            call(api.fetchFiles, dir_id, page, defaultSort.meta_info_id, defaultSort.default_sort.desc, isDisplayUnvisible),
+            call(api.fetchDirs, dir_id),
+            put(actions.setSortTarget(defaultSort.meta_info_id))
+          ]);
+        }
+        else {
+          [ files, dirs ] = yield all([
+            call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible),
+            call(api.fetchDirs, dir_id)
+          ]);
+        }
+
+        yield put(actions.initFileTotal(files.data.status.total));
+        yield put(actions.initFiles(files.data.body));
+        yield put(actions.initDir(dirs.data.body));
+
+      }
+      else {
+        const files = yield call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible);
+        yield put(actions.initNextFiles(files.data.body));
+      }
     }
     catch (e) {
       const { message, errors } = errorParser(e,"一覧の取得に失敗しました");
