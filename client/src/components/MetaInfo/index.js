@@ -45,7 +45,7 @@ class MetaInfo extends Component {
     };
 
     const value = meta.value_type === "Date"
-          ? moment(meta.value).format("YYYY-MM-DD hh:mm")
+          ? moment(meta.value).format("YYYY-MM-DD HH:mm")
           : meta.value;
 
     return (

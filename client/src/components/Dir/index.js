@@ -180,7 +180,7 @@ class Dir extends Component {
 
         <div style={{...cellStyle, width: headers[2].width}}>
           {headers[2].name === "modified"
-          ? moment(dir.modified).format("YYYY-MM-DD hh:mm:ss") : null}
+          ? moment(dir.modified).format("YYYY-MM-DD HH:mm:ss") : null}
         </div>
 
         <div style={{...cellStyle, width: headers[3].width}}>

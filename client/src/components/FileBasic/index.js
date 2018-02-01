@@ -34,7 +34,7 @@ const FileBasic = ({ file }) => {
       </div>
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>最終更新</div>
-        <div>{moment(file.modified).format("YYYY-MM-DD hh:mm")}</div>
+        <div>{moment(file.modified).format("YYYY-MM-DD HH:mm")}</div>
       </div>
     </div>
   );
