@@ -478,34 +478,34 @@ export class API {
     return this.client.patch(`/api/v1/notifications/read`, body);
   }
 
-  downloadXlsxFile = (dir_id, page, sorted, desc) => {
+  downloadXlsxFile = (dir_id, page, sorted, desc, isDisplayUnvisible) => {
     const order = desc ? "desc" : "asc";
     const config = {
       responseType: "arraybuffer",
-      params: { dir_id, page, sort: sorted, order }
+      params: { dir_id, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible }
     };
 
     return this.client.get("/api/v1/excels", config);
   };
 
-  downloadXlsxFileSimple = (value, page, sorted, desc) => {
+  downloadXlsxFileSimple = (value, page, sorted, desc, isDisplayUnvisible) => {
     const order = desc ? "desc" : "asc";
 
     const config = {
       responseType: "arraybuffer",
-      params: { q: value, page, sort: sorted, order }
+      params: { q: value, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible }
     };
 
     return this.client.get(`/api/v1/excels/search`, config);
   };
 
-  downloadXlsxFileDetail = (params, page, sorted, desc) => {
+  downloadXlsxFileDetail = (params, page, sorted, desc, isDisplayUnvisible) => {
     const order = desc ? "desc" : "asc";
 
     const config = {
       responseType: "arraybuffer",
     };
-    const data = { ...params, page, sort: sorted, order };
+    const data = { ...params, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible };
 
     return this.client.post(`/api/v1/excels/search_detail`, data, config);
   };

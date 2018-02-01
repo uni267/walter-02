@@ -12,13 +12,28 @@ function* watchDownloadXlsxFileSimple() {
     yield take(actions.downloadXlsxFileSimple().type);
     const api = new API();
 
+    // 非表示ファイルを取得するか
+    const isDisplayUnvisibleSetting = yield select( state => {
+      return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
+    });
+
+    let isDisplayUnvisible;
+
+    if (isDisplayUnvisibleSetting) {
+      isDisplayUnvisible = isDisplayUnvisibleSetting.value;
+    } else {
+      const settingsPayload = yield call(api.fetchAppSettings);
+      const settings = settingsPayload.data.body;
+      isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
+    }
+
     try {
       const { value } = yield select( state => state.fileSimpleSearch.search_value );
       const { page } = yield select( state => state.filePagination );
       const { sorted, desc } = yield select( state => state.fileSortTarget );
 
       yield put(commons.loadingStart());
-      const payload = yield call(api.downloadXlsxFileSimple, value, page, sorted, desc);
+      const payload = yield call(api.downloadXlsxFileSimple, value, page, sorted, desc, isDisplayUnvisible);
 
       const download = new Blob(
         [ payload.data ]
