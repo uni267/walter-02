@@ -694,7 +694,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       if ( typeof params.order === "string" && params.order !== "asc" && params.order !== "desc" ) throw new ValidationError("sort is empty");
 
       const param_ids = Object.keys(params)
-            .filter( p => !["page", "order", "sort"].includes(p) );
+            .filter( p => !["page", "order", "sort", "is_display_unvisible"].includes(p) );
 
       const conditions = { _id: param_ids };
 
@@ -730,6 +730,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         q.key_type = q.name;
         return q;
       });
+
       const meta_items = queries.filter( q => q.meta_info_id !== null ).map(q => {
         q.key_type = "meta";
         return q;
@@ -740,7 +741,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         base_queries = {};
       }else{
         const query = yield base_items.map( item =>{
-        const query = buildQuery(item);
+          const query = buildQuery(item);
           return query;
         });
         base_queries = Object.assign(...query);
@@ -785,6 +786,10 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         query = base_queries;
       }
 
+      // 非表示ファイルを表示するか
+      if (!req.body.is_display_unvisible) {
+        query = { ...query, unvisible: false };
+      }
       const total = yield File.find(query).count();
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
