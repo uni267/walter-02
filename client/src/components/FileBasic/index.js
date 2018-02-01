@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 // material ui
 import TextField from "material-ui/TextField";
+import * as constants from "../../constants";
 
 const styles = {
   metaRow: {
@@ -22,6 +23,10 @@ const FileBasic = ({ file }) => {
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>ファイル名</div>
         {file.name}
+      </div>
+      <div style={styles.metaRow}>
+        <div style={styles.metaCell}>場所</div>
+        <div>{file.dir_route === "" ? constants.TOP_DIR_NAME : file.dir_route }</div>
       </div>
       <div style={styles.metaRow}>
         <div style={styles.metaCell}>サイズ</div>

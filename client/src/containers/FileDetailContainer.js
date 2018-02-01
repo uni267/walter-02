@@ -30,9 +30,15 @@ import MetaInfo from "../components/MetaInfo";
 import FileBasic from "../components/FileBasic";
 import TitleWithGoBack from "../components/Common/TitleWithGoBack";
 import ChangeFileNameDialog from "../components/File/ChangeFileNameDialog";
+import DeleteFileDialog from "../components/File/DeleteFileDialog";
+import MoveFileDialog from "../components/File/MoveFileDialog";
 
 // actions
 import * as FileActions from "../actions/files";
+
+import { FILE_DETAIL } from "../constants";
+
+import { find, findIndex } from "lodash";
 
 const styles = {
   fileImageWrapper: {
@@ -185,6 +191,47 @@ class FileDetailContainer extends Component {
     }
   };
 
+  renderDownload = () => {
+    const style = {
+      marginTop: 8
+    }
+    const renderButtons = [{
+      name: "download",
+      component: () => (<RaisedButton label="ダウンロード" onClick={() => this.props.actions.downloadFile(this.props.file)} style={style} />)
+    },
+    // // 2018-02-01 ファイルではなく一覧が持つべきアクションなのでコメントアウト
+    // {
+    //   name: "move",
+    //   component: () => (<RaisedButton label="移動" onClick={() => {
+    //     this.props.actions.toggleMoveFileDialog(this.props.file);
+    //   }
+
+    //   } style={style}  />)
+    // },
+    {
+      name: "delete",
+      component: () => (<RaisedButton label="削除" onClick={() => this.props.actions.toggleDeleteFileDialog(this.props.file)} style={style} />)
+    }]
+
+    const permitDisplay = this.props.file.actions.filter( act => (
+      (findIndex( renderButtons , { name: act.name})) >= 0
+    )).map(act => ((find( renderButtons , { name: act.name})).component()));
+
+    if (permitDisplay.length > 0) {
+      return (
+        <Card style={styles.innerCard}>
+          <CardHeader title="操作 " />
+          <CardActions>
+            {permitDisplay}
+          </CardActions>
+        </Card>
+      );
+    }
+    else {
+      return null;
+    }
+  };
+
   renderAuthorityDialog = () => {
     const editAuthorityActions = (
       <FlatButton
@@ -290,7 +337,10 @@ class FileDetailContainer extends Component {
   };
 
   render() {
-    if (this.props.file._id === undefined) return null;
+    if (this.props.file === undefined || this.props.file._id === undefined) {
+      this.props.history.push(`/home/${this.props.tenant.dirId}`);
+      return null;
+    }
 
     let previewImg;
 
@@ -336,6 +386,7 @@ class FileDetailContainer extends Component {
             </div>
 
             <div style={{width: "30%"}}>
+              {this.renderDownload()}
               {this.renderBasic()}
 
               {this.renderAuthorities()}
@@ -364,6 +415,15 @@ class FileDetailContainer extends Component {
 
         </Card>
 
+        <DeleteFileDialog
+          { ...this.props }
+          open={this.props.deleteFileState.open}
+          file={this.props.deleteFileState.file} />
+        <MoveFileDialog
+          { ...this.props }
+          open={this.props.moveFileState.open}
+          file={this.props.moveFileState.file}
+          dir={this.props.selectedDir} />
         <ChangeFileNameDialog
           { ...this.props }
           open={this.props.changeFileNameState.open}
@@ -392,6 +452,9 @@ const mapStateToProps = (state, ownProps) => {
     fileMetaInfo: state.fileMetaInfo,
     filePreviewState: state.filePreview,
     session: state.session,
+    moveFileState: state.moveFile,
+    selectedDir: state.selectedDir,
+    deleteFileState: state.deleteFile,
     changeFileNameState: state.changeFileName
   };
 };

@@ -264,6 +264,15 @@ export const view = (req, res, next) => {
 
       const actions = extractFileActions(file.authorities, res.user);
 
+      const route = file.dirs
+      .filter( dir => dir.ancestor.is_display )
+      .map( dir => dir.ancestor.name );
+
+      file.dir_route = route.length > 0
+        ? route.reverse().join("/")
+        : "";
+
+
       res.json({
         status: { success: true },
         body: { ...file, tags, actions }
@@ -370,7 +379,7 @@ export const search = (req, res, next, export_excel=false) => {
                   "match" : {
                     "file.is_dir": true
                   }
-                }, isDisplayUnvisibleCondition   
+                }, isDisplayUnvisibleCondition
               ]
             }
           }
@@ -788,7 +797,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
       // 非表示ファイルを表示するか
       if (!req.body.is_display_unvisible) {
-        query = { ...query, unvisible: false };
+        query = { ...query, unvisible: false, is_trash:false };
       }
       const total = yield File.find(query).count();
 
@@ -2666,7 +2675,7 @@ export const toggleUnvisible = (req, res, next) => {
         status: { success: true },
         body: result
       });
-      
+
     }
     catch (e) {
       let errors;

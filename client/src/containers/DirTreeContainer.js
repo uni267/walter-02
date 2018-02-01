@@ -49,7 +49,7 @@ class DirTreeContainer extends Component {
               paddingLeft: 10,
               paddingRight: 10
             };
-console.log({node});
+
       return (
         <Card style={{ marginTop: 30, marginBottom: 30 }}>
           <CardText>

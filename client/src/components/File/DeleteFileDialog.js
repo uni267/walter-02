@@ -8,14 +8,18 @@ import Dialog from "material-ui/Dialog";
 const DeleteFileDialog = ({
   open,
   file,
-  actions
+  actions,
+  history
 }) => {
   const dialogActions = [
     (
       <FlatButton
         label="削除"
         primary={true}
-        onTouchTap={(e) => actions.deleteFile(file)} />
+        onTouchTap={(e) => actions.deleteFile(
+          file,
+          history
+        )} />
     ),
     (
       <FlatButton

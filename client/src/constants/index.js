@@ -33,6 +33,7 @@ export const PERMISSION_ANALYSIS = "analysis";
 export const LIST_DEFAULT = "LIST_DEFAULT";
 export const LIST_SEARCH_SIMPLE = "LIST_SEARCH_SIMPLE";
 export const LIST_SEARCH_DETAIL = "LIST_SEARCH_DETAIL";
+// export const FILE_DETAIL = "FILE_DETAIL";
 
 // apiのタイムアウト時間(ミリsec)
 export const DEFAULT_API_TIMEOUT = 10 * 1000;

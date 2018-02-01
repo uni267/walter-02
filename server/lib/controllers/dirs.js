@@ -480,12 +480,14 @@ export const view = (req, res, next) => {
   co(function* () {
     try {
       // TODO: 詳細の取得処理はfiles.viewとほぼ同じなので共通化する.返却値に差があるので注意
-      const { dir_id } = req.params;
+      let { dir_id } = req.params;
 
+      // デフォルトはテナントのホーム
       if (dir_id === undefined ||
-          dir_id === null ||
-          dir_id === "") {
-        throw new ValidationError("file_idが空です");
+         dir_id === null ||
+         dir_id === "" ||
+         dir_id === "null") {
+        dir_id = res.user.tenant.home_dir_id;
       }
       if( !mongoose.Types.ObjectId.isValid( dir_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
@@ -493,7 +495,7 @@ export const view = (req, res, next) => {
         res.user._id, constants.PERMISSION_VIEW_DETAIL
       );
 
-      if (!file_ids.map( f => f.toString() ).includes(dir_id)) {
+      if (!file_ids.map( f => f.toString() ).includes(dir_id.toString())) {
         throw new PermisstionDeniedException("指定されたファイルが見つかりません");
       }
 

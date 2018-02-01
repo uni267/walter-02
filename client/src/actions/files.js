@@ -12,8 +12,8 @@ export const copyFile = (dir_id, file) => ({
   type: actionTypes.COPY_FILE, dir_id, file
 });
 
-export const deleteFile = (file) => ({
-  type: actionTypes.DELETE_FILE, file
+export const deleteFile = (file, history) => ({
+  type: actionTypes.DELETE_FILE, file, history
 });
 
 export const deleteDir = (dir) => ({
