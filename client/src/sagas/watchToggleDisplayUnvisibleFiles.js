@@ -7,7 +7,28 @@ import * as commons from "../actions/commons";
 import errorParser from "../helper/errorParser";
 import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants";
 
-function* watchToggleDisplayUnvisibleFiles() {
+export function* isDisplayUnvisibleSetting() {
+  const api = new API();
+
+  // 非表示ファイルを取得するか
+  const isDisplayUnvisibleSetting = yield select( state => {
+    return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
+  });
+
+  let isDisplayUnvisible;
+
+  if (isDisplayUnvisibleSetting) {
+    isDisplayUnvisible = isDisplayUnvisibleSetting.value;
+  } else {
+    const settingsPayload = yield call(api.fetchAppSettings);
+    const settings = settingsPayload.data.body;
+    isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
+  }
+
+  return isDisplayUnvisible;
+}
+
+export function* watchToggleDisplayUnvisibleFiles() {
   while(true) {
     const task = yield take( actions.toggleDisplayUnvisibleFiles().type );
     yield put(actions.toggleDisplayUnvisibleFiles(task.checked));
@@ -22,19 +43,7 @@ function* watchToggleDisplayUnvisibleFiles() {
     const api = new API();
 
     // 非表示ファイルを取得するか
-    const isDisplayUnvisibleSetting = yield select( state => {
-      return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
-    });
-
-    let isDisplayUnvisible;
-
-    if (isDisplayUnvisibleSetting) {
-      isDisplayUnvisible = isDisplayUnvisibleSetting.value;
-    } else {
-      const settingsPayload = yield call(api.fetchAppSettings);
-      const settings = settingsPayload.data.body;
-      isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
-    }
+    const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
 
     try {
       const { list_type } = yield select( state => state.fileListType);
@@ -72,4 +81,3 @@ function* watchToggleDisplayUnvisibleFiles() {
   }
 }
 
-export default watchToggleDisplayUnvisibleFiles;

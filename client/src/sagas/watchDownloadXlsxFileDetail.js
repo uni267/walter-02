@@ -5,6 +5,8 @@ import { API } from "../apis";
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 
+import { isDisplayUnvisibleSetting } from "./watchToggleDisplayUnvisibleFiles";
+
 import { saveAs } from "file-saver";
 
 function* watchDownloadXlsxFileDetail() {
@@ -13,19 +15,7 @@ function* watchDownloadXlsxFileDetail() {
     const api = new API();
 
     // 非表示ファイルを取得するか
-    const isDisplayUnvisibleSetting = yield select( state => {
-      return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
-    });
-
-    let isDisplayUnvisible;
-
-    if (isDisplayUnvisibleSetting) {
-      isDisplayUnvisible = isDisplayUnvisibleSetting.value;
-    } else {
-      const settingsPayload = yield call(api.fetchAppSettings);
-      const settings = settingsPayload.data.body;
-      isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
-    }
+    const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
 
     try {
       const { searchedItems } = yield select( state => state.fileDetailSearch );

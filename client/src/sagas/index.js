@@ -98,7 +98,7 @@ import watchSaveMetaInfoName from "./watchSaveMetaInfoName";
 import watchSaveMetaInfoLabel from "./watchSaveMetaInfoLabel";
 import watchRequestFetchDir from "./watchRequestFetchDIr";
 import watchFetchAppSettings from "./watchFetchAppSettings";
-import watchToggleDisplayUnvisibleFiles from "./watchToggleDisplayUnvisibleFiles";
+import { watchToggleDisplayUnvisibleFiles } from "./watchToggleDisplayUnvisibleFiles";
 
 function* Saga() {
   yield fork(watchLogin);

@@ -3,6 +3,8 @@ import { call, put, take, all, select } from "redux-saga/effects";
 // api
 import { API } from "../apis";
 
+import { isDisplayUnvisibleSetting } from "./watchToggleDisplayUnvisibleFiles";
+
 // actions
 import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
@@ -12,19 +14,7 @@ export function* fetchFiles(dir_id, page, sorted, desc) {
   const api = new API();
 
   // 非表示ファイルを取得するか
-  const isDisplayUnvisibleSetting = yield select( state => {
-    return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
-  });
-
-  let isDisplayUnvisible;
-
-  if (isDisplayUnvisibleSetting) {
-    isDisplayUnvisible = isDisplayUnvisibleSetting.value;
-  } else {
-    const settingsPayload = yield call(api.fetchAppSettings);
-    const settings = settingsPayload.data.body;
-    isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
-  }
+  const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
 
   if (page === 0 || page === null) {
 

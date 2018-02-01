@@ -6,6 +6,8 @@ import * as commons from "../actions/commons";
 import { API } from "../apis";
 import { LIST_SEARCH_DETAIL } from "../constants/index";
 
+import { isDisplayUnvisibleSetting } from "./watchToggleDisplayUnvisibleFiles";
+
 import { isMatch } from "lodash";
 import errorParser from "../helper/errorParser";
 
@@ -30,20 +32,7 @@ function* watchSearchFileDetail() {
       const { sorted, desc } = yield select( state => state.fileSortTarget );
 
       // 非表示ファイルを取得するか
-      const isDisplayUnvisibleSetting = yield select( state => {
-        return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
-      });
-
-      let isDisplayUnvisible;
-
-      if (isDisplayUnvisibleSetting) {
-        isDisplayUnvisible = isDisplayUnvisibleSetting.value;
-      } else {
-        const settingsPayload = yield call(api.fetchAppSettings);
-        const settings = settingsPayload.data.body;
-        isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
-      }
-
+      const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
       const payload = yield call(api.searchFilesDetail, items, page, sorted, desc, isDisplayUnvisible);
 
       if (page === 0 || page === null) {
