@@ -5,6 +5,7 @@ import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import * as actionTypes from "../actionTypes";
 import { LIST_SEARCH_SIMPLE } from "../constants/index";
+import { find } from "lodash";
 
 function* watchSearchFileSimple() {
   while (true) {
@@ -30,7 +31,7 @@ function* watchSearchFileSimple() {
 
       // 非表示ファイルを取得するか
       const isDisplayUnvisibleSetting = yield select( state => {
-        return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
+        return find(state.appSettings, s => s.name === "unvisible_files_toggle" );
       });
 
       let isDisplayUnvisible;
@@ -40,7 +41,7 @@ function* watchSearchFileSimple() {
       } else {
         const settingsPayload = yield call(api.fetchAppSettings);
         const settings = settingsPayload.data.body;
-        isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
+        isDisplayUnvisible = find(settings, s => s.name === "unvisible_files_toggle" ).default_value;
       }
 
       const { page } = yield select( state => state.filePagination );
