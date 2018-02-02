@@ -786,13 +786,20 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         file_metainfo_ids = file_metainfo_ids.map(id => mongoose.Types.ObjectId(id));
       }
 
-      const file_ids = authority_file_ids.concat(file_metainfo_ids);
+      // ログインしているユーザの権限
+      const login_user_authority_file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST );
 
+      const file_ids = authority_file_ids.concat(file_metainfo_ids,login_user_authority_file_ids);
       let query;
       if(file_ids.length > 0){
         query = { ...base_queries, ...{ _id: { "$in":file_ids } } };
       }else{
-        query = base_queries;
+        // 一覧に表示できるファイルが0
+        res.json({
+          status: { success: true, total:0 },
+          body: []
+        });
+        return ;
       }
 
       // 非表示ファイルを表示するか
@@ -2788,7 +2795,7 @@ export const getAllowedFileIds = (user_id, permission) => {
       });
 
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
-
+console.log("2798",file_ids);
     return new Promise((resolve, reject) => resolve(file_ids) );
 
   });
