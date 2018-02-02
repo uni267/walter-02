@@ -735,6 +735,9 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         authority_file_ids = yield getAllowedFileIds(authorityUser._id, constants.PERMISSION_VIEW_LIST );
       }
 
+      // ログインしているユーザの権限
+      const login_user_authority_file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST );
+
       const base_items = queries.filter( q => ( q.meta_info_id === null && !(q.name === "authorities") ) ).map(q => {
         q.key_type = q.name;
         return q;
@@ -782,14 +785,17 @@ export const searchDetail = (req, res, next, export_excel=false) => {
             file_metainfo_ids = file_metainfo_id;
           }
         }
+
+        // login userに閲覧権限があるものを残す
+        const _login_user_authority_file_ids = login_user_authority_file_ids.map(id => id.toString());
+        file_metainfo_ids = intersection( file_metainfo_ids, _login_user_authority_file_ids )
+
         // intersectionするために文字列にしたIDをObjectIdに戻す
         file_metainfo_ids = file_metainfo_ids.map(id => mongoose.Types.ObjectId(id));
       }
 
-      // ログインしているユーザの権限
-      const login_user_authority_file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST );
 
-      const file_ids = authority_file_ids.concat(file_metainfo_ids,login_user_authority_file_ids);
+      const file_ids = authority_file_ids.concat(file_metainfo_ids);
       let query;
       if(file_ids.length > 0){
         query = { ...base_queries, ...{ _id: { "$in":file_ids } } };
