@@ -1,5 +1,6 @@
 import * as actionTypes from "../actionTypes";
 import { unset } from "lodash";
+import * as _ from "lodash";
 
 const initialState = {
   open: false,
@@ -55,7 +56,7 @@ const fileDetailSearchReducer = (state = initialState, action) => {
   case actionTypes.SEARCH_VALUE_CHANGE:
     let searchValues;
 
-    if (state.searchValues.find( obj => obj._id === action.item._id )) {
+    if ( _.find(state.searchValues, obj => obj._id === action.item._id )) {
       searchValues = state.searchValues.map( obj => {
         return obj._id === action.item._id ?
           { ...obj, value: action.value } : obj;

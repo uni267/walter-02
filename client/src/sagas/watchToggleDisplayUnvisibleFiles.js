@@ -12,7 +12,7 @@ export function* isDisplayUnvisibleSetting() {
 
   // 非表示ファイルを取得するか
   const isDisplayUnvisibleSetting = yield select( state => {
-    return state.appSettings.find( s => s.name === "unvisible_files_toggle" );
+    return _.find(state.appSettings, s => s.name === "unvisible_files_toggle" );
   });
 
   let isDisplayUnvisible;
@@ -22,7 +22,7 @@ export function* isDisplayUnvisibleSetting() {
   } else {
     const settingsPayload = yield call(api.fetchAppSettings);
     const settings = settingsPayload.data.body;
-    isDisplayUnvisible = settings.find( s => s.name === "unvisible_files_toggle" ).default_value;
+    isDisplayUnvisible = _.find(settings, s => s.name === "unvisible_files_toggle" ).default_value;
   }
 
   return isDisplayUnvisible;

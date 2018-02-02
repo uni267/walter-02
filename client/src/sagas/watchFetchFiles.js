@@ -10,46 +10,6 @@ import * as actions from "../actions/files";
 import * as commons from "../actions/commons";
 import errorParser from "../helper/errorParser";
 
-export function* fetchFiles(dir_id, page, sorted, desc) {
-  // // 非表示ファイルを取得するか
-  // const isDisplayUnvisible = yield call(isDisplayUnvisibleSetting);
-
-  // if (page === 0 || page === null) {
-
-  //   let files, dirs;
-
-  //   const { sorted, desc } = yield select( state => state.fileSortTarget );
-
-  //   if (sorted === null) {
-  //     let defaultSort = yield call(api.fetchDisplayItems);
-  //     defaultSort = defaultSort.data.body.filter( item => item.default_sort );
-
-  //     defaultSort = defaultSort.length > 0 ? defaultSort[0] : null;
-
-  //     [ files, dirs ] = yield all([
-  //       call(api.fetchFiles, dir_id, page, defaultSort.meta_info_id, defaultSort.default_sort.desc, isDisplayUnvisible),
-  //       call(api.fetchDirs, dir_id),
-  //       put(actions.setSortTarget(defaultSort.meta_info_id))
-  //     ]);
-  //   }
-  //   else {
-  //     [ files, dirs ] = yield all([
-  //       call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible),
-  //       call(api.fetchDirs, dir_id)
-  //     ]);
-  //   }
-
-  //   yield put(actions.initFileTotal(files.data.status.total));
-  //   yield put(actions.initFiles(files.data.body));
-  //   yield put(actions.initDir(dirs.data.body));
-
-  // }
-  // else {
-  //   const files = yield call(api.fetchFiles, dir_id, page, sorted, desc, isDisplayUnvisible);
-  //   yield put(actions.initNextFiles(files.data.body));
-  // }
-}
-
 export function* watchFetchFiles() {
   while (true) {
     let { dir_id, page, sorted, desc } = yield take( actions.requestFetchFiles().type );
@@ -110,4 +70,3 @@ export function* watchFetchFiles() {
   }
 }
 
-// export default watchFetchFiles;
