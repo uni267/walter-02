@@ -794,18 +794,22 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         file_metainfo_ids = file_metainfo_ids.map(id => mongoose.Types.ObjectId(id));
       }
 
-
+      // fixme: 権限での絞り込み
+      // メタ情報で絞り込まれたIDの配列
       const file_ids = authority_file_ids.concat(file_metainfo_ids);
       let query;
       if(file_ids.length > 0){
+        // file_idsはlogin_userの閲覧権限も考慮している
         query = { ...base_queries, ...{ _id: { "$in":file_ids } , is_display:true } };
+      }else if(Object.keys( base_queries).length > 0){
+        // file_idsが無いのでログインユーザの閲覧権減を別途条件に加える
+        query = { ...base_queries, ...{ _id: { "$in":login_user_authority_file_ids } }};
       }else{
-        // 一覧に表示できるファイルが0
         res.json({
           status: { success: true, total:0 },
           body: []
         });
-        return ;
+        return;
       }
 
       // 非表示ファイルを表示するか
