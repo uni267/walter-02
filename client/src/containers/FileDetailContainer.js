@@ -38,7 +38,7 @@ import * as FileActions from "../actions/files";
 
 import { FILE_DETAIL } from "../constants";
 
-import { find, findIndex } from "lodash";
+import { find, findIndex, uniq, chain, value } from "lodash";
 
 const styles = {
   fileImageWrapper: {
@@ -213,9 +213,13 @@ class FileDetailContainer extends Component {
       component: () => (<RaisedButton label="削除" onClick={() => this.props.actions.toggleDeleteFileDialog(this.props.file)} style={style} />)
     }]
 
-    const permitDisplay = this.props.file.actions.filter( act => (
-      (findIndex( renderButtons , { name: act.name})) >= 0
-    )).map(act => ((find( renderButtons , { name: act.name})).component()));
+    const permitDisplay = chain(this.props.file.actions).filter( act => (
+        (findIndex( renderButtons , { name: act.name})) >= 0
+      )).map(act => act.name )
+      .uniq()
+      .map(name => ((find( renderButtons , { name: name}))
+      .component()))
+      .value();
 
     if (permitDisplay.length > 0) {
       return (
