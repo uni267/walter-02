@@ -798,7 +798,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       const file_ids = authority_file_ids.concat(file_metainfo_ids);
       let query;
       if(file_ids.length > 0){
-        query = { ...base_queries, ...{ _id: { "$in":file_ids } } };
+        query = { ...base_queries, ...{ _id: { "$in":file_ids } , is_display:true } };
       }else{
         // 一覧に表示できるファイルが0
         res.json({
