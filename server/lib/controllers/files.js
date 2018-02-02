@@ -682,10 +682,10 @@ export const searchDetail = (req, res, next, export_excel=false) => {
   const createMetaSearchValue = (item) =>{
     switch (item.value_type) {
       case "Date":
-      return {
-          $gte: moment( item.value.gt ).utc().format("YYYY-MM-DD 00:00:00") ,
-          $lt: moment( item.value.lt ).add(1,"days").utc().format("YYYY-MM-DD 00:00:00")
-        };
+        const retObj = {};
+        if ( item.value.gt !== undefined && item.value.gt !== null && item.value.gt !== "" ) retObj["$gte"] = moment( item.value.gt ).utc().format("YYYY-MM-DD 00:00:00");
+        if ( item.value.lt !== undefined && item.value.lt !== null && item.value.lt !== "" ) retObj["$lt"] = moment( item.value.lt ).add(1,"days").utc().format("YYYY-MM-DD 00:00:00");
+        return retObj;
       case "String":
       default:
         return { $regex: escapeRegExp( item.value ) };
