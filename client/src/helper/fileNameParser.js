@@ -9,7 +9,8 @@ export const createFileName = (file,pattern) => {
 
   // 置換用文字列を生成(拡張子)
   const _name = file.name.split(".");
-  rep["{extension}"] = _name.lenght > 1 ? ("." + _name[_name.length - 1]) : "";
+
+  rep["{extension}"] = _name.length > 1 ? ("." + _name[_name.length - 1]) : "";
 
   // ファイル名生成
   const replaced = pattern.replace(/(\{.*?\})/g, (str) => {
