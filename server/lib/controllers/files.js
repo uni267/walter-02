@@ -824,18 +824,16 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
         ret_files = yield files.map( file => {
           const route = file.dirs
-                  .filter( dir => dir.ancestor.is_display )
+                  .filter( dir => {
+                    return ( dir.ancestor !== undefined &&  dir.ancestor.is_display );
+                  } )
                   .map( dir => dir.ancestor.name );
 
           file.dir_route = route.length > 0
             ? route.reverse().join("/")
             : "";
 
-          file.actions = chain(file.authorities)
-            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
-            .map( auth => auth.actions )
-            .flattenDeep()
-            .uniq();
+          file.actions = extractFileActions(file.authorities, res.user);
 
           return file;
         });
@@ -2795,7 +2793,7 @@ export const getAllowedFileIds = (user_id, permission) => {
       });
 
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
-console.log("2798",file_ids);
+
     return new Promise((resolve, reject) => resolve(file_ids) );
 
   });
