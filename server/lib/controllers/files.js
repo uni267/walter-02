@@ -967,9 +967,10 @@ export const move = (req, res, next) => {
 
       if (user === null) throw "user is empty";
 
-      const isPermitted = yield checkFilePermission(file_id, user._id, constants.PERMISSION_MOVE);
+      const isPermittedFile = yield checkFilePermission(file_id, user._id, constants.PERMISSION_MOVE);
+      const isPermittedDir = yield checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD);
 
-      if( !isPermitted ) throw "permission denied";
+      if( !(isPermittedFile && isPermittedDir ) ) throw "permission denied";
 
       const [ file, dir ] = yield [ File.findById(file_id), File.findById(dir_id) ];
 
