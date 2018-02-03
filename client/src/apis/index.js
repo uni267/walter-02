@@ -297,11 +297,11 @@ export class API {
     return this.client.get(`/api/v1/files/search_items`);
   };
 
-  searchFilesDetail = (params, page, sorted, desc, isDisplayUnvisible) => {
+  searchFilesDetail = (queries, page, sorted, desc, isDisplayUnvisible) => {
     const order = desc ? "desc" : "asc";
 
     const config = {
-      ...params, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible
+      queries, page, sort: sorted, order, is_display_unvisible: isDisplayUnvisible
     };
 
     return this.client.post("/api/v1/files/search_detail", config);

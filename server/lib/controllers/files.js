@@ -444,6 +444,7 @@ export const search = (req, res, next, export_excel=false) => {
         esQuery["size"] = 0;
       }
 
+      console.log(util.inspect(esQuery, false, null));
       let esResult = yield esClient.search(esQuery);
       const { total } = esResult.hits;
 
@@ -626,257 +627,292 @@ export const searchItems = (req, res, next) => {
 };
 
 export const searchDetail = (req, res, next, export_excel=false) => {
-  const buildQuery = (item) => {
-    return co(function*(){
-      switch ( item.key_type ) {
-        case "name":
-          return ({
-            [item.key_type]: {
-              $regex: escapeRegExp( item.value )
-            },
-            is_display: true
-          });
-        case "modified_less":
-          return ({
-            modified: {
-              $lt: new Date(item.value)
-            },
-            is_display: true
-          });
-        case "modified_greater":
-          return ({
-            modified: {
-              $gt: new Date(item.value)
-            },
-            is_display: true
-          });
-        case "meta":
-          return ({
-            meta_info_id: mongoose.Types.ObjectId(item._id),
-            value: createMetaSearchValue(item),
-            // is_display: true
-          });
-        case "tag":
-          return ({
-            tags: mongoose.Types.ObjectId(item.value),
-            is_display: true
-          });
-        case "favorite":
-          return ({
-            is_star: item.value,
-            is_display: true
-          });
-        case "dir_route":
-            const files = yield File.find({is_dir:true, name:{ $regex: escapeRegExp( item.value ) } }).select({ _id:1,name:1 });
-            const ret = { dir_id: { $in : files.map(file => file._id ) } };
-          return ret;
-        default:
-          return ({
-            [item.key_type]: item.value,
-            is_display: true
-          });
-        }
-    });
-  };
-
-  const createMetaSearchValue = (item) =>{
-    switch (item.value_type) {
-      case "Date":
-        const retObj = {};
-        if ( item.value.gt !== undefined && item.value.gt !== null && item.value.gt !== "" ) retObj["$gte"] = moment( item.value.gt ).utc().format("YYYY-MM-DD 00:00:00");
-        if ( item.value.lt !== undefined && item.value.lt !== null && item.value.lt !== "" ) retObj["$lt"] = moment( item.value.lt ).add(1,"days").utc().format("YYYY-MM-DD 00:00:00");
-        return retObj;
-      case "String":
-      default:
-        return { $regex: escapeRegExp( item.value ) };
-    }
-  };
-
-  return co(function* () {
+  co(function* () {
     try {
+      const { queries, page, sort, order, is_display_unvisible } = req.body;
 
-      const params = req.body;
-      if ( params.page === undefined || params.page === null ) page = 0;
-      if ( params.page === "" || isNaN( parseInt(params.page) ) ) throw new ValidationError("page is not number");
+      const _page = page === undefined || page === null
+        ? 0 : page;
+      if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      if ( typeof params.sort === "string" && !mongoose.Types.ObjectId.isValid(params.sort)  ) throw new ValidationError("sort is empty");
-      if ( typeof params.order === "string" && params.order !== "asc" && params.order !== "desc" ) throw new ValidationError("sort is empty");
+      const { tenant_id } = res.user;
 
-      const param_ids = Object.keys(params)
-            .filter( p => !["page", "order", "sort", "is_display_unvisible"].includes(p) );
+      const { trash_dir_id } = yield Tenant.findById(tenant_id);
+      const action = yield Action.findOne({ name: constants.PERMISSION_VIEW_LIST });
 
-      const conditions = { _id: param_ids };
+      const isDisplayUnvisible = is_display_unvisible === "true";
 
-      const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
-        meta = meta.toObject();
-        meta.meta_info_id = meta._id;
-        return meta;
-      });
+      const isDisplayUnvisibleCondition = isDisplayUnvisible
+            ? {} : { "match": { "file.unvisible": false } };
 
-      const displayItems = (yield DisplayItem.find({
-        ...conditions,
-        meta_info_id: null,
-        name: { $nin: ["file_checkbox", "action"] }
-      })).map(items => items.toObject()) ;
-
-      const items = metaInfos.concat(displayItems);
-
-      const queries = items.map( meta => {
-        const _meta = meta;
-        _meta.value = params[meta._id];
-        return _meta;
-      });
-
-      // ユーザで検索する場合 ユーザが閲覧できるファイルを取得
-      let authorities = find(queries, {name:'authorities'});
-      let authority_file_ids = [];
-      if( authorities !== undefined ){
-        const authorityUser = yield User.findById(authorities.value)  ;
-        authority_file_ids = yield getAllowedFileIds(authorityUser._id, constants.PERMISSION_VIEW_LIST );
-      }
-
-      // ログインしているユーザの権限
-      const login_user_authority_file_ids = yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST );
-
-      const base_items = queries.filter( q => ( q.meta_info_id === null && !(q.name === "authorities") ) ).map(q => {
-        q.key_type = q.name;
-        return q;
-      });
-
-      const meta_items = queries.filter( q => q.meta_info_id !== null ).map(q => {
-        q.key_type = "meta";
-        return q;
-      });
-
-      let base_queries;
-      if(base_items[0] === undefined){
-        base_queries = {};
-      }else{
-        const query = yield base_items.map( item =>{
-          const query = buildQuery(item);
-          return query;
-        });
-        base_queries = Object.assign(...query);
-      }
-
-      const meta_queries = meta_items[0] === undefined
-            ? []
-            : yield (meta_items.map(item => {
-              const query  = buildQuery(item);
-              return query;
-            }));
-
-      let file_metainfo_ids = [];
-
-      if(meta_items.length > 0){
-        // メタ情報検索条件に一致するfile_idを取得する
-        for(const key in meta_queries){
-
-          const fileMetainfoConditions = {
-            meta_info_id: mongoose.Types.ObjectId(meta_queries[key].meta_info_id),
-            value: meta_queries[key].value
-          };
-          const file_metainfo_id = (yield FileMetaInfo.find( fileMetainfoConditions )).map(metainfo => metainfo.file_id.toString() );
-
-          if(file_metainfo_ids.length){
-            // 既に取得済みのIDと今回取得したIDのうち共通するもののみ残す
-            file_metainfo_ids = intersection(file_metainfo_ids, file_metainfo_id );
-          }else{
-            file_metainfo_ids = file_metainfo_id;
+      const esQueryDir = {
+        index: tenant_id.toString(),
+        type: "files",
+        body: {
+          query: {
+            bool: {
+              must_not: [{
+                match: {"file.dir_id": { query: trash_dir_id.toString(), operator: "and" }}
+              }],
+              must: [{
+                match: {
+                  [`file.actions.${action._id}`]: {
+                    query: res.user._id,
+                    operator: "and"
+                  }
+                }
+              }, {
+                match: {
+                  "file.is_dir": true
+                }
+              }, isDisplayUnvisibleCondition]
+            }
           }
         }
+      };
 
-        // login userに閲覧権限があるものを残す
-        const _login_user_authority_file_ids = login_user_authority_file_ids.map(id => id.toString());
-        file_metainfo_ids = intersection( file_metainfo_ids, _login_user_authority_file_ids )
+      let esResultDir = yield esClient.search(esQueryDir);
 
-        // intersectionするために文字列にしたIDをObjectIdに戻す
-        file_metainfo_ids = file_metainfo_ids.map(id => mongoose.Types.ObjectId(id));
+      // 取得した一覧とTopが閲覧可能なフォルダとなる
+      const authorizedDirIds = [
+        ...(esResultDir.hits.hits.map(file=> file._id)),
+        res.user.tenant.home_dir_id.toString()
+      ];
+      
+      let esQueryMustsBase = [
+        {
+          match: {
+            [`file.actions.${action._id}`]: {
+              query: res.user._id,
+              operator: "and"
+            }
+          }
+        }, {
+          match: {
+            "file.is_display": true
+          }
+        }, {
+          match: {
+            "file.is_deleted": false
+          }
+        }, {
+          match: {
+            "file.is_trash": false
+          }
+        }, isDisplayUnvisibleCondition, {
+          terms: {
+            "file.dir_id": authorizedDirIds
+          }
+        }
+      ];
+
+      const _queries = yield queries.map( q => {
+        // メタ情報、文字列
+        if (q.meta_info_id && q.value_type === "String") {
+          return {
+            match: {
+              [`file.${q.meta_info_id}`]: q.value
+            }
+          };
+        }
+        // メタ情報、日付、between
+        else if (q.meta_info_id && q.value_type === "Date" && q.between) {
+          const between = {};
+
+          if ( q.value.gt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+            between.gte = moment( q.value.gt ).utc();
+          } else {
+            between.gte = null;
+          }
+
+          if ( q.value.lt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+            between.lte = moment( q.value.lt ).add(1,"days").utc();
+          } else {
+            between.lte = null;
+          }
+
+          return {
+            range: {
+              [`file.${q.meta_info_id}`]: between
+            }
+          };
+        }
+
+        // フォルダパス(場所)
+        if (q.name === "dir_route") {
+          const dirQuery = {
+            name: {
+              $regex: escapeRegExp( q.value )
+            },
+            is_dir: true
+          };
+
+          return File.findOne(dirQuery).then( dir => {
+            return dir ? {
+              match: {
+                "file.dir_id": dir._id
+              }
+            } : {
+              match: {
+                "file.dir_id": ""
+              }
+            };
+          });
+        }
+
+        // 更新日時などメタ情報以外の日付範囲
+        // @todo elasticsearchでindex化されていない
+        if (q.value_type === "Date" && q.between) {
+          const between = {};
+
+          if ( q.value.gt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+            between.gte = moment( q.value.gt ).utc();
+          } else {
+            between.gte = null;
+          }
+
+          if ( q.value.lt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+            between.lte = moment( q.value.lt ).add(1,"days").utc();
+          } else {
+            between.lte = null;
+          }
+
+          return {
+            range: {
+              [`file.${q.name}`]: between
+            }
+          };
+        }
+
+        // タグ @todo elasticsearchにindex化されていない
+
+        // メタ情報以外の文字列
+        return {
+          match: {
+            [`file.${q.name}`]: q.value
+          }
+        };
+      });
+
+      const must = [ ...esQueryMustsBase, _queries ];
+      
+      console.log(util.inspect(queries, false, null));
+      console.log(util.inspect(must, false, null));
+
+      const esQuery = {
+        index: tenant_id.toString(),
+        type: "files",
+        sort: [
+          "file.is_dir:desc",
+          (sort === undefined || sort === null) ? "_score" : `file.${sort}.raw:${order}`,
+          `file.name:${order}`
+        ],
+        body: {
+          query: {
+            bool: {
+              must_not: [{
+                match: {
+                  "file.dir_id": {
+                    query: trash_dir_id.toString(),
+                    operator: "AND"
+                  }
+                }
+              }],
+              must
+            }
+          }
+        }
+      };
+
+      const offset = _page * constants.FILE_LIMITS_PER_PAGE;
+
+      if (! export_excel) {
+        esQuery["from"] = offset;
+        esQuery["size"] = parseInt( offset ) + 30;
+      } else {
+        esQuery["from"] = 0;
+        esQuery["size"] = 0;
       }
 
-      // fixme: 権限での絞り込み
-      // メタ情報で絞り込まれたIDの配列
-      const file_ids = authority_file_ids.concat(file_metainfo_ids);
-      let query;
-      if(file_ids.length > 0){
-        // file_idsはlogin_userの閲覧権限も考慮している
-        query = { ...base_queries, ...{ _id: { "$in":file_ids } , is_display:true } };
-      }else if(Object.keys( base_queries).length > 0){
-        // file_idsが無いのでログインユーザの閲覧権減を別途条件に加える
-        query = { ...base_queries, ...{ _id: { "$in":login_user_authority_file_ids } }};
-      }else{
-        res.json({
-          status: { success: true, total:0 },
-          body: []
-        });
-        return;
+      let esResult = yield esClient.search(esQuery);
+      const { total } = esResult.hits;
+
+      if(export_excel){
+        esQuery["size"] = total;
+        esResult = yield esClient.search(esQuery);
       }
 
-      // 非表示ファイルを表示するか
-      if (!req.body.is_display_unvisible) {
-        query = { ...query, unvisible: false, is_trash:false };
-      }
-      const total = yield File.find(query).count();
+      const esResultIds = esResult.hits.hits
+      .map(hit => {
+        return mongoose.Types.ObjectId( hit._id );
+      });
+
+      const conditions = {
+        dir_id: { $ne: trash_dir_id },
+        is_display: true,
+        is_deleted: false,
+        $and: [
+          {_id: {$in : esResultIds} },
+        ]
+      };
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-      let { page } = req.body;
-      if (!page) page = 0;
-      const offset = page * limit;
 
-      const { sort, order } = params;
+      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
+      if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
+
       const _sort = yield createSortOption(sort, order);
 
-      let files = {};
-      let ret_files = {};
-      if(Object.keys(query).length !== 0){
-        // 権限チェックおよび検索条件作成段階で対象となるファイルがある場合のみ検索
-        files = yield File.searchFiles(query,offset,limit,_sort, mongoose.Types.ObjectId(sort));
+      let files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      files = files.map( file => {
+        const route = file.dirs
+              .filter( dir => dir.ancestor.is_display )
+              .map( dir => dir.ancestor.name );
 
-        ret_files = yield files.map( file => {
-          const route = file.dirs
-                  .filter( dir => {
-                    return ( dir.ancestor !== undefined &&  dir.ancestor.is_display );
-                  } )
-                  .map( dir => dir.ancestor.name );
+        file.dir_route = route.length > 0
+          ? route.reverse().join("/")
+          : "";
 
-          file.dir_route = route.length > 0
-            ? route.reverse().join("/")
-            : "";
+        files = files.map( file => {
 
-          file.actions = extractFileActions(file.authorities, res.user);
+          file.actions = chain(file.authorities)
+            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
+            .map( auth => auth.actions )
+            .flattenDeep()
+            .uniq();
 
           return file;
         });
-      }
 
+        return file;
+      });
 
-      if(export_excel){
-        return ret_files;
-      }else{
+      if (export_excel) {
+        return files;
+      } else {
         res.json({
           status: { success: true, total },
-          body: ret_files
+          body: files
         });
       }
     }
     catch (e) {
       let errors = {};
       switch (e.message) {
-        case "page is not number":
-          errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
-          break;
-        case "sort is empty":
-          errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
-          break;
-        default:
-          errors.unknown = e;
+      case "page is not number":
+        errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
+        break;
+      case "sort is empty":
+        errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
       }
 
       logger.error(errors);
       res.status(400).json({
         status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }
       });
-
     }
   });
 };

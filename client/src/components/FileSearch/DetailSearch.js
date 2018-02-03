@@ -28,12 +28,13 @@ class DetailSearch extends Component {
   }
 
   execSearch = () => {
-    const queryItems = this.state.items.reduce( (prev, cur) => {
-      if( find( this.props.searchItems , { _id:cur._id } ).picked  ){
-        prev[cur._id] = cur.value;
-      }
-      return prev;
-    }, {});
+    const queryItems = this.state.items
+          .filter( item => item.picked )
+          .map( item => {
+            const searchItem = find(this.props.searchItems, { _id: item._id, picked: true });
+            return searchItem ? { ...searchItem, value: item.value } : null;
+          })
+          .filter( item => item ); // reject null
 
     this.props.actions.searchFileDetail(this.props.history, queryItems);
   };
