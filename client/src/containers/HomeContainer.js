@@ -22,6 +22,10 @@ class HomeContainer extends Component {
   componentWillMount(){
     this.props.actions.keepFileSimpleSearchValue(undefined);
     this.props.actions.searchItemNotPickAll();
+
+    if (this.props.appSettings.length === 0) {
+      this.props.actions.requestFetchAppSettings();
+    }
   }
 
   render() {
@@ -68,7 +72,8 @@ const mapStateToProps = (state, ownProps) => {
     fileSortTarget: state.fileSortTarget,
     session: state.session,
     loading: state.loading,
-    tenant: state.tenant
+    tenant: state.tenant,
+    appSettings: state.appSettings
   };
 };
 

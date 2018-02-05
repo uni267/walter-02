@@ -35,7 +35,7 @@ import AppMenu from "../components/AppMenu";
 import AppNavBar from "../components/AppNavBar";
 
 // etc
-import { findIndex } from "lodash";
+import { find, findIndex } from "lodash";
 
 class NavigationContainer extends Component {
   constructor(props) {
@@ -134,7 +134,8 @@ class NavigationContainer extends Component {
           handleLogout={this.handleLogout}
           toggleMenu={this.toggleAppMenu}
           tenant={this.props.tenant}
-          session={this.props.session} />
+          session={this.props.session}
+          appSettings={this.props.appSettings} />
 
         <AppMenu
           open={this.state.roleMenu.open}
@@ -161,7 +162,8 @@ const mapStateToProps = (state) => {
     changePassword: state.changePassword,
     tenant: state.tenant,
     session: state.session,
-    menus: state.navigation.data.menus
+    menus: state.navigation.data.menus,
+    appSettings: state.appSettings
   };
 };
 

@@ -620,6 +620,13 @@ var settings = [
     description: "非表示属性のファイルを表示/非表示するトグルを表示するか",
     enable: true,
     default_value: false
+  },
+  {
+    tenant_id: db.tenants.findOne({ name: "test" })._id,
+    name: "change_user_password_permission",
+    description: "ユーザにパスワード変更の権限を許可するか",
+    enable: true,
+    default_value: false // 許可しない
   }
 ];
 

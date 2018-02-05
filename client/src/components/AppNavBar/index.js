@@ -16,6 +16,9 @@ import { List, ListItem } from "material-ui/List";
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import Popover from 'material-ui/Popover';
 
+// lodash
+import * as _ from "lodash";
+
 // components
 import Notification from "../Notification";
 
@@ -38,7 +41,8 @@ const AppNavBar = ({
   handleAccountOpen,
   handleLogout,
   tenant,
-  session
+  session,
+  appSettings
 }) => {
   const renderRightElements = () => {
     const notificationIcon = (
@@ -66,6 +70,10 @@ const AppNavBar = ({
         ? <Avatar />
         : <Avatar size={35}>{session.user_name[0].toUpperCase()}</Avatar>
     );
+
+    // パスワード変更を許可するか
+    const changeUserPasswordSetting = _.find(appSettings, { name: "change_user_password_permission" });
+    const changeUserPasswordEnable = changeUserPasswordSetting ? changeUserPasswordSetting.value : false;
 
     return (
       <div style={{paddingRight: 70}}>
@@ -100,7 +108,10 @@ const AppNavBar = ({
           <List style={{ padding: 0 }}>
             <ListItem disabled={true} primaryText={session.user_name} rightAvatar={avatarIcon} />
             <Divider />
-            <ListItem  primaryText="パスワード変更" onTouchTap={handleAccountOpen} />
+            { changeUserPasswordEnable
+              ? <ListItem  primaryText="パスワード変更" onTouchTap={handleAccountOpen} />
+              : null
+            }
             <Divider />
             <ListItem  primaryText="ログアウト" onTouchTap={handleLogout} />
           </List>
