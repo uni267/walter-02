@@ -390,6 +390,33 @@ export const search = (req, res, next, export_excel=false) => {
       // 取得した一覧とTopが閲覧可能なフォルダとなる
       const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
 
+      // 検索対象のフィールドを取得する
+      const searchFields = (yield DisplayItem.aggregate([
+        { $match: {
+          is_search: true
+        }},
+        { $lookup: {
+            from: "meta_infos",
+            localField: "meta_info_id",
+            foreignField: "_id",
+            as: "meta_info"
+        }},
+        {
+          $unwind: {
+            path: "$meta_info",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $match: {
+            $or: [
+              {"search_value_type": 'String'},
+              {"meta_info.value_type":"String"}
+            ]
+          }
+        }
+      ])).map(item => ( item.meta_info_id !== null ? `file.${item.meta_info_id.toString()}` : `file.${item.name}` ));
+
       const esQuery = {
         index: tenant_id.toString(),
         type: "files",
@@ -405,7 +432,8 @@ export const search = (req, res, next, export_excel=false) => {
                   {
                   "query_string":{
                     "query": escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
-                    "default_operator": "AND"
+                    "default_operator": "AND",
+                    "fields": searchFields
                     }
                   },{
                   "match" : {
@@ -444,7 +472,6 @@ export const search = (req, res, next, export_excel=false) => {
         esQuery["size"] = 0;
       }
 
-      console.log(util.inspect(esQuery, false, null));
       let esResult = yield esClient.search(esQuery);
       const { total } = esResult.hits;
 
@@ -678,7 +705,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         ...(esResultDir.hits.hits.map(file=> file._id)),
         res.user.tenant.home_dir_id.toString()
       ];
-      
+
       let esQueryMustsBase = [
         {
           match: {
@@ -795,7 +822,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       });
 
       const must = [ ...esQueryMustsBase, _queries ];
-      
+
       console.log(util.inspect(queries, false, null));
       console.log(util.inspect(must, false, null));
 
