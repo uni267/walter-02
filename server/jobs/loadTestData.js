@@ -196,7 +196,7 @@ var display_items = [
     value_type: "String",
     is_display: false,
     is_excel: true,
-    is_search: true,
+    is_search: false,
     order: 25
   },
   {
@@ -297,7 +297,7 @@ var display_items = [
     value_type: "Date",
     is_display: false,
     is_excel: false,
-    is_search: true,
+    is_search: false,
     between: true,
     width: "20%",
     order: 110
@@ -311,7 +311,7 @@ var display_items = [
     value_type: "Select",
     is_display: false,
     is_excel: true,
-    is_search: true,
+    is_search: false,
     width: "15%",
     order: 120
   },
@@ -336,7 +336,7 @@ var display_items = [
     value_type: "Select",
     is_display: false,
     is_excel: true,
-    is_search: true,
+    is_search: false,
     order: 140
   }
 ];
