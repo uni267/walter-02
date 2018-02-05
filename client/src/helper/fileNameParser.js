@@ -1,18 +1,32 @@
 import * as moment from "moment";
 
-export const createFileName = (file,pattern) => {
+import { find } from "lodash";
+
+export const createFileName = (file,format) => {
   let rep = [];
-  // 置換用文字列を生成(meta_info)
+
+  const { downloadinfo,extensionTarget } = format;
+  const pattern = downloadinfo.value;
+
   for(var idx in file.meta_infos){
     rep[`{${file.meta_infos[idx]._id}}`] = file.meta_infos[idx].value;
   }
 
   // 置換用文字列を生成(拡張子)
-  const _name = file.name.split(".");
+  let _name = file.name.split(".");
+
+  if(_name.length === 1 || extensionTarget !== null ){
+    // 指定されたメタ情報から.で分割して拡張子を取り出す
+    _name = (find(file.meta_infos, { _id:extensionTarget })).value.split(".")
+    ;
+    // 指定されたメタ情報は拡張子なしのものに
+    rep[`{${extensionTarget}}`] = _name[0];
+
+  }
 
   rep["{extension}"] = _name.length > 1 ? ("." + _name[_name.length - 1]) : "";
 
-  // ファイル名生成
+  // ファイル名生成
   const replaced = pattern.replace(/(\{.*?\})/g, (str) => {
     let _str = str.match(/{(.*?):(.*?)}/);
     if(_str === null ){

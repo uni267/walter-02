@@ -17,7 +17,7 @@ function* watchDownloadFiles() {
     try {
       yield put(commons.loadingStart());
 
-      const format = (yield call(api.downloadInfoFile)).data.body.value;
+      const format = (yield call(api.downloadInfoFile)).data.body;
 
       for(let i=0;i<files.length;i++){
         const file = files[i];

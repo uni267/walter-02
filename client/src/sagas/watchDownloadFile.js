@@ -16,7 +16,7 @@ function* watchDownloadFile() {
 
     try {
       yield put(commons.loadingStart());
-      const format = (yield call(api.downloadInfoFile)).data.body.value;
+      const format = (yield call(api.downloadInfoFile)).data.body;
       const file_name = createFileName(file, format);
 
       const payload = yield call(api.downloadFile, file);
