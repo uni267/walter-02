@@ -738,7 +738,11 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         if (q.meta_info_id && q.value_type === "String") {
           return {
             match: {
-              [`file.${q.meta_info_id}`]: q.value
+              [`file.${q.meta_info_id}`]: {
+                query: q.value,
+                operator: "and",
+                analyzer: "kuromoji"
+              }
             }
           };
         }
@@ -816,7 +820,11 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         // メタ情報以外の文字列
         return {
           match: {
-            [`file.${q.name}`]: q.value
+            [`file.${q.name}`]: {
+                query: q.value,
+                operator: "and",
+                analyzer: "kuromoji"
+            }
           }
         };
       });
