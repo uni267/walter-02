@@ -831,9 +831,6 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
       const must = [ ...esQueryMustsBase, _queries ];
 
-      console.log(util.inspect(queries, false, null));
-      console.log(util.inspect(must, false, null));
-
       const esQuery = {
         index: tenant_id.toString(),
         type: "files",
