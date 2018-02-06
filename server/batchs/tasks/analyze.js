@@ -87,13 +87,13 @@ const task = () => {
 
       // 2重集計防止
       yield AnalysisUseRateTotal.remove({
-        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       // 使用率保存
       yield AnalysisUseRateTotal.insertMany(
         fileFolderCounts.map( f => ({
-          reported_at: parseInt(moment().format("YYYYMMDD"), 10),
+          reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10),
           tenant_id: Types.ObjectId(f.tenantId),
           name: "useRateTotal",
           label: "全体の使用率",
@@ -106,13 +106,13 @@ const task = () => {
 
       // 2重集計防止
       yield AnalysisFileCount.remove({
-        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       // ファイル数保存
       yield AnalysisFileCount.insertMany(
         fileFolderCounts.map( f => ({
-          reported_at: parseInt(moment().format("YYYYMMDD"), 10),
+          reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10),
           tenant_id: Types.ObjectId(f.tenantId),
           name: "fileCount",
           label: "ファイル数合計",
@@ -122,13 +122,13 @@ const task = () => {
         
       // 2重集計防止
       yield AnalysisFolderCount.remove({
-        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       // フォルダ数保存
       yield AnalysisFolderCount.insertMany(
         fileFolderCounts.map ( f => ({
-          reported_at: parseInt(moment().format("YYYYMMDD"), 10),
+          reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10),
           tenant_id: Types.ObjectId(f.tenantId),
           name: "folderCount",
           label: "フォルダ数合計",
@@ -217,7 +217,7 @@ const task = () => {
       ]);
 
       yield AnalysisUseRateFolder.remove({
-        reported_at: parseInt( moment().format("YYYYMMDD"), 10 )        
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       const folderRatesCombined = folderRates.map( f => {
@@ -232,7 +232,7 @@ const task = () => {
 
       yield AnalysisUseRateFolder.insertMany(
         folderRatesCombined.map( r => ({
-          reported_at: parseInt( moment().format("YYYYMMDD"), 10 ),
+          reported_at: parseInt( moment().utc().add(9, "hours").format("YYYYMMDD"), 10 ),
           tenant_id: Types.ObjectId(r.tenant_id),
           name: "useRateFolder",
           label: "フォルダ毎の使用率",
@@ -307,7 +307,7 @@ const task = () => {
 
       // 2重集計防止
       yield AnalysisUseRateUser.remove({
-        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       const userRatesRecords = userRates.map( user => {
@@ -316,7 +316,7 @@ const task = () => {
         ))[0].size;
 
         return {
-          reported_at: parseInt( moment().format("YYYYMMDD"), 10 ),
+          reported_at: parseInt( moment().utc().add(9, "hours").format("YYYYMMDD"), 10 ),
           tenant_id: Types.ObjectId(user.tenant_id),
           name: "useRateUser",
           label: "ユーザ毎の使用率",
@@ -421,7 +421,7 @@ const task = () => {
       logger.info("tagRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
 
       yield AnalysisUseRateTag.remove({
-        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       const tagRatesCombined = tagRates.map( t => {
@@ -436,7 +436,7 @@ const task = () => {
 
       yield AnalysisUseRateTag.insertMany(
         tagRatesCombined.map( t => ({
-          reported_at: parseInt( moment().format("YYYYMMDD"), 10 ),
+          reported_at: parseInt( moment().utc().add(9, "hours").format("YYYYMMDD"), 10 ),
           tenant_id: Types.ObjectId(t.tenant_id),
           name: "useRateTag",
           label: "タグ毎の使用率",
@@ -532,12 +532,12 @@ const task = () => {
       logger.info("mimeRatesCombined summary: " + JSON.stringify(mimeRatesCombined));
 
       yield AnalysisUseRateMimeType.remove({
-        reported_at: parseInt(moment().format("YYYYMMDD"), 10)
+        reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
       });
 
       yield AnalysisUseRateMimeType.insertMany(
         mimeRatesCombined.map( m => ({
-          reported_at: parseInt( moment().format("YYYYMMDD"), 10 ),
+          reported_at: parseInt( moment().utc().add(9, "hours").format("YYYYMMDD"), 10 ),
           tenant_id: Types.ObjectId(m.tenant_id),
           name: "useRateMimeType",
           label: "mime-type毎の使用率",
