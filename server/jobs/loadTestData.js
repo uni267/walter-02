@@ -600,12 +600,13 @@ db.authority_files.insert(authority_files2);
 // ===============================
 //  ダウンロードファイルの命名規則
 // ===============================
-var display_file_name_id = db.meta_infos.findOne({name: "display_file_name"})._id.str;
-var send_date_time_id = db.meta_infos.findOne({name: "send_date_time"})._id.str;
+var display_file_name_id = db.meta_infos.findOne({name: "display_file_name"})._id;
+var send_date_time_id = db.meta_infos.findOne({name: "send_date_time"})._id;
 var downloadInfo = {
   type: "file",
-  value:`{${display_file_name_id}}{${send_date_time_id}:YYYYMMDD}{extension}`,
-  tenant_id: tenant._id
+  value:`{${display_file_name_id.str}}{${send_date_time_id.str}:YYYYMMDD}{extension}`,
+  tenant_id: tenant._id,
+  extensionTarget: display_file_name_id
 };
 db.download_infos.insert(downloadInfo);
 

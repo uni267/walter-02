@@ -15,7 +15,9 @@ export const createFileName = (file,format) => {
   // 置換用文字列を生成(拡張子)
   let _name = file.name.split(".");
 
-  if(_name.length === 1 || extensionTarget !== null ){
+  if( (extensionTarget !== undefined && extensionTarget !== null && extensionTarget !== "")
+    && find(file.meta_infos, { _id:extensionTarget }) !== undefined
+  ){
     // 指定されたメタ情報から.で分割して拡張子を取り出す
     _name = (find(file.meta_infos, { _id:extensionTarget })).value.split(".")
     ;

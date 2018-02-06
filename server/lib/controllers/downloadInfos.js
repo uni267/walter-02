@@ -2,6 +2,7 @@ import co from "co";
 import { Types } from "mongoose";
 
 import DownloadInfo from "../models/DownloadInfo";
+import AppSetting from "../models/AppSetting";
 
 export const index = (req, res, next) => {
   co(function*(){
@@ -21,18 +22,12 @@ export const index = (req, res, next) => {
       if(downloadinfo === undefined || downloadinfo === null || downloadinfo === "") throw "downloadinfo is undefined";
 
 
-      // client側ではこういう感じで使いたい
-      const str = "{aaa}_{bbb}{ccc}";
-      const r = { // 想定ではmetainfosやfilesが渡される
-        "{aaa}":"ほげ",
-        "{bbb}":"ふが",
-        "{ccc}":"ばー"
-      };
-      const replaced = str.replace(/(\{.*?\})/g, (c) => r[c] );
-
       res.json({
         status:{ success:true },
-        body: downloadinfo
+        body: {
+          downloadinfo,
+          extensionTarget:downloadinfo.extensionTarget
+        }
       });
     } catch (e) {
       res.status(400).json();
