@@ -11,5 +11,7 @@ router.get("/all", controller.index);
 
 // 既読に更新
 router.patch("/read", controller.updateRead);
+// 未読に更新
+router.patch("/unread", controller.updateUnRead);
 
 export default router;

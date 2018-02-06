@@ -248,3 +248,43 @@ export const updateRead = (req, res, next) => {
   });
 };
 
+
+export const updateUnRead = (req, res, next) => {
+  co(function*(){
+    try {
+
+      const user_id = res.user._id;
+      const notifications = req.body.notifications;
+
+      const notificationIds = notifications.map(notificationId => ObjectId(notificationId));
+      const updateResult = yield Notification.update({
+        _id : { $in: notificationIds},
+      },{$set:{ read:false }}, { multi:true });
+
+      const allNotifications = yield Notification.find({users: ObjectId(user_id) });
+
+      const readNotifications = allNotifications.filter(notification =>{
+        return (notification.read === undefined || notification.read === false);
+      });
+
+      res.json({
+        status: {
+          success: true,
+          unread:readNotifications.length,
+          total:allNotifications.length
+        },
+        body: updateResult
+      });
+    } catch (e) {
+      let errors = {};
+      switch (e.message) {
+        default:
+          errors.unknown = e;
+      }
+      logger.error(errors);
+      res.status(400).json({
+        status: { success: false, errors }
+      });
+    }
+  });
+};
