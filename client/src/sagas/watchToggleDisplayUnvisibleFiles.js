@@ -64,6 +64,8 @@ export function* watchToggleDisplayUnvisibleFiles() {
         payload = yield call(api.fetchFiles, dir_id, 0, sorted, desc, isDisplayUnvisible);
         break;
       }
+      // ページネーションしている場合、Yoffsetを記憶しているので強制的にスクロールトップする
+      yield put(actions.initFilePagination());
       yield put(actions.initFiles(payload.data.body));
       yield put(actions.initFileTotal(payload.data.status.total));
     }
