@@ -10,7 +10,9 @@
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
     "analyze": "babel-node batchs/index.js analyze",
     "init-elasticsearch": "babel-node batchs/index.js initElasticsearch",
-    "move-unvisible-files": "babel-node batchs/index.js moveUnvisibleFiles" 
+    "move-unvisible-files": "babel-node batchs/index.js moveUnvisibleFiles",
+    "create-admin": "babel-node batchs/index.js createAdmin",
+    "delete-admin": "babel-node batchs/index.js deleteAdmin"
   },
   "dependencies": {
     "babel-runtime": "6.26.0",

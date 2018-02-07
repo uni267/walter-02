@@ -46,6 +46,13 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   case "moveUnvisibleFiles":
     tasks.moveInvisibleFilesTask();
     break;
+  case "createAdmin":
+    tasks.createAdminTask();
+    break;
+    break;
+  case "deleteAdmin":
+    tasks.deleteAdminTask();
+    break;
   default:
     throw new Error("引数が不正です。");
   }
