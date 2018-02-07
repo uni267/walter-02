@@ -737,12 +737,10 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         // メタ情報、文字列
         if (q.meta_info_id && q.value_type === "String") {
           return {
-            match: {
-              [`file.${q.meta_info_id}`]: {
-                query: q.value,
-                operator: "and",
-                analyzer: "kuromoji"
-              }
+            query_string: {
+              query: escapeRegExp( q.value.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
+              default_operator: "AND",
+              fields: [ `file.${q.meta_info_id}` ]
             }
           };
         }
@@ -819,12 +817,10 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
         // メタ情報以外の文字列
         return {
-          match: {
-            [`file.${q.name}`]: {
-                query: q.value,
-                operator: "and",
-                analyzer: "kuromoji"
-            }
+          query_string: {
+            query: escapeRegExp( q.value.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
+            default_operator: "AND",
+            fields: [ `file.${q.name}` ]
           }
         };
       });
