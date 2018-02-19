@@ -14,6 +14,7 @@ import IconMenu from "material-ui/IconMenu";
 import IconButton from 'material-ui/IconButton';
 import { List, ListItem } from "material-ui/List";
 import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import HelpIcon from 'material-ui/svg-icons/action/help';
 import Popover from 'material-ui/Popover';
 
 // lodash
@@ -116,6 +117,12 @@ const AppNavBar = ({
             <ListItem  primaryText="ログアウト" onTouchTap={handleLogout} />
           </List>
         </IconMenu>
+
+        <IconButton iconStyle={{ color: "white" }} onClick={() => {
+            window.open(`/manuals/${tenant.name}/manual.pdf`, '_blank');
+          }} >
+          <HelpIcon />
+        </IconButton>
       </div>
     );
 
