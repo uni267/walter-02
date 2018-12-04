@@ -1,0 +1,31 @@
+version: "3"
+services:
+  nodejs:
+    build: nodejs
+    command: bash -c "cd /webapp/lib/configs && cp server.js.dist server.js && npm start"
+    volumes:
+      - /webapp:../server
+    ports:
+      - 3000:3333
+  mongo:
+    image: mongo:3.4.10
+    command: mongod --dbpath /data/db --port 27017
+    volumes:
+      - /webapp:../server
+    ports:
+      - 27017:27017
+
+  elastic:
+    build: elastic
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - /webapp:../server
+
+  swift:
+    image: morrisjobke/docker-swift-onlyone
+    ports:
+      - 8080:8080
+    volumes:
+      - /webapp:../server
