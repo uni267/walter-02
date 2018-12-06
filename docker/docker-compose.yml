@@ -22,7 +22,7 @@ services:
       - ../server:/webapp
   nodejs:
     build: nodejs
-    command: bash -c "cd /webapp && npm install && if [ ! -f lib/configs/server.js ]; then cp lib/configs/server.js.dist lib/configs/server.js; fi && npm start"
+    command: bash -c "cd /webapp && npm install && npm start"
     volumes:
       - ../server:/webapp
     ports:
