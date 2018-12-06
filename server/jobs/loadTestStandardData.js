@@ -146,6 +146,18 @@ db.tags.insert(tags);
 // value_type: ["String", "Number", "Date"]
 var tenant = db.tenants.findOne({ name: "test" });
 
+var meta_infos = [
+  { tenant_id: tenant._id, label: "受信日時", name: "receive_date_time", value_type: "Date" },
+  { tenant_id: tenant._id, label: "送信日時", name: "send_date_time", value_type: "Date" },
+  { tenant_id: tenant._id, label: "送信企業名", name: "send_company_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "送信ユーザ名", name: "send_user_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "受信企業名", name: "receive_company_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "受信ユーザ名", name: "receive_user_name", value_type: "String" },
+  { tenant_id: tenant._id, label: "表示ファイル名", name: "display_file_name", value_type: "String" }
+];
+
+db.meta_infos.insert(meta_infos);
+
 // ===============================
 //  display_items collection
 // ===============================
@@ -188,14 +200,15 @@ var display_items = [
     is_search: true,
     between: true,
     width: "20%",
-    order: 110
+    order: 110,
+    default_sort: { desc: true }
   },
   {
     tenant_id: tenant._id,
     meta_info_id: null,
     label: "メンバー",
     name: "authorities",
-    search_value_type: "Select",
+    search_value_type: null,
     value_type: "Select",
     is_display: true,
     is_excel: true,
