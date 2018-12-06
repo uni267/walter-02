@@ -53,6 +53,7 @@ const task = () => {
         _id: { type:"text", },
         name: {
           type:"text",
+          fielddata: true,
           fields: {
             raw: { type: "keyword" }
           }
