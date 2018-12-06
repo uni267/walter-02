@@ -21,7 +21,7 @@ const FileListHeader = ({
     if (fileSortTarget.sorted === header._id || fileSortTarget.sorted === header.meta_info_id ) {
       actions.toggleSortTarget();
     } else {
-      actions.setSortTarget( header.meta_info_id === null ? header._id : header.meta_info_id );
+      actions.setSortTarget( header.meta_info_id === null ? header.name : header.meta_info_id );
     }
   };
 
@@ -44,7 +44,7 @@ const FileListHeader = ({
       </div>
     );
   }
-  else if ( header.name === "action") {
+  else if ( header.name === "action" || header.name === "authorities") {
     return (
       <div key={idx} style={{ ...style, width: header.width}}>
         <div style={{
@@ -61,7 +61,10 @@ const FileListHeader = ({
   else {
     let sortIcon;
 
-    if ( header._id === fileSortTarget.sorted || fileSortTarget.sorted === header.meta_info_id  ) {
+    if ( header._id === fileSortTarget.sorted
+         || fileSortTarget.sorted === header.meta_info_id
+         || header.name === fileSortTarget.sorted
+       ) {
       if (fileSortTarget.desc) {
         sortIcon = <ContentSort />;
       }
