@@ -25,9 +25,9 @@ services:
       - ../server:/webapp
   nodejs:
     build: nodejs
-    command: bash -c "cd /webapp && npm install && npm start"
+    command: bash -c "cd /webapp/server && npm install && npm start"
     volumes:
-      - ../server:/webapp
+      - ../:/webapp
     ports:
       - 23000:3333
     depends_on:

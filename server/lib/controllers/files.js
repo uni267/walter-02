@@ -896,12 +896,17 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
 
-      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
       const _sort = yield createSortOption(sort, order);
 
-      let files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      let files;
+      if (mongoose.Types.ObjectId.isValid(sort)) {
+        files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      } else {
+        files = yield File.searchFiles(conditions, 0, limit, _sort);
+      }
+
       files = files.map( file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
