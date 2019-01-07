@@ -29,9 +29,18 @@ services:
     volumes:
       - ../:/webapp
     ports:
-      - 23000:3333
+      - 23333:3333
     depends_on:
       - mongo
       - elastic
       - swift
       
+  react:
+    command: bash -c "cd /webapp/client && npm install && npm start"
+    build: react
+    volumes:
+      - ../:/webapp
+    ports:
+      - 23000:3000
+    depends_on:
+      - nodejs
