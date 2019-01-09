@@ -6,12 +6,12 @@ services:
     volumes:
       - ../server:/webapp
     ports:
-      - 37017:27017
+      - $MONGO_PORTS:27017
   elastic:
     build: elastic
     ports:
-      - 29200:9200
-      - 29300:9300
+      - $ELASTIC_PORTS1:9200
+      - $ELASTIC_PORTS2:9300
     volumes:
       - ../server:/webapp
     environment:
@@ -20,7 +20,7 @@ services:
   swift:
     image: morrisjobke/docker-swift-onlyone
     ports:
-      - 28080:8080
+      - $SWIFT_PORTS:8080
     volumes:
       - ../server:/webapp
   nodejs:
@@ -29,18 +29,18 @@ services:
     volumes:
       - ../:/webapp
     ports:
-      - 23333:3333
+      - $NODEJS_PORTS:3333
     depends_on:
       - mongo
       - elastic
       - swift
-      
+
   react:
     command: bash -c "cd /webapp/client && npm install && npm start"
     build: react
     volumes:
       - ../:/webapp
     ports:
-      - 23000:3000
+      - $REACT_PORTS:3000
     depends_on:
       - nodejs
