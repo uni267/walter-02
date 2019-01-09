@@ -1,0 +1,46 @@
+version: "3"
+services:
+  mongo:
+    image: mongo:3.4.10
+    command: mongod --dbpath /data/db --port 27017
+    volumes:
+      - ../server:/webapp
+    ports:
+      - $MONGO_PORTS:27017
+  elastic:
+    build: elastic
+    ports:
+      - $ELASTIC_PORTS1:9200
+      - $ELASTIC_PORTS2:9300
+    volumes:
+      - ../server:/webapp
+    environment:
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+
+  swift:
+    image: morrisjobke/docker-swift-onlyone
+    ports:
+      - $SWIFT_PORTS:8080
+    volumes:
+      - ../server:/webapp
+  nodejs:
+    build: nodejs
+    command: bash -c "cd /webapp/server && npm install && npm start"
+    volumes:
+      - ../:/webapp
+    ports:
+      - $NODEJS_PORTS:3333
+    depends_on:
+      - mongo
+      - elastic
+      - swift
+
+  react:
+    command: bash -c "cd /webapp/client && npm install && npm start"
+    build: react
+    volumes:
+      - ../:/webapp
+    ports:
+      - $REACT_PORTS:3000
+    depends_on:
+      - nodejs

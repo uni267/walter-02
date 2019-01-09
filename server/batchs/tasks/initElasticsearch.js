@@ -51,7 +51,13 @@ const task = () => {
 
       const file_properties={
         _id: { type:"text", },
-        name: { type:"text", fielddata:true },
+        name: {
+          type:"text",
+          fielddata: true,
+          fields: {
+            raw: { type: "keyword" }
+          }
+        },
         mime_type: { type:"text", index: false },
         size: { type:"long", index: false },
         is_dir: { type:"boolean" },
@@ -61,7 +67,13 @@ const task = () => {
         is_trash: { type:"boolean" },
         is_crypted: { type:"boolean", index: false },
         is_deleted: { type:"boolean" },
-        modified: { type:"date", index: false },
+        modified: {
+          type:"date",
+          index: true,
+          fields: {
+            raw: { type: "keyword" }
+          }
+        },
         preview_id: { type:"text", index: false },
         authorities: { type:"nested" },
         dirs: { type:"nested" },

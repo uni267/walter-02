@@ -29,13 +29,15 @@ export function* watchFetchFiles() {
         if (sorted === null) {
           let defaultSort = yield call(api.fetchDisplayItems);
           defaultSort = defaultSort.data.body.filter( item => item.default_sort );
-
           defaultSort = defaultSort.length > 0 ? defaultSort[0] : null;
-          
+          const _defaultSort = defaultSort.meta_info_id === null
+                ? defaultSort.name
+                : defaultSort.meta_info_id;
+
           [ files, dirs ] = yield all([
-            call(api.fetchFiles, dir_id, page, defaultSort.meta_info_id, defaultSort.default_sort.desc, isDisplayUnvisible),
+            call(api.fetchFiles, dir_id, page, _defaultSort, defaultSort.default_sort.desc, isDisplayUnvisible),
             call(api.fetchDirs, dir_id),
-            put(actions.setSortTarget(defaultSort.meta_info_id))
+            put(actions.setSortTarget(_defaultSort))
           ]);
         }
         else {

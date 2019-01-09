@@ -1,25 +1,5 @@
-// ===============================
-//  all collection drop
-// ===============================
-db.files.drop();
-db.dirs.drop();
-db.tenants.drop();
-db.groups.drop();
-db.users.drop();
-db.tags.drop();
-db.meta_infos.drop();
-db.display_items.drop();
-db.actions.drop();
-db.menus.drop();
-db.role_files.drop();
-db.role_menus.drop();
-db.previews.drop();
-db.authority_files.drop();
-db.authority_menus.drop();
-db.notifications.drop();
-db.file_meta_infos.drop();
-db.download_infos.drop();
-db.app_settings.drop();
+// [important] テナント名
+var tenantName = "test1";
 
 // ===============================
 //  files collection
@@ -30,7 +10,7 @@ var files = [
     name: "Top",
     modified: "2017-01-01 10:00",
     is_dir: true,
-    dir_id: 0,
+    dir_id: tenantName,
     is_display: false,
     authority_files: []
   },
@@ -38,7 +18,7 @@ var files = [
     name: "Trash",
     modified: "2017-01-01 10:00",
     is_dir: true,
-    dir_id: 0,
+    dir_id: tenantName,
     is_display: false,
     authority_files: []
   }
@@ -50,8 +30,8 @@ db.files.insert(files);
 //  dirs collection
 // ===============================
 
-var top_id = db.files.findOne({ name: "Top" }, { _id: 1 })._id;
-var trash_id = db.files.findOne({ name: "Trash" }, { _id: 1 })._id;
+var top_id = db.files.findOne({ name: "Top", dir_id: tenantName }, { _id: 1 })._id;
+var trash_id = db.files.findOne({ name: "Trash", dir_id: tenantName }, { _id: 1 })._id;
 
 var dirs = [
   { ancestor: top_id, descendant: top_id, depth: 0 },
@@ -67,12 +47,13 @@ db.dirs.insert(dirs);
 
 // tenants
 var tenant = {
-  name: "test",
+  name: tenantName,
   home_dir_id: top_id,
   trash_dir_id: trash_id,
   threshold: 1024 * 1024 * 1024 * 100
 };
 db.tenants.insert(tenant);
+var tenant = db.tenants.findOne({ name: tenantName }, { _id: 1});
 
 // ===============================
 // groups collection
@@ -82,13 +63,13 @@ var groups = [
     name: "全社",
     description: "全社員が所属するグループ",
     role_files: [],
-    tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
+    tenant_id: tenant._id
   },
   {
     name: "管理者",
     description: "システム管理者",
     role_files: [],
-    tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
+    tenant_id: tenant._id
   }
 ];
 
@@ -107,8 +88,8 @@ var user1 = {
   email: "test",
   password: pass,
   enabled: true,
-  groups: [ db.groups.findOne({ name: "全社" }, {_id: 1})._id ],
-  tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
+  groups: [ db.groups.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1})._id ],
+  tenant_id: tenant._id
 };
 
 var user2 = {
@@ -118,8 +99,8 @@ var user2 = {
   email: "taro",
   password: pass,
   enabled: true,
-  groups: [ db.groups.findOne({ name: "全社" }, {_id: 1})._id ],
-  tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1 })._id
+  groups: [ db.groups.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1})._id ],
+  tenant_id: tenant._id
 };
 
 db.users.insert(user1);
@@ -133,7 +114,7 @@ var tags = [
   {
     color: "#f55",
     label: "非表示",
-    tenant_id: db.tenants.findOne({ name: "test" }, { _id: 1} )._id
+    tenant_id: tenant._id
   }
 ];
 
@@ -144,16 +125,12 @@ db.tags.insert(tags);
 // ===============================
 
 // value_type: ["String", "Number", "Date"]
-var tenant = db.tenants.findOne({ name: "test" });
+// var tenant = db.tenants.findOne({ name: tenantName });
 
 var meta_infos = [
-  { tenant_id: tenant._id, label: "受信日時", name: "receive_date_time", value_type: "Date" },
-  { tenant_id: tenant._id, label: "送信日時", name: "send_date_time", value_type: "Date" },
-  { tenant_id: tenant._id, label: "送信企業名", name: "send_company_name", value_type: "String" },
-  { tenant_id: tenant._id, label: "送信ユーザ名", name: "send_user_name", value_type: "String" },
-  { tenant_id: tenant._id, label: "受信企業名", name: "receive_company_name", value_type: "String" },
-  { tenant_id: tenant._id, label: "受信ユーザ名", name: "receive_user_name", value_type: "String" },
-  { tenant_id: tenant._id, label: "表示ファイル名", name: "display_file_name", value_type: "String" }
+  { tenant_id: tenant._id, label: "メタ情報1", name: "meta_info_1", value_type: "String" },
+  { tenant_id: tenant._id, label: "メタ情報2", name: "meta_info_2", value_type: "String" },
+  { tenant_id: tenant._id, label: "メタ情報3", name: "meta_info_3", value_type: "String" }
 ];
 
 db.meta_infos.insert(meta_infos);
@@ -161,8 +138,6 @@ db.meta_infos.insert(meta_infos);
 // ===============================
 //  display_items collection
 // ===============================
-var tenant = db.tenants.findOne({ name: "test" });
-
 var display_items = [
   {
     tenant_id: tenant._id,
@@ -263,78 +238,40 @@ var display_items = [
     is_excel: true,
     is_search: false,
     order: 140
-  }
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "meta_info_1", tenant_id: tenant._id })._id,
+    label: "メタ情報1",
+    name: "meta_info_1",
+    is_display: false,
+    is_excel: true,
+    is_search: true,
+    order: 70
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "meta_info_2", tenant_id: tenant._id })._id,
+    label: "メタ情報2",
+    name: "meta_info_2",
+    is_display: false,
+    is_excel: true,
+    is_search: true,
+    order: 71
+  },
+  {
+    tenant_id: tenant._id,
+    meta_info_id: db.meta_infos.findOne({ name: "meta_info_3", tenant_id: tenant._id })._id,
+    label: "メタ情報3",
+    name: "meta_info_3",
+    is_display: false,
+    is_excel: true,
+    is_search: true,
+    order: 72
+  },
 ];
 
 db.display_items.insert(display_items);
-
-// ===============================
-//  actions collection
-// ===============================
-var actions = [
-  {
-    name: "list",
-    label: "一覧表示"
-  },
-  {
-    name: "detail",
-    label: "詳細表示"
-  },
-  {
-    name: "history",
-    label: "履歴情報表示"
-  },
-  {
-    name: "download",
-    label: "ダウンロード"
-  },
-  {
-    name: "change-name",
-    label: "ファイル名変更"
-  },
-  {
-    name: "change-tag",
-    label: "タグ変更"
-  },
-  {
-    name: "change-meta-info",
-    label: "メタ情報変更"
-  },
-  {
-    name: "upload",
-    label: "アップロード"
-  },
-  {
-    name: "makedir",
-    label: "フォルダ作成"
-  },
-  {
-    name: "move",
-    label: "移動"
-  },
-  {
-    name: "copy",
-    label: "複製"
-  },
-  {
-    name: "restore",
-    label: "復元"
-  },
-  {
-    name: "delete",
-    label: "削除"
-  },
-  {
-    name: "revert",
-    label: "ゴミ箱から元に戻す"
-  },
-  {
-    name: "authority",
-    label: "権限変更"
-  }
-];
-
-db.actions.insert(actions);
 
 // ===============================
 //  role_files collection
@@ -350,7 +287,7 @@ var role_files = [
       db.actions.findOne({ name: "history" })._id,
       db.actions.findOne({ name: "download" })._id,
     ],
-    tenant_id: db.tenants.findOne({ name: "test" })._id
+    tenant_id: tenant._id
   },
   {
     name: "編集可能",
@@ -370,7 +307,7 @@ var role_files = [
       db.actions.findOne({ name: "delete" })._id,
       db.actions.findOne({ name: "revert" })._id
     ],
-    tenant_id: db.tenants.findOne({ name: "test" })._id
+    tenant_id: tenant._id
   },
   {
     name: "フルコントロール",
@@ -392,51 +329,11 @@ var role_files = [
       db.actions.findOne({ name: "authority" })._id,
       db.actions.findOne({ name: "move" })._id
     ],
-    tenant_id: db.tenants.findOne({ name: "test" })._id
+    tenant_id: tenant._id
   }
 ];
 
 db.role_files.insert(role_files);
-
-// ===============================
-//  menus collection
-// ===============================
-var menus = [
-  {
-    name: "home",
-    label: "ファイル一覧"
-  },
-  {
-    name: "tags",
-    label: "タグ管理"
-  },
-  {
-    name: "analysis",
-    label: "容量管理"
-  },
-  {
-    name: "users",
-    label: "ユーザ管理"
-  },
-  {
-    name: "groups",
-    label: "グループ管理"
-  },
-  {
-    name: "role_files",
-    label: "ロール管理"
-  },
-  {
-    name: "role_menus",
-    label: "ユーザタイプ管理"
-  },
-  {
-    name: "meta_infos",
-    label: "メタ情報管理"
-  },
-]
-
-db.menus.insert(menus);
 
 var role_menus = [
   {
@@ -446,7 +343,7 @@ var role_menus = [
       db.menus.findOne({ name: "home" })._id,
       db.menus.findOne({ name: "tags" })._id,
     ],
-    tenant_id: db.tenants.findOne({ name: "test" })._id
+    tenant_id: tenant._id
   },
   {
     name: "システム管理者",
@@ -461,25 +358,23 @@ var role_menus = [
       db.menus.findOne({ name: "role_menus" })._id,
       db.menus.findOne({ name: "meta_infos" })._id
     ],
-    tenant_id: db.tenants.findOne({ name: "test" })._id
+    tenant_id: tenant._id
   },
-
-]
+];
 
 db.role_menus.insert(role_menus);
 
 var authority_menus = [{
-  role_menus : db.role_menus.findOne({ name: "一般ユーザ"})._id,
-  users : db.users.findOne({ name: "hanako"})._id,
+  role_menus : db.role_menus.findOne({ name: "一般ユーザ", tenant_id: tenant._id })._id,
+  users : db.users.findOne({ name: "hanako", tenant_id: tenant._id })._id,
   groups : null
 },{
-  role_menus : db.role_menus.findOne({ name: "システム管理者"})._id,
-  users : db.users.findOne({ name: "taro"})._id,
+  role_menus : db.role_menus.findOne({ name: "システム管理者", tenant_id: tenant._id })._id,
+  users : db.users.findOne({ name: "taro", tenant_id: tenant._id })._id,
   groups : null
-}]
+}];
 
 db.authority_menus.insert(authority_menus);
-
 
 var preview = {
   image: null
@@ -487,14 +382,13 @@ var preview = {
 
 db.previews.insert(preview);
 
-
-var role_file_full_controll = db.role_files.findOne({name:"フルコントロール"});
-var role_file_read_only = db.role_files.findOne({name:"読み取りのみ"});
-var top_dir = db.files.findOne({name:"Top"});
-var trash_dir = db.files.findOne({name:"Trash"});
+var role_file_full_controll = db.role_files.findOne({name:"フルコントロール", tenant_id: tenant._id});
+var role_file_read_only = db.role_files.findOne({name:"読み取りのみ", tenant_id: tenant._id});
+var top_dir = db.files.findOne({ name: "Top", dir_id: tenantName }, { _id: 1 });
+var trash_dir = db.files.findOne({ name: "Trash", dir_id: tenantName }, { _id: 1 });
 // var user1 = db.users.findOne(user1); // hanako
 var user2 = db.users.findOne(user2);  // taro
-var group1 = db.groups.findOne({name:"全社"});
+var group1 = db.groups.findOne({ name:"全社", tenant_id: tenant._id });
 
 var authority_files1 = [{
   files: top_dir._id,
@@ -525,22 +419,22 @@ db.authority_files.insert(authority_files2);
 // ===============================
 //  ダウンロードファイルの命名規則
 // ===============================
-var display_file_name_id = db.meta_infos.findOne({name: "display_file_name"})._id;
-var send_date_time_id = db.meta_infos.findOne({name: "send_date_time"})._id;
-var downloadInfo = {
-  type: "file",
-  value:`{${display_file_name_id.str}}{${send_date_time_id.str}:YYYYMMDD}{extension}`,
-  tenant_id: tenant._id,
-  extensionTarget: display_file_name_id
-};
-db.download_infos.insert(downloadInfo);
+// var display_file_name_id = db.meta_infos.findOne({name: "display_file_name"})._id;
+// var send_date_time_id = db.meta_infos.findOne({name: "send_date_time"})._id;
+// var downloadInfo = {
+//   type: "file",
+//   value:`{${display_file_name_id.str}}{${send_date_time_id.str}:YYYYMMDD}{extension}`,
+//   tenant_id: tenant._id,
+//   extensionTarget: display_file_name_id
+// };
+// db.download_infos.insert(downloadInfo);
 
 // ===============================
 //  テナント毎のグローバル設定(app_settings)
 // ===============================
 var settings = [
   {
-    tenant_id: db.tenants.findOne({ name: "test"})._id,
+    tenant_id: tenant._id,
     // ファイル一覧の設定項目
     name: "unvisible_files_toggle",
     description: "非表示属性のファイルを表示/非表示するトグルを表示するか",
@@ -548,7 +442,7 @@ var settings = [
     default_value: false
   },
   {
-    tenant_id: db.tenants.findOne({ name: "test" })._id,
+    tenant_id: tenant._id,
     name: "change_user_password_permission",
     description: "ユーザにパスワード変更の権限を許可するか",
     enable: true,
@@ -557,44 +451,3 @@ var settings = [
 ];
 
 db.app_settings.insert(settings);
-
-// ===============================
-//  外部キーのindex
-// ===============================
-db.files.ensureIndex({ dir_id: 1 });
-db.files.ensureIndex({ preview_id: 1 });
-
-db.authority_files.ensureIndex({ files: 1 });
-db.authority_files.ensureIndex({ role_files: 1 });
-db.authority_files.ensureIndex({ users: 1 });
-db.authority_files.ensureIndex({ groups: 1 });
-
-db.authority_menus.ensureIndex({ role_menus: 1 });
-db.authority_menus.ensureIndex({ users: 1 });
-db.authority_menus.ensureIndex({ groups: 1 });
-
-db.dirs.ensureIndex({ ancestor: 1 });
-db.dirs.ensureIndex({ descendant: 1 });
-
-db.display_items.ensureIndex({ tenant_id: 1 });
-db.display_items.ensureIndex({ meta_info_id: 1 });
-
-db.file_meta_infos.ensureIndex({ file_id: 1 });
-db.file_meta_infos.ensureIndex({ meta_info_id: 1 });
-
-db.groups.ensureIndex({ tenant_id: 1 });
-
-db.meta_infos.ensureIndex({ tenant_id: 1 });
-
-db.notifications.ensureIndex({ users: 1 });
-
-db.role_files.ensureIndex({ tenant_id: 1 });
-
-db.role_menus.ensureIndex({ tenant_id: 1 });
-
-db.tags.ensureIndex({ tenant_id: 1 });
-
-db.tenants.ensureIndex({ home_dir_id: 1 });
-db.tenants.ensureIndex({ trash_dir_id: 1 });
-
-db.users.ensureIndex({ tenant_id: 1 });

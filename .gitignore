@@ -8,7 +8,7 @@
 /server/dump
 /server/uploads
 /server/lib/public/*
-/server/lib/configs/server.js
+#/server/lib/configs/server.js
 /server/logs
 /server/tmp
 

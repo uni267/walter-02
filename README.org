@@ -1,167 +1,46 @@
 #+STARTUP: indent
 
-* 環境設定
-** 共通(osx)
-- nodeが既にインストールされているかの確認
-  nodebrew上にnodejsをインストールしたいので既存のnodeは削除する
-
-#+begin_src 
-$ node --version
+* コンテナ作成
+#+begin_src sh
+$ cd /path/to/repos
+$ cd docker
+$ docker-compose build
+$ docker-compose up -d
 #+end_src
 
-- nodebrewのインストール
-#+begin_src shell
-$ curl -L git.io/nodebrew | perl - setup
+* 開発用db初期化
+#+begin_src sh
+$ docker-compose exec mongo bash -c "mongo walter --quiet /webapp/jobs/loadTestData.js"
 #+end_src
 
-- bashrcにpathを追加
-#+begin_src shell
-$ vi ~/.bashrc
-export PATH=$HOME/.nodebrew/current/bin:$PATH
-
-$ source ~/.bashrc
+* 開発用swift初期化
+#+begin_src sh
+$ docker-compose exec swift swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post test
 #+end_src
 
-- nodejs本体をインストール
-#+begin_src shell
-$ nodebrew install v6.11.0
-$ nodebrew use v6.11.0
-$ node --version
-v6.11.0
+* 開発用es初期化
+#+begin_src sh
+$ docker-compose exec nodejs bash -c "cd /webapp/server && npm run init-elasticsearch test"
+#+end_src
+* imagemagick設定変更
+
+ファイルのプレビュー機能を有効にするため以下の箇所を変更
+#+begin_src sh
+$ docker-compose exec nodejs bash
+$ vi /etc/ImageMagick-6/policy.xml
+
+@@ -69,6 +69,6 @@
+   <!-- disable ghostscript format types -->
+   <policy domain="coder" rights="none" pattern="PS" />
+   <policy domain="coder" rights="none" pattern="EPS" />
+-  <policy domain="coder" rights="none" pattern="PDF" />
++  <policy domain="coder" rights="read/write" pattern="PDF" />
+   <policy domain="coder" rights="none" pattern="XPS" />
+ </policymap> 
 #+end_src
 
-- 任意のパスにcloud storageのリポジトリをclone
-#+begin_src shell
-$ cd /path/to/work
-$ git clone https://github.com/knb-wkm/walter-02.git
-#+end_src
+* 容量集計のバッチ
 
-** サーバサイド
-
-- npm
-#+begin_src shell
-$ cd /path/to/walter-02
-$ cd server
-$ npm install
-#+end_src
-
-- 起動
-#+begin_src shell
-$ npm start
-#+end_src
-
-- libreofficeをインストール
-  guiのインストーラなので手順は割愛
-
-- プレビュー画像作成用(imagemagick, ghostscript)
-#+begin_src shell
-$ brew install imagemagick ghostscript
-#+end_src
-
-** フロントエンド
-
-- npm
-#+begin_src shell
-$ cd /path/to/walter-02
-$ cd client
-$ npm install
-#+end_src
-
-- 起動
-#+begin_src shell
-$ npm start
-#+end_src
-
-** コンテナを作成
-- 事前にmongo, openstack-swiftのコンテナを作成しておく
-- docker serverに以下の内容をdocker-compose.ymlとして保存する
-#+begin_src yaml
-version: "2"
-services:
-  mongo:
-    container_name: "walter-db2"
-    image: "mongo"
-    privileged: true
-    networks:
-      platform:
-        ipv4_address: 172.16.55.xx
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/tmp:/tmp"
-    environment:
-      LANG: "ja_JP.UTF-8"
-  swift:
-    container_name: "walter-swift2"
-    image: "morrisjobke/docker-swift-onlyone"
-    privileged: true
-    networks:
-      platform:
-        ipv4_address: 172.16.55.xx
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/tmp:/tmp"
-    environment:
-      LANG: "ja_JP.UTF-8"
-networks:
-  platform:
-    external: true
-#+end_src
-
-- docker-compose実行
-#+begin_src shell
-$ sudo /usr/local/bin/docker-compose -d up
-#+end_src
-
-** mongoのセットアップ
-
-- mongoをインストール
-#+begin_src shell
-$ brew install mongodb
-#+end_src
-
-- データ投入
-#+begin_src shell
-$ cd /path/to/walter-02/server/jobs
-
-# 部内Dockerのmongodbを指定する
-$ mongo 172.16.55.xx/walter --quiet loadTestData.js
-#+end_src
-
-** openstack swiftのセットアップ
-
-- swift上にwalterのコンテナ(swiftでいうところのコンテナ)を作成する
-- swiftのdocker containerにbashにてログインしコンテナを作成
-#+begin_src shell
-$ sudo docker exec -it walter-swiftx /bin/bash
-$ swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post walter
-#+end_src
-
-** node(server side)のリソース参照先を設定
-
-- server.js.distをリネームし、先ほど作成したコンテナのアドレスを設定する
-#+begin_src shell
-$ cd /path/to/repos/server/configs
-$ cp server.js.dist server.js
-$ vi server.js
-#+end_src
-
-- server.jsの以下を編集
-#+begin_src js
-export const SERVER_CONF = {
-  development: {
-    url: "mongodb://172.16.55.xx",  // <- mongoのip
-    db_name: "walter",
-    port: 3333
-  }
-...
-export const STORAGE_CONF = {
-  // virtualbox
-  development: {
-    provider: "openstack",
-    username: "test:tester",
-    password: "testing",
-    authUrl: "http://172.16.55.75:8080/auth/v1.0",  // <- swiftのip
-    version: 1
-  }
-...
+#+begin_src sh
+$ docker-compose exec nodejs bash -c "cd /webapp/server && npm run analyze"
 #+end_src

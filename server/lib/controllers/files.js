@@ -82,7 +82,6 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
 
-      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
       const sortOption = yield createSortOption(sort, order);
 
@@ -162,7 +161,12 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
 
-      let files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
+      let files;
+      if (mongoose.Types.ObjectId.isValid(sort)) {
+        files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
+      }  else {
+        files = yield File.searchFiles(conditions, 0, limit, sortOption);
+      }
 
       files = files.map( file => {
         file.actions = extractFileActions(file.authorities, res.user);
@@ -497,12 +501,18 @@ export const search = (req, res, next, export_excel=false) => {
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
 
-      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
+      // if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
       const _sort = yield createSortOption(sort, order);
 
-      let files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      let files;
+      if (mongoose.Types.ObjectId.isValid(sort)) {
+        files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      } else {
+        files = yield File.searchFiles(conditions, 0, limit, _sort);
+      }
+
       files = files.map( file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
@@ -886,12 +896,17 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
       const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
 
-      if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
       const _sort = yield createSortOption(sort, order);
 
-      let files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      let files;
+      if (mongoose.Types.ObjectId.isValid(sort)) {
+        files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+      } else {
+        files = yield File.searchFiles(conditions, 0, limit, _sort);
+      }
+
       files = files.map( file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
@@ -2820,31 +2835,36 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
     sort["id"] = order;
 
   } else {
-    const conditions = { _id: mongoose.Types.ObjectId(_sort) };
-    const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
-      meta = meta.toObject();
-      meta.meta_info_id = meta._id;
-      return meta;
-    });
+    let conditions, metaInfos;
+    if (mongoose.Types.ObjectId.isValid(_sort)) {
+      conditions = { _id: mongoose.Types.ObjectId(_sort) };
+      metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+        meta = meta.toObject();
+        meta.meta_info_id = meta._id;
+        return meta;
+      });
 
-    const displayItems = (yield DisplayItem.find({
-      ...conditions,
-      name: { $nin: ["file_checkbox", "action"] }
-    })).map(items => items.toObject()) ;
+      const displayItems = (yield DisplayItem.find({
+        ...conditions,
+        name: { $nin: ["file_checkbox", "action"] }
+      })).map(items => items.toObject()) ;
 
-    const item = metaInfos.concat(displayItems)[0];
-    if (item.meta_info_id === null) {
-      // メタ情報以外でのソート
-      sort[item.name] = order;
-    } else if(item.meta_info_id !== null) {
-      // メタ情報でのソート
-      sort = {
-        "is_dir":"desc",
-        "sort_target": order
-      };
+      const item = metaInfos.concat(displayItems)[0];
+      if (item.meta_info_id === null) {
+        // メタ情報以外でのソート
+        sort[item.name] = order;
+      } else if(item.meta_info_id !== null) {
+        // メタ情報でのソート
+        sort = {
+          "is_dir":"desc",
+          "sort_target": order
+        };
+      } else {
+        // @fixme
+        sort["id"] = order;
+      }
     } else {
-      // @fixme
-      sort["id"] = order;
+      sort["sort_target"] = order;
     }
   }
   sort["name"] = order;
