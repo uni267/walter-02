@@ -44,7 +44,11 @@ class File extends Component {
     if (header.meta_info_id === null) {
       if (header.name === "authorities") {
         body = this.renderMember();
-      } else {
+      }
+      else if (header.value_type === "Date") {
+        body = moment(file[header.name]).format("YYYY-MM-DD HH:mm");
+      }
+      else {
         body = file[header.name];
       }
     } else {
