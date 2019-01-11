@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 RUN set -x \
     && apt-get update \
     && apt-get install -y locales language-pack-ja libreoffice-l10n-ja libreoffice imagemagick ghostscript nkf curl fonts-ipa* fonts-takao* \
-    && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt-get install -y nodejs build-essential git vim \
     && mkdir /webapp \
     && cd /webapp \
@@ -15,10 +15,10 @@ RUN set -x \
     && cp lib/configs/server.js.dist lib/configs/server.js \
     && cd ../client \
     && npm install \
-    && npm run build 
+    && npm run build
 
 EXPOSE 3333
 
 CMD ["node"]
-    
+
 
