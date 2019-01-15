@@ -9,10 +9,12 @@
     "serve": "node dist/index.js",
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
     "analyze": "babel-node batchs/index.js analyze",
+    "addTenant": "babel-node batchs/index.js addTenant",
     "init-elasticsearch": "babel-node batchs/index.js initElasticsearch",
     "move-unvisible-files": "babel-node batchs/index.js moveUnvisibleFiles",
     "create-admin": "babel-node batchs/index.js createAdmin",
-    "delete-admin": "babel-node batchs/index.js deleteAdmin"
+    "delete-admin": "babel-node batchs/index.js deleteAdmin",
+    "debug_main": "nodemon lib/index.js --exec babel-node --inspect-brk=9229"
   },
   "dependencies": {
     "babel-runtime": "6.26.0",

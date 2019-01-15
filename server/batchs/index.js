@@ -14,7 +14,7 @@ let url;
 let db_name;
 
 switch (mode) {
-
+  
 case "integration":
   url = SERVER_CONF.integration.url;
   db_name = SERVER_CONF.integration.db_name;
@@ -37,8 +37,11 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   case "analyze":
     tasks.AnalyzeTask();
     break;
-  case "perfTest":
+    case "perfTest":
     tasks.PerfTest();
+    break;
+  case "addTenant":
+    tasks.addTenantTask();
     break;
   case "initElasticsearch":
     tasks.initElasticsearchTask();
