@@ -32,3 +32,6 @@ yarn-error.log*
 client/.vscode/*
 server/.vscode/*
 *.code-workspace
+
+
+.vscode
