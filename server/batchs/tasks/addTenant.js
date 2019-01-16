@@ -19,6 +19,7 @@ import AuthorityMenu from "../../lib/models/AuthorityMenu";
 import AuthorityFile from "../../lib/models/AuthorityFile";
 import Preview from "../../lib/models/Preview";
 import AppSetting from "../../lib/models/AppSetting";
+import DownloadInfo from "../../lib/models/DownloadInfo";
 
 import Tag from "../../lib/models/Tag";
 import DisplayItem from "../../lib/models/DisplayItem";
@@ -29,31 +30,13 @@ const task = async () => {
 
   const tenantName = 'share'
 
-  // // fileコレクション
-  // const topDir = new File();
-  // topDir.name =  "Top";
-  // topDir.modified = "2019-01-01 10:00";
-  // topDir.is_dir = true;
-  // topDir.dir_id =  0.0;
-  // topDir.is_display =  false;
-  // topDir.authority_files =  [];
-  // await topDir.save();
-
-  // const trashDir = new File();
-  // trashDir.name =  "Trash";
-  // trashDir.modified = "2019-01-01 10:00";
-  // trashDir.is_dir = true;
-  // trashDir.dir_id =  0.0;
-  // trashDir.is_display =  false;
-  // trashDir.authority_files =  [];
-  // await topDir.save();
   /*
     ※あらかじめ、以下をmongoコンソールで実行しておくこと。
 
     var files = [
       {
         name: "Top",
-        modified: "2019-01-01 10:00",
+        modified: new Date(2019, 0, 1),
         is_dir: true,
         dir_id: 0.0,
         is_display: false,
@@ -61,7 +44,7 @@ const task = async () => {
       },
       {
         name: "Trash",
-        modified: "2019-01-01 10:00",
+        modified: new Date(2019, 0, 1),
         is_dir: true,
         dir_id: 0.0,
         is_display: false,
@@ -72,12 +55,8 @@ const task = async () => {
     db.files.insert(files);
 
   */
-  //const topDir = await File.findOne({ name: 'Top', modified: "2019-01-01 10:00"})
-  //const trashDir = await File.findOne({ name: 'Trash', modified: "2019-01-01 10:00" })
-  const topDir = await File.findOne({ name: 'Top', _id: Types.ObjectId("5c3d8efcebc3106d428ee89d")}) // Top
-  const trashDir = await File.findOne({ name: 'Trash', _id: Types.ObjectId("5c3d8efcebc3106d428ee89e")}) // Trash
-  //const topDir = await File.findOne({ name: 'Top'})
-  //const trashDir = await File.findOne({ name: 'Trash'})
+  const topDir = await File.findOne({ name: 'Top', modified: {"$gte": new Date(2019, 0, 1)}})
+  const trashDir = await File.findOne({ name: 'Trash', modified: {"$gte": new Date(2019, 0, 1)} })
   console.log(topDir)
   console.log(trashDir)
 
@@ -376,18 +355,17 @@ await AuthorityFile.insertMany([{
   groups : null
 }]);
 
-  // // ===============================
-  // //  ダウンロードファイルの命名規則
-  // // ===============================
-  // var display_file_name_id = db.meta_infos.findOne({name: "display_file_name"})._id;
-  // var send_date_time_id = db.meta_infos.findOne({name: "send_date_time"})._id;
-  // var downloadInfo = {
-  //   type: "file",
-  //   value:`{${display_file_name_id.str}}{${send_date_time_id.str}:YYYYMMDD}{extension}`,
-  //   tenant_id: tenant._id,
-  //   extensionTarget: display_file_name_id
-  // };
-  // db.download_infos.insert(downloadInfo);
+  // ===============================
+  //  ダウンロードファイルの命名規則
+  // ===============================
+  var display_file_name_id = (await MetaInfo.findOne({name: "display_file_name"}))._id;
+  var send_date_time_id = (await MetaInfo.findOne({name: "send_date_time"}))._id;
+  await DownloadInfo.insertMany([{
+    type: "file",
+    value:`{${display_file_name_id}}{${send_date_time_id}:YYYYMMDD}{extension}`,
+    tenant_id: tenant._id,
+    extensionTarget: display_file_name_id
+  }]);
 
 // ===============================
 //  テナント毎のグローバル設定(app_settings)
