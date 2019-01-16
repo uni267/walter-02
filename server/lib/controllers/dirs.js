@@ -476,7 +476,8 @@ export const getDescendants = (dir_id) => {
 }
 
 
-export const view = async (req, res, next) => {
+export const view = (req, res, next) => {
+  co(function* () {
     try {
       // TODO: 詳細の取得処理はfiles.viewとほぼ同じなので共通化する.返却値に差があるので注意
       let { dir_id } = req.params;
@@ -490,7 +491,7 @@ export const view = async (req, res, next) => {
       }
       if( !mongoose.Types.ObjectId.isValid( dir_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
-      const file_ids = await getAllowedFileIds(
+      const file_ids = yield getAllowedFileIds(
         res.user._id, constants.PERMISSION_VIEW_DETAIL
       );
 
@@ -505,7 +506,7 @@ export const view = async (req, res, next) => {
         ]
       };
 
-      const file = await File.searchFileOne(conditions);
+      const file = yield File.searchFileOne(conditions);
 
       if (file === null || file === "" || file === undefined) {
         throw new RecordNotFoundException("指定されたファイルが見つかりません");
@@ -530,4 +531,5 @@ export const view = async (req, res, next) => {
         status: { success: false,message:"ファイルの取得に失敗しました", errors: e }
       });
     }
+  });
 };

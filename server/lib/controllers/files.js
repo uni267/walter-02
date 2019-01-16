@@ -57,7 +57,8 @@ import { Swift } from "../storages/Swift";
 
 import { moveDir } from "./dirs";
 
-export const index = async (req, res, next, export_excel=false, no_limit=false) => {
+export const index = (req, res, next, export_excel=false, no_limit=false) => {
+  return co(function* () {
     try {
       let { dir_id, page ,sort ,order, is_display_unvisible } = req.query;
       const { tenant_id } = res.user;
@@ -68,13 +69,13 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       }
 
       if ( !mongoose.Types.ObjectId.isValid(dir_id) ) throw new ValidationError("dir_id is not valid");
-      const _dir = await File.findById(dir_id);
+      const _dir = yield File.findById(dir_id);
 
       if(_dir === null) throw new RecordNotFoundException("dir is not found");
 
       // 権限チェック
       const file_ids = [
-        ...(await getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
+        ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
         res.user.tenant.home_dir_id,
         res.user.tenant.trash_dir_id
       ];
@@ -82,13 +83,13 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
 
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
-      const sortOption = await createSortOption(sort, order);
+      const sortOption = yield createSortOption(sort, order);
 
       // pagination
       if ( page === undefined || page === null ) page = 0;
       if ( page === "" || isNaN( parseInt(page) ) ) throw new ValidationError("page is not number");
 
-      const action_id = (await Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       // デフォルト表示させたくないファイル
       const isDisplayUnvisible = is_display_unvisible === "true";
@@ -136,13 +137,13 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
         esQuery["size"] = 0;
       }
 
-      let esResult = await esClient.search(esQuery);
+      let esResult = yield esClient.search(esQuery);
       const { total } = esResult.hits;
 
       if(export_excel){
         // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
         esQuery["size"] = total;
-        esResult = await esClient.search(esQuery);
+        esResult = yield esClient.search(esQuery);
       }
 
       const esResultIds = esResult.hits.hits
@@ -162,9 +163,9 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
 
       let files;
       if (mongoose.Types.ObjectId.isValid(sort)) {
-        files = await File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
+        files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
       }  else {
-        files = await File.searchFiles(conditions, 0, limit, sortOption);
+        files = yield File.searchFiles(conditions, 0, limit, sortOption);
       }
 
       files = files.map( file => {
@@ -223,6 +224,7 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       });
 
     }
+  });
 };
 
 export const view = (req, res, next) => {
