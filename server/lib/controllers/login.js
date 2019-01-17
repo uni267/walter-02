@@ -28,7 +28,7 @@ export const authentication = (req, res, next) => {
 
       if (tenant === null) throw "tenant is empty";
 
-      const user = yield User.findOne({ account_name });
+      const user = yield User.findOne({ account_name, tenant_id: tenant._id });
 
       if (user === null) throw "user is empty";
 
