@@ -151,6 +151,10 @@ class Authority extends Component {
             onNewRequest={(text) => this.setState({ user: text })}
             filter={(text, key) => key.indexOf(text) !== -1 }
             openOnFocus={true}
+            menuStyle={{
+              maxHeight: '50vh',
+              overflowY: 'auto',
+            }}
             dataSource={users} />
 
           <AutoComplete
@@ -162,6 +166,10 @@ class Authority extends Component {
             onNewRequest={(text) => this.setState({ role: text }) }
             filter={(text, key) => key.indexOf(text) !== -1 }
             openOnFocus={true}
+            menuStyle={{
+              maxHeight: '50vh',
+              overflowY: 'auto',
+            }}
             dataSource={roles} />
 
           <RaisedButton

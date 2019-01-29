@@ -115,6 +115,10 @@ class GroupDetailContainer extends Component {
                     openOnFocus={true}
                     filter={ (text, key) => key.indexOf(text) !== -1 }
                     dataSource={users}
+                    menuStyle={{
+                      maxHeight: '50vh',
+                      overflowY: 'auto',
+                    }}
                     />
                 </CardText>
               </Card>
