@@ -32,6 +32,7 @@ const CopyDirDialog = ({
       title="フォルダをコピー"
       open={open}
       modal={false}
+      autoScrollBodyContent
       actions={dialogActions} >
 
       <DirTreeContainer />
