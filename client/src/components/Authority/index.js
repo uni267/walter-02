@@ -155,7 +155,7 @@ class Authority extends Component {
               maxHeight: '50vh',
               overflowY: 'auto',
             }}
-            dataSource={users} />
+            dataSource={users.filter(u => u.user.enabled )} />
 
           <AutoComplete
             style={{ marginRight: 30 }}
