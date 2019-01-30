@@ -64,6 +64,10 @@ const UserBelongsToGroup = ({
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}
           dataSource={_groups}
+          menuStyle={{
+            maxHeight: '50vh',
+            overflowY: 'auto',
+          }}
         />
       </div>
     </div>

@@ -41,7 +41,7 @@ class MoveDirDialog extends Component {
         title="フォルダを移動"
         open={this.props.dirTree.moveDirDialogOpen}
         modal={false}
-        autoScrollBodyContent={true}
+        autoScrollBodyContent
         onRequestClose={this.props.toggleMoveDirDialog}
         actions={actions} >
 

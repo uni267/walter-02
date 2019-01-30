@@ -56,6 +56,10 @@ const RoleOfAction = ({
           }}
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}
+          menuStyle={{
+            maxHeight: '50vh',
+            overflowY: 'auto',
+          }}
           dataSource={_actions}
           />
       </div>

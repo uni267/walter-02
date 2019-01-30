@@ -128,6 +128,10 @@ class DetailSearch extends Component {
         dataSource={data_source}
         floatingLabelText={item.label}
         hintText={item.label}
+        menuStyle={{
+          maxHeight: '50vh',
+          overflowY: 'auto',
+        }}
       />
     );
   };

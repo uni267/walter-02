@@ -44,6 +44,7 @@ const MoveFileDialog = ({
       title="ファイルを移動"
       open={open}
       modal={false}
+      autoScrollBodyContent
       actions={dialogActions} >
 
       <DirTreeContainer />

@@ -5,12 +5,12 @@ import { uniq } from "lodash";
 
 // material
 import Checkbox from 'material-ui/Checkbox';
-import TextField from "material-ui/TextField";
+import IconButton from 'material-ui/IconButton';
 
 // mateirla-icon
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import Avatar from "material-ui/Avatar";
+import ImageBrightness from 'material-ui/svg-icons/image/brightness-1';
 
 // components
 import FileDialogMenu from "./FileDialogMenu";
@@ -89,11 +89,15 @@ class File extends Component {
               </div>
               <div style={{ width: "20%" }}>
                 {file.tags.map( tag => (
-                  <Avatar
-                    size={14}
-                    backgroundColor={tag.color}
-                    style={{ marginLeft: 5 }}>
-                  </Avatar>
+                  <IconButton
+                    disableTouchRipple
+                    tooltip={tag.label}
+                    tooltipPosition="top-center"
+                    iconStyle={{ width: 14, height: 14 }}
+                    tooltipStyles={{ top: 8 }}
+                    style={{ marginLeft: 5 }} >
+                    <ImageBrightness color={tag.color} />
+                  </IconButton>
                 ))}
               </div>
             </div>
@@ -130,11 +134,15 @@ class File extends Component {
               </div>
               <div style={{ width: "20%" }}>
                 {file.tags.map( tag => (
-                  <Avatar
-                    size={14}
-                    backgroundColor={tag.color}
-                    style={{ marginLeft: 5 }}>
-                  </Avatar>
+                  <IconButton
+                    disableTouchRipple
+                    tooltip={tag.label}
+                    tooltipPosition="top-center"
+                    iconStyle={{ width: 14, height: 14 }}
+                    tooltipStyles={{ top: 8 }}
+                    style={{ marginLeft: 5 }} >
+                    <ImageBrightness color={tag.color} />
+                  </IconButton>
                 ))}
               </div>
             </div>

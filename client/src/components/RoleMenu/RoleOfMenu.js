@@ -58,6 +58,10 @@ const RoleOfMenu = ({
           openOnFocus={true}
           filter={(text, key) => key.indexOf(text) !== -1}
           dataSource={_menus}
+          menuStyle={{
+            maxHeight: '50vh',
+            overflowY: 'auto',
+          }}
           errorText={validationErrors.menu}
         />
       </div>
