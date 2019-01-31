@@ -17,6 +17,8 @@ import {
   reject,
   chain,
   uniq,
+  uniqWith,
+  isEqualWith,
   findIndex,
   find,
   isNaN,
@@ -1549,25 +1551,48 @@ export const upload = (req, res, next) => {
         name: "フルコントロール" // @fixme
       });
 
-      const authorityFiles = zipWith(files, fileModels, (file, model) => {
-        if (file.hasError) return false;
+      const authorityFiles = yield zipWith(files, fileModels, (file, model) => {
+        return co(function*() {
+          if (file.hasError) return false;
 
-        const authorityFile = new AuthorityFile();
-        authorityFile.users = user._id;
-        authorityFile.files = model;
-        authorityFile.role_files = role._id;
-
-        if (file.authorities.length === 0) return [ authorityFile ];
-
-        const authorityFiles = file.authorities.map( auth => {
           const authorityFile = new AuthorityFile();
-          authorityFile.users = mongoose.Types.ObjectId(auth.users);
+          authorityFile.users = user._id;
           authorityFile.files = model;
-          authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
-          return authorityFile;
-        });
+          authorityFile.role_files = role._id;
 
-        return authorityFiles.concat(authorityFile);
+          let authorityFiles = []
+          const parentFile = yield File.findById(file.dir_id)
+
+          if (parentFile.inherit_on_upload) {
+            const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
+            authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
+              users: mongoose.Types.ObjectId(ihr.users),
+              files: model,
+              role_files: mongoose.Types.ObjectId(ihr.role_files),
+            }))
+          }
+
+          if (file.authorities.length > 0) {
+            authorityFiles = file.authorities.map( auth => {
+              const authorityFile = new AuthorityFile();
+              authorityFile.users = mongoose.Types.ObjectId(auth.users);
+              authorityFile.files = model;
+              authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
+              return authorityFile;
+            }).concat(authorityFiles)
+          }
+
+          authorityFiles = authorityFiles.concat(authorityFile)
+          authorityFiles = uniqWith(authorityFiles, (a, b) => (
+            isEqualWith(a, b, (a, b) => (
+              a.users.toString() === b.users.toString()
+              && a.files.toString() === b.files.toString()
+              && a.role_files.toString() === b.role_files.toString()
+            ))
+          ))
+
+          return Promise.resolve(authorityFiles);
+        })
       });
 
       // メタ情報
