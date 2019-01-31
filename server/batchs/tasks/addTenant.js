@@ -30,7 +30,7 @@ const task = () => {
   co(function* () {
   console.log('start')    
 
-  const tenantName = 'share'
+  const tenantName = 'wakayama'
 
   /*
     ※あらかじめ、以下をmongoコンソールで実行しておくこと。
@@ -38,7 +38,7 @@ const task = () => {
     var files = [
       {
         name: "Top",
-        modified: new Date(2019, 0, 1),
+        modified: new Date(2019, 0, 26),
         is_dir: true,
         dir_id: 0.0,
         is_display: false,
@@ -46,7 +46,7 @@ const task = () => {
       },
       {
         name: "Trash",
-        modified: new Date(2019, 0, 1),
+        modified: new Date(2019, 0, 26),
         is_dir: true,
         dir_id: 0.0,
         is_display: false,
@@ -57,8 +57,8 @@ const task = () => {
     db.files.insert(files);
 
   */
-  const topDir = yield File.findOne({ name: 'Top', modified: {"$gte": new Date(2019, 0, 1)}})
-  const trashDir = yield File.findOne({ name: 'Trash', modified: {"$gte": new Date(2019, 0, 1)} })
+  const topDir = yield File.findOne({ name: 'Top', modified: {"$gte": new Date(2019, 0, 26)}})
+  const trashDir = yield File.findOne({ name: 'Trash', modified: {"$gte": new Date(2019, 0, 26)} })
   console.log(topDir)
   console.log(trashDir)
 
@@ -105,8 +105,8 @@ var pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac1
 
 const user1 = new User();
 user1.type = "user";
-user1.account_name= "hanako2";
-user1.name= "hanako2";
+user1.account_name= "test";
+user1.name= "test";
 user1.email= "test";
 user1.password= pass;
 user1.enabled= true;
@@ -116,9 +116,9 @@ yield user1.save();
 
 const user2 = new User();
 user2.type = "user";
-user2.account_name= "taro2";
-user2.name= "taro2";
-user2.email= "taro";
+user2.account_name= "admin";
+user2.name= "admin";
+user2.email= "admin";
 user2.password= pass;
 user2.enabled= true;
 user2.groups= [ (yield Group.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1}))._id ];
@@ -261,7 +261,7 @@ yield RoleFile.insertMany([
       (yield Action.findOne({ name: "copy" }))._id,
       (yield Action.findOne({ name: "restore" }))._id,
       (yield Action.findOne({ name: "delete" }))._id,
-      (yield Action.findOne({ name: "revert" }))._id
+      //(yield Action.findOne({ name: "revert" }))._id
     ],
     tenant_id: tenant._id
   },
@@ -281,7 +281,7 @@ yield RoleFile.insertMany([
       (yield Action.findOne({ name: "copy" }))._id,
       (yield Action.findOne({ name: "restore" }))._id,
       (yield Action.findOne({ name: "delete" }))._id,
-      (yield Action.findOne({ name: "revert" }))._id,
+      //(yield Action.findOne({ name: "revert" }))._id,
       (yield Action.findOne({ name: "authority" }))._id,
       (yield Action.findOne({ name: "move" }))._id
     ],

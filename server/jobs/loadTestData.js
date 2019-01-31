@@ -399,10 +399,10 @@ var actions = [
     name: "delete",
     label: "削除"
   },
-  {
-    name: "revert",
-    label: "ゴミ箱から元に戻す"
-  },
+  // {
+  //   name: "revert",
+  //   label: "ゴミ箱から元に戻す"
+  // },
   {
     name: "authority",
     label: "権限変更"
@@ -443,7 +443,7 @@ var role_files = [
       db.actions.findOne({ name: "copy" })._id,
       db.actions.findOne({ name: "restore" })._id,
       db.actions.findOne({ name: "delete" })._id,
-      db.actions.findOne({ name: "revert" })._id
+      //db.actions.findOne({ name: "revert" })._id
     ],
     tenant_id: db.tenants.findOne({ name: "test" })._id
   },
@@ -463,7 +463,7 @@ var role_files = [
       db.actions.findOne({ name: "copy" })._id,
       db.actions.findOne({ name: "restore" })._id,
       db.actions.findOne({ name: "delete" })._id,
-      db.actions.findOne({ name: "revert" })._id,
+      //db.actions.findOne({ name: "revert" })._id,
       db.actions.findOne({ name: "authority" })._id,
       db.actions.findOne({ name: "move" })._id
     ],
