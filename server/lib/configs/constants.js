@@ -71,7 +71,7 @@ export const PERMISSION_MOVE = "move";
 export const PERMISSION_COPY = "copy";
 export const PERMISSION_RESTORE = "restore";
 export const PERMISSION_DELETE = "delete";
-export const PERMISSION_REVERT = "revert";
+//export const PERMISSION_REVERT = "revert";  未使用
 export const PERMISSION_AUTHORITY = "authority";
 
 // 権限(menu)
