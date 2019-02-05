@@ -25,7 +25,6 @@ const FileSchema = Schema({
   preview_id: Schema.Types.ObjectId,
   is_crypted: {type:Boolean, default: false},
   unvisible: { type: Boolean, default: false }, // デフォルト表示させたくないファイル
-  inherit_on_upload: { type: Boolean, default: false }
 });
 
 FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_id=null) => {

@@ -12,4 +12,6 @@ const AppSettingSchema = Schema({
 
 const AppSetting = mongoose.model("app_settings", AppSettingSchema, "app_settings");
 
+AppSetting.INHERIT_PARENT_DIR_AUTH = "inherit_parent_dir_auth";
+
 export default AppSetting;

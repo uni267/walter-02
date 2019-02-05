@@ -55,6 +55,7 @@ import AuthorityFile from "../models/AuthorityFile";
 import Action from "../models/Action";
 import FileMetaInfo from "../models/FileMetaInfo";
 import DisplayItem from "../models/DisplayItem";
+import AppSetting from "../models/AppSetting";
 import { Swift } from "../storages/Swift";
 
 import { moveDir } from "./dirs";
@@ -1561,9 +1562,14 @@ export const upload = (req, res, next) => {
           authorityFile.role_files = role._id;
 
           let authorityFiles = []
-          const parentFile = yield File.findById(file.dir_id)
 
-          if (parentFile.inherit_on_upload) {
+          const inheritAuthSetting = yield AppSetting.findOne({
+            tenant_id: user.tenant_id,
+            name: AppSetting.INHERIT_PARENT_DIR_AUTH
+          });
+
+          if (inheritAuthSetting.enable) {
+            const parentFile = yield File.findById(file.dir_id)
             const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
             authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
               users: mongoose.Types.ObjectId(ihr.users),
