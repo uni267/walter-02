@@ -8,7 +8,7 @@ import { API } from "../apis";
 
 function* watchUploadFiles() {
   while (true) {
-    const { dir_id, files } = yield take(actions.uploadFiles().type);
+    const { dir_id, files, disableFileBuffer } = yield take(actions.uploadFiles().type);
     const api = new API();
     yield put(commons.loadingStart());
 
@@ -37,12 +37,14 @@ function* watchUploadFiles() {
       const _files = yield all(files.map( f => readFile(f) ));
       const uploadPayload = yield call(api.filesUploadBlob, dir_id, _files);
 
-      // アップロードダイアログの一覧を更新
-      const buffers = uploadPayload.data.body.map( body => (
-        put(actions.pushFileToBuffer(body))
-      ));
+      if (!disableFileBuffer) {
+        // アップロードダイアログの一覧を更新
+        const buffers = uploadPayload.data.body.map( body => (
+          put(actions.pushFileToBuffer(body))
+        ));
 
-      yield all(buffers);
+        yield all(buffers);
+      }
 
       // ファイル一覧の先頭に追加
       yield put(actions.insertFileRow(uploadPayload.data.body));

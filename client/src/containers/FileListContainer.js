@@ -219,8 +219,9 @@ class FileListContainer extends Component {
   // finder, explorerからファイルをドロップするハンドラ
   handleFileDrop = (item, monitor) => {
     if (monitor) {
+      const disableFileBuffer = true
       this.props.actions.uploadFiles(
-        this.props.match.params.id, monitor.getItem().files
+        this.props.match.params.id, monitor.getItem().files, disableFileBuffer
       );
     }
   }

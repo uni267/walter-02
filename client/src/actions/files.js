@@ -58,8 +58,8 @@ export const requestFetchFiles = (
   type: actionTypes.REQUEST_FETCH_FILES, dir_id, page, sorted, desc
 });
 
-export const uploadFiles = (dir_id, files) => ({
-  type: actionTypes.UPLOAD_FILES, dir_id, files
+export const uploadFiles = (dir_id, files, disableFileBuffer = false) => ({
+  type: actionTypes.UPLOAD_FILES, dir_id, files, disableFileBuffer
 });
 
 export const toggleDeleteFileDialog = (file) => ({
