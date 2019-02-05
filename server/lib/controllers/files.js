@@ -1568,7 +1568,7 @@ export const upload = (req, res, next) => {
             name: AppSetting.INHERIT_PARENT_DIR_AUTH
           });
 
-          if (inheritAuthSetting.enable) {
+          if (inheritAuthSetting && inheritAuthSetting.enable) {
             const parentFile = yield File.findById(file.dir_id)
             const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
             authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
