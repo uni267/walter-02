@@ -2669,7 +2669,7 @@ export const previewExists = (req, res, next) => {
             const previewImage = yield preview.save();
           }
           preview_id = file.preview_id;
-          fs.unlink(path.join(`${tmpFileName}.png`));
+          fs.unlinkSync(path.join(`${tmpFileName}.png`));
         }
       }else{
         if(preview.image === undefined) preview_id = null;
