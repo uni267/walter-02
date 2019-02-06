@@ -8,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 import AutoComplete from "material-ui/AutoComplete";
+import Select from 'react-select';
 
 import { find, findIndex, has } from 'lodash';
 import * as moment from 'moment';
@@ -90,50 +91,67 @@ class DetailSearch extends Component {
     let data_source;
     switch (item.name) {
       case "tag":
-        data_source = this.props.tags.map(tag => tag.label );
+        data_source = this.props.tags.map(tag => ({ value:tag._id, label:tag.label }));
         break;
       case "authorities":
-        data_source = this.props.users.map(user => user.name);
+        data_source = this.props.users.map(user => ({ value:user._id, label:user.name }));
         break;
       default:
         break;
     }
 
     return (
-      <AutoComplete
-        filter={ (searchText, key) => {
-          if(searchText === '') return true
-          return searchText !== '' && key.indexOf(searchText) !== -1
-        }}
-        onNewRequest={e =>{
+      <Select
+        isMulti
+        name="colors"
+        options={data_source}
+        className="basic-multi-select"
+        classNamePrefix="select"
+        onBlur={e => {
           this.execSearch();
         }}
-        onUpdateInput={(searchText, dataSource, params)=>{
-          let value;
-          switch (item.name) {
-            case "tag":
-              const tag = find(this.props.tags, { label:searchText });
-              value = tag === undefined ? "" : tag._id;
-              break;
-            case "authorities":
-              const user = find(this.props.users, { name:searchText });
-              value = user === undefined ? "" : user._id;
-              break;
-            default:
-              break;
-          }
-          if(value !== "") this.appendSearchValue(item, value);
-        }}
-        openOnFocus={true}
-        dataSource={data_source}
-        floatingLabelText={item.label}
-        hintText={item.label}
-        menuStyle={{
-          maxHeight: '50vh',
-          overflowY: 'auto',
+        onChange={selectedValues => {
+          const values = selectedValues.map(v => v.value)
+          values !== "" && this.appendSearchValue(item, values);
         }}
       />
-    );
+
+    // return (
+    //   <AutoComplete
+    //     filter={ (searchText, key) => {
+    //       if(searchText === '') return true
+    //       return searchText !== '' && key.indexOf(searchText) !== -1
+    //     }}
+    //     onNewRequest={e =>{
+    //       this.execSearch();
+    //     }}
+    //     onUpdateInput={(searchText, dataSource, params)=>{
+    //       let value;
+    //       switch (item.name) {
+    //         case "tag":
+    //           const tag = find(this.props.tags, { label:searchText });
+    //           value = tag === undefined ? "" : tag._id;
+    //           break;
+    //         case "authorities":
+    //           const user = find(this.props.users, { name:searchText });
+    //           value = user === undefined ? "" : user._id;
+    //           break;
+    //         default:
+    //           break;
+    //       }
+    //       if(value !== "") this.appendSearchValue(item, value);
+    //     }}
+    //     openOnFocus={true}
+    //     dataSource={data_source}
+    //     floatingLabelText={item.label}
+    //     hintText={item.label}
+    //     menuStyle={{
+    //       maxHeight: '50vh',
+    //       overflowY: 'auto',
+    //     }}
+    //   />
+    // );
+    )
   };
 
   searchBoolField = (item) => {
