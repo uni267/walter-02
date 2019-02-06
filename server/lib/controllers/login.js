@@ -6,6 +6,9 @@ import * as commons from "./commons";
 import { SECURITY_CONF } from "../configs/server";
 import User from "../models/User";
 import Tenant from "../models/Tenant";
+import AppSetting from "../models/AppSetting";
+import { checkFilePermission } from "./files";
+import * as constants from "../configs/constants";
 
 export const authentication = (req, res, next) => {
   co(function* () {
@@ -38,7 +41,10 @@ export const authentication = (req, res, next) => {
 
       if (user.password !== hash) throw "password is invalid";
 
-      const _user = { ...user.toObject(), tenant };
+      const _tenant = { ...tenant.toObject()}
+      _tenant.trash_icon_visibility = yield checkFilePermission(_tenant.trash_dir_id, { ...user.toObject() }._id, constants.PERMISSION_VIEW_LIST);  //ごみ箱アイコンの表示権限有無
+
+      const _user = { ...user.toObject(), tenant: _tenant };
       delete _user.password;
 
       const { secretKey, expiresIn } = SECURITY_CONF.development;
@@ -117,7 +123,10 @@ export const verifyToken = (req, res, next) => {
 
       const tenant = yield Tenant.findOne(user.tenant_id);
 
-      user = { ...user.toObject(), tenant, iat: decoded.iat };
+      const _tenant = { ...tenant.toObject()}
+      _tenant.trash_icon_visibility = yield checkFilePermission(_tenant.trash_dir_id, decoded._id, constants.PERMISSION_VIEW_LIST);  //ごみ箱アイコンの表示権限有無
+
+      user = { ...user.toObject(), tenant: _tenant, iat: decoded.iat };
       delete user.password;
 
       res.json({
@@ -157,3 +166,4 @@ export const verifyToken = (req, res, next) => {
     }
   });
 };
+

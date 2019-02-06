@@ -40,8 +40,8 @@ export const requestLoginFailed = (message, errors) => ({
   type: actionTypes.REQUEST_LOGIN_FAILED, message, errors
 });
 
-export const putTenant = (tenant_id, name, dirId, trashDirId) => ({
-  type: actionTypes.PUT_TENANT, tenant_id, name, dirId, trashDirId
+export const putTenant = (tenant_id, name, dirId, trashDirId, trashIconVisibility) => ({
+  type: actionTypes.PUT_TENANT, tenant_id, name, dirId, trashDirId, trashIconVisibility
 });
 
 export const requestFetchNextFiles = (dir_id, page) => ({

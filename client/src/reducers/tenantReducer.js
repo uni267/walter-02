@@ -15,7 +15,8 @@ const tenantReducer = (state = initialState, action) => {
       tenant_id: action.tenant_id,
       name: action.name,
       dirId: action.dirId, 
-      trashDirId: action.trashDirId
+      trashDirId: action.trashDirId,
+      trashIconVisibility: action.trashIconVisibility
     };
   default:
     return state;

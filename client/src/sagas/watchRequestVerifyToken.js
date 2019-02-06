@@ -11,8 +11,8 @@ export const verify = function* (token){
   const api = new API();
   const payload = yield call(api.verifyToken, token);
   const { user } = payload.data.body;
-  const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
-  yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
+  const { _id, name, home_dir_id, trash_dir_id, trash_icon_visibility } = user.tenant;
+  yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id, trash_icon_visibility));
   yield put(actions.requestFetchAuthorityMenus());
   yield put(actions.requestLoginSuccess("success", user));
 

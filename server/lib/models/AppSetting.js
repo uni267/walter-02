@@ -12,6 +12,7 @@ const AppSettingSchema = Schema({
 
 const AppSetting = mongoose.model("app_settings", AppSettingSchema, "app_settings");
 
-AppSetting.INHERIT_PARENT_DIR_AUTH = "inherit_parent_dir_auth";
+AppSetting.INHERIT_PARENT_DIR_AUTH = "inherit_parent_dir_auth"; //親フォルダの割り当てられたユーザファイル操作権限を継承する
+AppSetting.SHOW_TRASH_ICON_BY_OWN_AUTH = "show_trash_icon_by_own_auth"; //ごみ箱アイコンの表示をTrashフォルダの権限に負う
 
 export default AppSetting;

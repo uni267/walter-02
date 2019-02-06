@@ -52,8 +52,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestLoginSuccess: (message, user_id) => {
     dispatch(actions.requestLoginSuccess(message, user_id));
   },
-  putTenant: (tenant_id, name, dirId, trashDirId) => {
-    dispatch(actions.putTenant(tenant_id, name, dirId, trashDirId));
+  putTenant: (tenant_id, name, dirId, trashDirId, trashIconVisibility) => {
+    dispatch(actions.putTenant(tenant_id, name, dirId, trashDirId, trashIconVisibility));
   },
   requestVerifyToken: (token) => {
     dispatch(actions.requestVerifyToken(token));

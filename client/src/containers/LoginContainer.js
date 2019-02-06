@@ -130,8 +130,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   requestVerifyToken: (token) => {
     dispatch(actions.requestVerifyToken(token));
   },
-  putTenant: (name, dirId, trashDirId) => {
-    dispatch(actions.putTenant(name, dirId, trashDirId));
+  putTenant: (name, dirId, trashDirId, trashIconVisibility) => {
+    dispatch(actions.putTenant(name, dirId, trashDirId, trashIconVisibility));
   }
 });
 

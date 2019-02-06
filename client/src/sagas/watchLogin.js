@@ -20,8 +20,8 @@ function* watchLogin() {
       const payload = yield call(api.login, account_name, password, tenant_name);
       const { user, token } = payload.data.body;
       localStorage.setItem("token", token);
-      const { _id, name, home_dir_id, trash_dir_id } = user.tenant;
-      yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id));
+      const { _id, name, home_dir_id, trash_dir_id, trash_icon_visibility } = user.tenant;
+      yield put(actions.putTenant(_id, name, home_dir_id, trash_dir_id, trash_icon_visibility));
       yield put(actions.requestLoginSuccess("success", user._id));
     }
     catch (e) {

@@ -100,7 +100,13 @@ class FileActionContainer extends Component {
             />
         )}
       ];
-      return dirActions.filter(action => (find( this.props.dirAction.actions , {"name":action.name}) !== undefined )).map((actions,idx) => actions.component());
+      const show_trash_icon_by_own_auth = ( find( this.props.appSettings, {name: 'show_trash_icon_by_own_auth', enable: true}) !== undefined)
+      return dirActions
+          .filter(action => {
+            if(action.name === constants.PERMISSION_DELETE && show_trash_icon_by_own_auth ) return this.props.tenant.trashIconVisibility;
+            return (find( this.props.dirAction.actions , {"name":action.name}) !== undefined )
+          })
+          .map((actions,idx) => actions.component());
     }
 
     const hasDir = (findIndex(this.props.checkedFiles,{"is_dir":true}) >= 0 )
@@ -202,6 +208,7 @@ class FileActionContainer extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    appSettings: state.appSettings,
     checkedFiles: state.files.filter( file => file.checked ),
     filesBuffer: state.filesBuffer,
     roles: state.roles,
