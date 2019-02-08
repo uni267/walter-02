@@ -838,7 +838,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         };
       });
 
-      const must = [ ...esQueryMustsBase, _queries ];
+      const must = [ ...esQueryMustsBase, ..._queries ];
 
       const esQuery = {
         index: tenant_id.toString(),
