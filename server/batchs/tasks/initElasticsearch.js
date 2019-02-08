@@ -79,7 +79,8 @@ const task = () => {
         dirs: { type:"nested" },
         unvisible: { type: "boolean" },
         sort_target: { type:"text", index: false },
-        actions:{ properties:{}}
+        actions:{ properties:{}},
+        tag: { type: "text" }
       };
 
       // meta_infoのマッピング

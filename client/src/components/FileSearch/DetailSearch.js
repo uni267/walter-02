@@ -111,8 +111,8 @@ class DetailSearch extends Component {
           this.execSearch();
         }}
         onChange={selectedValues => {
-          const values = selectedValues.map(v => v.value)
-          values !== "" && this.appendSearchValue(item, values);
+          const value = selectedValues.map(v => v.value).join(" ")
+          value !== "" && this.appendSearchValue(item, value);
         }}
       />
 

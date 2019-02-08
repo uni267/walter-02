@@ -47,6 +47,9 @@ esClient.createIndex = co.wrap(
             _id: file._id
           }
         });
+
+        const tags = file.tags.map(t => t._id)
+
         const esFile = {
           _id: file._id,
           name: file.name,
@@ -62,7 +65,8 @@ esClient.createIndex = co.wrap(
           // modified: file.modified,
           preview_id: file.preview_id,
           sort_target: file.sort_target,
-          unvisible: file.unvisible
+          unvisible: file.unvisible,
+          tag: tags
         };
 
         file.meta_infos.forEach(meta =>{
