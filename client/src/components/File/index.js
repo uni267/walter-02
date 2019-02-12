@@ -88,8 +88,9 @@ class File extends Component {
                 {body}
               </div>
               <div style={{ width: "20%" }}>
-                {file.tags.map( tag => (
+                {file.tags.map((tag, tagIdx) => (
                   <IconButton
+                    key={(idx * 100) + tagIdx}
                     disableTouchRipple
                     tooltip={tag.label}
                     tooltipPosition="top-center"
@@ -133,8 +134,9 @@ class File extends Component {
                 </div>
               </div>
               <div style={{ width: "20%" }}>
-                {file.tags.map( tag => (
+                {file.tags.map((tag, tagIdx) => (
                   <IconButton
+                    key={(idx * 100) + tagIdx}
                     disableTouchRipple
                     tooltip={tag.label}
                     tooltipPosition="top-center"

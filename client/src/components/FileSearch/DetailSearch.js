@@ -8,11 +8,15 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from "material-ui/IconButton";
 import ContentRemoveCircleOutline from "material-ui/svg-icons/content/remove-circle-outline";
 import AutoComplete from "material-ui/AutoComplete";
-import Select from 'react-select';
+import Avatar from "material-ui/Avatar";
 
 import { find, findIndex, has } from 'lodash';
 import * as moment from 'moment';
 import dateTimeFormatter from '../../helper/dateTimeFormatter'
+import MultipleAutoComplete from "./MultipleAutoComplete";
+
+// mateirla-icon
+import ImageBrightness from 'material-ui/svg-icons/image/brightness-1';
 
 class DetailSearch extends Component {
   constructor(props) {
@@ -91,7 +95,59 @@ class DetailSearch extends Component {
     let data_source;
     switch (item.name) {
       case "tag":
-        data_source = this.props.tags.map(tag => ({ value:tag._id, label:tag.label }));
+        data_source = this.props.tags.map(tag => tag.label );
+        break;
+      case "authorities":
+        data_source = this.props.users.map(user => user.name);
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <AutoComplete
+        filter={ (searchText, key) => {
+          if(searchText === '') return true
+          return searchText !== '' && key.indexOf(searchText) !== -1
+        }}
+        onNewRequest={e =>{
+          this.execSearch();
+        }}
+        onUpdateInput={(searchText, dataSource, params)=>{
+          let value;
+          switch (item.name) {
+            case "tag":
+              const tag = find(this.props.tags, { label:searchText });
+              value = tag === undefined ? "" : tag._id;
+              break;
+            case "authorities":
+              const user = find(this.props.users, { name:searchText });
+              value = user === undefined ? "" : user._id;
+              break;
+            default:
+              break;
+          }
+          if(value !== "") this.appendSearchValue(item, value);
+        }}
+        openOnFocus={true}
+        dataSource={data_source}
+        floatingLabelText={item.label}
+        hintText={item.label}
+        menuStyle={{
+          maxHeight: '50vh',
+          overflowY: 'auto',
+        }}
+      />
+    );
+  };
+
+  searchMultiAutoCompleteField = (item) => {
+    let data_source;
+    switch (item.name) {
+      case "tag":
+      data_source = this.props.tags.map(tag => ({ value:tag._id, label:tag.label, avatar: (
+          <Avatar icon={<ImageBrightness style={{margin:0, width:24, height:24}} />} color={tag.color} backgroundColor={"#e0e0e0"} />
+        )}));
         break;
       case "authorities":
         data_source = this.props.users.map(user => ({ value:user._id, label:user.name }));
@@ -101,57 +157,13 @@ class DetailSearch extends Component {
     }
 
     return (
-      <Select
-        isMulti
-        name="colors"
-        options={data_source}
-        className="basic-multi-select"
-        classNamePrefix="select"
-        onBlur={e => {
-          this.execSearch();
-        }}
-        onChange={selectedValues => {
-          const value = selectedValues.map(v => v.value).join(" ")
-          value !== "" && this.appendSearchValue(item, value);
-        }}
+      <MultipleAutoComplete
+        item={item}
+        dataSource={data_source}
+        execSearch={this.execSearch}
+        appendSearchValue={this.appendSearchValue}
       />
-
-    // return (
-    //   <AutoComplete
-    //     filter={ (searchText, key) => {
-    //       if(searchText === '') return true
-    //       return searchText !== '' && key.indexOf(searchText) !== -1
-    //     }}
-    //     onNewRequest={e =>{
-    //       this.execSearch();
-    //     }}
-    //     onUpdateInput={(searchText, dataSource, params)=>{
-    //       let value;
-    //       switch (item.name) {
-    //         case "tag":
-    //           const tag = find(this.props.tags, { label:searchText });
-    //           value = tag === undefined ? "" : tag._id;
-    //           break;
-    //         case "authorities":
-    //           const user = find(this.props.users, { name:searchText });
-    //           value = user === undefined ? "" : user._id;
-    //           break;
-    //         default:
-    //           break;
-    //       }
-    //       if(value !== "") this.appendSearchValue(item, value);
-    //     }}
-    //     openOnFocus={true}
-    //     dataSource={data_source}
-    //     floatingLabelText={item.label}
-    //     hintText={item.label}
-    //     menuStyle={{
-    //       maxHeight: '50vh',
-    //       overflowY: 'auto',
-    //     }}
-    //   />
-    // );
-    )
+    );
   };
 
   searchBoolField = (item) => {
@@ -244,6 +256,8 @@ class DetailSearch extends Component {
         return  item.between ? this.searchBetweenDateField(item) : this.searchDateField(item);
       case "Select":
         return this.searchAutoCompleteField(item);
+      case "MultiSelect":
+        return this.searchMultiAutoCompleteField(item);
       case "Bool":
         return this.searchBoolField(item);
       case "String":
@@ -269,7 +283,7 @@ class DetailSearch extends Component {
   render() {
     return (
       <div style={{ display: "flex", flexDirection: "row-reverse", flexWrap: "wrap" }}>
-        {this.props.searchItems.map( (item, idx) => this.renderForm(item) )}
+        {this.props.searchItems.map( (item, idx) => this.renderForm(item, idx) )}
       </div>
     );
   }

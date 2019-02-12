@@ -106,7 +106,7 @@ class FileActionContainer extends Component {
             if(action.name === constants.PERMISSION_DELETE && show_trash_icon_by_own_auth ) return this.props.tenant.trashIconVisibility;
             return (find( this.props.dirAction.actions , {"name":action.name}) !== undefined )
           })
-          .map((actions,idx) => actions.component());
+          .map((actions,idx) => actions.component(idx));
     }
 
     const hasDir = (findIndex(this.props.checkedFiles,{"is_dir":true}) >= 0 )
@@ -172,35 +172,41 @@ class FileActionContainer extends Component {
   render() {
     return (
       <div style={{marginRight: 30,position:"relative"  , top: 0}} id="fileAction">
-        <Menu>
-          {this.renderMenuItems()}
-        </Menu>
+        {(!this.props.isSearch || this.props.checkedFiles.length > 0) && (
+          <Menu>
+            {this.renderMenuItems()}
+          </Menu>
+        )}
 
-        <AddFileDialog
-          dir_id={this.props.match.params.id}
-          open={this.state.addFile.open}
-          closeDialog={() => this.setState({ addFile: { open: false } })}
-          { ...this.props }
+        {!this.props.isSearch && (
+          <div>
+            <AddFileDialog
+              dir_id={this.props.match.params.id}
+              open={this.state.addFile.open}
+              closeDialog={() => this.setState({ addFile: { open: false } })}
+              { ...this.props }
+              />
+
+            <AddDirDialog
+              dir_id={this.props.dir_id}
+              { ...this.props }
+              />
+          </div>
+        )}
+
+        <DeleteAllFilesDialog
+          open={this.props.deleteFilesDialog.open}
+          handleClose={this.props.actions.toggleDeleteFilesDialog}
+          deleteFiles={this.props.actions.deleteFiles}
+          files={this.props.checkedFiles}
           />
 
-          <AddDirDialog
-            dir_id={this.props.dir_id}
-            { ...this.props }
-            />
-
-          <DeleteAllFilesDialog
-            open={this.props.deleteFilesDialog.open}
-            handleClose={this.props.actions.toggleDeleteFilesDialog}
-            deleteFiles={this.props.actions.deleteFiles}
-            files={this.props.checkedFiles}
-            />
-
-          <DownloadFilesDialog
-            open={this.props.downloadFilesDialog.open}
-            handleClose={this.props.actions.toggleDownloadFilesDialog}
-            downloadFiles={this.props.actions.downloadFiles}
-            files={this.props.checkedFiles}
-            />
+        <DownloadFilesDialog
+          open={this.props.downloadFilesDialog.open}
+          handleClose={this.props.actions.toggleDownloadFilesDialog}
+          downloadFiles={this.props.actions.downloadFiles}
+          files={this.props.checkedFiles}
+          />
       </div>
     );
   }
