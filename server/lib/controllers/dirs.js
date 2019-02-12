@@ -352,6 +352,17 @@ export const move = (req, res, next) => {
       if( !isPermitted ) throw "permission denied";
 
       const moved_dir = yield moveDir(moving_id, destination_id, user, "移動");
+      // フォルダ権限を移動先フォルダの権限に張替え
+      yield AuthorityFile.remove({ files: moved_dir._id })
+      const docs = yield AuthorityFile.find({ files: moved_dir.dir_id })
+      for (let i in docs ) {
+        yield AuthorityFile.create({
+          files: moved_dir._id,
+          role_files: docs[i].role_files,
+          users: docs[i].users,
+          group: docs[i].group,
+        })
+      }
 
       // 移動したフォルダについて elasticsearch index更新
       const { tenant_id }= res.user;
