@@ -289,13 +289,37 @@ const task = async () => {
   //  tags collection
   // ===============================
   await Tag.remove({})  //全てクリア 
-  await Tag.insertMany([
-    {
-      color: "#f55",
-      label: "分析種 経済分析",
-      tenant_id: tenant._id
-    }
-  ])
+  const tags = [
+    {color: "#f44336", label: "分析種 経済分析"},
+    {color: "#e91e63", label: "分析種 社会分析"},
+    {color: "#9c27b0", label: "分析種 その他"},
+    {color: "#673ab7", label: "分野 暮らし"},
+    {color: "#3f51b5", label: "分野 環境"},
+    {color: "#2196f3", label: "分野 農林業"},
+    {color: "#03a9f4", label: "分野 漁業"},
+    {color: "#00bcd4", label: "分野 産業"},
+    {color: "#009688", label: "分野 観光"},
+    {color: "#4caf50", label: "分野 移住定住"},
+    {color: "#8bc34a", label: "分野 健康・医療"},
+    {color: "#cddc39", label: "分野 福祉"},
+    {color: "#ffeb3b", label: "分野 教育"},
+    {color: "#ffc107", label: "分野 文化"},
+    {color: "#ff9800", label: "分野 まちづくり"},
+    {color: "#ff5722", label: "分野 交通"},
+    {color: "#795548", label: "分野 防災"},
+    {color: "#607d8b", label: "分野 その他"},
+  ]
+  for(let i = 0 ; i< tags.length; i++){
+    const tag = tags[i];
+    await Tag.insertMany([
+      {
+        color: tag.color,
+        label: tag.label,
+        tenant_id: tenant._id
+      }
+    ])
+  }
+
 
   const existing_file_ids = (await Dir.find({ ancestor: tenant.home_dir_id, depth: 1, descendant: {'$ne': tenant.trash_dir_id}  })).map( dir => dir.descendant.toString() );
   await Promise.all(_.forEach(existing_file_ids, async id => {

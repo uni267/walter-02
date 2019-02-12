@@ -24,11 +24,14 @@ const Tag = ({
 }) => {
 
   const renderTag = (tag, idx) => {
+    const deletable = file.actions.filter( act => (
+      act.name === "change-tag"
+    )).length > 0;
     return (
       <Chip
         key={idx}
-        style={{marginLeft: 10}}
-        onRequestDelete={() => actions.requestDelTag(file, tag)}
+        style={{ marginRight: 10, marginBottom: 10 }}
+        onRequestDelete={deletable ? () => actions.requestDelTag(file, tag): null}
         >
         {tag.label}
       </Chip>
@@ -61,7 +64,7 @@ const Tag = ({
 
   return (
     <div>
-      <div style={{...styles.row, display: "flex"}}>
+      <div style={{...styles.row, display: "flex", flexWrap:"wrap"}}>
         {file.tags.map( (tag, idx) => renderTag(tag, idx) )}
       </div>
       {addTagButton()}

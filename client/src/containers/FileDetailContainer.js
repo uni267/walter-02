@@ -406,7 +406,7 @@ class FileDetailContainer extends Component {
                 </CardText>
               </Card>
 
-              {this.renderMetaInfos()}
+              { (this.props.metaInfo.meta_infos && this.props.metaInfo.meta_infos.length > 0) ? this.renderMetaInfos() : null}
               {this.renderHistories()}
 
             </div>
