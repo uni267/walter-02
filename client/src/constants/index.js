@@ -17,6 +17,8 @@ export const PERMISSION_RESTORE = "restore";
 export const PERMISSION_DELETE = "delete";
 //export const PERMISSION_REVERT = "revert";    未使用
 export const PERMISSION_AUTHORITY = "authority";
+export const PERMISSION_FILE_AUTHORITY = "file-authority";  //ファイル権限変更
+export const PERMISSION_DIR_AUTHORITY = "dir-authority";    //フォルダ権限変更
 
 // 権限(menu)
 export const PERMISSION_META_INFOS = "meta_infos";

@@ -243,28 +243,6 @@ const task = async () => {
     user_center.tenant_id= tenant._id;
     await user_center.save();
 
-    const user_nourin = new User();
-    user_nourin.type = "user";
-    user_nourin.account_name= "nourin";
-    user_nourin.name= "農林水産部";
-    user_nourin.email= `${user_sa.account_name}@${tenantName}`;
-    user_nourin.password= pass;
-    user_nourin.enabled= true;
-    user_nourin.groups= [ (await Group.findOne({ name: "基本ユーザーG", tenant_id: tenant._id }, {_id: 1}))._id ];
-    user_nourin.tenant_id= tenant._id;
-    await user_nourin.save();
-
-    const user_soumu = new User();
-    user_soumu.type = "user";
-    user_soumu.account_name= "soumu";
-    user_soumu.name= "総務部";
-    user_soumu.email= `${user_sa.account_name}@${tenantName}`;
-    user_soumu.password= pass;
-    user_soumu.enabled= true;
-    user_soumu.groups= [ (await Group.findOne({ name: "基本ユーザーG", tenant_id: tenant._id }, {_id: 1}))._id ];
-    user_soumu.tenant_id= tenant._id;
-    await user_soumu.save();
-  
     await AuthorityMenu.insertMany([
       {
         role_menus : roleMenu_sa._id,
@@ -276,17 +254,36 @@ const task = async () => {
         users : user_center._id,
         groups : null
       },
-      {
-        role_menus : roleMenu_norm._id,
-        users : user_nourin._id,
-        groups : null
-      },
-      {
-        role_menus : roleMenu_norm._id,
-        users : user_soumu._id,
-        groups : null
-      },
     ])
+
+    const normal_users = [
+      {account_name: 'nourin', name: '農林水産部'},
+      {account_name: 'soumu', name: '総務部'},
+      {account_name: 'fukushi', name: '福祉保健部'},
+      {account_name: 'kendo', name: '県土整備部'},
+      {account_name: 'kankyo', name: '環境生活部'},
+      {account_name: 'syoko', name: '商工観光労働部'},
+      {account_name: 'kikaku', name: '企画部'},
+    ]
+    for(let i = 0 ; i< normal_users.length; i++){
+      const inf = normal_users[i]
+      const user = new User();
+      user.type = "user";
+      user.account_name= inf.account_name;
+      user.name= inf.name;
+      user.email= `${user.account_name}@${tenantName}`;
+      user.password= pass;
+      user.enabled= true;
+      user.groups= [ (await Group.findOne({ name: "基本ユーザーG", tenant_id: tenant._id }, {_id: 1}))._id ];
+      user.tenant_id= tenant._id;
+      await user.save();
+      await AuthorityMenu.insertMany([{
+          role_menus : roleMenu_norm._id,
+          users : user._id,
+          groups : null
+      }])
+    }        
+  
 
   // ===============================
   //  tags collection
@@ -308,13 +305,8 @@ const task = async () => {
   }))
 
   //デフォルトフォルダの準備  
-  const default_folders = [
-    {name: '農林水産部', user: user_nourin },
-    {name: '総務部', user: user_soumu },
-  ];
-
-  for(let i = 0;i < default_folders.length; i++){
-    const inf = default_folders[i];
+  for(let i = 0;i < normal_users.length; i++){
+    const inf = normal_users[i];
     const dir = new File();
     dir.name = inf.name;
     dir.modified = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -333,7 +325,7 @@ const task = async () => {
     authFileDefault.role_files = role_file_full_controll;
     // 共有ユーザー
     const authFileShare = new AuthorityFile();
-    authFileShare.users = inf.user;
+    authFileShare.users = (await User.findOne({ account_name: inf.account_name, tenant_id: tenant._id }, {_id: 1}));
     authFileShare.files = dir;
     authFileShare.role_files = role_file_read_upload;
     dir.authority_files = [ authFileDefault, authFileShare ];

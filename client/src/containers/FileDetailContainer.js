@@ -36,7 +36,7 @@ import MoveFileDialog from "../components/File/MoveFileDialog";
 // actions
 import * as FileActions from "../actions/files";
 
-import { FILE_DETAIL } from "../constants";
+import { FILE_DETAIL, PERMISSION_AUTHORITY, PERMISSION_FILE_AUTHORITY } from "../constants";
 
 import { find, findIndex, uniq, chain, value } from "lodash";
 
@@ -138,7 +138,7 @@ class FileDetailContainer extends Component {
     };
 
     const editable = this.props.file.actions.filter( act => (
-      act.name === "authority"
+      act.name === PERMISSION_AUTHORITY || act.name === PERMISSION_FILE_AUTHORITY
     )).length > 0;
 
     const button = editable

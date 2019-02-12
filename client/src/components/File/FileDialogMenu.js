@@ -98,6 +98,16 @@ const FileDialogMenu = ({
       )
     },
     {
+      name: constants.PERMISSION_FILE_AUTHORITY,
+      component: idx => (
+        <MenuItem
+          key={idx}
+          primaryText="権限を変更"
+          leftIcon={<ActionVerifiedUser />}
+          onTouchTap={() => actions.toggleAuthorityFileDialog(file)} />
+      )
+    },
+    {
       name: constants.PERMISSION_CHANGE_TAG,
       component: idx => (
         <MenuItem

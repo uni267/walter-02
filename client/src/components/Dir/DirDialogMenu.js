@@ -83,6 +83,16 @@ const DirDialogMenu = ({
         leftIcon={<ActionVerifiedUser />}
         onTouchTap={() => actions.toggleAuthorityDirDialog(dir)} />
       )
+    },
+    {
+      name: constants.PERMISSION_DIR_AUTHORITY,
+      component: idx => (
+        <MenuItem
+        key={idx}
+        primaryText="権限を変更"
+        leftIcon={<ActionVerifiedUser />}
+        onTouchTap={() => actions.toggleAuthorityDirDialog(dir)} />
+      )
     }
   ];
 
