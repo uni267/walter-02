@@ -96,7 +96,7 @@ class File extends Component {
                     tooltipPosition="top-center"
                     iconStyle={{ width: 14, height: 14 }}
                     tooltipStyles={{ top: 8 }}
-                    style={{ marginLeft: 5 }} >
+                    style={{ marginLeft:5, zIndex:0 }} >
                     <ImageBrightness color={tag.color} />
                   </IconButton>
                 ))}
@@ -142,7 +142,7 @@ class File extends Component {
                     tooltipPosition="top-center"
                     iconStyle={{ width: 14, height: 14 }}
                     tooltipStyles={{ top: 8 }}
-                    style={{ marginLeft: 5 }} >
+                    style={{ marginLeft:5, zIndex:0 }} >
                     <ImageBrightness color={tag.color} />
                   </IconButton>
                 ))}
