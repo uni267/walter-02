@@ -1074,6 +1074,21 @@ export const move = (req, res, next) => {
         if(file._id.toString() === dir._id.toString()) throw "target is the same as folder";
 
         const movedDirs = ( yield moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
+
+        // フォルダ権限を移動先フォルダの権限に張替え
+        for (let i in movedDirs) {
+          yield AuthorityFile.remove({ files: movedDirs[i]._id })
+          const docs = yield AuthorityFile.find({ files: movedDirs[i].dir_id })
+          for (let j in docs ) {
+            yield AuthorityFile.create({
+              files: movedDirs[i]._id,
+              role_files: docs[j].role_files,
+              users: docs[j].users,
+              group: docs[j].group,
+            })
+          }
+        }
+
         // 移動フォルダ自身と子を取得
         const movedFiles = yield File.find({
           $or: [
@@ -1084,6 +1099,17 @@ export const move = (req, res, next) => {
         for(let i in movedFiles ){
           movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
           yield movedFiles[i].save();
+          // フォルダ権限を移動先フォルダの権限に張替え
+          yield AuthorityFile.remove({ files: movedFiles[i]._id })
+          const docs = yield AuthorityFile.find({ files: movedFiles[i].dir_id })
+          for (let j in docs ) {
+            yield AuthorityFile.create({
+              files: movedFiles[i]._id,
+              role_files: docs[j].role_files,
+              users: docs[j].users,
+              group: docs[j].group,
+            })
+          }
           // フォルダ内のファイルについて elasticsearch index更新
           const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
           yield esClient.createIndex(tenant_id,[updatedFile]);
@@ -1092,6 +1118,18 @@ export const move = (req, res, next) => {
       } else {
         file.is_trash = dir._id.toString() === trash_dir_id;
         changedFile = yield moveFile(file, dir._id, user, "移動");
+
+        // ファイル権限を移動先フォルダの権限に張替え
+        yield AuthorityFile.remove({ files: changedFile._id })
+        const docs = yield AuthorityFile.find({ files: changedFile.dir_id })
+        for (let i in docs ) {
+          yield AuthorityFile.create({
+            files: file._id,
+            role_files: docs[i].role_files,
+            users: docs[i].users,
+            group: docs[i].group,
+          })
+        }
       }
       // elasticsearch index作成
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
