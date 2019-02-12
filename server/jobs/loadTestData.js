@@ -406,7 +406,15 @@ var actions = [
   {
     name: "authority",
     label: "権限変更"
-  }
+  },
+  {
+    name: "file-authority",
+    label: "ファイル権限変更"
+  },
+  {
+    name: "dir-authority",
+    label: "フォルダ権限変更"
+  },
 ];
 
 db.actions.insert(actions);
