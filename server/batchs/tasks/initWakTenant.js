@@ -172,7 +172,7 @@ const task = async () => {
           (await Action.findOne({ name: "move" }))._id,
           (await Action.findOne({ name: "restore" }))._id,
           (await Action.findOne({ name: "delete" }))._id,
-          (await Action.findOne({ name: "authority" }))._id,
+          (await Action.findOne({ name: "dir-authority" }))._id,
         ],
         tenant_id: tenant._id
       }
@@ -335,9 +335,9 @@ const task = async () => {
     const authFileShare = new AuthorityFile();
     authFileShare.users = inf.user;
     authFileShare.files = dir;
-    authFileShare.role_files = role_file_full_controll;
+    authFileShare.role_files = role_file_read_upload;
     dir.authority_files = [ authFileDefault, authFileShare ];
-    console.log(`フォルダ '${inf.name}' が作成開始`)
+    //console.log(`フォルダ '${inf.name}' が作成開始`)
 
     await dir.save()
     await authFileDefault.save()

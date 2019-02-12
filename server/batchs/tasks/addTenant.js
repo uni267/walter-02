@@ -59,8 +59,8 @@ const task = () => {
 
     const topDir = yield File.findOne({ name: 'Top', modified: {"$gte": now}})
     const trashDir = yield File.findOne({ name: 'Trash', modified: {"$gte": now} })
-    console.log(topDir)
-    console.log(trashDir)
+    //console.log(topDir)
+    //console.log(trashDir)
   
     //dirコレクション
     var dirs = [

@@ -173,6 +173,7 @@ export const reCreateElasticCache = async () => {
         }))
         .map( folder => folder.descendant ) // フォルダのidリストを取得
 
+      console.log('インデックス作成されるフォルダリスト：')
       console.log(folder_ids)
       for(let i = 0 ; i< folder_ids.length; i++){
         const folder_id = folder_ids[i];
