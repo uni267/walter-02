@@ -29,6 +29,7 @@ import MetaInfo from "../../lib/models/MetaInfo";
 
 const task = async () => {
   try{
+
     console.log('addTenantバッチにより追加されたテナントに対し、県庁向け設定にカスタマイズします。')    
 
     if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
@@ -265,8 +266,8 @@ const task = async () => {
       {account_name: 'syoko', name: '商工観光労働部'},
       {account_name: 'kikaku', name: '企画部'},
     ]
-    for(let i = 0 ; i< normal_users.length; i++){
-      const inf = normal_users[i]
+
+    await Promise.all(_.map(normal_users, async inf => {
       const user = new User();
       user.type = "user";
       user.account_name= inf.account_name;
@@ -282,7 +283,7 @@ const task = async () => {
           users : user._id,
           groups : null
       }])
-    }        
+     }))
   
 
   // ===============================
@@ -309,28 +310,23 @@ const task = async () => {
     {color: "#795548", label: "分野 防災"},
     {color: "#607d8b", label: "分野 その他"},
   ]
-  for(let i = 0 ; i< tags.length; i++){
-    const tag = tags[i];
-    await Tag.insertMany([
-      {
+  await Promise.all(_.map(tags, async tag => (
+    await Tag.insertMany([{
         color: tag.color,
         label: tag.label,
         tenant_id: tenant._id
-      }
-    ])
-  }
-
+    }])
+  )))
 
   const existing_file_ids = (await Dir.find({ ancestor: tenant.home_dir_id, depth: 1, descendant: {'$ne': tenant.trash_dir_id}  })).map( dir => dir.descendant.toString() );
-  await Promise.all(_.forEach(existing_file_ids, async id => {
+  await Promise.all(_.map(existing_file_ids, async id => {
     await File.remove({ _id: Types.ObjectId(id) })
     await AuthorityFile.remove({ files: Types.ObjectId(id) })
     await Dir.remove({ descendant: Types.ObjectId(id) })
   }))
 
   //デフォルトフォルダの準備  
-  for(let i = 0;i < normal_users.length; i++){
-    const inf = normal_users[i];
+  await Promise.all(_.map(normal_users, async inf => {
     const dir = new File();
     dir.name = inf.name;
     dir.modified = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -371,9 +367,8 @@ const task = async () => {
       },
     ])
     console.log(`フォルダ '${inf.name}' が作成されました`)
-  }
-
-  }
+  }))
+}
   catch (e) {
     console.log(e)    
     console.log(util.inspect(e, false, null));
