@@ -521,5 +521,11 @@ export class API {
   fetchAppSettings = () => {
     return this.client.get("/api/v1/app_settings");
   };
+
+  saveTagsOrderNumber = (tags) => {
+    const body = { tags };
+
+    return this.client.patch(`/api/v1/tags/order_number`, body);
+  };
 }
 

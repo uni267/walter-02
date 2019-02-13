@@ -99,6 +99,7 @@ import watchSaveMetaInfoLabel from "./watchSaveMetaInfoLabel";
 import watchRequestFetchDir from "./watchRequestFetchDIr";
 import watchFetchAppSettings from "./watchFetchAppSettings";
 import { watchToggleDisplayUnvisibleFiles } from "./watchToggleDisplayUnvisibleFiles";
+import watchSaveTagsOrderNumber from "./watchSaveTagsOrderNumber";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -200,6 +201,7 @@ function* Saga() {
   yield fork(watchRequestFetchDir);
   yield fork(watchFetchAppSettings);
   yield fork(watchToggleDisplayUnvisibleFiles);
+  yield fork(watchSaveTagsOrderNumber);
 }
 
 export default Saga;

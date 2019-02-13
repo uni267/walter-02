@@ -42,7 +42,7 @@ export const index = (req, res, next) => {
         };
       }
 
-      const tags = yield Tag.find(conditions);
+      const tags = yield Tag.find(conditions).sort({ order: 'asc', _id: 'asc' });
       res.json({
         status: { success: true },
         body: tags
@@ -128,6 +128,7 @@ export const create = (req, res, next) => {
       newTag.label = tag.label;
       newTag.color = tag.color;
       newTag.tenant_id = ObjectId(res.user.tenant_id);
+      newTag.order = 0;
 
       const createdTag = yield newTag.save();
 
@@ -322,3 +323,50 @@ export const changeColor = (req, res, next) => {
     }
   });
 };
+
+export const changeOrderNumber = async (req, res, next) => {
+  try {
+    const { tags } = req.body;
+
+    for (let i in tags) {
+      const ori = await Tag.findById(tags[i]._id)
+      if (tags[i].order === "") {
+        tags[i].order = 0
+      }
+      if (!isNaN(parseInt(tags[i].order))) {
+        ori.set('order', tags[i].order)
+        await ori.save()
+      }
+    }
+
+    const resp = await Tag.find({
+      $or: [
+        { tenant_id: res.user.tenant_id },
+        { user_id: res.user._id },
+      ]
+    }).sort({ order: 'asc', _id: 'asc' });
+
+    res.json({
+      status: { success: true },
+      body: {
+        tags: resp
+      }
+    });
+  }
+  catch (e) {
+    let errors = {};
+
+    switch (e.message) {
+    default:
+      errors.unknown = e;
+      break;
+    }
+
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "並び順の登録に失敗しました",
+        errors }
+    });
+  }
+}

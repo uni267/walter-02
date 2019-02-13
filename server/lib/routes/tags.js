@@ -21,4 +21,8 @@ router.route("/:tag_id/label")
 router.route("/:tag_id/color")
   .patch(controller.changeColor);
 
+// 並び順一括変更
+router.route("/order_number")
+  .patch(controller.changeOrderNumber);
+
 export default router;

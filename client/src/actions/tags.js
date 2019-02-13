@@ -52,3 +52,11 @@ export const createTag = (tag, history) => ({
 export const toggleColorPicker = () => ({
   type: actionTypes.TOGGLE_COLOR_PICKER
 });
+
+export const setTagsOrderNumber = (order, index) => ({
+  type: actionTypes.SET_TAGS_ORDER_NUMBER, order, index
+});
+
+export const saveTagsOrderNumber = (tags) => ({
+  type: actionTypes.SAVE_TAGS_ORDER_NUMBER, tags
+});
