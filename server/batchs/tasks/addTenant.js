@@ -174,7 +174,7 @@ const task = () => {
       value_type: "Date",
       is_display: true,
       is_excel: false,
-      is_search: false,
+      is_search: true,
       between: true,
       width: "20%",
       order: 30,
@@ -223,10 +223,10 @@ const task = () => {
       label: "タグ",
       name: "tag",
       search_value_type: "Select",
-      value_type: "Select",
+      value_type: "MultiSelect",
       is_display: false,
       is_excel: true,
-      is_search: false,
+      is_search: true,
       order: 140
     }
   ])

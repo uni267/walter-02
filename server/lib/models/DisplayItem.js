@@ -10,6 +10,9 @@ const DisplayItemSchema = Schema({
   value_type: String,
   is_display: Boolean,
   is_excel: Boolean,
+  is_search: Boolean,
+  search_value_type: String,
+  between: Boolean, 
   width: String,
   order: Number,
   default_sort: Schema.Types.Mixed
