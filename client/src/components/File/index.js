@@ -82,21 +82,21 @@ class File extends Component {
           <div
             key={idx}
             onClick={linkToFileDetail}
-            style={{ ...cellStyle, width: header.width, color }}>
-            <div style={{ ...cellStyle, padding: 0, width: "100%", justifyContent: "center", alignItems: "center"}}>
-              <div style={{ width: "80%" }}>
+            style={{ ...cellStyle, width: header.width, color, overflow:'unset' }}>
+            <div style={{ ...cellStyle, padding: 0, width: "100%", justifyContent: "center", alignItems: "center", overflow:'unset'}}>
+              <div style={{ width: "75%" }}>
                 {body}
               </div>
-              <div style={{ width: "20%" }}>
+              <div style={{ width: "25%", display:"flex", flexWrap:"wrap" }}>
                 {file.tags.map((tag, tagIdx) => (
                   <IconButton
                     key={(idx * 100) + tagIdx}
                     disableTouchRipple
                     tooltip={tag.label}
-                    tooltipPosition="top-center"
+                    tooltipPosition="top-left"
                     iconStyle={{ width: 14, height: 14 }}
-                    tooltipStyles={{ top: 8 }}
-                    style={{ marginLeft:5, zIndex:0 }} >
+                    tooltipStyles={{ right:0 }}
+                    style={{ padding:0, width:'initial', height:'initial', minWidth:24, minHeight:20 }} >
                     <ImageBrightness color={tag.color} />
                   </IconButton>
                 ))}
@@ -118,9 +118,9 @@ class File extends Component {
     } else {
       if (idx === 0) {
         element = (
-          <div key={idx} style={{ ...cellStyle, width: header.width, color }}>
-            <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center" }}>
-              <div style={{ width: "80%" }}>
+          <div key={idx} style={{ ...cellStyle, width: header.width, color, overflow:'unset' }}>
+            <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center", flexWrap: "wrap", overflow:'unset' }}>
+              <div style={{ width: "75%" }}>
                 <div onClick={linkToFileDetail}>
                   {body}
                 </div>
@@ -133,16 +133,16 @@ class File extends Component {
                   ? constants.TOP_DIR_NAME : this.props.file.dir_route }
                 </div>
               </div>
-              <div style={{ width: "20%" }}>
+              <div style={{ width: "25%", display:"flex", flexWrap:"wrap" }}>
                 {file.tags.map((tag, tagIdx) => (
                   <IconButton
                     key={(idx * 100) + tagIdx}
                     disableTouchRipple
                     tooltip={tag.label}
-                    tooltipPosition="top-center"
+                    tooltipPosition="top-left"
                     iconStyle={{ width: 14, height: 14 }}
-                    tooltipStyles={{ top: 8 }}
-                    style={{ marginLeft:5, zIndex:0 }} >
+                    tooltipStyles={{ right:0 }}
+                    style={{ padding:0, width:'initial', height:'initial', minWidth:24, minHeight:20 }} >
                     <ImageBrightness color={tag.color} />
                   </IconButton>
                 ))}
