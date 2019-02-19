@@ -8,26 +8,41 @@ import co from "co";
 import User from "../models/User";
 import Group from "../models/Group";
 
+import logger from "../logger/logstash";
+
 import Test from "../models/Test";
 const router = Router();
 
-router.get("/", (req, res, next) => {
-  function* main() {
-    try {
-      yield new Promise( (resolve, reject) => {
-        setTimeout( () => resolve(), 1000);
-      });
-      const users = yield User.find();
-      const groups = yield Group.find();
-      res.json({users, groups});
-    }
-    catch (err) {
-      res.json(err);
-    }
+const foo = async (req, res, next) => {
+  try {
+    logger.info('ghogehogehogehogehogehgeo')
+    res.json("success");
   }
+  catch (err) {
+    res.json(err);
+  }
+};
 
-  co(main);
-});
+router.route("/").get(foo);
+
+
+// router.get("/", (req, res, next) => {
+//   function* main() {
+//     try {
+//       yield new Promise( (resolve, reject) => {
+//         setTimeout( () => resolve(), 1000);
+//       });
+//       const users = yield User.find();
+//       const groups = yield Group.find();
+//       res.json({users, groups});
+//     }
+//     catch (err) {
+//       res.json(err);
+//     }
+//   }
+
+//   co(main);
+// });
 
 router.get("/1", (req, res, next) => {
   function* main() {
@@ -70,20 +85,20 @@ router.get("/3", (req, res, next) => {
 
 });
 
-router.get("/flow", (req, res, next) => {
-  const add = (a: number, b: number): number => a + b;
+// router.get("/flow", (req, res, next) => {
+//   const add = (a: number, b: number): number => a + b;
 
-  const result = add(1, 2);
+//   const result = add(1, 2);
 
-  res.json(result);
-});
+//   res.json(result);
+// });
 
-router.get("/flow1", (req, res, next) => {
-  const foo = (a: string): string => a + "!";
+// router.get("/flow1", (req, res, next) => {
+//   const foo = (a: string): string => a + "!";
 
-  const result = foo(1);
-  res.json(result);
-});
+//   const result = foo(1);
+//   res.json(result);
+// });
 // const upload = multer({ dest: "uploads/" });
 
 // router.post("/", upload.fields([ { name: "myFile" } ]), (req, res, next) => {

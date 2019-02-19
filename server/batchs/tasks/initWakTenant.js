@@ -30,15 +30,15 @@ import MetaInfo from "../../lib/models/MetaInfo";
 const task = async () => {
   try{
 
-    console.log('addTenantバッチにより追加されたテナントに対し、県庁向け設定にカスタマイズします。')    
+    console.log('addTenantバッチにより追加されたテナントに対し、県庁向け設定にカスタマイズします。')
 
     if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
     //テナント名をfindしてなければアウト
     const tenantName = process.argv[3]
     const tenant = await Tenant.findOne({ name: tenantName})
     if(!tenant) throw new Error("存在しないテナントです");
-    console.log(`テナント ${tenant.name}(${tenant._id}) の設定を県庁向けに更新します。`)    
-    console.log('start')    
+    console.log(`テナント ${tenant.name}(${tenant._id}) の設定を県庁向けに更新します。`)
+    console.log('start')
 
     // ===============================
     //  テナント毎のグローバル設定(app_settings)
@@ -80,11 +80,11 @@ const task = async () => {
     await Group.update(
       { name: "全社", tenant_id: tenant._id },
       { $set: { name: '基本ユーザーG' } }, { multi:false }
-    );    
+    );
     await Group.update(
       { name: "管理者", tenant_id: tenant._id },
       { $set: { name: 'ファイル管理者G' } }, { multi:false }
-    );    
+    );
     const group_norm = await Group.findOne({ name: '基本ユーザーG' } )
     const group_file = await Group.findOne({ name: 'ファイル管理者G' } )
     // 既存RoleMenuの削除
@@ -102,7 +102,7 @@ const task = async () => {
     ];
     roleMenu_norm.tenant_id= tenant._id;
     await roleMenu_norm.save();
-    
+
     const roleMenu_file = new RoleMenu();
     roleMenu_file.name= "ファイル管理者";
     roleMenu_file.description= "";
@@ -178,11 +178,11 @@ const task = async () => {
         tenant_id: tenant._id
       }
     ])
-  
+
     const role_file_full_controll = await RoleFile.findOne({name:"フルコントロール", tenant_id: tenant._id});
     const role_file_read_upload = await RoleFile.findOne({name:"読み取り+アップロード", tenant_id: tenant._id});
     const role_file_read_only = await RoleFile.findOne({name:"読み取りのみ", tenant_id: tenant._id});
-  
+
     // Topとtrashフォルダの権限設定
     await AuthorityFile.insertMany([
       {
@@ -210,7 +210,7 @@ const task = async () => {
         groups : group_norm._id
       },
     ]);
-    
+
     //既存ユーザーの削除
     const existing_user_ids = (await User.find({ tenant_id: tenant._id })).map( user => user._id.toString() );
     await Promise.all(_.forEach(existing_user_ids, async id => {
@@ -284,12 +284,12 @@ const task = async () => {
           groups : null
       }])
      }))
-  
+
 
   // ===============================
   //  tags collection
   // ===============================
-  await Tag.remove({})  //全てクリア 
+  await Tag.remove({})  //全てクリア
   const tags = [
     {color: "#f44336", label: "分析種 経済分析"},
     {color: "#e91e63", label: "分析種 社会分析"},
@@ -325,7 +325,7 @@ const task = async () => {
     await Dir.remove({ descendant: Types.ObjectId(id) })
   }))
 
-  //デフォルトフォルダの準備  
+  //デフォルトフォルダの準備
   await Promise.all(_.map(normal_users, async inf => {
     const dir = new File();
     dir.name = inf.name;
@@ -370,14 +370,13 @@ const task = async () => {
   }))
 }
   catch (e) {
-    console.log(e)    
+    console.log(e)
     console.log(util.inspect(e, false, null));
     logger.error(e);
     process.exit();
   }
   finally {
-    console.log('end')    
-    logger.info("################# init wak tenant end #################");
+    console.log("################# init wak tenant end #################");
     process.exit();
   }
 

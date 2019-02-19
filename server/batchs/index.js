@@ -14,7 +14,7 @@ let url;
 let db_name;
 
 switch (mode) {
-  
+
 case "integration":
   url = SERVER_CONF.integration.url;
   db_name = SERVER_CONF.integration.db_name;
@@ -65,9 +65,9 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   default:
     throw new Error("引数が不正です。");
   }
-}).catch(err => {
+}).catch(e => {
 
-  logger.info(err);
+  logger.error(e);
   process.exit();
 
 });

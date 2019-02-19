@@ -15,11 +15,11 @@ import Menu from "../../lib/models/Menu";
 const task = () => {
   co(function* () {
 		try {
-      logger.info("################# create admin start #################");
+      console.log("################# create admin start #################");
 			const tenant_name = process.argv[3];
 			if ( tenant_name === undefined ) throw "テナントを指定してください";
 
-			logger.info("tenant name: " + tenant_name);
+			console.log("tenant name: " + tenant_name);
 
 			const tenant = yield Tenant.findOne({name:tenant_name});
 			if (tenant === null) throw "指定されたテナントが見つかりません";
@@ -57,7 +57,7 @@ const task = () => {
       const {createdUser,createdAuthorityMenu} = yield { createdUser:admin_user.save(), createdAuthorityMenu:authority_menus.save() };
 
 			console.log("システム管理者を作成しました");
-      logger.info("################# create admin end #################");
+      console.log("################# create admin end #################");
 
 		} catch (error) {
       logger.error(error);

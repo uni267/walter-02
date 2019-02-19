@@ -22,32 +22,42 @@ export const MAX_CREATE_PREVIEW_FILE_SIZE = 32212254720;
 // loggerの設定
 export const LOGGER_CONFIG = {
   appenders: {
-    default: {
+    file: {
       type:     "dateFile",
       filename: "logs/app.log",
       pattern:  "-yyyy-MM-dd",
       layout:{
         type: "pattern",
         pattern: "[%d] [%p] %h - %m"
+      },
+    },
+    access: {
+      type:     "dateFile",
+      filename: "logs/access.log",
+      pattern:  "-yyyy-MM-dd",
+      layout: {
+        type: 'json'
       }
     },
-    production: {
-      type:     "dateFile",
-      filename: "logs/app.log",
-      pattern:  "-yyyy-MM-dd",
-      layout:{
-        type: "pattern",
-        pattern: "[%d] [%p] %h - %m"
-      }
-    }
+    info: {
+      type: 'logLevelFilter',
+      appender: 'access',
+      level: 'info',
+      maxLevel: 'info',
+    },
+    error: {
+      type: 'logLevelFilter',
+      appender: 'file',
+      level: 'error',
+    },
   },
   categories:{
     default: {
-      appenders:['default'],
+      appenders:['info', 'error'],
       level: 'ALL'
     },
     production: {
-      appenders:['production'],
+      appenders:['info', 'error'],
       level: 'ALL'
     }
   }
