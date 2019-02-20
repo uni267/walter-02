@@ -361,14 +361,14 @@ const task = () => {
     // ===============================
     //  ダウンロードファイルの命名規則
     // ===============================
-    // var display_file_name_id = (yield MetaInfo.findOne({name: "display_file_name"}))._id;
-    // var send_date_time_id = (yield MetaInfo.findOne({name: "send_date_time"}))._id;
-    // yield DownloadInfo.insertMany([{
-    //   type: "file",
-    //   value:`{${display_file_name_id}}{${send_date_time_id}:YYYYMMDD}{extension}`,
-    //   tenant_id: tenant._id,
-    //   extensionTarget: display_file_name_id
-    // }]);
+    var display_file_name_id = (yield MetaInfo.findOne({name: "display_file_name"}))._id;
+    var send_date_time_id = (yield MetaInfo.findOne({name: "send_date_time"}))._id;
+    yield DownloadInfo.insertMany([{
+      type: "file",
+      value:`{${display_file_name_id}}{${send_date_time_id}:YYYYMMDD}{extension}`,
+      tenant_id: tenant._id,
+      extensionTarget: display_file_name_id
+    }]);
   
   // ===============================
   //  テナント毎のグローバル設定(app_settings)

@@ -184,3 +184,14 @@ db.previews.insert(preview);
 // ===============================
 //  テナント毎のグローバル設定(app_settings)
 // ===============================
+
+
+// ===============================
+// addTenantにてDownloadInfoを作成するためのダミードキュメント。
+// いつか削除する
+//
+var meta_infos = [
+  { label: "送信日時", name: "send_date_time", value_type: "Date" },
+  { label: "表示ファイル名", name: "display_file_name", value_type: "String" }
+];
+db.meta_infos.insert(meta_infos);
