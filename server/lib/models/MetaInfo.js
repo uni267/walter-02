@@ -9,6 +9,8 @@ const MetaInfoSchema = Schema({
   value_type: String
 });
 
+MetaInfoSchema.index({ tenant_id: 1 });
+
 const MetaInfo = mongoose.model("meta_infos", MetaInfoSchema, "meta_infos");
 
 export default MetaInfo;

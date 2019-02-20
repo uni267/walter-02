@@ -13,6 +13,8 @@ const UserSchema = Schema({
   tenant_id: Schema.Types.ObjectId
 });
 
+UserSchema.index({ tenant_id: 1 });
+
 const User = mongoose.model("users", UserSchema, "users");
 
 export default User;

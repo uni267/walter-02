@@ -37,7 +37,7 @@ const task = async () => {
     const tenantName = process.argv[3]
     const tenant = await Tenant.findOne({ name: tenantName})
     if(!tenant) throw new Error("存在しないテナントです");
-    console.log(`テナント ${tenant.name}(${tenant._id}) の設定を県庁向けに更新します。`)    
+    console.log(`テナント ${tenant.name}(${tenant._id}) の設定を更新します。`)    
     console.log('start')    
 
     // ===============================

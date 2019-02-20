@@ -10,6 +10,10 @@ const AuthorityMenuSchema = Schema({
   groups : { type:Schema.Types.ObjectId, ref:'groups'}
 });
 
+AuthorityMenuSchema.index({ role_menus: 1 });
+AuthorityMenuSchema.index({ users: 1 });
+AuthorityMenuSchema.index({ groups: 1 });
+
 /**
  * Authority の roles から actions を取得する
  * @param Object condition

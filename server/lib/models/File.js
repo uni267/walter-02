@@ -27,6 +27,9 @@ const FileSchema = Schema({
   unvisible: { type: Boolean, default: false }, // デフォルト表示させたくないファイル
 });
 
+FileSchema.index({ dir_id: 1 });
+FileSchema.index({ preview_id: 1 });
+
 FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_id=null) => {
   return co(function* (){
     try {

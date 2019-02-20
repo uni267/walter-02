@@ -9,6 +9,8 @@ const GroupSchema = Schema({
   roles: Array
 });
 
+GroupSchema.index({ tenant_id: 1 });
+
 const Group = mongoose.model("groups", GroupSchema, "groups");
 
 export default Group;

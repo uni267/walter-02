@@ -18,6 +18,9 @@ const DisplayItemSchema = Schema({
   default_sort: Schema.Types.Mixed
 });
 
+DisplayItemSchema.index({ tenant_id: 1 });
+DisplayItemSchema.index({ meta_info_id: 1 });
+
 const DisplayItem = mongoose.model(
   "display_items", DisplayItemSchema, "display_items"
 );

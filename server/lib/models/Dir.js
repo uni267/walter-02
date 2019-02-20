@@ -8,6 +8,10 @@ const DirSchema = Schema({
   depth: Number
 });
 
+DirSchema.index({ ancestor: 1 });
+DirSchema.index({ descendant: 1 });
+
+
 const Dir = mongoose.model("dirs", DirSchema, "dirs");
 
 export default Dir;

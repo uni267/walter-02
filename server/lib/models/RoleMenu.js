@@ -9,6 +9,9 @@ const RoleMenuSchema = Schema({
   tenant_id: Schema.Types.ObjectId
 });
 
+RoleMenuSchema.index({ tenant_id: 1 });
+
+
 const RoleMenu = mongoose.model("role_menus", RoleMenuSchema, "role_menus");
 
 export default RoleMenu;

@@ -12,6 +12,9 @@ const FileMetaInfoSchema = Schema({
   value: String
 });
 
+FileMetaInfoSchema.index({ file_id: 1 });
+FileMetaInfoSchema.index({ meta_info_id: 1 });
+
 const FileMetaInfo = mongoose.model(
   "file_meta_infos",
   FileMetaInfoSchema,

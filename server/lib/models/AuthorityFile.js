@@ -11,6 +11,12 @@ const AuthoritySchema = Schema({
   groups : { type:Schema.Types.ObjectId, ref:'groups'}
 });
 
+AuthoritySchema.index({ files: 1 });
+AuthoritySchema.index({ role_files: 1 });
+AuthoritySchema.index({ users: 1 });
+AuthoritySchema.index({ groups: 1 });
+
+
 /**
  * Authority の roles から actions を取得する
  * @param Object condition

@@ -9,6 +9,8 @@ const RoleFileSchema = Schema({
   tenant_id: Schema.Types.ObjectId
 });
 
+RoleFileSchema.index({ tenant_id: 1 });
+
 const RoleFile = mongoose.model("role_files", RoleFileSchema, "role_files");
 
 export default RoleFile;

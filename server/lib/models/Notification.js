@@ -12,6 +12,8 @@ const NotificationSchema = Schema({
 
 });
 
+NotificationSchema.index({ users: 1 });
+
 const Notification = mongoose.model("notifications", NotificationSchema, "notifications");
 
 export default Notification;

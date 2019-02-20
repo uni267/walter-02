@@ -9,5 +9,7 @@ const TagSchema = Schema({
   order: { type: Number, default: 0 },
 });
 
+TagSchema.index({ tenant_id: 1 });
+
 const Tag = mongoose.model("tags", TagSchema, "tags");
 export default Tag;

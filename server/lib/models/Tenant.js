@@ -9,5 +9,8 @@ const TenantSchema = Schema({
   threshold: Schema.Types.Number
 });
 
+TenantSchema.index({ home_dir_id: 1 });
+TenantSchema.index({ trash_dir_id: 1 });
+
 const Tenant = mongoose.model("tenants", TenantSchema, "tenants");
 export default Tenant;
