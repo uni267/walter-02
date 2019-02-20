@@ -5,7 +5,7 @@ import createAdmin from "./createAdmin";
 import deleteAdmin from "./deleteAdmin";
 
 import addTenant from "./addTenant";
-import initWakTenant from "./initWakTenant";
+import initTenantW from "./initTenantW";
 import {reCreateElasticCache} from "./initElasticsearch";
 
 export const AnalyzeTask = () => analyze();
@@ -21,4 +21,4 @@ export const deleteAdminTask = () => deleteAdmin();
 
 export const addTenantTask = () => addTenant();
 
-export const initWakTenantTask = () => initWakTenant();
+export const initTenantWTask = () => initTenantW();

@@ -30,7 +30,7 @@ import MetaInfo from "../../lib/models/MetaInfo";
 const task = async () => {
   try{
 
-    console.log('addTenantバッチにより追加されたテナントに対し、県庁向け設定にカスタマイズします。')    
+    console.log('addTenantバッチにより追加されたテナントに対し、カスタマイズします。')    
 
     if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
     //テナント名をfindしてなければアウト
@@ -289,7 +289,7 @@ const task = async () => {
   // ===============================
   //  tags collection
   // ===============================
-  await Tag.remove({})  //全てクリア 
+  await Tag.remove({tenant_id: tenant._id})  //テナントid一致分を全てクリア 
   const tags = [
     {color: "#f44336", label: "分析種 経済分析"},
     {color: "#e91e63", label: "分析種 社会分析"},
