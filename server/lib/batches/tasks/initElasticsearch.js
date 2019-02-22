@@ -4,20 +4,20 @@ import moment from "moment";
 import util from "util";
 import * as _ from "lodash";
 
-import esClient from "../../lib/elasticsearchclient";
+import esClient from "../../elasticsearchclient";
 
 // logger
-import logger from "../../lib/logger";
+import logger from "../../logger";
 
 // models
-import Tenant from "../../lib/models/Tenant";
-import DisplayItem from "../../lib/models/DisplayItem";
-import MetaInfo from "../../lib/models/MetaInfo";
-import Action from "../../lib/models/Action";
-import File from "../../lib/models/File";
-import Dir from "../../lib/models/Dir";
+import Tenant from "../../models/Tenant";
+import DisplayItem from "../../models/DisplayItem";
+import MetaInfo from "../../models/MetaInfo";
+import Action from "../../models/Action";
+import File from "../../models/File";
+import Dir from "../../models/Dir";
 
-import * as constants from "../../lib/configs/constants";
+import * as constants from "../../configs/constants";
 
 const task = () => {
   co(function* () {
@@ -156,7 +156,7 @@ const task = () => {
 
 /**
  * init後に行う
- * @param {*} tenant_id 
+ * @param {*} tenant_id
  */
 export const reCreateElasticCache = async () => {
   return co(function* (){
@@ -191,7 +191,7 @@ export const reCreateElasticCache = async () => {
           yield esClient.createIndex(tenant._id.toString(), files);
         }
       }
-    
+
     } catch (error) {
       console.log(error);
     } finally {

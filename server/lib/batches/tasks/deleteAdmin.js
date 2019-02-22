@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 import co from "co";
 
 // logger
-import logger from "../../lib/logger";
+import logger from "../../logger";
 
 // models
-import User from "../../lib/models/User";
-import Tenant from "../../lib/models/Tenant";
-import RoleMenu from "../../lib/models/RoleMenu";
-import AuthorityMenu from "../../lib/models/AuthorityMenu";
+import User from "../../models/User";
+import Tenant from "../../models/Tenant";
+import RoleMenu from "../../models/RoleMenu";
+import AuthorityMenu from "../../models/AuthorityMenu";
 
 const task = () => {
   co(function* () {

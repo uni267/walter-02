@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 import co from "co";
 
 import * as tasks from "./tasks/index";
-import { SERVER_CONF } from "../lib/configs/server";
-import * as constants from "../lib/configs/constants";
-import logger from "../lib/logger";
+import { SERVER_CONF } from "../configs/server";
+import * as constants from "../configs/constants";
+import logger from "../logger";
 
 // 環境変数
 // 開発 => development、社内テスト => integration、本番 => production
@@ -14,7 +14,7 @@ let url;
 let db_name;
 
 switch (mode) {
-  
+
 case "integration":
   url = SERVER_CONF.integration.url;
   db_name = SERVER_CONF.integration.db_name;

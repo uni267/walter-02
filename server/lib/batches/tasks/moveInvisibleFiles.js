@@ -2,17 +2,17 @@ import express from "express";
 import bodyParser from "body-parser";
 import util from "util";
 import co from "co";
-import logger from "../../lib/logger";
+import logger from "../../logger";
 import supertest from "supertest";
 import defaults from "superagent-defaults";
 
 // router
-import Router from "../../lib/routes";
+import Router from "../../routes";
 
 // models
-import Tenant from "../../lib/models/Tenant";
-import File from "../../lib/models/File";
-import Tag from "../../lib/models/Tag";
+import Tenant from "../../models/Tenant";
+import File from "../../models/File";
+import Tag from "../../models/Tag";
 
 const app = express();
 app.use(bodyParser.json());

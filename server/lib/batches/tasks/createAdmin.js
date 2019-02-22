@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 import co from "co";
 
 // logger
-import logger from "../../lib/logger";
+import logger from "../../logger";
 
 // models
-import User from "../../lib/models/User";
-import Tenant from "../../lib/models/Tenant";
-import RoleMenu from "../../lib/models/RoleMenu";
-import Group from "../../lib/models/Group";
-import AuthorityMenu from "../../lib/models/AuthorityMenu";
-import Menu from "../../lib/models/Menu";
+import User from "../../models/User";
+import Tenant from "../../models/Tenant";
+import RoleMenu from "../../models/RoleMenu";
+import Group from "../../models/Group";
+import AuthorityMenu from "../../models/AuthorityMenu";
+import Menu from "../../models/Menu";
 
 const task = () => {
   co(function* () {

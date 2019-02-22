@@ -4,38 +4,38 @@ import moment from "moment";
 import util from "util";
 
 // logger
-import logger from "../../lib/logger";
+import logger from "../../logger";
 
 // models
-import Tenant from "../../lib/models/Tenant";
-import Dir from "../../lib/models/Dir";
-import File from "../../lib/models/File";
-import Group from "../../lib/models/Group";
-import User from "../../lib/models/User";
-import Action from "../../lib/models/Action";
-import Menu from "../../lib/models/Menu";
-import RoleFile from "../../lib/models/RoleFile";
-import RoleMenu from "../../lib/models/RoleMenu";
-import AuthorityMenu from "../../lib/models/AuthorityMenu";
-import AuthorityFile from "../../lib/models/AuthorityFile";
-import Preview from "../../lib/models/Preview";
-import AppSetting from "../../lib/models/AppSetting";
-import DownloadInfo from "../../lib/models/DownloadInfo";
+import Tenant from "../../models/Tenant";
+import Dir from "../../models/Dir";
+import File from "../../models/File";
+import Group from "../../models/Group";
+import User from "../../models/User";
+import Action from "../../models/Action";
+import Menu from "../../models/Menu";
+import RoleFile from "../../models/RoleFile";
+import RoleMenu from "../../models/RoleMenu";
+import AuthorityMenu from "../../models/AuthorityMenu";
+import AuthorityFile from "../../models/AuthorityFile";
+import Preview from "../../models/Preview";
+import AppSetting from "../../models/AppSetting";
+import DownloadInfo from "../../models/DownloadInfo";
 
-import Tag from "../../lib/models/Tag";
-import DisplayItem from "../../lib/models/DisplayItem";
-import MetaInfo from "../../lib/models/MetaInfo";
+import Tag from "../../models/Tag";
+import DisplayItem from "../../models/DisplayItem";
+import MetaInfo from "../../models/MetaInfo";
 
 const task = () => {
   co(function* () {
   try{
-    console.log('start')    
+    console.log('start')
 
     if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
     const tenantName = process.argv[3]
     const _tenant = yield Tenant.findOne({ name: tenantName})
     if(_tenant) throw new Error("すでに存在しているテナントです");
-  
+
     const now = new Date()
     const root_files = [
       {
@@ -61,7 +61,7 @@ const task = () => {
     const trashDir = yield File.findOne({ name: 'Trash', modified: {"$gte": now} })
     //console.log(topDir)
     //console.log(trashDir)
-  
+
     //dirコレクション
     var dirs = [
       { ancestor: topDir._id, descendant: topDir._id, depth: 0 },
@@ -69,7 +69,7 @@ const task = () => {
       { ancestor: topDir._id, descendant: trashDir._id, depth: 1 }
     ];
     yield Dir.insertMany(dirs)
-    
+
     // ===============================
     //  tenants collection
     // ===============================
@@ -79,7 +79,7 @@ const task = () => {
     tenant.trash_dir_id= trashDir._id;
     tenant.threshold= 1024 * 1024 * 1024 * 100;
     yield tenant.save();
-  
+
     // ===============================
     // groups collection
     // ===============================
@@ -89,20 +89,20 @@ const task = () => {
     group1.role_files= [];
     group1.tenant_id= tenant._id;
     yield group1.save();
-  
+
     const group2 = new Group();
     group2.name= "管理者";
     group2.description= "システム管理者";
     group2.role_files= [];
     group2.tenant_id= tenant._id;
     yield group2.save();
-  
+
   // ===============================
   //  users collection
   // ===============================
-  
+
   var pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff";
-  
+
   const user1 = new User();
   user1.type = "user";
   user1.account_name= tenantName + '2';
@@ -125,7 +125,7 @@ const task = () => {
   user2.tenant_id= tenant._id;
   yield user2.save();
   console.log(`管理ユーザー ${user2.account_name}が作成されました`)
-  
+
   // ===============================
   //  tags collection
   // ===============================
@@ -136,7 +136,7 @@ const task = () => {
       tenant_id: tenant._id
     }
   ])
-  
+
   // ===============================
   //  display_items collection
   // ===============================
@@ -230,7 +230,7 @@ const task = () => {
       order: 140
     }
   ])
-  
+
   // ===============================
   //  role_files collection
   // ===============================
@@ -289,9 +289,9 @@ const task = () => {
       tenant_id: tenant._id
     }
   ])
-  
+
   const roleMenu1 = new RoleMenu();
-  
+
   roleMenu1.name= "一般ユーザ";
   roleMenu1.description= "";
   roleMenu1.menus= [
@@ -300,7 +300,7 @@ const task = () => {
   ];
   roleMenu1.tenant_id= tenant._id;
   yield roleMenu1.save();
-  
+
   const roleMenu2 = new RoleMenu();
   roleMenu2.name= "システム管理者";
   roleMenu2.description= "";
@@ -316,7 +316,7 @@ const task = () => {
   ];
   roleMenu2.tenant_id= tenant._id;
   yield roleMenu2.save();
-  
+
   yield AuthorityMenu.insertMany([{
     role_menus : roleMenu1._id,
     users : user1._id,
@@ -326,14 +326,14 @@ const task = () => {
     users : user2._id,
     groups : null
   }])
-  
+
   // yield Preview.insertMany([{
   //   image: null
   // }]);
-  
+
   const role_file_full_controll = yield RoleFile.findOne({name:"フルコントロール", tenant_id: tenant._id});
   const role_file_read_only = yield RoleFile.findOne({name:"読み取りのみ", tenant_id: tenant._id});
-  
+
   yield AuthorityFile.insertMany([{
     files: topDir._id,
     role_files : role_file_read_only._id,
@@ -345,7 +345,7 @@ const task = () => {
     users : null,
     groups : group1._id
   }]);
-  
+
   yield AuthorityFile.insertMany([{
     files: topDir._id,
     role_files : role_file_full_controll._id,
@@ -357,7 +357,7 @@ const task = () => {
     users : user2._id,
     groups : null
   }]);
-  
+
     // ===============================
     //  ダウンロードファイルの命名規則
     // ===============================
@@ -369,7 +369,7 @@ const task = () => {
       tenant_id: tenant._id,
       extensionTarget: display_file_name_id
     }]);
-  
+
   // ===============================
   //  テナント毎のグローバル設定(app_settings)
   // ===============================
@@ -390,8 +390,8 @@ const task = () => {
       default_value: false // 許可しない
     }
   ])
-  
-      
+
+
   }
   catch (e) {
     console.log(util.inspect(e, false, null));

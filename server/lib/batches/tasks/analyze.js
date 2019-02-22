@@ -4,20 +4,20 @@ import moment from "moment";
 import util from "util";
 
 // logger
-import logger from "../../lib/logger";
+import logger from "../../logger";
 
 // models
-import Tenant from "../../lib/models/Tenant";
-import Dir from "../../lib/models/Dir";
-import File from "../../lib/models/File";
-import Tag from "../../lib/models/Tag";
-import AnalysisUseRateTotal from "../../lib/models/AnalysisUseRateTotal";
-import AnalysisFileCount from "../../lib/models/AnalysisFileCount";
-import AnalysisFolderCount from "../../lib/models/AnalysisFolderCount";
-import AnalysisUseRateFolder from "../../lib/models/AnalysisUseRateFolder";
-import AnalysisUseRateTag from "../../lib/models/AnalysisUseRateTag";
-import AnalysisUseRateMimeType from "../../lib/models/AnalysisUseRateMimeType";
-import AnalysisUseRateUser from "../../lib/models/AnalysisUseRateUser";
+import Tenant from "../../models/Tenant";
+import Dir from "../../models/Dir";
+import File from "../../models/File";
+import Tag from "../../models/Tag";
+import AnalysisUseRateTotal from "../../models/AnalysisUseRateTotal";
+import AnalysisFileCount from "../../models/AnalysisFileCount";
+import AnalysisFolderCount from "../../models/AnalysisFolderCount";
+import AnalysisUseRateFolder from "../../models/AnalysisUseRateFolder";
+import AnalysisUseRateTag from "../../models/AnalysisUseRateTag";
+import AnalysisUseRateMimeType from "../../models/AnalysisUseRateMimeType";
+import AnalysisUseRateUser from "../../models/AnalysisUseRateUser";
 
 const task = () => {
   co(function* () {
@@ -119,7 +119,7 @@ const task = () => {
           count: f.fileCount
         }))
       );
-        
+
       // 2重集計防止
       yield AnalysisFolderCount.remove({
         reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
