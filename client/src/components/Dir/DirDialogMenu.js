@@ -15,6 +15,7 @@ import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ActionRestore from "material-ui/svg-icons/action/restore";
 import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
+import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
 
 
 const DirDialogMenu = ({
@@ -91,6 +92,16 @@ const DirDialogMenu = ({
         key={idx}
         primaryText="権限を変更"
         leftIcon={<ActionVerifiedUser />}
+        onTouchTap={() => actions.toggleAuthorityDirDialog(dir)} />
+      )
+    },
+    {
+      name: constants.PERMISSION_AUTO_TIMESTAMP,
+      component: idx => (
+        <MenuItem
+        key={idx}
+        primaryText="タイムスタンプ自動発行"
+        leftIcon={<ActionFingerprint />}
         onTouchTap={() => actions.toggleAuthorityDirDialog(dir)} />
       )
     }

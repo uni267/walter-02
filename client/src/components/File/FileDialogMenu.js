@@ -138,11 +138,20 @@ const FileDialogMenu = ({
       )
     },
     {
-      name: "PERMISSION_TIMESTAMP",
+      name: constants.PERMISSION_ADD_TIMESTAMP,
       component: idx => (
         <MenuItem
           key={idx}
           primaryText="タイムスタンプ発行"
+          leftIcon={<ActionFingerprint />} />
+      )
+    },
+    {
+      name: constants.PERMISSION_VERIFY_TIMESTAMP,
+      component: idx => (
+        <MenuItem
+          key={idx}
+          primaryText="タイムスタンプ検証"
           leftIcon={<ActionFingerprint />} />
       )
     }

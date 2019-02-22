@@ -408,6 +408,15 @@ class FileDetailContainer extends Component {
 
               { (this.props.metaInfo.meta_infos && this.props.metaInfo.meta_infos.length > 0) ? this.renderMetaInfos() : null}
               {this.renderHistories()}
+              <Card style={styles.innerCard}>
+                <CardHeader title="タイムスタンプ" />
+                <CardText>
+                発行日時　2019/02/22 12:34:56<br/>  
+                有効期限　2019/02/22 12:34:56<br/>  
+                検証日時　2019/02/22 12:34:56<br/>  
+
+                </CardText>
+              </Card>
 
             </div>
 
