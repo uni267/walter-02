@@ -2926,14 +2926,14 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
         // メタ情報でのソート
         sort = {
           "is_dir":"desc",
-          "sort_target": order
+          [_sort]: order
         };
       } else {
         // @fixme
         sort["id"] = order;
       }
     } else {
-      sort["sort_target"] = order;
+      sort[_sort] = order;
     }
   }
   sort["name"] = order;
