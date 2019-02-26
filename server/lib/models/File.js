@@ -21,6 +21,11 @@ const FileSchema = Schema({
   is_trash: {type:Boolean,default:false },
   is_deleted: {type:Boolean, default: false}, // 完全削除フラグ。ゴミ箱移動時はfalseのまま
   tags: Array,
+  tst_token: String,
+  tst_stamped_date: Date,
+  tst_limit_date: Date,
+  tst_verified_date: Date,
+  tst_verify_result: String,
   histories: Array,
   preview_id: Schema.Types.ObjectId,
   is_crypted: {type:Boolean, default: false},
