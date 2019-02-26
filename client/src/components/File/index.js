@@ -221,7 +221,7 @@ class File extends Component {
           <IconButton iconStyle={
             (file.name ==='署名済み、通常.pdf') ? { color: "green" }
               :( file.name ==='署名済み、通常.jpg' ? { color: "green" }
-              :( file.name ==='署名済み、有効期限切れ間近.pdf' ? { color: "yellow" }
+              :( file.name ==='署名済み、有効期限切れ間近.pdf' ? { color: "orange" }
               :( file.name ==='署名済み、有効期限切れ.pdf' ? { color: "red" }
               :( file.name ==='署名済み、改ざんされた署名.pdf' ? { color: "red" }
               :( file.name ==='署名済み、不正な証明書.pdf' ? { color: "red" }
