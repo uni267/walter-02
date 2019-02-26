@@ -11,6 +11,7 @@ import IconButton from 'material-ui/IconButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import ImageBrightness from 'material-ui/svg-icons/image/brightness-1';
+import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
 
 // components
 import FileDialogMenu from "./FileDialogMenu";
@@ -216,6 +217,22 @@ class File extends Component {
               this.props.actions.setPageYOffset(window.pageYOffset)
               this.props.actions.toggleStar(file)
             }} />
+
+          <IconButton iconStyle={
+            (file.name ==='署名済み、通常.pdf') ? { color: "green" }
+              :( file.name ==='署名済み、通常.jpg' ? { color: "green" }
+              :( file.name ==='署名済み、有効期限切れ間近.pdf' ? { color: "yellow" }
+              :( file.name ==='署名済み、有効期限切れ.pdf' ? { color: "red" }
+              :( file.name ==='署名済み、改ざんされた署名.pdf' ? { color: "red" }
+              :( file.name ==='署名済み、不正な証明書.pdf' ? { color: "red" }
+              :( file.name ==='署名済み、サポート外署名.pdf' ? { color: "red" }
+              :{ color: "white" }
+              ))))))
+          }>
+            <ActionFingerprint />
+          </IconButton>
+
+
         </div>
 
         {headers.filter( header => (

@@ -20,6 +20,7 @@ import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
 import ActionHistory from "material-ui/svg-icons/action/history";
+import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
 import DirDialogMenu from "./DirDialogMenu";
 
 const style = {
@@ -168,12 +169,18 @@ class Dir extends Component {
               this.props.actions.setPageYOffset(window.pageYOffset)
               this.props.actions.toggleFileCheck(dir)
             }} />
-
           <Checkbox
             disabled={true}
             style={style.checkbox}
             checkedIcon={favorite_icon}
             uncheckedIcon={favorite_icon_border} />
+
+          <IconButton iconStyle={
+            (dir.name ==='必ずタイムスタンプ発行') ? { color: "green" }
+              :{ color: "white" }
+          }>
+            <ActionFingerprint />
+          </IconButton>
         </div>
 
         {this.renderDirName()}

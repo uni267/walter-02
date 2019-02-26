@@ -411,10 +411,11 @@ class FileDetailContainer extends Component {
               <Card style={styles.innerCard}>
                 <CardHeader title="タイムスタンプ" />
                 <CardText>
-                発行日時　2019/02/22 12:34:56<br/>  
-                有効期限　2019/02/22 12:34:56<br/>  
-                検証日時　2019/02/22 12:34:56<br/>  
-
+                発行日時　2015/02/22 22:28:07<br/>  
+                有効期限　2025/02/22 22:28:07<br/>  
+                検証日時　2019/01/13 11:57:32<br/>  
+                <br/>
+                <RaisedButton label="TSTダウンロード" />                
                 </CardText>
               </Card>
 
