@@ -118,13 +118,13 @@ export const LIBRE_OFFICE_PATH = () => {
 
   switch (process.env.NODE_ENV) {
   case "integration":
-    librePath = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+    librePath = "/usr/bin/soffice";
     break;
   case "production":
     librePath = "/usr/bin/soffice";
     break;
   default:
-    librePath = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+    librePath = "/usr/bin/soffice";
     break;
   }
 
