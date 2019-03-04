@@ -1,11 +1,6 @@
-import mongoose from "mongoose";
-import fs from "fs";
-
 import File from "../models/File";
 import FileMetaInfo from "../models/FileMetaInfo";
 import MetaInfo from "../models/MetaInfo";
-
-import * as constants from "../configs/constants";
 
 import logger from "../logger";
 import api from "../apis/timestamp";
@@ -39,6 +34,7 @@ export const grantToken = async (req, res, next) => {
         fileMetaInfo = new FileMetaInfo({
           file_id: file._id,
           meta_info_id: metaInfo._id,
+          value: [],
         })
       }
 
@@ -57,13 +53,14 @@ export const grantToken = async (req, res, next) => {
         }
       }
 
-      if (data.timestamp) fileMetaInfo.timestamps.push(data.timestamp)
-
-      await fileMetaInfo.save()
+      if (data.timestamp) {
+        await fileMetaInfo.update({ $push: { value: data.timestamp }})
+        fileMetaInfo = await FileMetaInfo.findById(fileMetaInfo._id)
+      }
 
       res.json({
         status: { success: true },
-        body: fileMetaInfo
+        body: { fileMetaInfo }
       });
     }
     catch (e) {
@@ -97,7 +94,7 @@ export const verifyToken = async (req, res, next) => {
     const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
 
     let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
-    if (!fileMetaInfo || fileMetaInfo.timestamps.length === 0) throw "The file does not have timestamp token"
+    if (!fileMetaInfo || fileMetaInfo.value.length === 0) throw "The file does not have timestamp token"
 
     const tenant_name = res.user.tenant.name;
     const readStream = await new Swift().downloadFile(tenant_name, file);
@@ -109,7 +106,7 @@ export const verifyToken = async (req, res, next) => {
         .on("error", e => reject(e))
     }))
 
-    const timestamp = fileMetaInfo.timestamps.pop()
+    const timestamp = fileMetaInfo.value[fileMetaInfo.value.length - 1]
 
     let data = null
     if (file.mime_type !== "application/pdf") {
@@ -119,12 +116,14 @@ export const verifyToken = async (req, res, next) => {
       data = await api.verifyPades(file._id.toString(), encodedFile, timestamp.token)
     }
 
-    fileMetaInfo.timestamps.push({
-      ...timestamp,
-      ...data.result
+    await fileMetaInfo.update({
+      $set: {
+        [`value.${fileMetaInfo.value.length - 1}`]: {
+          ...timestamp,
+          ...data.result,
+        }
+      }
     })
-
-    await fileMetaInfo.save()
 
     res.json({
       status: { success: true },
@@ -159,11 +158,9 @@ export const enableAutoGrantToken = async (req, res, next) => {
         file_id === "") throw "file_id is empty";
 
     const file = await File.findById(file_id);
-
     if (!file.is_dir) throw "it's not a directory";
 
     const metaInfo = await MetaInfo.findOne({ name: "auto_grant_timestamp" })
-
     let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
     if (!fileMetaInfo) {
       fileMetaInfo = new FileMetaInfo({
@@ -206,13 +203,10 @@ export const disableAutoGrantToken = async (req, res, next) => {
         file_id === "") throw "file_id is empty";
 
     const file = await File.findById(file_id);
-
     if (!file.is_dir) throw "it's not a directory";
 
     const metaInfo = await MetaInfo.findOne({ name: "auto_grant_timestamp" })
-
     let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
-
     if (fileMetaInfo) {
       fileMetaInfo.value = false
       await fileMetaInfo.save()

@@ -67,6 +67,26 @@ export class API {
   }
 
 
+  verifyToken(requestId = "", file, token) {
+    // const body = { requestId, file };
+    // return this.client.post(`/grant/tst/binary`, body);
+
+    return Promise.resolve({
+      requestId: requestId.toString(),
+      result: {
+        status: "success",
+        verifiedDate: new Date(),
+        errors: [
+          {
+            code: "expired",
+            description: "string"
+          }
+        ]
+      }
+    })
+  };
+
+
   verifyPades(requestId = "", file, token) {
     // const body = { requestId, file };
     // return this.client.post(`/grant/tst/binary`, body);
@@ -83,6 +103,24 @@ export class API {
           }
         ]
       }
+    })
+  };
+
+  inspect(requestId = "", file) {
+    // const body = { requestId, file };
+    // return this.client.post(`/grant/tst/binary`, body);
+
+    return Promise.resolve({
+      requestId: requestId.toString(),
+      timestamp: {
+        stampedDate: new Date(),
+        limitDate: (new Date()).setFullYear(2029),
+        isCyberTSA: true,
+        token: "string",
+        hashAlgorithm: "SHA256",
+        hash: "string"
+      },
+      file,
     })
   };
 }

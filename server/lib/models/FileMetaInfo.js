@@ -9,8 +9,7 @@ mongoose.Promise = global.Promise;
 const FileMetaInfoSchema = Schema({
   file_id: Schema.Types.ObjectId,
   meta_info_id: Schema.Types.ObjectId,
-  value: String,
-  timestamps: Array,
+  value: Schema.Types.Mixed,
 });
 
 FileMetaInfoSchema.index({ file_id: 1 });
