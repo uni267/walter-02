@@ -230,7 +230,8 @@ export const enableAutoGrantToken = async (req, res, next) => {
 
     // サブディレクトリを取得
     const dirs = await findAllDescendants(file._id)
-    await dirs.forEach(async dir => {
+
+    await Promise.all(dirs.map(async dir => {
       let fileMetaInfo = await FileMetaInfo.findOne({ file_id: dir.file._id, meta_info_id: metaInfo._id })
       if (!fileMetaInfo) {
         fileMetaInfo = new FileMetaInfo({
@@ -239,8 +240,8 @@ export const enableAutoGrantToken = async (req, res, next) => {
         })
       }
       fileMetaInfo.value = true
-      await fileMetaInfo.save()
-    })
+      return await fileMetaInfo.save()
+    }))
 
     res.json({
       status: { success: true },
@@ -291,7 +292,7 @@ export const disableAutoGrantToken = async (req, res, next) => {
 
     // サブディレクトリを取得
     const dirs = await findAllDescendants(file._id)
-    await dirs.forEach(async dir => {
+    await Promise.all(dirs.map(async dir => {
       let fileMetaInfo = await FileMetaInfo.findOne({ file_id: dir.file._id, meta_info_id: metaInfo._id })
       if (!fileMetaInfo) {
         fileMetaInfo = new FileMetaInfo({
@@ -300,8 +301,8 @@ export const disableAutoGrantToken = async (req, res, next) => {
         })
       }
       fileMetaInfo.value = false
-      await fileMetaInfo.save()
-    })
+      return await fileMetaInfo.save()
+    }))
 
     res.json({
       status: { success: true },

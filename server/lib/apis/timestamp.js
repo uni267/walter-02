@@ -127,6 +127,7 @@ export class API {
 
     return Promise.resolve({
       requestId: requestId.toString(),
+      hasToken: true,
       timestampToken: {
         stampedDate: this.getCurrentTime(),
         expirationDate: this.get10YearsAfter(),

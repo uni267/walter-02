@@ -36,7 +36,7 @@ import {
   RecordNotFoundException,
   PermisstionDeniedException
 } from "../errors/AppError";
-import api from "../apis/timestamp";
+import tsApi from "../apis/timestamp";
 
 // constants
 import { SECURITY_CONF } from "../configs/server";
@@ -1576,15 +1576,15 @@ export const upload = (req, res, next) => {
         const tenant_name = res.user.tenant.name;
 
         try {
-          const tsData = yield api.inspect(model._id, data)
+          const tsData = yield tsApi.inspect(model._id, data)
           if (tsData.file) data = tsData.file
-          if (tsData.timestamp) {
+          if (tsData.timestampToken) {
             const metaInfo = yield MetaInfo.findOne({ name: "timestamp" })
 
             yield FileMetaInfo.create({
               file_id: model._id,
               meta_info_id: metaInfo._id,
-              value: [tsData.timestamp]
+              value: [tsData.timestampToken]
             })
           }
 

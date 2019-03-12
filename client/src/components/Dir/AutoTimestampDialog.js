@@ -23,13 +23,14 @@ const AutoTimestampDialog = ({
     )
   ];
 
+  const dirName = (dir && dir.name) ? dir.name : ""
+
   return (
     <Dialog
-      title={`タイムスタンプ自動発行 - ${dir.name}`}
+      title={`タイムスタンプ自動発行 - ${dirName}`}
       modal={false}
       actions={dialogActions}
       open={open}
-      // onRequestClose={actions.toggleAutoTimestampDialog}
       contentStyle={{ maxWidth: 600 }}
       >
       <div>
