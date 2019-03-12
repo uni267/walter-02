@@ -1,5 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { TIMESTAMP_API_CONF } from "../configs/server";
 
@@ -31,15 +32,23 @@ export class API {
     });
   }
 
+  getCurrentTime() {
+    return moment().format()
+  }
+
+  get10YearsAfter() {
+    return moment().add(moment.duration(10, 'months')).format()
+  }
+
   grantToken(requestId = "", file) {
     // const body = { requestId, file };
     // return this.client.post(`/grant/tst/binary`, body);
 
     return Promise.resolve({
       requestId: requestId.toString(),
-      timestamp: {
-        stampedDate: "2019-02-28T06:08:43.333Z",
-        limitDate: "2019-02-28T06:08:43.333Z",
+      timestampToken: {
+        stampedDate: this.getCurrentTime(),
+        expirationDate: this.get10YearsAfter(),
         isCyberTSA: true,
         token: "string",
         hashAlgorithm: "SHA256",
@@ -54,9 +63,9 @@ export class API {
 
     return Promise.resolve({
       requestId: requestId.toString(),
-      timestamp: {
-        stampedDate: new Date(),
-        limitDate: (new Date()).setFullYear(2029),
+      timestampToken: {
+        stampedDate: this.getCurrentTime(),
+        expirationDate: this.get10YearsAfter(),
         isCyberTSA: true,
         token: "string",
         hashAlgorithm: "SHA256",
@@ -75,7 +84,7 @@ export class API {
       requestId: requestId.toString(),
       result: {
         status: "success",
-        verifiedDate: new Date(),
+        verifiedDate: this.getCurrentTime(),
         errors: [
           {
             code: "expired",
@@ -94,12 +103,18 @@ export class API {
     return Promise.resolve({
       requestId: requestId.toString(),
       result: {
-        status: "success",
-        verifiedDate: new Date(),
+        status: "failed",
+        verifiedDate: this.getCurrentTime(),
         errors: [
           {
+            // expired, falsified_hash, invalid_cert, other
             code: "expired",
-            description: "string"
+            description: "有効期限がきれた",
+          },
+          {
+            // expired, falsified_hash, invalid_cert, other
+            code: "expired",
+            description: "有効期限がきれた",
           }
         ]
       }
@@ -112,9 +127,9 @@ export class API {
 
     return Promise.resolve({
       requestId: requestId.toString(),
-      timestamp: {
-        stampedDate: new Date(),
-        limitDate: (new Date()).setFullYear(2029),
+      timestampToken: {
+        stampedDate: this.getCurrentTime(),
+        expirationDate: this.get10YearsAfter(),
         isCyberTSA: true,
         token: "string",
         hashAlgorithm: "SHA256",

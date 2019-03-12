@@ -138,6 +138,10 @@ export const toggleAuthorityDirDialog = (dir) => ({
   type: actionTypes.TOGGLE_AUTHORITY_DIR_DIALOG, dir
 });
 
+export const toggleAutoTimestampDialog = (dir) => ({
+  type: actionTypes.TOGGLE_AUTO_TIMESTAMP_DIALOG, dir
+});
+
 export const toggleMoveFileDialog = (file) => ({
   type: actionTypes.TOGGLE_MOVE_FILE_DIALOG, file
 });
@@ -148,6 +152,18 @@ export const toggleCopyFileDialog = (file) => ({
 
 export const toggleHistoryFileDialog = (file) => ({
   type: actionTypes.TOGGLE_HISTORY_FILE_DIALOG, file
+});
+
+export const toggleTimestampDialog = (file) => ({
+  type: actionTypes.TOGGLE_TIMESTAMP_DIALOG, file
+});
+
+export const toggleTimestampConfirmDialog = () => ({
+  type: actionTypes.TOGGLE_TIMESTAMP_CONFIRM_DIALOG
+});
+
+export const updateTimestampTargetFile = (file) => ({
+  type: actionTypes.UPDATE_TIMESTAMP_TARGET_FILE, file
 });
 
 export const toggleFileTagDialog = (file) => ({
@@ -428,3 +444,18 @@ export const debugReduxLogger = () => ({
   type: actionTypes.DEBUG_REDUX_LOGGER
 });
 
+export const issueTimestamp = (file) => ({
+  type: actionTypes.ISSUE_TIMESTAMP, file
+})
+
+export const verifyTimestamp = (file) => ({
+  type: actionTypes.VERIFY_TIMESTAMP, file
+})
+
+export const toggleAutoTimestamp = (dir, enable) => ({
+  type: actionTypes.TOGGLE_AUTO_TIMESTAMP, dir, enable
+});
+
+export const downloadTimestampToken = (file) => ({
+  type: actionTypes.DOWNLOAD_TIMESTAMP_TOKEN, file
+})

@@ -36,6 +36,7 @@ import {
   RecordNotFoundException,
   PermisstionDeniedException
 } from "../errors/AppError";
+import api from "../apis/timestamp";
 
 // constants
 import { SECURITY_CONF } from "../configs/server";
@@ -1294,7 +1295,7 @@ export const upload = (req, res, next) => {
         if (file.hasError) return file;
 
         const hexdigest = crypto.createHash("md5")
-              .update(new Buffer(file.base64))
+              .update(Buffer.from(file.base64))
               .digest("hex");
 
         if (file.checksum === hexdigest) {
@@ -1566,11 +1567,23 @@ export const upload = (req, res, next) => {
 
         const regex = /;base64,(.*)$/;
         const matches = file.base64.match(regex);
-        const data = matches[1];
+        let data = matches[1];
         const tenant_name = res.user.tenant.name;
 
         try {
-          yield swift.upload(tenant_name, new Buffer(data, 'base64'), model._id.toString());
+          const tsData = yield api.inspect(model._id, data)
+          if (tsData.file) data = tsData.file
+          if (tsData.timestamp) {
+            const metaInfo = yield MetaInfo.findOne({ name: "timestamp" })
+
+            yield FileMetaInfo.create({
+              file_id: model._id,
+              meta_info_id: metaInfo._id,
+              value: [tsData.timestamp]
+            })
+          }
+
+          yield swift.upload(tenant_name, Buffer.from(data, 'base64'), model._id.toString());
         } catch (e) {
           logger.info(e);
           fileModels[i] = false;

@@ -15,7 +15,7 @@ import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ActionRestore from "material-ui/svg-icons/action/restore";
 import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
-import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
+import DeviceAccessTime from "material-ui/svg-icons/device/access-time";
 
 
 const DirDialogMenu = ({
@@ -101,10 +101,10 @@ const DirDialogMenu = ({
         <MenuItem
         key={idx}
         primaryText="タイムスタンプ自動発行"
-        leftIcon={<ActionFingerprint />}
-        onTouchTap={() => actions.toggleAuthorityDirDialog(dir)} />
+        leftIcon={<DeviceAccessTime />}
+        onTouchTap={() => actions.toggleAutoTimestampDialog(dir)} />
       )
-    }
+    },
   ];
 
   menuItems = trashDirId === dir.dir_id

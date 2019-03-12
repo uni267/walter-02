@@ -91,6 +91,7 @@ import watchFetchMoreNotification from "./watchFetchMoreNotification";
 import watchChangeFileName from "./watchChangeFileName";
 import watchFetchAnalysisPeriod from "./watchFetchAnalysisPeriod";
 import watchDeleteDirs from "./watchDeleteDirs";
+import watchToggleAutoTimestamp from "./watchToggleAutoTimestamp";
 import watchDownloadXlsxFile from "./watchDownloadXlsxFile";
 import watchDownloadXlsxFileSimple from "./watchDownloadXlsxFileSimple";
 import watchDownloadXlsxFileDetail from "./watchDownloadXlsxFileDetail";
@@ -100,6 +101,9 @@ import watchRequestFetchDir from "./watchRequestFetchDIr";
 import watchFetchAppSettings from "./watchFetchAppSettings";
 import { watchToggleDisplayUnvisibleFiles } from "./watchToggleDisplayUnvisibleFiles";
 import watchSaveTagsOrderNumber from "./watchSaveTagsOrderNumber";
+import watchIssueTimestamp from "./watchIssueTimestamp";
+import watchVerifyTimestamp from "./watchVerifyTimestamp";
+import watchDownloadTimestampToken from "./watchDownloadTimestampToken";
 
 function* Saga() {
   yield fork(watchLogin);
@@ -193,6 +197,7 @@ function* Saga() {
   yield fork(watchChangeFileName);
   yield fork(watchFetchAnalysisPeriod);
   yield fork(watchDeleteDirs);
+  yield fork(watchToggleAutoTimestamp);
   yield fork(watchDownloadXlsxFile);
   yield fork(watchDownloadXlsxFileSimple);
   yield fork(watchDownloadXlsxFileDetail);
@@ -202,6 +207,9 @@ function* Saga() {
   yield fork(watchFetchAppSettings);
   yield fork(watchToggleDisplayUnvisibleFiles);
   yield fork(watchSaveTagsOrderNumber);
+  yield fork(watchIssueTimestamp);
+  yield fork(watchVerifyTimestamp);
+  yield fork(watchDownloadTimestampToken);
 }
 
 export default Saga;

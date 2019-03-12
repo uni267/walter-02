@@ -527,5 +527,30 @@ export class API {
 
     return this.client.patch(`/api/v1/tags/order_number`, body);
   };
-}
 
+  grantTimestamp = (fileId) => {
+    return this.client.post(`/api/v1/files/${fileId}/timestamp/grant`)
+  }
+
+  verifyTimestamp = (fileId) => {
+    return this.client.post(`/api/v1/files/${fileId}/timestamp/verify`)
+  }
+
+  enableAutoGrantTimestamp = (fileId) => {
+    return this.client.post(`/api/v1/files/${fileId}/timestamp/auto_grant`);
+  };
+
+  disableAutoGrantTimestamp = (fileId) => {
+    return this.client.delete(`/api/v1/files/${fileId}/timestamp/auto_grant`);
+  };
+
+  downloadTimestampToken = async (fileId) => {
+    const config = {
+      responseType: "arraybuffer",
+      params: {
+        file_id: fileId
+      }
+    };
+    return this.client.get(`/api/v1/files/timestamp/download`, config);
+  };
+}

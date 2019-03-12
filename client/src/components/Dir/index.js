@@ -20,8 +20,10 @@ import ContentContentCopy from "material-ui/svg-icons/content/content-copy";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
 import ActionHistory from "material-ui/svg-icons/action/history";
-import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
 import DirDialogMenu from "./DirDialogMenu";
+
+// material custom icons
+import FileFolderOpen_TS from "../icons/FileFolderOpen_TS";
 
 const style = {
   dir: {
@@ -69,6 +71,13 @@ class Dir extends Component {
 
   };
 
+  renderDirIcon = iconStyle => {
+    const autoTimestamp = this.props.dir.meta_infos.find(m => m.name === "auto_grant_timestamp")
+    return (autoTimestamp && autoTimestamp.value)
+      ? <FileFolderOpen_TS style={iconStyle} />
+      : <FileFolderOpen style={iconStyle} />
+  }
+
   renderDirName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
@@ -95,7 +104,7 @@ class Dir extends Component {
               onClick={linkToDir}
               style={{ display: "flex", alignItems: "center" }}>
               <div>
-                <FileFolderOpen style={style.dir_icon} />
+                {this.renderDirIcon(style.dir_icon)}
               </div>
               <div style={{ marginLeft: 10 }}>
                 {this.props.dir.name}
@@ -115,7 +124,7 @@ class Dir extends Component {
         <div style={{ ...style, color }}
              onClick={linkToDir} >
           <div>
-            <FileFolderOpen style={style.dir_icon} />
+            {this.renderDirIcon(style.dir_icon)}
           </div>
           <div style={{ marginLeft: 10 }}>
             {this.props.dir.name}
@@ -174,13 +183,6 @@ class Dir extends Component {
             style={style.checkbox}
             checkedIcon={favorite_icon}
             uncheckedIcon={favorite_icon_border} />
-
-          <IconButton iconStyle={
-            (dir.name ==='必ずタイムスタンプ発行') ? { color: "green" }
-              :{ color: "white" }
-          }>
-            <ActionFingerprint />
-          </IconButton>
         </div>
 
         {this.renderDirName()}

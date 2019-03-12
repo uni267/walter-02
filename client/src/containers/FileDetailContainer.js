@@ -21,6 +21,8 @@ import RaisedButton from "material-ui/RaisedButton";
 import Dialog from "material-ui/Dialog";
 import FlatButton from "material-ui/FlatButton";
 import CircularProgress from 'material-ui/CircularProgress';
+import Paper from 'material-ui/Paper';
+import { red100 } from "material-ui/styles/colors";
 
 // components
 import Authority from "../components/Authority";
@@ -340,6 +342,40 @@ class FileDetailContainer extends Component {
     );
   };
 
+  renderTimestamp = () => {
+    const { file } = this.props
+
+    const meta = file && file.meta_infos && file.meta_infos.find(m => m.name === "timestamp")
+    if (!meta || !meta.value || meta.value.length === 0) return null
+
+    const [firstTs, ts] = [meta.value[0], meta.value[meta.value.length-1]]
+    const stampedDate = ts ? moment(firstTs.stampedDate).format("YYYY-MM-DD HH:mm:ss") : null
+    const expirationDate = ts ? moment(ts.expirationDate).format("YYYY-MM-DD HH:mm:ss") : null
+    const verifiedDate = ts && ts.verifiedDate ? moment(ts.verifiedDate).format("YYYY-MM-DD HH:mm:ss") : null
+
+    return (
+      <Card style={styles.innerCard}>
+        <CardHeader title="タイムスタンプ" />
+        <CardText>
+        開始日時　{stampedDate}<br/>
+        有効期限　{expirationDate}<br/>
+        検証日時　{verifiedDate}<br/>
+        {ts && ts.status === "failed" && (
+          <Paper zDepth="0" style={{ backgroundColor:red100, marginTop:5, padding:1, paddingLeft:7 }}>
+            { ts.errors.map(e => <p>{e.description}</p>) }
+          </Paper>
+        )}
+        </CardText>
+        <CardActions>
+          <RaisedButton
+            label="TSTダウンロード"
+            onClick={() => this.props.actions.downloadTimestampToken(file)}
+            />
+        </CardActions>
+      </Card>
+    )
+  }
+
   render() {
     if (this.props.file === undefined || this.props.file._id === undefined) {
       return null;
@@ -408,17 +444,7 @@ class FileDetailContainer extends Component {
 
               { (this.props.metaInfo.meta_infos && this.props.metaInfo.meta_infos.length > 0) ? this.renderMetaInfos() : null}
               {this.renderHistories()}
-              <Card style={styles.innerCard}>
-                <CardHeader title="タイムスタンプ" />
-                <CardText>
-                発行日時　2015/02/22 22:28:07<br/>  
-                有効期限　2025/02/22 22:28:07<br/>  
-                検証日時　2019/01/13 11:57:32<br/>  
-                <br/>
-                <RaisedButton label="TSTダウンロード" />                
-                </CardText>
-              </Card>
-
+              {this.renderTimestamp()}
             </div>
 
           </div>

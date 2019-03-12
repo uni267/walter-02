@@ -73,13 +73,16 @@ router.route("/:file_id/toggle_star").patch(controller.toggleStar);
 // 非表示状態のトグル
 router.route("/:file_id/toggle_unvisible").patch(controller.toggleUnvisible);
 
-// タイムスタンプトークンの付与
+// タイムスタンプトークン付与
 router.route("/:file_id/timestamp/grant").post(tsController.grantToken);
 
-// タイムスタンプトークンの検証
+// タイムスタンプトークン検証
 router.route("/:file_id/timestamp/verify").post(tsController.verifyToken);
 
-// ディレクトリ下のタイムスタンプトークンの自動付与
+// タイムスタンプトークンダウンロード
+router.route("/timestamp/download").get(tsController.downloadToken);
+
+// ディレクトリ下のタイムスタンプトークン自動付与
 router.route("/:file_id/timestamp/auto_grant")
   .post(tsController.enableAutoGrantToken)
   .delete(tsController.disableAutoGrantToken)

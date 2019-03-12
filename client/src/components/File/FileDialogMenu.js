@@ -11,7 +11,7 @@ import NavigationMenu from "material-ui/svg-icons/navigation/menu";
 // icons
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import ActionDescription from "material-ui/svg-icons/action/description";
-import ActionFingerprint from "material-ui/svg-icons/action/fingerprint";
+import DeviceAccessTime from "material-ui/svg-icons/device/access-time";
 import ActionLabel from "material-ui/svg-icons/action/label";
 import ActionHistory from "material-ui/svg-icons/action/history";
 import ActionRestore from "material-ui/svg-icons/action/restore";
@@ -142,17 +142,9 @@ const FileDialogMenu = ({
       component: idx => (
         <MenuItem
           key={idx}
-          primaryText="タイムスタンプ発行"
-          leftIcon={<ActionFingerprint />} />
-      )
-    },
-    {
-      name: constants.PERMISSION_VERIFY_TIMESTAMP,
-      component: idx => (
-        <MenuItem
-          key={idx}
-          primaryText="タイムスタンプ検証"
-          leftIcon={<ActionFingerprint />} />
+          primaryText="タイムスタンプ"
+          leftIcon={<DeviceAccessTime />}
+          onTouchTap={() => actions.toggleTimestampDialog(file)} />
       )
     }
   ];
