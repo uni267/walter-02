@@ -61,6 +61,11 @@ import { Swift } from "../storages/Swift";
 
 import { moveDir } from "./dirs";
 
+import {
+  _grantToken,
+  _aggregateMetaInfo,
+} from "./timestamps";
+
 export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
     try {
@@ -1731,6 +1736,9 @@ export const upload = (req, res, next) => {
 
       if (changedFiles.length > 0) {
         const changedFileIds = changedFiles.map(file => file._id);
+
+        yield Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant.name)))
+
         const sortOption = yield createSortOption();
         const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
         yield esClient.createIndex(tenant_id, indexingFile);
@@ -1791,6 +1799,11 @@ export const upload = (req, res, next) => {
     }
   });
 };
+
+const grantTimestamp = async (file, tenant_name) => {
+  const autoGrantTsInfo = await _aggregateMetaInfo(file.dir_id, "auto_grant_timestamp")
+  if (autoGrantTsInfo && autoGrantTsInfo.value) await _grantToken(file._id, tenant_name)
+}
 
 export const addTag = (req, res, next) => {
   co(function* () {

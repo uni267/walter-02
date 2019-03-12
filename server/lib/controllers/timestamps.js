@@ -7,73 +7,16 @@ import logger from "../logger";
 import api from "../apis/timestamp";
 import { Swift } from "../storages/Swift";
 import fs from "fs";
-import path from "path";
-import stream from "stream";
 
 export const grantToken = async (req, res, next) => {
     try {
       const { file_id } = req.params;
 
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
-
-      const file = await File.findById(file_id);
-      if (file.is_dir) throw "it's a directory";
-
-      const tenant_name = res.user.tenant.name;
-      const readStream = await new Swift().downloadFile(tenant_name, file);
-      const encodedFile = await (new Promise((resolve, reject) => {
-        let chunks = []
-        readStream
-          .on("data", chunk => chunks.push(chunk))
-          .on("end", () => resolve(Buffer.concat(chunks).toString("base64")))
-          .on("error", e => reject(e))
-      }))
-
-      const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
-
-      let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
-      if (!fileMetaInfo) {
-        fileMetaInfo = new FileMetaInfo({
-          file_id: file._id,
-          meta_info_id: metaInfo._id,
-          value: [],
-        })
-      }
-
-      let grantResp
-      if (file.mime_type !== "application/pdf") {
-        grantResp = await api.grantToken(file._id.toString(), encodedFile)
-      }
-      else {
-        grantResp = await api.grantPades(file._id.toString(), encodedFile)
-        try {
-          await new Swift().upload(tenant_name, Buffer.from(grantResp.file, 'base64'), file._id.toString());
-        }
-        catch (e) {
-          console.log(e)
-          throw "ファイル本体の保存に失敗しました"
-        }
-      }
-
-      if (grantResp.timestampToken) {
-        let verifyResp
-        if (file.mime_type !== "application/pdf") {
-          verifyResp = await api.verifyToken(file._id.toString(), encodedFile, grantResp.timestampToken.token)
-        }
-        else {
-          verifyResp = await api.verifyPades(file._id.toString(), encodedFile, grantResp.timestampToken.token)
-        }
-        fileMetaInfo.value = [...fileMetaInfo.value, { ...grantResp.timestampToken, ...verifyResp.result }]
-        await fileMetaInfo.save()
-      }
+      const meta_info = _grantToken(file_id, res.user.tenant.name)
 
       res.json({
         status: { success: true },
-        body: {
-          meta_info: await aggregateMetaInfo(file._id, metaInfo.name)
-        }
+        body: { meta_info },
       });
     }
     catch (e) {
@@ -92,6 +35,65 @@ export const grantToken = async (req, res, next) => {
       });
     }
 };
+
+export const _grantToken = async (file_id, tenant_name) => {
+
+  if (file_id === undefined ||
+      file_id === null ||
+      file_id === "") throw "file_id is empty";
+
+  const file = await File.findById(file_id);
+  if (file.is_dir) throw "it's a directory";
+
+  const readStream = await new Swift().downloadFile(tenant_name, file);
+  const encodedFile = await (new Promise((resolve, reject) => {
+    let chunks = []
+    readStream
+      .on("data", chunk => chunks.push(chunk))
+      .on("end", () => resolve(Buffer.concat(chunks).toString("base64")))
+      .on("error", e => reject(e))
+  }))
+
+  const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
+
+  let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
+  if (!fileMetaInfo) {
+    fileMetaInfo = new FileMetaInfo({
+      file_id: file._id,
+      meta_info_id: metaInfo._id,
+      value: [],
+    })
+  }
+
+  let grantResp
+  if (file.mime_type !== "application/pdf") {
+    grantResp = await api.grantToken(file._id.toString(), encodedFile)
+  }
+  else {
+    grantResp = await api.grantPades(file._id.toString(), encodedFile)
+    try {
+      await new Swift().upload(tenant_name, Buffer.from(grantResp.file, 'base64'), file._id.toString());
+    }
+    catch (e) {
+      console.log(e)
+      throw "ファイル本体の保存に失敗しました"
+    }
+  }
+
+  if (grantResp.timestampToken) {
+    let verifyResp
+    if (file.mime_type !== "application/pdf") {
+      verifyResp = await api.verifyToken(file._id.toString(), encodedFile, grantResp.timestampToken.token)
+    }
+    else {
+      verifyResp = await api.verifyPades(file._id.toString(), encodedFile, grantResp.timestampToken.token)
+    }
+    fileMetaInfo.value = [...fileMetaInfo.value, { ...grantResp.timestampToken, ...verifyResp.result }]
+    await fileMetaInfo.save()
+  }
+
+  return await _aggregateMetaInfo(file._id, metaInfo.name)
+}
 
 export const verifyToken = async (req, res, next) => {
   try {
@@ -141,7 +143,7 @@ export const verifyToken = async (req, res, next) => {
     res.json({
       status: { success: true },
       body: {
-        meta_info: await aggregateMetaInfo(file._id, metaInfo.name)
+        meta_info: await _aggregateMetaInfo(file._id, metaInfo.name)
       }
     });
   }
@@ -243,7 +245,7 @@ export const enableAutoGrantToken = async (req, res, next) => {
     res.json({
       status: { success: true },
       body: {
-        meta_info: await aggregateMetaInfo(file._id, metaInfo.name)
+        meta_info: await _aggregateMetaInfo(file._id, metaInfo.name)
       }
     });
   }
@@ -304,7 +306,7 @@ export const disableAutoGrantToken = async (req, res, next) => {
     res.json({
       status: { success: true },
       body: {
-        meta_info: await aggregateMetaInfo(file._id, metaInfo.name)
+        meta_info: await _aggregateMetaInfo(file._id, metaInfo.name)
       }
     });
   }
@@ -325,7 +327,7 @@ export const disableAutoGrantToken = async (req, res, next) => {
   }
 };
 
-const aggregateMetaInfo = async (file_id, meta_info_name) => {
+export const _aggregateMetaInfo = async (file_id, meta_info_name) => {
   return await FileMetaInfo.aggregate([
     { $match: { file_id }},
     {
