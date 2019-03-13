@@ -15,7 +15,7 @@
     "init-tenant-w:prod": "node dist/batches/index.js initTenantW",
     "init-elasticsearch:prod": "node dist/batches/index.js initElasticsearch",
     "re-create-elastic-cache:prod": "node dist/batches/index.js reCreateElasticCache",
-    "patch": "babel-node lib/batches/index.js patch",
+    "add-timestamp-setting": "babel-node lib/batches/index.js addTimestampSetting",
     "analyze": "babel-node batches/index.js analyze",
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
     "debug-re-create-elastic-cache": "babel-node batches/index.js reCreateElasticCache --inspect-brk=9229",

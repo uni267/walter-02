@@ -46,8 +46,8 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   case "initTenantW":
     tasks.initTenantWTask();
     break;
-  case "patch":
-    tasks.patchTask();
+  case "addTimestampSetting":
+    tasks.addTimestampSettingTask();
     break;
   case "reCreateElasticCache":
     tasks.reCreateElasticCacheTask();
