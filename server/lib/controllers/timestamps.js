@@ -4,15 +4,14 @@ import MetaInfo from "../models/MetaInfo";
 import Dir from "../models/Dir";
 
 import logger from "../logger";
-import api from "../apis/timestamp";
+import TsaApi from "../apis/tsaClient";
 import { Swift } from "../storages/Swift";
 import fs from "fs";
 
 export const grantToken = async (req, res, next) => {
     try {
       const { file_id } = req.params;
-
-      const meta_info = _grantToken(file_id, res.user.tenant.name)
+      const meta_info = await _grantToken(file_id, res.user.tenant.name, res.user.tenant.tsaAuth)
 
       res.json({
         status: { success: true },
@@ -20,79 +19,85 @@ export const grantToken = async (req, res, next) => {
       });
     }
     catch (e) {
-      console.error(e)
+      logger.error(e)
       let errors = {};
       switch (e) {
       case "file_id is empty":
         errors.file_id = e;
         break;
       default:
-        errors.unknown = e;
         break;
       }
       res.status(400).json({
-        status: { success: false, errors }
+        status: { success: false, message: "タイムスタンプの発行に失敗しました" , errors }
       });
     }
 };
 
-export const _grantToken = async (file_id, tenant_name) => {
+export const _grantToken = async (file_id, tenant_name, tsaAuth) => {
+  try {
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
 
-  if (file_id === undefined ||
-      file_id === null ||
-      file_id === "") throw "file_id is empty";
+    if (!tsaAuth || !tsaAuth.user || !tsaAuth.pass) throw "TSA authentication info is not found"
 
-  const file = await File.findById(file_id);
-  if (file.is_dir) throw "it's a directory";
+    const file = await File.findById(file_id);
+    if (file.is_dir) throw "it's a directory";
 
-  const readStream = await new Swift().downloadFile(tenant_name, file);
-  const encodedFile = await (new Promise((resolve, reject) => {
-    let chunks = []
-    readStream
-      .on("data", chunk => chunks.push(chunk))
-      .on("end", () => resolve(Buffer.concat(chunks).toString("base64")))
-      .on("error", e => reject(e))
-  }))
+    const readStream = await new Swift().downloadFile(tenant_name, file);
+    const encodedFile = await (new Promise((resolve, reject) => {
+      let chunks = []
+      readStream
+        .on("data", chunk => chunks.push(chunk))
+        .on("end", () => resolve(Buffer.concat(chunks).toString("base64")))
+        .on("error", e => reject(e))
+    }))
 
-  const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
+    const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
 
-  let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
-  if (!fileMetaInfo) {
-    fileMetaInfo = new FileMetaInfo({
-      file_id: file._id,
-      meta_info_id: metaInfo._id,
-      value: [],
-    })
-  }
-
-  let grantResp
-  if (file.mime_type !== "application/pdf") {
-    grantResp = await api.grantToken(file._id.toString(), encodedFile)
-  }
-  else {
-    grantResp = await api.grantPades(file._id.toString(), encodedFile)
-    try {
-      await new Swift().upload(tenant_name, Buffer.from(grantResp.file, 'base64'), file._id.toString());
+    let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
+    if (!fileMetaInfo) {
+      fileMetaInfo = new FileMetaInfo({
+        file_id: file._id,
+        meta_info_id: metaInfo._id,
+        value: [],
+      })
     }
-    catch (e) {
-      console.log(e)
-      throw "ファイル本体の保存に失敗しました"
-    }
-  }
 
-  if (grantResp.timestampToken) {
-    let verifyResp
+    let grantResp
+    const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
     if (file.mime_type !== "application/pdf") {
-      verifyResp = await api.verifyToken(file._id.toString(), encodedFile, grantResp.timestampToken.token)
+      grantResp = await tsaApi.grantToken(file._id.toString(), encodedFile)
     }
     else {
-      verifyResp = await api.verifyPades(file._id.toString(), encodedFile, grantResp.timestampToken.token)
+      grantResp = await tsaApi.grantPades(file._id.toString(), encodedFile)
+      try {
+        await new Swift().upload(tenant_name, Buffer.from(grantResp.file, 'base64'), file._id.toString());
+      }
+      catch (e) {
+        console.log(e)
+        throw "ファイル本体の保存に失敗しました"
+      }
     }
-    fileMetaInfo.value = [...fileMetaInfo.value, { ...grantResp.timestampToken, ...verifyResp.result }]
-    await fileMetaInfo.save()
-  }
 
-  return await _aggregateMetaInfo(file._id, metaInfo.name)
+    if (grantResp.timestampToken) {
+      let verifyResp
+      if (file.mime_type !== "application/pdf") {
+        verifyResp = await tsaApi.verifyToken(file._id.toString(), encodedFile, grantResp.timestampToken.token)
+      }
+      else {
+        verifyResp = await tsaApi.verifyPades(file._id.toString(), encodedFile)
+      }
+      fileMetaInfo.value = [...fileMetaInfo.value, { ...grantResp.timestampToken, ...verifyResp.result }]
+      await fileMetaInfo.save()
+    }
+
+    return await _aggregateMetaInfo(file._id, metaInfo.name)
+  }
+  catch (e) {
+    throw new Error(e)
+  }
 }
 
 export const verifyToken = async (req, res, next) => {
@@ -102,6 +107,9 @@ export const verifyToken = async (req, res, next) => {
     if (file_id === undefined ||
         file_id === null ||
         file_id === "") throw "file_id is empty";
+
+    const tsaAuth = res.user.tenant.tsaAuth
+    if (!tsaAuth || !tsaAuth.user || !tsaAuth.pass) throw "TSA authentication info is not found"
 
     const file = await File.findById(file_id);
     if (file.is_dir) throw "it's a directory";
@@ -124,11 +132,12 @@ export const verifyToken = async (req, res, next) => {
     const timestamp = fileMetaInfo.value[fileMetaInfo.value.length - 1]
 
     let data = null
+    const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
     if (file.mime_type !== "application/pdf") {
-      data = await api.verifyToken(file._id.toString(), encodedFile, timestamp.token)
+      data = await tsaApi.verifyToken(file._id.toString(), encodedFile, timestamp.token)
     }
     else {
-      data = await api.verifyPades(file._id.toString(), encodedFile, timestamp.token)
+      data = await tsaApi.verifyPades(file._id.toString(), encodedFile)
     }
 
     await fileMetaInfo.update({
@@ -148,18 +157,17 @@ export const verifyToken = async (req, res, next) => {
     });
   }
   catch (e) {
-    console.error(e)
+    logger.error(e)
     let errors = {};
     switch (e) {
     case "file_id is empty":
       errors.file_id = e;
       break;
     default:
-      errors.unknown = e;
       break;
     }
     res.status(400).json({
-      status: { success: false, errors }
+      status: { success: false, message: "タイムスタンプの検証に失敗しました", errors }
     });
   }
 };
@@ -189,18 +197,17 @@ export const downloadToken = async (req, res, next) => {
     });
   }
   catch (e) {
-    console.error(e)
+    logger.error(e)
     let errors = {};
     switch (e) {
     case "file_id is empty":
       errors.file_id = e;
       break;
     default:
-      errors.unknown = e;
       break;
     }
     res.status(400).json({
-      status: { success: false, errors }
+      status: { success: false, message: "タイムスタンプトークンのダウンロードに失敗しました", errors }
     });
   }
 }
@@ -251,7 +258,7 @@ export const enableAutoGrantToken = async (req, res, next) => {
     });
   }
   catch (e) {
-    console.error(e)
+    logger.error(e)
     let errors = {};
     switch (e) {
     case "file_id is empty":
@@ -312,7 +319,7 @@ export const disableAutoGrantToken = async (req, res, next) => {
     });
   }
   catch (e) {
-    console.error(e)
+    logger.error(e)
     let errors = {};
     switch (e) {
     case "file_id is empty":

@@ -36,7 +36,7 @@ import {
   RecordNotFoundException,
   PermisstionDeniedException
 } from "../errors/AppError";
-import tsApi from "../apis/timestamp";
+import TsaApi from "../apis/tsaClient";
 
 // constants
 import { SECURITY_CONF } from "../configs/server";
@@ -1576,18 +1576,6 @@ export const upload = (req, res, next) => {
         const tenant_name = res.user.tenant.name;
 
         try {
-          const tsData = yield tsApi.inspect(model._id, data)
-          if (tsData.file) data = tsData.file
-          if (tsData.timestampToken) {
-            const metaInfo = yield MetaInfo.findOne({ name: "timestamp" })
-
-            yield FileMetaInfo.create({
-              file_id: model._id,
-              meta_info_id: metaInfo._id,
-              value: [tsData.timestampToken]
-            })
-          }
-
           yield swift.upload(tenant_name, Buffer.from(data, 'base64'), model._id.toString());
         } catch (e) {
           logger.info(e);
@@ -1601,6 +1589,29 @@ export const upload = (req, res, next) => {
           };
         }
       }
+
+      // for ( let i = 0; i < zipFiles.length; i++ ) {
+      //   const { file, model } = zipFiles[i];
+
+      //   if (file.hasError) continue;
+
+      //   const regex = /;base64,(.*)$/;
+      //   const matches = file.base64.match(regex);
+      //   let data = matches[1];
+      //   const tsaAuth = res.user.tenant.tsaAuth
+      //   const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
+      //   const tsData = yield tsaApi.inspect(model._id, data).catch(e => { throw new Error(e) })
+      //   if (tsData.file) data = tsData.file
+      //   if (tsData.timestampToken) {
+      //     const metaInfo = yield MetaInfo.findOne({ name: "timestamp" })
+
+      //     yield FileMetaInfo.create({
+      //       file_id: model._id,
+      //       meta_info_id: metaInfo._id,
+      //       value: [tsData.timestampToken]
+      //     })
+      //   }
+      // }
 
       // 権限
       const role = yield RoleFile.findOne({
@@ -1737,7 +1748,7 @@ export const upload = (req, res, next) => {
       if (changedFiles.length > 0) {
         const changedFileIds = changedFiles.map(file => file._id);
 
-        yield Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant.name)))
+        yield Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant.name, res.user.tenant.tsaAuth)))
 
         const sortOption = yield createSortOption();
         const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
@@ -1800,9 +1811,9 @@ export const upload = (req, res, next) => {
   });
 };
 
-const grantTimestamp = async (file, tenant_name) => {
+const grantTimestamp = async (file, tenant_name, tsaAuth) => {
   const autoGrantTsInfo = await _aggregateMetaInfo(file.dir_id, "auto_grant_timestamp")
-  if (autoGrantTsInfo && autoGrantTsInfo.value) await _grantToken(file._id, tenant_name)
+  if (autoGrantTsInfo && autoGrantTsInfo.value) await _grantToken(file._id, tenant_name, tsaAuth)
 }
 
 export const addTag = (req, res, next) => {
