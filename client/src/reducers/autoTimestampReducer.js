@@ -21,7 +21,7 @@ const autoTimestampReducer = (state = initialState, action) => {
 
 const checkAutoTimestampEnabled = dir => {
   const autoTimestamp = dir.meta_infos.find(m => m.name === "auto_grant_timestamp")
-  return (autoTimestamp && autoTimestamp.value)
+  return (!!autoTimestamp && !!autoTimestamp.value)
 }
 
 export default autoTimestampReducer;

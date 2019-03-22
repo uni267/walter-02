@@ -17,9 +17,8 @@ function* watchToggleAutoTimestamp() {
           : yield call(api.disableAutoGrantTimestamp, dir._id)
 
       if (meta_info && meta_info.name === "auto_grant_timestamp") {
-        const updateDir = {
-          ...dir, meta_infos: dir.meta_infos.map(m => m.name === "auto_grant_timestamp" ? meta_info : m )
-        }
+        const meta_infos = dir.meta_infos.length > 0 ? dir.meta_infos.map(m => m.name === "auto_grant_timestamp" ? meta_info : m ) : [meta_info]
+        const updateDir = { ...dir, meta_infos }
         yield put(actions.updateFileRow(updateDir))
 
         const finishMessage = enable ? "タイムスタンプ自動発行を有効にしました" : "タイムスタンプ自動発行を無効にしました"

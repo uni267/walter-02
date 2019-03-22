@@ -73,7 +73,7 @@ class Dir extends Component {
 
   renderDirIcon = iconStyle => {
     const autoTimestamp = this.props.dir.meta_infos.find(m => m.name === "auto_grant_timestamp")
-    return (autoTimestamp && autoTimestamp.value)
+    return (!!autoTimestamp && !!autoTimestamp.value)
       ? <FileFolderOpen_TS style={iconStyle} />
       : <FileFolderOpen style={iconStyle} />
   }

@@ -61,10 +61,7 @@ import { Swift } from "../storages/Swift";
 
 import { moveDir } from "./dirs";
 
-import {
-  _grantToken,
-  _aggregateMetaInfo,
-} from "./timestamps";
+import { grantTimestampToken } from "./timestamps";
 
 export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
@@ -1600,7 +1597,7 @@ export const upload = (req, res, next) => {
       //   let data = matches[1];
       //   const tsaAuth = res.user.tenant.tsaAuth
       //   const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
-      //   const tsData = yield tsaApi.inspect(model._id, data).catch(e => { throw new Error(e) })
+      //   const tsData = yield tsaApi.inspect(model._id, data).catch(e => { throw e })
       //   if (tsData.file) data = tsData.file
       //   if (tsData.timestampToken) {
       //     const metaInfo = yield MetaInfo.findOne({ name: "timestamp" })
@@ -1748,7 +1745,7 @@ export const upload = (req, res, next) => {
       if (changedFiles.length > 0) {
         const changedFileIds = changedFiles.map(file => file._id);
 
-        yield Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant.name, res.user.tenant.tsaAuth)))
+        yield Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant._id))).catch(e => Promise.reject(e))
 
         const sortOption = yield createSortOption();
         const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
@@ -1811,9 +1808,10 @@ export const upload = (req, res, next) => {
   });
 };
 
-const grantTimestamp = async (file, tenant_name, tsaAuth) => {
-  const autoGrantTsInfo = await _aggregateMetaInfo(file.dir_id, "auto_grant_timestamp")
-  if (autoGrantTsInfo && autoGrantTsInfo.value) await _grantToken(file._id, tenant_name, tsaAuth)
+const grantTimestamp = async (file, tenant_id) => {
+  const updatedFile = await File.searchFileOne({_id: file._id})
+  const autoGrantTsInfo = updatedFile.meta_infos.find(m => m.name === metaInfo.name)
+  if (autoGrantTsInfo && autoGrantTsInfo.value) await grantTimestampToken(file._id, tenant_id)
 }
 
 export const addTag = (req, res, next) => {

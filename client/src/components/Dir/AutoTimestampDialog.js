@@ -49,7 +49,7 @@ const AutoTimestampDialog = ({
 };
 
 AutoTimestampDialog.propTypes = {
-  dir: PropTypes.object.isRequired,
+  dir: PropTypes.object,
   open: PropTypes.bool.isRequired,
   actions: PropTypes.object,
   enable: PropTypes.bool.isRequired,

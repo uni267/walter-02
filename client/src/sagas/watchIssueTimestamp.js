@@ -26,10 +26,10 @@ function* watchIssueTimestamp() {
         const updateFile = {
           ...file, meta_infos
         }
+        yield put(commonActions.triggerSnackbar("タイムスタンプを発行しました"))
         yield put(actions.updateFileRow(updateFile))
         yield put(actions.updateTimestampTargetFile(updateFile))
         yield put(actions.toggleTimestampConfirmDialog())
-        yield put(commonActions.triggerSnackbar("タイムスタンプを発行しました"))
       }
     }
     catch (e) {

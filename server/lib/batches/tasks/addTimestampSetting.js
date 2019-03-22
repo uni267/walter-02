@@ -1,5 +1,7 @@
 import util from "util";
 
+import esClient from "../../elasticsearchclient";
+
 // logger
 import logger from "../../logger";
 
@@ -11,36 +13,65 @@ import MetaInfo from "../../models/MetaInfo";
 
 const task = async () => {
   try{
-    console.log('addTenantバッチにより追加されたテナントに対し、タイムスタンプ機能を追加します。')
+    console.log('追加済のテナントに対し、タイムスタンプ機能を追加します。')
+    console.log('-------- Start --------')
 
-    if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
-    //テナント名をfindしてなければアウト
+    if (!process.argv[3]) throw "引数にテナント名を指定する必要があります。"
+    if (!process.argv[4]) throw "サイバーリンクスTSA認証局のユーザIDを指定してください。"
+    if (!process.argv[5]) throw "サイバーリンクスTSA認証局のユーザPWを指定してください。"
+
     const tenantName = process.argv[3]
     const tenant = await Tenant.findOne({ name: tenantName})
-    if(!tenant) throw new Error("存在しないテナントです");
-    console.log(`テナント ${tenant.name}(${tenant._id}) の設定を更新します。`)
-    console.log('start')
+    if (!tenant) throw "存在しないテナントです。"
 
-    const description = 'タイムスタンプサービスの利用を許可する'
-    let appSetting = await AppSetting.findOne({
-      tenant_id: tenant._id,
-      name: AppSetting.TIMESTAMP_PERMISSION,
-      description,
-    })
+    const tsaUser = process.argv[4]
+    const tsaPass = process.argv[5]
 
-    appSetting = appSetting || new AppSetting({
-      tenant_id: tenant._id,
-      name: AppSetting.TIMESTAMP_PERMISSION,
-      description,
-      enable: false,
-      default_value: false
-    })
+    console.log(`テナント ${tenant.name}(${tenant._id}) の設定を更新します。。。`)
 
-    if (!appSetting.enable) {
-      appSetting.enable = true
-      await appSetting.save()
+    const mapping = await esClient.indices.getMapping({ index: [tenant._id] })
+    const props = mapping[tenant._id.toString()].mappings.files.properties.file.properties
+    const newFileProps = {
+      properties: {
+        file: {
+          properties: {
+            ...props,
+            tstStatus: { "type": "keyword" },
+            tstExpirationDate: { "type": "date" },
+          }
+        }
+      }
+    }
+    await esClient.indices.putMapping({index: [tenant._id], type: "files", body:JSON.stringify(newFileProps)});
+
+    // タイムスタンプ関連のアクションを追加（全テナント共有）
+    const appSetting = await AppSetting.findOne({ tenant_id: tenant._id, name: AppSetting.TIMESTAMP_PERMISSION })
+    if (!appSetting) {
+      await AppSetting.create({
+          tenant_id: tenant._id,
+          name: AppSetting.TIMESTAMP_PERMISSION,
+          description: 'タイムスタンプサービスの利用を許可する。',
+          enable: true,
+      });
+    }
+    else {
+      await appSetting.update({
+        $set: {
+          enable: true
+        }
+      })
     }
 
+    await tenant.update({
+      $set: {
+        tsaAuth: {
+          user: tsaUser,
+          pass: tsaPass,
+        }
+      }
+    })
+
+    // タイムスタンプ関連のアクションを追加（全テナント共有）
     if(!(await Action.findOne({ name: "add-timestamp" }))){
       await Action.insertMany([
         {
@@ -77,6 +108,7 @@ const task = async () => {
       ]);
     }
 
+    // タイムスタンプ関連のメタ情報を追加（全テナント共有）
     if(!(await MetaInfo.findOne({ name: "timestamp" }))){
       await MetaInfo.insertMany([
         {
@@ -96,6 +128,9 @@ const task = async () => {
         },
       ]);
     }
+
+    // タイムスタンプをファイル一覧のフィルタリング項目に追加
+
   }
   catch (e) {
     console.log(e)
@@ -104,7 +139,7 @@ const task = async () => {
     process.exit();
   }
   finally {
-    console.log('end')
+    console.log('-------- Finish --------')
     logger.info("################# add timestamp setting end #################");
     process.exit();
   }

@@ -69,7 +69,7 @@ class File extends Component {
 
     if (timestamped) {
       const ts = meta.value[meta.value.length-1]
-      if (ts.status === "success") {
+      if (ts.status === "Success") {
         const current = moment();
         const expire = moment(ts.expirationDate);
         tsStatus = expire.diff(current, 'y') ? 'normal' : 'warning'

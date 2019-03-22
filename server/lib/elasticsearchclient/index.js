@@ -3,6 +3,7 @@ import elasticsearch from "elasticsearch";
 import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
 import { ELASTIC_INDEXING_TIMEOUT } from "../configs/constants";
+import AppSetting from "../models/AppSetting";
 
 const mode = process.env.NODE_ENV;
 
@@ -39,6 +40,9 @@ esClient.createIndex = co.wrap(
   function* (tenant_id,files){
     try {
       const bulkBody = [];
+      const appSetting = yield AppSetting.findOne({ tenant_id, name: AppSetting.TIMESTAMP_PERMISSION })
+      const timestampOptionEnabled = !!appSetting && !!appSetting.enable
+
       files.forEach(file=>{
         bulkBody.push({
           index:{
@@ -69,7 +73,7 @@ esClient.createIndex = co.wrap(
           tag: tags
         };
 
-        file.meta_infos.forEach(meta =>{
+        file.meta_infos.filter(m => m.name !== "timestamp").forEach(meta =>{
           esFile[ meta._id.toString() ] = meta.value;
         });
 
@@ -91,10 +95,15 @@ esClient.createIndex = co.wrap(
           });
           // esFile.users += (esFile.users==="" ? "": " ") + authority.users.name;
         });
+
+        if (timestampOptionEnabled) {
+          esFile.tstStatus = file.tstStatus
+          esFile.tstExpirationDate = file.tstExpirationDate
+        }
+
         bulkBody.push({
           file: esFile
         });
-
       });
 
       const result = yield esClient.bulk({ refresh:"true", body:bulkBody });

@@ -28,7 +28,7 @@ export class API {
   constructor(tsaUser = null, tsaPass = null) {
     this.client = axios.create({
       baseURL,
-      timeout: 1000,
+      timeout: 10000,
       auth: {
         username: tsaUser,
         password: tsaPass,
@@ -45,11 +45,11 @@ export class API {
   }
 
   verifyToken(requestId = "", file, token) {
-    return this.client.post(`/verify/tst/binary`, { requestId, file, token })
+    return this.client.post("/verify/tst/binary", { requestId, file, token })
   }
 
   verifyPades(requestId = "", file) {
-    return this.client.post(`/grant/tst/binary`, { requestId, file })
+    return this.client.post("/verify/pades/binary", { requestId, file })
   }
 
   inspect(requestId = "", file) {
