@@ -100,12 +100,7 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
       tsMetaInfo = updatedFile.meta_infos.find(m => m.name === metaInfo.name)
       if (!tsMetaInfo) throw "Failed to create timestamp meta info."
 
-      const tst = tsMetaInfo.value[tsMetaInfo.value.length-1]
-      await esClient.createIndex(tenant_id, [{
-        ...updatedFile,
-        tstStatus: tst.status,
-        tstExpirationDate: tst.expirationDate,
-      }]);
+      await esClient.createIndex(tenant_id, [updatedFile]);
     }
 
     return tsMetaInfo

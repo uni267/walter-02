@@ -111,7 +111,6 @@ const TimestampConfirmDialog = ({
       autoScrollBodyContent={true}
       actions={dialogActions}
     >
-      タイムスタンプ発行毎に費用が掛かります。
     </Dialog>
   )
 }

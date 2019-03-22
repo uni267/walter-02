@@ -829,6 +829,50 @@ export const searchDetail = (req, res, next, export_excel=false) => {
           };
         }
 
+        // タイムスタンプ処理
+        if (q.name === "timestamp") {
+          switch (q.value) {
+            case "valid_timestamp":
+              return { bool: { must: [
+                {
+                  match: {
+                    "file.tstStatus": "Success"
+                  }
+                },
+                {
+                  range: {
+                    "file.tstExpirationDate": {
+                        "gte": "now+1y/d"
+                    }
+                  }
+                }
+              ]}}
+            case "expire_soon":
+              return { bool: { must: [
+                {
+                  match: {
+                    "file.tstStatus": "Success"
+                  }
+                },
+                {
+                  range: {
+                    "file.tstExpirationDate": {
+                        "gte": "now/d",
+                        "lt": "now+1y/d"
+                    }
+                  }
+                }
+              ]}}
+            case "invalid_timestamp":
+            default:
+              return {
+                match: {
+                  "file.tstStatus": "Failed"
+                }
+              }
+          }
+        }
+
         // タグ @todo elasticsearchにindex化されていない
 
         // メタ情報以外の文字列

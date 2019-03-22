@@ -10,6 +10,7 @@ import Tenant from "../../models/Tenant";
 import Action from "../../models/Action";
 import AppSetting from "../../models/AppSetting";
 import MetaInfo from "../../models/MetaInfo";
+import DisplayItem from "../../models/DisplayItem";
 
 const task = async () => {
   try{
@@ -130,7 +131,36 @@ const task = async () => {
     }
 
     // タイムスタンプをファイル一覧のフィルタリング項目に追加
-
+    if(!(await DisplayItem.findOne({ tenant_id: tenant._id, name: "timestamp" }))){
+      await DisplayItem.create(
+        {
+          tenant_id: tenant._id,
+          meta_info_id: null,
+          label: "タイムスタンプ",
+          name: "timestamp",
+          search_value_type: "Select",
+          is_display: false,
+          is_excel: false,
+          is_search: true,
+          order: 150,
+          value_type: "Select",
+          select_options: [
+            {
+              name: "valid_timestamp",
+              label: "有効なタイムスタンプ"
+            },
+            {
+              name: "expire_soon",
+              label: "まもなく期限切れ"
+            },
+            {
+              name: "invalid_timestamp",
+              label: "無効なタイムスタンプ"
+            },
+          ]
+        }
+      )
+    }
   }
   catch (e) {
     console.log(e)

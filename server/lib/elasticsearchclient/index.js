@@ -97,8 +97,12 @@ esClient.createIndex = co.wrap(
         });
 
         if (timestampOptionEnabled) {
-          esFile.tstStatus = file.tstStatus
-          esFile.tstExpirationDate = file.tstExpirationDate
+          const tsMetaInfo = file.meta_infos.find(m => m.name === "timestamp")
+          if (!!tsMetaInfo && tsMetaInfo.value.length > 0) {
+            const tst = tsMetaInfo.value[tsMetaInfo.value.length-1]
+            esFile.tstStatus = tst.status
+            esFile.tstExpirationDate = tst.expirationDate
+          }
         }
 
         bulkBody.push({

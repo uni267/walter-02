@@ -12,10 +12,11 @@ const DisplayItemSchema = Schema({
   is_excel: Boolean,
   is_search: Boolean,
   search_value_type: String,
-  between: Boolean, 
+  between: Boolean,
   width: String,
   order: Number,
-  default_sort: Schema.Types.Mixed
+  default_sort: Schema.Types.Mixed,
+  select_options: Schema.Types.Mixed
 });
 
 DisplayItemSchema.index({ tenant_id: 1 });
