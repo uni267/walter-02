@@ -1570,7 +1570,8 @@ export const upload = (req, res, next) => {
         const tenant_name = res.user.tenant.name;
 
         try {
-          yield swift.upload(tenant_name, new Buffer(data, 'base64'), model._id.toString());
+          file.buffer = new Buffer(data, 'base64')
+          yield swift.upload(tenant_name, file.buffer, model._id.toString());
         } catch (e) {
           logger.info(e);
           fileModels[i] = false;
@@ -1720,6 +1721,11 @@ export const upload = (req, res, next) => {
         const changedFileIds = changedFiles.map(file => file._id);
         const sortOption = yield createSortOption();
         const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+
+        indexingFile = indexingFile.map(file =>{
+          return {...file, buffer: files[0].buffer}
+        })
+
         yield esClient.createIndex(tenant_id, indexingFile);
 
         returnfiles = indexingFile.map( file => {

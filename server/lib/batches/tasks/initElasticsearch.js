@@ -44,6 +44,11 @@ const task = () => {
           "analyzer":{
             "default": {
               "tokenizer": "kuromoji_search"
+            },
+            "full_text_analyzer": {
+              "type": "custom",
+              "tokenizer": "kuromoji_search",
+              "filter": [ "ja_stop", "kuromoji_part_of_speech", "kuromoji_number" ]
             }
           }
         }
@@ -85,7 +90,19 @@ const task = () => {
         unvisible: { type: "boolean" },
         sort_target: { type:"text", index: false },
         actions:{ properties:{}},
-        tag: { type: "text" }
+        tag: { type: "text" },
+        full_text: {
+          type: "text",
+          fielddata: true,
+          search_analyzer: "full_text_analyzer",
+          analyzer: "full_text_analyzer"
+        },
+        meta_text: {
+          type: "text",
+          fielddata: true,
+          search_analyzer: "full_text_analyzer",
+          analyzer: "full_text_analyzer"
+        },
       };
 
       // meta_infoのマッピング

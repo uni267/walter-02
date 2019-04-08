@@ -3,6 +3,7 @@ import elasticsearch from "elasticsearch";
 import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
 import { ELASTIC_INDEXING_TIMEOUT } from "../configs/constants";
+import { Swift } from "../storages/Swift";
 
 const mode = process.env.NODE_ENV;
 
@@ -50,6 +51,17 @@ esClient.createIndex = co.wrap(
 
         const tags = file.tags.map(t => t._id)
 
+        // // tikaへアクセス
+        // const swift = new Swift();
+        // const readStream = yield swift.getFile("wakayama", file._id.toString());
+  
+        let meta = null, text = null
+        if(file.buffer){
+          const tika_result = getTikaResult(file.buffer)
+          meta = tika_result.meta
+          text = tika_result.text
+        }
+
         const esFile = {
           _id: file._id,
           name: file.name,
@@ -66,7 +78,9 @@ esClient.createIndex = co.wrap(
           preview_id: file.preview_id,
           sort_target: file.sort_target,
           unvisible: file.unvisible,
-          tag: tags
+          tag: tags,
+          full_text: meta,
+          meta_text: text,
         };
 
         file.meta_infos.forEach(meta =>{
@@ -109,3 +123,13 @@ esClient.createIndex = co.wrap(
 );
 
 export default esClient;
+
+export const getTikaResult = async (buffer) => {
+  const tikaUrl = "http://tika:9998";
+  //const tikaUrl = "http://localhost:9998";
+  const meta = await request.put(tikaUrl + "/meta")
+    .set("Accept", "application/json")
+    .send(buffer);
+  const text = await request.put(tikaUrl + "/tika").send(buffer);        
+  return {meta, text}
+}
