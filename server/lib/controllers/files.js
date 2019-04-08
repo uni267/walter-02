@@ -1722,9 +1722,9 @@ export const upload = (req, res, next) => {
         const sortOption = yield createSortOption();
         const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
 
-        indexingFile = indexingFile.map(file =>{
-          return {...file, buffer: files[0].buffer}
-        })
+        //indexingFile = indexingFile.map(file =>{
+        //  return {...file, buffer: files[0].buffer}
+        //})
 
         yield esClient.createIndex(tenant_id, indexingFile);
 
