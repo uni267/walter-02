@@ -1184,8 +1184,8 @@ export const move = (req, res, next) => {
   });
 };
 
-export const upload = (req, res, next) => {
-  co(function* () {
+export const upload = async (req, res, next) => {
+//  co(function* () {
     try {
       const myFiles  = req.body.files;
       let dir_id = req.body.dir_id;
@@ -1204,15 +1204,15 @@ export const upload = (req, res, next) => {
         dir_id = res.user.tenant.home_dir_id; // デフォルトはテナントのホーム
       }
 
-      const dir = yield File.findById(dir_id);
+      const dir = await File.findById(dir_id);
 
       if (dir === null) throw "dir is not found";
 
-      const user = yield User.findById(res.user._id);
+      const user = await User.findById(res.user._id);
 
       if (user === null) throw "user is not found";
 
-      const isPermitted = yield checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD );
+      const isPermitted = await checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD );
       if(isPermitted === false ) throw "permission denied";
 
       // ファイルの基本情報
@@ -1312,7 +1312,7 @@ export const upload = (req, res, next) => {
       });
 
       // postされたメタ情報の_idがマスタに存在するかのチェック用
-      const metainfos = yield MetaInfo.find({ tenant_id: res.user.tenant_id });
+      const metainfos = await MetaInfo.find({ tenant_id: res.user.tenant_id });
 
       // メタ情報のチェック
       files = files.map( file => {
@@ -1409,7 +1409,7 @@ export const upload = (req, res, next) => {
       });
 
       // タグがマスタに存在するかのチェック
-      const tags = (yield Tag.find({ tenant_id: res.user.tenant_id }))
+      const tags = (await Tag.find({ tenant_id: res.user.tenant_id }))
             .map( tag => tag._id.toString() );
 
       files = files.map( file => {
@@ -1449,13 +1449,13 @@ export const upload = (req, res, next) => {
       });
 
       // ロール、ユーザ、グループがマスタに存在するかのチェック
-      const role_files = (yield RoleFile.find({ tenant_id: res.user.tenant_id }))
+      const role_files = (await RoleFile.find({ tenant_id: res.user.tenant_id }))
             .map( role => role._id.toString() );
 
-      const users = (yield User.find({ tenant_id: res.user.tenant_id }))
+      const users = (await User.find({ tenant_id: res.user.tenant_id }))
             .map( user => user._id.toString() );
 
-      const groups = (yield Group.find({ tenant_id: res.user.tenant_id }))
+      const groups = (await Group.find({ tenant_id: res.user.tenant_id }))
             .map( group => group._id.toString() );
 
       files = files.map( file => {
@@ -1570,7 +1570,7 @@ export const upload = (req, res, next) => {
         const tenant_name = res.user.tenant.name;
 
         try {
-          yield swift.upload(tenant_name, new Buffer(data, 'base64'), model._id.toString());
+          await swift.upload(tenant_name, new Buffer(data, 'base64'), model._id.toString());
         } catch (e) {
           logger.info(e);
           fileModels[i] = false;
@@ -1585,13 +1585,13 @@ export const upload = (req, res, next) => {
       }
 
       // 権限
-      const role = yield RoleFile.findOne({
+      const role = await RoleFile.findOne({
         tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
         name: "フルコントロール" // @fixme
       });
 
-      const authorityFiles = yield zipWith(files, fileModels, (file, model) => {
-        return co(function*() {
+      const authorityFiles = await zipWith(files, fileModels, async (file, model) => {
+      //  return co(function*() {
           if (file.hasError) return false;
 
           const authorityFile = new AuthorityFile();
@@ -1601,14 +1601,14 @@ export const upload = (req, res, next) => {
 
           let authorityFiles = []
 
-          const inheritAuthSetting = yield AppSetting.findOne({
+          const inheritAuthSetting = await AppSetting.findOne({
             tenant_id: user.tenant_id,
             name: AppSetting.INHERIT_PARENT_DIR_AUTH
           });
 
           if (inheritAuthSetting && inheritAuthSetting.enable) {
-            const parentFile = yield File.findById(file.dir_id)
-            const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
+            const parentFile = await File.findById(file.dir_id)
+            const inheritAuths = await AuthorityFile.find({ files: parentFile._id })
             authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
               users: mongoose.Types.ObjectId(ihr.users),
               files: model,
@@ -1636,7 +1636,7 @@ export const upload = (req, res, next) => {
           ))
 
           return Promise.resolve(authorityFiles);
-        })
+      //  })
       });
 
       // メタ情報
@@ -1663,7 +1663,7 @@ export const upload = (req, res, next) => {
         // ファイル本体(files)の保存
         if (! fileModels[i]) continue;
 
-        const saveFileModel = yield fileModels[i].save();
+        const saveFileModel = await fileModels[i].save();
         changedFiles.push(saveFileModel);
 
         if (! saveFileModel) {
@@ -1681,7 +1681,7 @@ export const upload = (req, res, next) => {
         if (fileMetaInfos[i].length > 0) {
           for ( let j = 0; j < fileMetaInfos[i].length; j++ ) {
             if (fileMetaInfos[i][j]) {
-              const saveFileMetaInfo = yield fileMetaInfos[i][j].save();
+              const saveFileMetaInfo = await fileMetaInfos[i][j].save();
               if (! saveFileMetaInfo) {
 
                 files[i] = {
@@ -1699,7 +1699,7 @@ export const upload = (req, res, next) => {
         // 権限の保存
         if (authorityFiles[i].length > 0) {
           for ( let j = 0; j < authorityFiles[i].length; j++ ) {
-            const saveAuthorityFile = yield authorityFiles[i][j].save();
+            const saveAuthorityFile = await authorityFiles[i][j].save();
             if (! saveAuthorityFile) {
               files[i] = {
                 ...files[i],
@@ -1718,9 +1718,9 @@ export const upload = (req, res, next) => {
 
       if (changedFiles.length > 0) {
         const changedFileIds = changedFiles.map(file => file._id);
-        const sortOption = yield createSortOption();
-        const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
-        yield esClient.createIndex(tenant_id, indexingFile);
+        const sortOption = await createSortOption();
+        const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+        await esClient.createIndex(tenant_id, indexingFile);
 
         returnfiles = indexingFile.map( file => {
           file.actions = extractFileActions(file.authorities, res.user);
@@ -1776,7 +1776,7 @@ export const upload = (req, res, next) => {
         }
       });
     }
-  });
+//  });
 };
 
 export const addTag = (req, res, next) => {
