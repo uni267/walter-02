@@ -4,6 +4,8 @@ import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
 import { ELASTIC_INDEXING_TIMEOUT } from "../configs/constants";
 import { Swift } from "../storages/Swift";
+import request from "superagent";
+import { WSAEDQUOT } from "constants";
 
 const mode = process.env.NODE_ENV;
 
@@ -124,12 +126,15 @@ esClient.createIndex = co.wrap(
 
 export default esClient;
 
-export const getTikaResult = async (buffer) => {
-  const tikaUrl = "http://tika:9998";
-  //const tikaUrl = "http://localhost:9998";
-  const meta = await request.put(tikaUrl + "/meta")
-    .set("Accept", "application/json")
-    .send(buffer);
-  const text = await request.put(tikaUrl + "/tika").send(buffer);        
-  return {meta, text}
+export const getTikaResult = (buffer) => {
+  co(function*() {
+
+    const tikaUrl = "http://tika:9998";
+    //const tikaUrl = "http://localhost:9998";
+    const meta = yield request.put(tikaUrl + "/meta")
+      .set("Accept", "application/json")
+      .send(buffer);
+    const text = yield request.put(tikaUrl + "/tika").send(buffer);        
+    return {meta, text}
+  });
 }
