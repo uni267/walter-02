@@ -1185,7 +1185,6 @@ export const move = (req, res, next) => {
 };
 
 export const upload = async (req, res, next) => {
-  //co(function* () {
   try {
     const myFiles  = req.body.files;
     let dir_id = req.body.dir_id;
@@ -1591,54 +1590,51 @@ export const upload = async (req, res, next) => {
       name: "フルコントロール" // @fixme
     });
 
-    const authorityFiles = await zipWith(files, fileModels, (file, model) => {
-      return co(function*() {
-        if (file.hasError) return false;
+    const authorityFiles = await Promise.all(zipWith(files, fileModels, async (file, model) => {
+      if (file.hasError) return false;
 
-        const authorityFile = new AuthorityFile();
-        authorityFile.users = user._id;
-        authorityFile.files = model;
-        authorityFile.role_files = role._id;
+      const authorityFile = new AuthorityFile();
+      authorityFile.users = user._id;
+      authorityFile.files = model;
+      authorityFile.role_files = role._id;
 
-        let authorityFiles = []
+      let authorityFiles = []
 
-        const inheritAuthSetting = await AppSetting.findOne({
-          tenant_id: user.tenant_id,
-          name: AppSetting.INHERIT_PARENT_DIR_AUTH
-        });
+      const inheritAuthSetting = await AppSetting.findOne({
+        tenant_id: user.tenant_id,
+        name: AppSetting.INHERIT_PARENT_DIR_AUTH
+      });
 
-        if (inheritAuthSetting && inheritAuthSetting.enable) {
-          const parentFile = await File.findById(file.dir_id)
-          const inheritAuths = await AuthorityFile.find({ files: parentFile._id })
-          authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
-            users: mongoose.Types.ObjectId(ihr.users),
-            files: model,
-            role_files: mongoose.Types.ObjectId(ihr.role_files),
-          }))
-        }
+      if (inheritAuthSetting && inheritAuthSetting.enable) {
+        const parentFile = await File.findById(file.dir_id)
+        const inheritAuths = await AuthorityFile.find({ files: parentFile._id })
+        authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
+          users: mongoose.Types.ObjectId(ihr.users),
+          files: model,
+          role_files: mongoose.Types.ObjectId(ihr.role_files),
+        }))
+      }
 
-        if (file.authorities.length > 0) {
-          authorityFiles = file.authorities.map( auth => {
-            const authorityFile = new AuthorityFile();
-            authorityFile.users = mongoose.Types.ObjectId(auth.users);
-            authorityFile.files = model;
-            authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
-            return authorityFile;
-          }).concat(authorityFiles)
-        }
+      if (file.authorities.length > 0) {
+        authorityFiles = file.authorities.map( auth => {
+          const authorityFile = new AuthorityFile();
+          authorityFile.users = mongoose.Types.ObjectId(auth.users);
+          authorityFile.files = model;
+          authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
+          return authorityFile;
+        }).concat(authorityFiles)
+      }
 
-        authorityFiles = authorityFiles.concat(authorityFile)
-        authorityFiles = uniqWith(authorityFiles, (a, b) => (
-          isEqualWith(a, b, (a, b) => (
-            a.users.toString() === b.users.toString()
-            && a.files.toString() === b.files.toString()
-            && a.role_files.toString() === b.role_files.toString()
-          ))
+      authorityFiles = authorityFiles.concat(authorityFile)
+      authorityFiles = uniqWith(authorityFiles, (a, b) => (
+        isEqualWith(a, b, (a, b) => (
+          a.users.toString() === b.users.toString()
+          && a.files.toString() === b.files.toString()
+          && a.role_files.toString() === b.role_files.toString()
         ))
-
-        return Promise.resolve(authorityFiles);
-      })
-    });
+      ))
+      return authorityFiles;
+    }));
 
     // メタ情報
     const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
@@ -1720,12 +1716,7 @@ export const upload = async (req, res, next) => {
     if (changedFiles.length > 0) {
       const changedFileIds = changedFiles.map(file => file._id);
       const sortOption = await createSortOption();
-      let indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
-
-      //indexingFile = indexingFile.map(file =>{
-      //  return {...file, buffer: files[0].buffer}
-      //})
-
+      const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       await esClient.createIndex(tenant_id, indexingFile);
 
       returnfiles = indexingFile.map( file => {
@@ -1782,7 +1773,6 @@ export const upload = async (req, res, next) => {
       }
     });
   }
-//  });
 };
 
 export const addTag = (req, res, next) => {
