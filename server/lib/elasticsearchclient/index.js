@@ -126,15 +126,15 @@ esClient.createIndex = co.wrap(
 
 export default esClient;
 
-export const getTikaResult = (buffer) => {
-  co(function*() {
+// export const getTikaResult = (buffer) => {
+//   co(function*() {
 
-    const tikaUrl = "http://tika:9998";
-    //const tikaUrl = "http://localhost:9998";
-    const meta = yield request.put(tikaUrl + "/meta")
-      .set("Accept", "application/json")
-      .send(buffer);
-    const text = yield request.put(tikaUrl + "/tika").send(buffer);        
-    return {meta, text}
-  });
-}
+//     const tikaUrl = "http://tika:9998";
+//     //const tikaUrl = "http://localhost:9998";
+//     const meta = yield request.put(tikaUrl + "/meta")
+//       .set("Accept", "application/json")
+//       .send(buffer);
+//     const text = yield request.put(tikaUrl + "/tika").send(buffer);        
+//     return {meta, text}
+//   });
+// }
