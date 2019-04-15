@@ -11,6 +11,7 @@ import util from "util";
 import crypto from "crypto";
 import esClient from "../elasticsearchclient";
 import tikaClient from "../tikaclient";
+import * as _ from "lodash";
 import {
   intersection,
   zipWith,
@@ -1673,6 +1674,8 @@ export const upload = async (req, res, next) => {
           }
         };
         continue;  // 保存に失敗した場合、メタ情報や権限の書き込みは行わない
+      }else{
+        files[i]._id = saveFileModel._id.toString()
       }
 
       // メタ情報の保存
@@ -1720,9 +1723,11 @@ export const upload = async (req, res, next) => {
       const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       await esClient.createIndex(tenant_id, indexingFile);
       
-      await Promise.all(_.chain(changedFiles).filter(file => !file.errors.hasError).forEach(async file => {
+      const tikaFiles = _.filter(files, file => !file.hasError )
+      const file = tikaFiles[0]
+      //await Promise.all(tikaFiles.forEach(async file => {
         await sendQueueToTika(tenant_id, file._id, file.buffer)
-      }))
+      //}))
 
       returnfiles = indexingFile.map( file => {
         file.actions = extractFileActions(file.authorities, res.user);
@@ -1783,7 +1788,8 @@ export const upload = async (req, res, next) => {
 export const sendQueueToTika = async (tenant_id, file_id, buffer) => {
   const response_meta_text = await tikaClient.getMetaInfo(buffer)
   const response_full_text = await tikaClient.getTextInfo(buffer)
-  await esClient.updateTextContents(tenant_id, file_id, JSON.parse(response_meta_text.text), response_full_text.text)
+  //await esClient.updateTextContents(tenant_id, file_id, response_meta_text.text, response_full_text.text)
+  await esClient.updateTextContents(tenant_id, file_id, "", response_full_text.text)
 }
 
 export const addTag = (req, res, next) => {
