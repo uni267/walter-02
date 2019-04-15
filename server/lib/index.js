@@ -25,7 +25,7 @@ app.use( (req, res, next) => {
 });
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json({limit: '100mb'}));
+app.use(bodyParser.json({limit: '300mb'}));
 // app.use(morgan({ format: "dev", immediate: true }));
 app.use(express.static(path.join(__dirname, '../../client/build')));
 app.use(log4js.connectLogger(logger));
