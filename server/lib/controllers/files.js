@@ -347,21 +347,21 @@ export const download = (req, res, next) => {
   });
 };
 
-export const search = (req, res, next, export_excel=false) => {
-  return co(function* () {
+export const search = async (req, res, next, export_excel=false) => {
+//  return co(function* () {
     try {
 
       const { q, page, sort, order, is_display_unvisible } = req.query;
       const { tenant_id } = res.user;
 
       if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
-      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
+      const { trash_dir_id } = await Tenant.findOne(tenant_id);
 
       const _page = page === undefined || page === null
         ? 0 : page;
       if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+      const action_id = (await Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       const isDisplayUnvisible = is_display_unvisible === "true";
       const isDisplayUnvisibleCondition = isDisplayUnvisible
@@ -394,13 +394,13 @@ export const search = (req, res, next, export_excel=false) => {
           }
         }
       };
-      let esResultDir = yield esClient.search(esQueryDir);
+      let esResultDir = await esClient.search(esQueryDir);
 
       // 取得した一覧とTopが閲覧可能なフォルダとなる
       const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
 
       // 検索対象のフィールドを取得する
-      const searchFields = (yield DisplayItem.aggregate([
+      const searchFields = (await DisplayItem.aggregate([
         { $match: {
           is_search: true
         }},
@@ -442,7 +442,7 @@ export const search = (req, res, next, export_excel=false) => {
                   "query_string":{
                     "query": escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
                     "default_operator": "AND",
-                    "fields": searchFields
+                    "fields": [...searchFields, "file.full_text"]
                     }
                   },{
                   "match" : {
@@ -481,13 +481,13 @@ export const search = (req, res, next, export_excel=false) => {
         esQuery["size"] = 0;
       }
 
-      let esResult = yield esClient.search(esQuery);
+      let esResult = await esClient.search(esQuery);
       const { total } = esResult.hits;
 
       if(export_excel){
         // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
         esQuery["size"] = total;
-        esResult = yield esClient.search(esQuery);
+        esResult = await esClient.search(esQuery);
       }
 
       const esResultIds = esResult.hits.hits
@@ -509,13 +509,13 @@ export const search = (req, res, next, export_excel=false) => {
       // if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
 
-      const _sort = yield createSortOption(sort, order);
+      const _sort = await createSortOption(sort, order);
 
       let files;
       if (mongoose.Types.ObjectId.isValid(sort)) {
-        files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+        files = await File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
       } else {
-        files = yield File.searchFiles(conditions, 0, limit, _sort);
+        files = await File.searchFiles(conditions, 0, limit, _sort);
       }
 
       files = files.map( file => {
@@ -571,7 +571,7 @@ export const search = (req, res, next, export_excel=false) => {
         body: []
       });
     }
-  });
+//  });
 };
 
 export const searchItems = (req, res, next) => {
@@ -1724,10 +1724,10 @@ export const upload = async (req, res, next) => {
       await esClient.createIndex(tenant_id, indexingFile);
       
       const tikaFiles = _.filter(files, file => !file.hasError )
-      const file = tikaFiles[0]
-      //await Promise.all(tikaFiles.forEach(async file => {
+      //const file = tikaFiles[0]
+      tikaFiles.forEach(async file => {
         await sendQueueToTika(tenant_id, file._id, file.buffer)
-      //}))
+      })
 
       returnfiles = indexingFile.map( file => {
         file.actions = extractFileActions(file.authorities, res.user);
