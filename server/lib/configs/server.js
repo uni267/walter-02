@@ -80,3 +80,19 @@ export const ELASTICSEARCH_CONF = {
     logLevel: "error"
   }
 };
+
+// tikaの設定
+export const TIKA_CONF = {
+  development: {
+    host: "tika",
+    port: "9998",
+  },
+  integration: {
+    host: "192.168.99.100",
+    port: "9998",
+  },
+  production: {
+    host: process.env.TIKA_HOST_NAME,
+    port: "9998",
+  }
+};
