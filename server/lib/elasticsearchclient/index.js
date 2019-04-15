@@ -124,17 +124,26 @@ esClient.createIndex = co.wrap(
   }
 );
 
+//全文検索用フィールドの更新
+esClient.updateTextContents = async (tenant_id, file_id, meta_text, full_text) => {
+  const script_helper = str => ( str !== null ? `'${str}'` : "null" )
+  await esClient.updateByQuery({ 
+    index: tenant_id,
+    type: "files",
+    body: { 
+      "query": {
+        "bool": {
+          "must": [
+            {"term": {
+              "_id": file_id
+            }}
+          ]
+        }
+      },
+      "script": "ctx._source.file.full_text = " + script_helper(full_text) + ";"
+              + "ctx._source.file.meta_text = " + script_helper(meta_text) +  ";" 
+    }
+  })
+}
+
 export default esClient;
-
-// export const getTikaResult = (buffer) => {
-//   co(function*() {
-
-//     const tikaUrl = "http://tika:9998";
-//     //const tikaUrl = "http://localhost:9998";
-//     const meta = yield request.put(tikaUrl + "/meta")
-//       .set("Accept", "application/json")
-//       .send(buffer);
-//     const text = yield request.put(tikaUrl + "/tika").send(buffer);        
-//     return {meta, text}
-//   });
-// }
