@@ -232,8 +232,8 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
   });
 };
 
-export const view = (req, res, next) => {
-  co(function* () {
+export const view = async (req, res, next) => {
+//  co(function* () {
     try {
       const { file_id } = req.params;
 
@@ -244,7 +244,7 @@ export const view = (req, res, next) => {
       }
       if( !mongoose.Types.ObjectId.isValid( file_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
-      const file_ids = yield getAllowedFileIds(
+      const file_ids = await getAllowedFileIds(
         res.user._id, constants.PERMISSION_VIEW_DETAIL
       );
 
@@ -259,7 +259,7 @@ export const view = (req, res, next) => {
         ]
       };
 
-      const file = yield File.searchFileOne(conditions);
+      const file = await File.searchFileOne(conditions);
 
       if (file === null || file === "" || file === undefined) {
         throw new RecordNotFoundException("指定されたファイルが見つかりません");
@@ -269,7 +269,7 @@ export const view = (req, res, next) => {
         throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
       }
 
-      const tags = yield Tag.find({ _id: { $in: file.tags } });
+      const tags = await Tag.find({ _id: { $in: file.tags } });
 
       const actions = extractFileActions(file.authorities, res.user);
 
@@ -281,10 +281,16 @@ export const view = (req, res, next) => {
         ? route.reverse().join("/")
         : "";
 
+      let response_body = { ...file, tags, actions }
 
+      const { tenant_id } = res.user;
+      const es_file = await esClient.getFile(tenant_id.toString(), file_id)
+      if(es_file !== null || es_file !== undefined ){
+        response_body = {...response_body, full_text: es_file.full_text, meta_text: es_file.meta_text }
+      }
       res.json({
         status: { success: true },
-        body: { ...file, tags, actions }
+        body: response_body
       });
 
     }
@@ -295,7 +301,7 @@ export const view = (req, res, next) => {
         status: { success: false,message:"ファイルの取得に失敗しました", errors: e }
       });
     }
-  });
+//  });
 };
 
 export const download = (req, res, next) => {
@@ -1724,10 +1730,9 @@ export const upload = async (req, res, next) => {
       await esClient.createIndex(tenant_id, indexingFile);
       
       const tikaFiles = _.filter(files, file => !file.hasError )
-      //const file = tikaFiles[0]
-      tikaFiles.forEach(async file => {
-        await sendQueueToTika(tenant_id, file._id, file.buffer)
-      })
+      await Promise.all(tikaFiles.map( async file => {
+        return await sendQueueToTika(tenant_id, file._id, file.buffer)
+      }))
 
       returnfiles = indexingFile.map( file => {
         file.actions = extractFileActions(file.authorities, res.user);
@@ -1788,8 +1793,9 @@ export const upload = async (req, res, next) => {
 export const sendQueueToTika = async (tenant_id, file_id, buffer) => {
   const response_meta_text = await tikaClient.getMetaInfo(buffer)
   const response_full_text = await tikaClient.getTextInfo(buffer)
-  //await esClient.updateTextContents(tenant_id, file_id, response_meta_text.text, response_full_text.text)
-  await esClient.updateTextContents(tenant_id, file_id, "", response_full_text.text)
+  const meta_info = JSON.parse(response_meta_text.text)
+  const meta_text = meta_info.Content-Type || ''
+  return await esClient.updateTextContents(tenant_id, file_id, meta_text, response_full_text.text)
 }
 
 export const addTag = (req, res, next) => {

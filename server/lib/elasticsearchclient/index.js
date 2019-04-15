@@ -146,4 +146,22 @@ esClient.updateTextContents = async (tenant_id, file_id, meta_text, full_text) =
   })
 }
 
+// file_idよりfile情報を取得
+esClient.getFile = async (tenant_id, file_id) => {
+  const result = await esClient.search({
+    index: tenant_id,
+    type: "files",
+    body:
+    {
+      "query": {
+        "term": {
+            "_id": file_id
+        }
+      }
+    }
+  })
+  return result.hits.hits[0]._source.file
+}
+
+
 export default esClient;
