@@ -9,6 +9,7 @@ import logger from "../logger";
 import TsaApi from "../apis/tsaClient";
 import { Swift } from "../storages/Swift";
 import fs from "fs";
+import util from "util";
 
 export const grantToken = async (req, res, next) => {
     try {
@@ -21,7 +22,6 @@ export const grantToken = async (req, res, next) => {
       });
     }
     catch (e) {
-      console.log(e)
       logger.error(e)
       let errors = {};
       switch (e) {
@@ -89,9 +89,10 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
       let verifyData
       if (file.mime_type !== "application/pdf") {
         ({data: verifyData} = await tsaApi.verifyToken(file._id.toString(), encodedFile, grantData.timestampToken.token))
+        console.log(util.inspect(verifyData, false, null));
       }
       else {
-        ({data: verifyData} = await tsaApi.verifyPades(file._id.toString(), encodedFile))
+        ({data: verifyData} = await tsaApi.verifyPades(file._id.toString(), grantData.file))
       }
       fileMetaInfo.value = [...fileMetaInfo.value, { ...grantData.timestampToken, ...verifyData.result }]
       await fileMetaInfo.save()

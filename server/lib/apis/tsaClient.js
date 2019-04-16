@@ -44,6 +44,9 @@ export class API {
     return this.client.post("/grant/pades/binary", { requestId, file })
   }
 
+  grantEst(requestId = "", file) {
+    return this.client.post("/grant/ES-T/binary", { requestId, file });
+  }
   verifyToken(requestId = "", file, token) {
     return this.client.post("/verify/tst/binary", { requestId, file, token })
   }
