@@ -22,6 +22,9 @@ import ActionVerifiedUser from "material-ui/svg-icons/action/verified-user";
 import ActionHistory from "material-ui/svg-icons/action/history";
 import DirDialogMenu from "./DirDialogMenu";
 
+// material custom icons
+import FileFolderOpen_TS from "../icons/FileFolderOpen_TS";
+
 const style = {
   dir: {
     textDecoration: "none",
@@ -68,6 +71,13 @@ class Dir extends Component {
 
   };
 
+  renderDirIcon = iconStyle => {
+    const autoTimestamp = this.props.dir.meta_infos.find(m => m.name === "auto_grant_timestamp")
+    return (!!autoTimestamp && !!autoTimestamp.value)
+      ? <FileFolderOpen_TS style={iconStyle} />
+      : <FileFolderOpen style={iconStyle} />
+  }
+
   renderDirName = () => {
     const color = this.state.hover ? "rgb(0, 188, 212)" : "inherit";
 
@@ -94,7 +104,7 @@ class Dir extends Component {
               onClick={linkToDir}
               style={{ display: "flex", alignItems: "center" }}>
               <div>
-                <FileFolderOpen style={style.dir_icon} />
+                {this.renderDirIcon(style.dir_icon)}
               </div>
               <div style={{ marginLeft: 10 }}>
                 {this.props.dir.name}
@@ -114,7 +124,7 @@ class Dir extends Component {
         <div style={{ ...style, color }}
              onClick={linkToDir} >
           <div>
-            <FileFolderOpen style={style.dir_icon} />
+            {this.renderDirIcon(style.dir_icon)}
           </div>
           <div style={{ marginLeft: 10 }}>
             {this.props.dir.name}
@@ -168,7 +178,6 @@ class Dir extends Component {
               this.props.actions.setPageYOffset(window.pageYOffset)
               this.props.actions.toggleFileCheck(dir)
             }} />
-
           <Checkbox
             disabled={true}
             style={style.checkbox}

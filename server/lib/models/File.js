@@ -21,6 +21,11 @@ const FileSchema = Schema({
   is_trash: {type:Boolean,default:false },
   is_deleted: {type:Boolean, default: false}, // 完全削除フラグ。ゴミ箱移動時はfalseのまま
   tags: Array,
+  tst_token: String,
+  tst_stamped_date: Date,
+  tst_limit_date: Date,
+  tst_verified_date: Date,
+  tst_verify_result: String,
   histories: Array,
   preview_id: Schema.Types.ObjectId,
   is_crypted: {type:Boolean, default: false},
@@ -263,6 +268,7 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
               $push: {
                 _id: "$meta_info._id",
                 label: "$meta_info.label",
+                name: "$meta_info.name",
                 value_type: "$meta_info.value_type",
                 value: "$meta_infos.value",
                 meta_info_id: "$meta_infos.meta_info_id",

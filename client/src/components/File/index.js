@@ -12,6 +12,20 @@ import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import ImageBrightness from 'material-ui/svg-icons/image/brightness-1';
 
+// material custom icons
+import FileDocument from "../icons/FileDocument";
+import FileDocument_TS from "../icons/FileDocument_TS";
+import FileWord from "../icons/FileWord";
+import FileWord_TS from "../icons/FileWord_TS";
+import FilePdf from "../icons/FilePdf";
+import FilePdf_TS from "../icons/FilePdf_TS";
+import FileImage from "../icons/FileImage";
+import FileImage_TS from "../icons/FileImage_TS";
+import FileExcel from "../icons/FileExcel";
+import FileExcel_TS from "../icons/FileExcel_TS";
+import FilePowerPoint from "../icons/FilePowerPoint";
+import FilePowerPoint_TS from "../icons/FilePowerPoint_TS";
+
 // components
 import FileDialogMenu from "./FileDialogMenu";
 
@@ -23,7 +37,10 @@ const style = {
     margin: 0,
     padding: 0
   },
-
+  fileIcon: {
+    padding: 0,
+    marginRight: 10
+  },
   fileDetail: {
     textDecoration: "none",
     color: "#111"
@@ -36,6 +53,83 @@ class File extends Component {
     this.state = {
       hover: false
     };
+  }
+
+  renderFileIcon = (file, iconStyle) => {
+    const meta = file.meta_infos.find(m => m.name === "timestamp")
+    const timestamped = meta && meta.value.length > 0
+
+    let tsStatus
+    let fileWordTs
+    let fileExcelTs
+    let filePowerPointTs
+    let filePdfTs
+    let fileImageTs
+    let fileDocumentTs
+
+    if (timestamped) {
+      const ts = meta.value[meta.value.length-1]
+      if (ts.status === "Success") {
+        const current = moment();
+        const expire = moment(ts.expirationDate);
+        tsStatus = expire.diff(current, 'y') ? 'normal' : 'warning'
+
+        fileWordTs = <FileWord_TS timestampStatus={tsStatus} />
+        fileExcelTs = <FileExcel_TS timestampStatus={tsStatus} />
+        filePowerPointTs = <FilePowerPoint_TS timestampStatus={tsStatus} />
+        filePdfTs = <FilePdf_TS timestampStatus={tsStatus} />
+        fileImageTs = <FileImage_TS timestampStatus={tsStatus} />
+        fileDocumentTs = <FileDocument_TS timestampStatus={tsStatus} />
+      }
+      else {
+        tsStatus = "danger"
+
+        const errMsgs = ts.errors.map(e => <div>{e.description}</div> )
+
+        const ErrorTip = ({ children }) => (
+          <IconButton
+            disableTouchRipple
+            tooltip={errMsgs}
+            tooltipPosition="top-left"
+            iconStyle={{ width: 14, height: 14 }}
+            tooltipStyles={{ right:0 }}
+            style={{ padding:0, width:'initial', height:'initial', minWidth:24, minHeight:20 }} >
+            {children}
+          </IconButton>
+        )
+
+        fileWordTs = <ErrorTip><FileWord_TS timestampStatus={tsStatus} /></ErrorTip>
+        fileExcelTs = <ErrorTip><FileExcel_TS timestampStatus={tsStatus} /></ErrorTip>
+        filePowerPointTs = <ErrorTip><FilePowerPoint_TS timestampStatus={tsStatus} /></ErrorTip>
+        filePdfTs = <ErrorTip><FilePdf_TS timestampStatus={tsStatus} /></ErrorTip>
+        fileImageTs = <ErrorTip><FileImage_TS timestampStatus={tsStatus} /></ErrorTip>
+        fileDocumentTs = <ErrorTip><FileDocument_TS timestampStatus={tsStatus} /></ErrorTip>
+      }
+    }
+
+    switch(file.mime_type) {
+      case "application/msword":
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
+        return timestamped ? fileWordTs : <FileWord />
+      case "application/vnd.ms-excel":
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
+        return timestamped ? fileExcelTs : <FileExcel />
+      case "application/vnd.ms-powerpoint":
+      case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      case "application/vnd.openxmlformats-officedocument.presentationml.template":
+        return timestamped ? filePowerPointTs : <FilePowerPoint />
+      case "application/pdf":
+        return timestamped ? filePdfTs : <FilePdf />
+      case "image/jpeg":
+      case "image/png":
+      case "image/gif":
+      case "image/tiff":
+        return timestamped ? fileImageTs : <FileImage />
+      default:
+        return timestamped ? fileDocumentTs : <FileDocument />
+    }
   }
 
   renderCell = (header, file, cellStyle, idx) => {
@@ -84,8 +178,13 @@ class File extends Component {
             onClick={linkToFileDetail}
             style={{ ...cellStyle, width: header.width, color, overflow:'unset' }}>
             <div style={{ ...cellStyle, padding: 0, width: "100%", justifyContent: "center", alignItems: "center", overflow:'unset'}}>
-              <div style={{ width: "75%" }}>
-                {body}
+              <div style={{ width: "75%", display: "flex", alignItems: "center" }}>
+                <div>
+                  {this.renderFileIcon(this.props.file, style.fileIcon)}
+                </div>
+                <div style={{ marginLeft: 10 }}>
+                  {body}
+                </div>
               </div>
               <div style={{ width: "25%", display:"flex", flexWrap:"wrap" }}>
                 {file.tags.map((tag, tagIdx) => (
@@ -121,8 +220,15 @@ class File extends Component {
           <div key={idx} style={{ ...cellStyle, width: header.width, color, overflow:'unset' }}>
             <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center", flexWrap: "wrap", overflow:'unset' }}>
               <div style={{ width: "75%" }}>
-                <div onClick={linkToFileDetail}>
-                  {body}
+                <div
+                  onClick={linkToFileDetail}
+                  style={{ display: "flex", alignItems: "center" }}>
+                  <div>
+                    {this.renderFileIcon(this.props.file, style.fileIcon)}
+                  </div>
+                  <div style={{ marginLeft: 10 }}>
+                    {body}
+                  </div>
                 </div>
                 <div style={{ fontSize: 12, color: "#aaa"}}
                      onClick={() => (

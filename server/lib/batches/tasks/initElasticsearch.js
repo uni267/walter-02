@@ -158,8 +158,8 @@ const task = () => {
  * init後に行う
  * @param {*} tenant_id
  */
-export const reCreateElasticCache = async () => {
-  return co(function* (){
+export const reCreateElasticCache = () => {
+  co(function* (){
     try {
 
       if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
@@ -196,7 +196,6 @@ export const reCreateElasticCache = async () => {
       console.log(error);
     } finally {
       process.exit();
-
     }
   });
 }

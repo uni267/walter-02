@@ -12,11 +12,13 @@ import MoveDirDialog from "../components/Dir/MoveDirDialog";
 import CopyDirDialog from "../components/Dir/CopyDirDialog";
 import DeleteDirDialog from "../components/Dir/DeleteDirDialog";
 import AuthorityDirDialog from "../components/Dir/AuthorityDirDialog";
+import AutoTimestampDialog from "../components/Dir/AutoTimestampDialog";
 import AuthorityFileDialog from "../components/File/AuthorityFileDialog";
 import DeleteFileDialog from "../components/File/DeleteFileDialog";
 import MoveFileDialog from "../components/File/MoveFileDialog";
 import CopyFileDialog from "../components/File/CopyFileDialog";
 import HistoryFileDialog from "../components/File/HistoryFileDialog";
+import TimestampDialog from "../components/File/TimestampDialog";
 import TagFileDialog from "../components/File/TagFileDialog";
 import MetaInfoDialog from "../components/File/MetaInfoDialog";
 import RestoreFileDialog from "../components/File/RestoreFileDialog";
@@ -27,7 +29,7 @@ class FileOperationDialogContainer extends Component {
     return (
       <div>
         <MoveDirDialog />
-        <CopyDirDialog 
+        <CopyDirDialog
           { ...this.props }
           open={this.props.copyDirState.open}
           handleClose={this.props.actions.toggleCopyDirDialog} />
@@ -41,6 +43,11 @@ class FileOperationDialogContainer extends Component {
           roles={this.props.roles}
           users={this.props.users}
           dir={this.props.authorityDirTarget} />
+        <AutoTimestampDialog
+          { ...this.props }
+          open={this.props.autoTimestampState.open}
+          enable={this.props.autoTimestampState.enable}
+          dir={this.props.autoTimestampTarget} />
         <AuthorityFileDialog
           { ...this.props }
           open={this.props.authorityFileState.open}
@@ -65,12 +72,17 @@ class FileOperationDialogContainer extends Component {
           { ...this.props }
           open={this.props.fileHistoryState.open}
           file={this.props.fileHistoryState.file} />
+        <TimestampDialog
+          { ...this.props }
+          open={this.props.fileTimestampState.open}
+          openConfirm={this.props.fileTimestampState.openConfirm}
+          file={this.props.fileTimestampState.file} />
         <TagFileDialog
           { ...this.props }
           open={this.props.fileTagState.open}
           tags={this.props.tags}
           file={this.props.fileTagState.file} />
-        <MetaInfoDialog 
+        <MetaInfoDialog
           { ...this.props }
           open={this.props.fileMetaInfoState.open}
           file={this.props.metainfoFileTarget}
@@ -112,6 +124,16 @@ const mapStateToProps = (state, ownProps) => {
     authorityDirTarget = state.authorityDir.dir;
   }
 
+  let autoTimestampTarget;
+
+  if (state.autoTimestamp.dir._id !== undefined) {
+    autoTimestampTarget = state.files.filter( dir => (
+      dir._id === state.autoTimestamp.dir._id
+    ))[0];
+  } else {
+    autoTimestampTarget = state.autoTimestamp.dir;
+  }
+
   let changeFileNameTarget;
 
   if (state.changeFileName.file._id !== undefined) {
@@ -141,11 +163,13 @@ const mapStateToProps = (state, ownProps) => {
     deleteFileState: state.deleteFile,
     deleteDirState: state.deleteDir,
     authorityDirState: state.authorityDir,
+    autoTimestampState: state.autoTimestamp,
     authorityFileState: state.authorityFile,
     moveFileState: state.moveFile,
     selectedDir: state.selectedDir,
     copyFileState: state.copyFile,
     fileHistoryState: state.fileHistory,
+    fileTimestampState: state.fileTimestamp,
     fileTagState: state.fileTag,
     fileMetaInfoState: state.fileMetaInfo,
     restoreFileState: state.restoreFile,
@@ -153,6 +177,7 @@ const mapStateToProps = (state, ownProps) => {
     session: state.session,
     authorityFileTarget,
     authorityDirTarget,
+    autoTimestampTarget,
     changeFileNameTarget,
     metainfoFileTarget
   };

@@ -38,9 +38,11 @@ import authorityFile from "./authorityFileReducer";
 import copyDir from "./copyDirReducer";
 import deleteDir from "./deleteDirReducer";
 import authorityDir from "./authorityDirReducer";
+import autoTimestamp from "./autoTimestampReducer";
 import moveFile from "./moveFileReducer";
 import copyFile from "./copyFileReducer";
 import fileHistory from "./fileHistoryReducer";
+import fileTimestamp from "./fileTimestampReducer";
 import fileTag from "./fileTagReducer";
 import fileMetaInfo from "./fileMetaInfoReducer";
 import restoreFile from "./restoreFileReducer";
@@ -95,9 +97,11 @@ const fileApp = combineReducers({
   copyDir,
   deleteDir,
   authorityDir,
+  autoTimestamp,
   moveFile,
   copyFile,
   fileHistory,
+  fileTimestamp,
   fileTag,
   fileMetaInfo,
   restoreFile,
@@ -112,7 +116,7 @@ const fileApp = combineReducers({
   fileSimpleSearch,
   fileListType,
   dirAction,
-  appSettings
+  appSettings,
 });
 
 export default fileApp;

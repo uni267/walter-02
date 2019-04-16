@@ -7,6 +7,7 @@ import deleteAdmin from "./deleteAdmin";
 import addTenant from "./addTenant";
 import initTenantW from "./initTenantW";
 import {reCreateElasticCache} from "./initElasticsearch";
+import addTimestampSetting from "./addTimestampSetting";
 
 export const AnalyzeTask = () => analyze();
 
@@ -22,3 +23,5 @@ export const deleteAdminTask = () => deleteAdmin();
 export const addTenantTask = () => addTenant();
 
 export const initTenantWTask = () => initTenantW();
+
+export const addTimestampSettingTask = () => addTimestampSetting();

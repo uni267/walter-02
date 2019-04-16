@@ -6,7 +6,8 @@ const TenantSchema = Schema({
   name: String,
   home_dir_id: Schema.Types.ObjectId,
   trash_dir_id: Schema.Types.ObjectId,
-  threshold: Schema.Types.Number
+  threshold: Schema.Types.Number,
+  tsaAuth:  Schema.Types.Mixed, // { user, pass }
 });
 
 TenantSchema.index({ home_dir_id: 1 });

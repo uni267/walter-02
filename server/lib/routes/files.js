@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as controller from "../controllers/files";
+import * as tsController from "../controllers/timestamps";
 
 const router = Router();
 
@@ -72,5 +73,18 @@ router.route("/:file_id/toggle_star").patch(controller.toggleStar);
 // 非表示状態のトグル
 router.route("/:file_id/toggle_unvisible").patch(controller.toggleUnvisible);
 
-export default router;
+// タイムスタンプトークン付与
+router.route("/:file_id/timestamp/grant").post(tsController.grantToken);
 
+// タイムスタンプトークン検証
+router.route("/:file_id/timestamp/verify").post(tsController.verifyToken);
+
+// タイムスタンプトークンダウンロード
+router.route("/timestamp/download").get(tsController.downloadToken);
+
+// ディレクトリ下のタイムスタンプトークン自動付与
+router.route("/:file_id/timestamp/auto_grant")
+  .post(tsController.enableAutoGrantToken)
+  .delete(tsController.disableAutoGrantToken)
+
+export default router;

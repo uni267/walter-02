@@ -100,6 +100,9 @@ class DetailSearch extends Component {
       case "authorities":
         data_source = this.props.users.map(user => user.name);
         break;
+      case "timestamp":
+        data_source = item.select_options.map(opt => opt.label);
+        break;
       default:
         break;
     }
@@ -123,6 +126,10 @@ class DetailSearch extends Component {
             case "authorities":
               const user = find(this.props.users, { name:searchText });
               value = user === undefined ? "" : user._id;
+              break;
+            case "timestamp":
+              const opt = find(item.select_options, { label:searchText });
+              value = opt === undefined ? "" : opt.name;
               break;
             default:
               break;

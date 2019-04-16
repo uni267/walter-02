@@ -80,3 +80,25 @@ export const ELASTICSEARCH_CONF = {
     logLevel: "error"
   }
 };
+
+// Timestamp APIの設定
+export const TIMESTAMP_API_CONF = {
+  development: {
+    url: "http://tsacli",
+    port: "8080",
+    apiVersion: "v1",
+    logLevel: "error"
+  },
+  integration: {
+    url: "tsacli",
+    port: "8080",
+    apiVersion: 'v1',
+    logLevel: "error"
+  },
+  production: {
+    url: process.env.TIMESTAMP_API_BASE_URL,
+    port: "80",
+    apiVersion: 'v1',
+    logLevel: "error"
+  }
+};
