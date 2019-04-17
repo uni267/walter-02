@@ -16,7 +16,7 @@ describe("kafkaclientのテスト", () => {
     const file_id = '5cb03ac534679e36881995d4'
     const config = {
       kafka_topic: 'quztopic',
-      kafka_server: 'localhost:12181',
+      kafka_server: '54.64.22.157:12181',
     };    
     beforeEach( () => {
     });
@@ -27,18 +27,16 @@ describe("kafkaclientのテスト", () => {
         const Producer = kafka.Producer;
         const client = new kafka.KafkaClient(config.kafka_server);
         const producer = new Producer(client);
-        const kafka_topic = 'quztopic';
 
-        console.log(kafka_topic);
-        let payloads = [
+        const payloads = [
           {
-            topic: kafka_topic,
-            messages: config.kafka_topic
+            topic: config.kafka_topic,
+            messages: "hello! kafka"
           }
         ];
 
         producer.on('ready', async function() {
-          let push_status = await producer.send(payloads, (err, data) => {
+          const push_status = await producer.send(payloads, (err, data) => {
             finished = true;
             if (err) {
               return err
@@ -55,7 +53,7 @@ describe("kafkaclientのテスト", () => {
       catch(e) {
         finished = true
       }
-      await test_helper.sleep(5000)                
+      await test_helper.sleep(5000)             
       console.log('finish');
     })
   // it(`send2`,t => {
