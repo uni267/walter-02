@@ -11,3 +11,9 @@ export const sleep = time => {
     }, time);
   });
 }
+
+export const wait = async finished => {
+  while(!finished){
+    await sleep(1000)
+  }
+}
