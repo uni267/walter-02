@@ -29,9 +29,7 @@ import MetaInfo from "../../models/MetaInfo";
 
 const task = async () => {
   try{
-
     console.log('addTenantバッチにより追加されたテナントに対し、カスタマイズします。')
-
     if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
     //テナント名をfindしてなければアウト
     const tenantName = process.argv[3]

@@ -22,7 +22,7 @@ import AnalysisUseRateUser from "../../models/AnalysisUseRateUser";
 const task = () => {
   co(function* () {
     try {
-      logger.info("################# analyze start #################");
+      console.log("################# analyze start #################");
 
       // 使用率、ファイル数、フォルダ数
       const fileFolderCounts = yield File.aggregate([
@@ -83,7 +83,7 @@ const task = () => {
         }
       ]);
 
-      logger.info("fileFolderCounts summary: " + JSON.stringify(fileFolderCounts));
+      console.log("fileFolderCounts summary: " + JSON.stringify(fileFolderCounts));
 
       // 2重集計防止
       yield AnalysisUseRateTotal.remove({
@@ -196,7 +196,7 @@ const task = () => {
 
       const folderRates = yield File.aggregate(folderRatesConditions);
 
-      logger.info("folderRates summary: " + JSON.stringify(folderRates));
+      console.log("folderRates summary: " + JSON.stringify(folderRates));
 
       const folderRatesSum = yield File.aggregate([
         ...folderRatesConditions,
@@ -228,7 +228,7 @@ const task = () => {
         return f;
       });
 
-      logger.info("folderRatesCombined summary: " + JSON.stringify(folderRatesCombined));
+      console.log("folderRatesCombined summary: " + JSON.stringify(folderRatesCombined));
 
       yield AnalysisUseRateFolder.insertMany(
         folderRatesCombined.map( r => ({
@@ -290,7 +290,7 @@ const task = () => {
 
       const userRates = yield File.aggregate(userRatesConditions);
 
-      logger.info("userRates summary: " + JSON.stringify(userRates));
+      console.log("userRates summary: " + JSON.stringify(userRates));
 
       const userRatesSumConditions = [
         ...userRatesConditions,
@@ -303,7 +303,7 @@ const task = () => {
       ];
 
       const userRatesSum = yield File.aggregate(userRatesSumConditions);
-      logger.info("userGroupRatesSum summary: " + JSON.stringify(userRatesSum));
+      console.log("userGroupRatesSum summary: " + JSON.stringify(userRatesSum));
 
       // 2重集計防止
       yield AnalysisUseRateUser.remove({
@@ -328,7 +328,7 @@ const task = () => {
         };
       });
 
-      logger.info("userRates + sum summary: " + JSON.stringify(userRatesSum));
+      console.log("userRates + sum summary: " + JSON.stringify(userRatesSum));
       yield AnalysisUseRateUser.insertMany(userRatesRecords);
 
       // タグ毎の使用率 ここから
@@ -417,8 +417,8 @@ const task = () => {
         }
       ]);
 
-      logger.info("tagRates summary: " + JSON.stringify(tagRates));
-      logger.info("tagRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
+      console.log("tagRates summary: " + JSON.stringify(tagRates));
+      console.log("tagRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
 
       yield AnalysisUseRateTag.remove({
         reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
@@ -432,7 +432,7 @@ const task = () => {
         return t;
       });
 
-      logger.info("tagRatesCombined summary: " + JSON.stringify(tagRatesCombined));
+      console.log("tagRatesCombined summary: " + JSON.stringify(tagRatesCombined));
 
       yield AnalysisUseRateTag.insertMany(
         tagRatesCombined.map( t => ({
@@ -517,8 +517,8 @@ const task = () => {
         }
       ]);
 
-      logger.info("mimeRates summary: " + JSON.stringify(mimeRates));
-      logger.info("mimeRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
+      console.log("mimeRates summary: " + JSON.stringify(mimeRates));
+      console.log("mimeRatesGroupByTenants summary: " + JSON.stringify(tagRatesGroupByTenants));
 
       const mimeRatesCombined = mimeRates.map( m => {
         const sum = mimeRatesGroupByTenants.filter( sum => (
@@ -529,7 +529,7 @@ const task = () => {
         return m;
       });
 
-      logger.info("mimeRatesCombined summary: " + JSON.stringify(mimeRatesCombined));
+      console.log("mimeRatesCombined summary: " + JSON.stringify(mimeRatesCombined));
 
       yield AnalysisUseRateMimeType.remove({
         reported_at: parseInt(moment().utc().add(9, "hours").format("YYYYMMDD"), 10)
@@ -550,7 +550,7 @@ const task = () => {
         }))
       );
 
-      logger.info("################# analyze end #################");
+      console.log("################# analyze end #################");
     }
     catch (e) {
       console.log(util.inspect(e, false, null));
@@ -558,7 +558,7 @@ const task = () => {
       process.exit();
     }
     finally {
-      logger.info("################# analyze end #################");
+      console.log("################# analyze end #################");
       process.exit();
     }
   });

@@ -13,11 +13,11 @@ import AuthorityMenu from "../../models/AuthorityMenu";
 const task = () => {
   co(function* () {
 		try {
-      logger.info("################# delete admin start #################");
+      console.log("################# delete admin start #################");
 			const tenant_name = process.argv[3];
 			if ( tenant_name === undefined ) throw "テナントを指定してください";
 
-			logger.info("tenant name: " + tenant_name);
+			console.log("tenant name: " + tenant_name);
 
 			const tenant = yield Tenant.findOne({name:tenant_name});
 			if (tenant === null) throw "指定されたテナントが見つかりません";
@@ -31,7 +31,7 @@ const task = () => {
 			yield User.remove({account_name:"admin"});
 
 			console.log("システム管理者を削除しました");
-      logger.info("################# delete admin end #################");
+      console.log("################# delete admin end #################");
 
 		} catch (error) {
       logger.error(error);

@@ -23,7 +23,7 @@ const request = defaults(supertest(app));
 const task = () => {
   co(function* () {
     try {
-      logger.info("非表示タグのついたファイルを非表示属性に変更するパッチを適用開始");
+      console.log("非表示タグのついたファイルを非表示属性に変更するパッチを適用開始");
       // console.log("非表示タグのついたファイルを非表示属性に変更するパッチを適用開始");
 
       if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
@@ -45,8 +45,8 @@ const task = () => {
       console.log(`非表示パッチ適用対象のレコード数: ${targetFiles.length}`);
       console.log(`非表示パッチ適用対象のレコード: ${targetFiles}`);
 
-      logger.info(`非表示パッチ適用対象のレコード数: ${targetFiles.length}`);
-      logger.info(`非表示パッチ適用対象のレコード: ${targetFiles}`);
+      console.log(`非表示パッチ適用対象のレコード数: ${targetFiles.length}`);
+      console.log(`非表示パッチ適用対象のレコード: ${targetFiles}`);
 
       let authData;
 
@@ -97,7 +97,7 @@ const task = () => {
         });
       });
 
-      logger.info("非表示タグのついたファイルを非表示属性に変更するパッチが適用完了");
+      console.log("非表示タグのついたファイルを非表示属性に変更するパッチが適用完了");
       console.log("非表示タグのついたファイルを非表示属性に変更するパッチが適用完了");
       process.exit();
     }

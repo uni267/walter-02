@@ -68,9 +68,9 @@ mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
   default:
     throw new Error("引数が不正です。");
   }
-}).catch(err => {
+}).catch(e => {
 
-  logger.info(err);
+  logger.error(e);
   process.exit();
 
 });

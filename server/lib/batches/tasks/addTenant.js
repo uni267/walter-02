@@ -399,7 +399,7 @@ const task = () => {
     process.exit();
   }
   finally {
-    logger.info("################# add tenant end #################");
+    console.log("################# add tenant end #################");
     process.exit();
   }
 });

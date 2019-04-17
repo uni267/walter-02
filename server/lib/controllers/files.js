@@ -1619,7 +1619,7 @@ export const upload = (req, res, next) => {
         try {
           yield swift.upload(tenant_name, Buffer.from(data, 'base64'), model._id.toString());
         } catch (e) {
-          logger.info(e);
+          logger.error(e);
           fileModels[i] = false;
           files[i] = {
             ...files[i],
@@ -2724,8 +2724,8 @@ export const previewExists = (req, res, next) => {
         const tmpDirPath = path.join(__dirname,'../../tmp');
         const tmpFileName = path.join(tmpDirPath,file.name);
 
-        fs.mkdir(tmpDirPath, (err)=>{
-          if(err && err.code !== "EEXIST") logger.info(err);
+        fs.mkdir(tmpDirPath, err => {
+          if(err && err.code !== "EEXIST") logger.error(err);
         });
 
         const tenant_name = res.user.tenant.name;
