@@ -533,7 +533,7 @@ export const search = async (req, res, next, export_excel=false) => {
           ? route.reverse().join("/")
           : "";
 
-        files = files.map( file => {
+        files = await Promise.all(files.map( async file => {
 
           file.actions = chain(file.authorities)
             .filter( auth => auth.users._id.toString() === res.user._id.toString() )
@@ -541,8 +541,14 @@ export const search = async (req, res, next, export_excel=false) => {
             .flattenDeep()
             .uniq();
 
+          const es_file = await esClient.getFile(tenant_id.toString(), file._id)
+          if(es_file !== null || es_file !== undefined ){
+            file.full_text = es_file.full_text
+            file.meta_text = es_file.meta_text 
+          }
+          
           return file;
-        });
+        }));
 
         return file;
       });
