@@ -66,32 +66,6 @@ describe("kafkaclientのテスト", () => {
     after( () => {
     });
 
-    it(`createTopics `,async () => {
-      //const client = new kafka.KafkaClient(config.kafka_server);
-      // client.createTopics([{
-      //   topic: 'topic1',
-      //   partitions: 1,
-      //   replicationFactor: 2
-      // },], (error, result) => {
-      //   console.log(result)
-      //   console.log(error)
-      //   // result is an array of any errors if a given topic could not be created
-      // });
-    })
-    it(`producer`,async () => {
-      const topic = 'partition2'
-      const payloads = [
-        {
-          topic: '?????',
-          partition: 0,
-          messages: 'hello!'
-        },
-      ];
-      await enqueue(payloads, 'unknownhost', 1000)
-      await test_helper.sleep(8000)             
-
-    })
-
     it(`producer 単独キュー送信`,async () => {
       const topic = 'partition2'
       const uuid = test_helper.getUUID()
