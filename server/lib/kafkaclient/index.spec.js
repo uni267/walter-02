@@ -7,86 +7,121 @@ import * as test_helper from "../test/helper";
 import kafka from "kafka-node"
 
 //import kafkaClient from "./index";
+const config = {
+  kafka_topic: 'quztopic',
+  kafka_server: '54.64.22.157:121851',
+};
+
+const enqueue = async (payloads) => {
+  const client = new kafka.KafkaClient(config.kafka_server);
+  const kafkaProducer = new kafka.Producer(client);
+  try {
+    kafkaProducer.on('ready', async function() {
+      const push_status = await kafkaProducer.send(
+        payloads, (err, data) => {
+          if (err) {
+            console.log(err)
+            return err
+          } else {
+            console.log(data)
+            return data
+          }
+      });
+    });
+    kafkaProducer.on('error', function(err) {
+      console.log(err)
+      throw err;
+    });
+  }
+  catch(e) {
+    console.log(e)
+    throw e
+  }
+
+}
+
+const dequeue = async (payloads) => {
+}
+
 
 
 describe("kafkaclientのテスト", () => {
 
   describe(`kafkaClient()`, () => {
-    const tenant_id = '5cb02dd57faea500c6a0acb7'
-    const file_id = '5cb03ac534679e36881995d4'
-    const config = {
-      kafka_topic: 'quztopic',
-      kafka_server: '54.64.22.157:12181',
-    };    
-    beforeEach( () => {
+    before( () => {
+    });
+    after( () => {
     });
 
-    it(`send`,async () => {
+    it(`createTopics `,async () => {
+      const client = new kafka.KafkaClient(config.kafka_server);
+      // client.createTopics([{
+      //   topic: 'topic1',
+      //   partitions: 1,
+      //   replicationFactor: 2
+      // },], (error, result) => {
+      //   console.log(result)
+      //   console.log(error)
+      //   // result is an array of any errors if a given topic could not be created
+      // });
+    })
+
+    it(`producer 単独キュー送信`,async () => {
+      const topic = 'partition2'
+      const uuid = test_helper.getUUID()
+      const payloads = [
+        {
+          topic: topic,
+          partition: 0,
+          messages: {uuid, data: 'hello!!'}
+        },
+      ];
+      enqueue(payloads)
       let finished = false
-      try {
-        const Producer = kafka.Producer;
-        const client = new kafka.KafkaClient(config.kafka_server);
-        const producer = new Producer(client);
-
-        const payloads = [
-          {
-            topic: config.kafka_topic,
-            messages: "hello! kafka"
-          }
-        ];
-
-        producer.on('ready', async function() {
-          const push_status = await producer.send(payloads, (err, data) => {
-            finished = true;
-            if (err) {
-              return err
-            } else {
-              return data
-            }
-          });
-        });
-      
-        producer.on('error', function(err) {
-          throw err;
-        });
-      }
-      catch(e) {
-        finished = true
-      }
       await test_helper.sleep(5000)             
       console.log('finish');
     })
-  // it(`send2`,t => {
-  //   const Producer = kafka.Producer;
-  //   const client = new kafka.KafkaClient({
-  //       kafkaHost: "localhost:12181"
-  //   });
-  //   const producer = new Producer(client, {
-  //       partitionerType: 0
-  //   });
-
-  //   producer.on("ready", () => {
-  //       const payloads = [
-  //           {
-  //               topic: "quztopic",
-  //               messages: JSON.stringify({name: "あああああ", age: 24})
-  //           },
-  //           {
-  //               topic: "quztopic",
-  //               messages: [
-  //                   JSON.stringify({name: "いいいいい", age: 11}),
-  //                   JSON.stringify({name: "うううううう", age: 9})
-  //               ]
-  //           }
-  //       ];
-
-  //       producer.send(payloads, (err, data) => {
-  //           t.end();
-  //       });
-  //   });
-  //   //expect(1).equal(1);
-  // });
-
+    it(`producer 複数キュー送信`,async () => {
+      const topic = 'partition2'
+      const uuids = [test_helper.getUUID(), test_helper.getUUID(), test_helper.getUUID()]
+      const payloads = uuids.map( uuid => ({
+          topic: topic,
+          partition: 1,
+          messages: `message ${uuid}`
+      }))
+      enqueue([
+        ...payloads,
+        {
+          topic: 'quztopic',
+          partition: 0,
+          messages: [`message test1!!!`, `message test2!!!`]
+        }
+      ])
+      let finished = false
+      await test_helper.sleep(5000)             
+      console.log('finish');
+    })
+    it(`consumer メッセージ受信`,async () => {
+      const client = new kafka.KafkaClient(config.kafka_server);
+      const consumer = new kafka.Consumer(
+          client,
+          [
+              { topic: 'quztopic', partition: 0 }, { topic: 'partition2', partition: 1 }
+          ],
+          {
+              autoCommit: true,
+              autoCommitIntervalMs: 5000,
+          }
+      );
+        consumer.on('message', function (message) {
+          console.log(message);
+          if(message.offset == (message.highWaterOffset -1)){
+            consumer.close(true, (err, message) => {
+              console.log("consumer has been closed..");
+            });
+          }
+        });
+        await test_helper.sleep(8000)             
+    })
   })
-
 });
