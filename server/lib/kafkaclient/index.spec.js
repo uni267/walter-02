@@ -12,8 +12,8 @@ const config = {
 };
 
 const enqueue = async (payloads, kafka_server, request_timeout) => { // kafka_server以降は基本的には何も設定しない（テスト用）
-  const server = kafka_server === undefined || kafka_server === null ? config.kafka_server : kafka_server
-  const timeout = request_timeout === undefined || request_timeout === null ? 30000 : request_timeout
+  const server = kafka_server || config.kafka_server
+  const timeout = request_timeout || 30000
   console.log('kafka_server:' + server)
   console.log('timeout:' + timeout)
   const client = new kafka.KafkaClient({
