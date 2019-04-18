@@ -8,33 +8,46 @@ import kafka from "kafka-node"
 
 //import kafkaClient from "./index";
 const config = {
-  kafka_topic: 'quztopic',
-  kafka_server: '54.64.22.157:121851',
+  kafka_server: '54.64.22.157:12181',
 };
 
-const enqueue = async (payloads) => {
-  const client = new kafka.KafkaClient(config.kafka_server);
-  const kafkaProducer = new kafka.Producer(client);
+const enqueue = async (payloads, kafka_server, request_timeout) => { // kafka_server以降は基本的には何も設定しない（テスト用）
+  const server = kafka_server === undefined || kafka_server === null ? config.kafka_server : kafka_server
+  const timeout = request_timeout === undefined || request_timeout === null ? 30000 : request_timeout
+  console.log('kafka_server:' + server)
+  console.log('timeout:' + timeout)
+  const client = new kafka.KafkaClient({
+    kafkaHost: server, 
+    requestTimeout: timeout,
+  });
+  const kafkaProducer = new kafka.Producer(client, {
+    // Configuration for when to consider a message as acknowledged, default 1
+    requireAcks: 1,
+    // The amount of time in milliseconds to wait for all acks before considered, default 100ms
+    ackTimeoutMs: 100,
+    // Partitioner type (default = 0, random = 1, cyclic = 2, keyed = 3, custom = 4), default 0
+    partitionerType: 2
+  });
   try {
     kafkaProducer.on('ready', async function() {
       const push_status = await kafkaProducer.send(
         payloads, (err, data) => {
           if (err) {
-            console.log(err)
+            console.log('producer senderror:' + err) //ok
             return err
           } else {
-            console.log(data)
+            console.log('producer success:' + data)
             return data
           }
       });
     });
     kafkaProducer.on('error', function(err) {
-      console.log(err)
+      console.log('producer onerror:' + err) //
       throw err;
     });
   }
   catch(e) {
-    console.log(e)
+    console.log('producer exception:' + e)
     throw e
   }
 
@@ -54,7 +67,7 @@ describe("kafkaclientのテスト", () => {
     });
 
     it(`createTopics `,async () => {
-      const client = new kafka.KafkaClient(config.kafka_server);
+      //const client = new kafka.KafkaClient(config.kafka_server);
       // client.createTopics([{
       //   topic: 'topic1',
       //   partitions: 1,
@@ -65,6 +78,19 @@ describe("kafkaclientのテスト", () => {
       //   // result is an array of any errors if a given topic could not be created
       // });
     })
+    it(`producer`,async () => {
+      const topic = 'partition2'
+      const payloads = [
+        {
+          topic: '?????',
+          partition: 0,
+          messages: 'hello!'
+        },
+      ];
+      await enqueue(payloads, 'unknownhost', 1000)
+      await test_helper.sleep(8000)             
+
+    })
 
     it(`producer 単独キュー送信`,async () => {
       const topic = 'partition2'
@@ -73,10 +99,27 @@ describe("kafkaclientのテスト", () => {
         {
           topic: topic,
           partition: 0,
-          messages: {uuid, data: 'hello!!'}
+          messages: JSON.stringify({file_id: uuid})
         },
       ];
       enqueue(payloads)
+      let finished = false
+      await test_helper.sleep(5000)             
+      console.log('finish');
+    })
+    it(`producer 不明なtopicへ送信`,async () => {
+      const topic = '????????'
+      const uuid = test_helper.getUUID()
+      const payloads = [
+        {
+          topic: topic,
+          partition: 0,
+          messages: JSON.stringify({file_id: uuid})
+        },
+      ];
+      enqueue(payloads)
+
+      // senderror:Error: InvalidTopic
       let finished = false
       await test_helper.sleep(5000)             
       console.log('finish');
@@ -114,7 +157,7 @@ describe("kafkaclientのテスト", () => {
           }
       );
         consumer.on('message', function (message) {
-          console.log(message);
+          //console.log(message);
           if(message.offset == (message.highWaterOffset -1)){
             consumer.close(true, (err, message) => {
               console.log("consumer has been closed..");
