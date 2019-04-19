@@ -11,6 +11,7 @@ import util from "util";
 import crypto from "crypto";
 import esClient from "../elasticsearchclient";
 import tikaClient from "../tikaclient";
+import { produce } from "../kafkaclient/index";
 import * as _ from "lodash";
 import {
   intersection,
@@ -1735,13 +1736,17 @@ export const upload = async (req, res, next) => {
       const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       await esClient.createIndex(tenant_id, indexingFile);
       
-      const tikaFiles = _.filter(files, file => !file.hasError )
-      // await Promise.all(_.map( async file => {
-      //   await sendQueueToTika(tenant_id, file._id, file.buffer)
-      // }))
-      tikaFiles.forEach(async file => {
-        await sendQueueToTika(tenant_id, file._id, file.buffer)
-      })
+      const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
+        topic: constants.KAFKA_TOPIC_TIKA,
+        messages: JSON.stringify({
+          tenant_id,
+          file_id: file._id,
+          //buffer: file.buffer,
+        })
+      }))
+      // kafkaに送信
+      await produce(kafka_payloads)
+
       returnfiles = indexingFile.map( file => {
         file.actions = extractFileActions(file.authorities, res.user);
         return file;

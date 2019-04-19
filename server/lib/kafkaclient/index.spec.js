@@ -5,140 +5,112 @@ import supertest from "supertest";
 import { expect } from "chai";
 import * as test_helper from "../test/helper";
 import kafka from "kafka-node"
+import { produce, getConsumer, closeConsumer, createTopics } from "./index";
 
-//import kafkaClient from "./index";
-const config = {
-  kafka_server: '54.64.22.157:12181',
-};
-
-const enqueue = async (payloads, kafka_server, request_timeout) => { // kafka_server以降は基本的には何も設定しない（テスト用）
-  const server = kafka_server || config.kafka_server
-  const timeout = request_timeout || 30000
-  console.log('kafka_server:' + server)
-  console.log('timeout:' + timeout)
-  const client = new kafka.KafkaClient({
-    kafkaHost: server, 
-    requestTimeout: timeout,
-  });
-  const kafkaProducer = new kafka.Producer(client, {
-    // Configuration for when to consider a message as acknowledged, default 1
-    requireAcks: 1,
-    // The amount of time in milliseconds to wait for all acks before considered, default 100ms
-    ackTimeoutMs: 100,
-    // Partitioner type (default = 0, random = 1, cyclic = 2, keyed = 3, custom = 4), default 0
-    partitionerType: 2
-  });
-  try {
-    kafkaProducer.on('ready', async function() {
-      const push_status = await kafkaProducer.send(
-        payloads, (err, data) => {
-          if (err) {
-            console.log('producer senderror:' + err) //ok
-            return err
-          } else {
-            console.log('producer success:' + data)
-            return data
-          }
-      });
-    });
-    kafkaProducer.on('error', function(err) {
-      console.log('producer onerror:' + err) //
-      throw err;
-    });
-  }
-  catch(e) {
-    console.log('producer exception:' + e)
-    throw e
-  }
-
-}
-
-const dequeue = async (payloads) => {
-}
 
 
 
 describe("kafkaclientのテスト", () => {
-
+  const topic_single_partition = 'topic_unit_test_single_partition'
+  const topic_double_partition = 'topic_unit_test_double_partition'
   describe(`kafkaClient()`, () => {
     before( () => {
     });
     after( () => {
     });
+    it(`producer topics作成`,async () => {
+      await createTopics([
+        {
+          topic: topic_single_partition,
+          partitions: 1,
+          replicationFactor: 1
+        },
+        {
+          topic: topic_double_partition,
+          partitions: 2,
+          replicationFactor: 1
+        }
+      ])
+    })
 
     it(`producer 単独キュー送信`,async () => {
-      const topic = 'partition2'
+      const partition = 0
       const uuid = test_helper.getUUID()
       const payloads = [
         {
-          topic: topic,
-          partition: 0,
+          key: 'theKey',
+          topic: topic_double_partition,
+          partition,
           messages: JSON.stringify({file_id: uuid})
         },
       ];
-      enqueue(payloads)
-      let finished = false
-      await test_helper.sleep(5000)             
-      console.log('finish');
+      const result = await produce(payloads)
+      expect(result[topic_double_partition][partition]).to.not.be.undefined
     })
-    it(`producer 不明なtopicへ送信`,async () => {
-      const topic = '????????'
-      const uuid = test_helper.getUUID()
-      const payloads = [
-        {
-          topic: topic,
-          partition: 0,
-          messages: JSON.stringify({file_id: uuid})
-        },
-      ];
-      enqueue(payloads)
 
-      // senderror:Error: InvalidTopic
-      let finished = false
-      await test_helper.sleep(5000)             
-      console.log('finish');
+    it(`producer 不明なtopicへ送信`,async () => {
+      const uuid = test_helper.getUUID()
+      const payloads = [{
+          topic: '????????',
+          messages: JSON.stringify({file_id: uuid})
+      },];
+      try{
+        const result = await produce(payloads)
+        expect("ここが評価されるのはNG").to.be.null
+      }catch(e){
+        expect(e.message).equal('InvalidTopic')
+      }
+    })
+
+    it.skip(`producer 存在しないホストに送信`,async () => {
+      const partition = 0
+      const uuid = test_helper.getUUID()
+      const payloads = [{
+        topic_double_partition,
+        messages: JSON.stringify({file_id: uuid})
+      },];
+      const config = {kafkaHost:'unknown_host:11111', connectTimeout: 1000}
+      try{
+        const result = await produce(payloads,config)
+        expect("ここが評価されるのはNG").to.be.null
+      }catch(e){
+        expect(e.message).equal('InvalidTopic')
+      }
     })
     it(`producer 複数キュー送信`,async () => {
-      const topic = 'partition2'
       const uuids = [test_helper.getUUID(), test_helper.getUUID(), test_helper.getUUID()]
       const payloads = uuids.map( uuid => ({
-          topic: topic,
+          topic: topic_double_partition,
           partition: 1,
           messages: `message ${uuid}`
       }))
-      enqueue([
+      const result = await produce([
         ...payloads,
         {
-          topic: 'quztopic',
+          topic: topic_single_partition,
           partition: 0,
           messages: [`message test1!!!`, `message test2!!!`]
         }
       ])
-      let finished = false
-      await test_helper.sleep(5000)             
-      console.log('finish');
+      expect(result).to.have.property(topic_double_partition);
+      expect(result).to.have.property(topic_single_partition);
     })
-    it(`consumer メッセージ受信`,async () => {
-      const client = new kafka.KafkaClient(config.kafka_server);
-      const consumer = new kafka.Consumer(
-          client,
-          [
-              { topic: 'quztopic', partition: 0 }, { topic: 'partition2', partition: 1 }
-          ],
-          {
-              autoCommit: true,
-              autoCommitIntervalMs: 5000,
-          }
-      );
-        consumer.on('message', function (message) {
-          //console.log(message);
-          if(message.offset == (message.highWaterOffset -1)){
-            consumer.close(true, (err, message) => {
-              console.log("consumer has been closed..");
-            });
-          }
-        });
-        await test_helper.sleep(8000)             
+
+    it(`consumer 単一受信`,async () => {
+      const payloads = [
+        { topic: topic_single_partition, partition: 0},
+        //{ topic: 'quztopic', partition: 0 }, { topic: 'partition2', partition: 1 }
+      ];
+      const consumer = getConsumer(payloads)
+      consumer.on('message', async message => {
+        console.log(message)
+        if(message.offset == (message.highWaterOffset -1)){
+          await closeConsumer(consumer)
+        }
+      });
+      consumer.on('error', err => {
+        expect("errorが発生").to.be.null
+      })
     })
   })
 });
