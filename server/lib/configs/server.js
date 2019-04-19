@@ -96,3 +96,19 @@ export const TIKA_CONF = {
     port: "9998",
   }
 };
+
+// kafkaの設定
+export const KAFKA_CONF = {
+  development: {
+    host: "kafka",
+    port: "9092",
+  },
+  integration: {
+    host: "192.168.99.100",
+    port: "9092",
+  },
+  production: {
+    host: process.env.KAFKA_HOST_NAME,
+    port: "9092",
+  }
+};
