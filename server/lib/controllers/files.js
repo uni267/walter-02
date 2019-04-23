@@ -525,7 +525,7 @@ export const search = async (req, res, next, export_excel=false) => {
         files = await File.searchFiles(conditions, 0, limit, _sort);
       }
 
-      files = files.map( file => {
+      files = files.map( async file => {
         const route = file.dirs
               .filter( dir => dir.ancestor.is_display )
               .map( dir => dir.ancestor.name );
