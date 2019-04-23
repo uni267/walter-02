@@ -11,6 +11,10 @@ import router from "./routes";
 import * as constants from "./configs/constants";
 import { Swift } from "./storages/Swift";
 import esClient from "./elasticsearchclient";
+import tikaClient from "./tikaclient";
+import { produce, getConsumer, closeConsumer, createTopics } from "./kafkaclient";
+
+
 const app = express();
 
 app.use( (req, res, next) => {
@@ -136,10 +140,29 @@ const checkElastic = (count = 0) => {
   });
 };
 
+export const checkTika = async (count = 0) => {
+  //await createTopics(payloads)
+  try{
+    await tikaClient.checkConnection()
+  }catch(e){
+    console.log("tika connection failed", count + 1);
+    logger.info("tika connection failed", count + 1);
+    checkTika(count + 1);
+  }
+  console.log("tika connection success");
+};
+export const checkKafka = async (count = 0) => {
+  //await createTopics(payloads)
+  console.log("kafka connection success");
+};
+
+
 try {
   checkMongo();
   checkSwift();
   checkElastic();
+  checkKafka();
+  checkTika();  //全文検索オプションがONの時
 } catch (e) {
   logger.error(e);
   process.exit();

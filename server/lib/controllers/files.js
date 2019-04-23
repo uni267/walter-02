@@ -1803,14 +1803,6 @@ export const upload = async (req, res, next) => {
   }
 };
 
-export const sendQueueToTika = async (tenant_id, file_id, buffer) => {
-  const response_meta_text = await tikaClient.getMetaInfo(buffer)
-  const response_full_text = await tikaClient.getTextInfo(buffer)
-  const meta_info = JSON.parse(response_meta_text.text)
-  const meta_text = ''  //meta_info.Content-Type || ''
-  await esClient.updateTextContents(tenant_id, file_id, meta_text, response_full_text.text)
-}
-
 export const addTag = (req, res, next) => {
   co(function* () {
     try {
