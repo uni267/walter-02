@@ -144,15 +144,14 @@ export const checkTika = async (count = 0) => {
   //await createTopics(payloads)
   try{
     await tikaClient.checkConnection()
+    console.log("tika connection success");
   }catch(e){
     console.log("tika connection failed", count + 1);
     logger.info("tika connection failed", count + 1);
     setTimeout( () => {
       checkTika(count + 1);
     }, constants.TIKA_CONNECTION_INTERVAL);
-
   }
-  console.log("tika connection success");
 };
 export const checkKafka = async (count = 0) => {
   try{
@@ -163,15 +162,14 @@ export const checkKafka = async (count = 0) => {
         replicationFactor: 1
       },
     ])    
+    console.log("kafka connection success");
   }catch(e){
     console.log("kafka connection failed", count + 1);
     logger.info("kafka connection failed", count + 1);
     setTimeout( () => {
       checkKafka(count + 1);
     }, constants.KAFKA_CONNECTION_INTERVAL);
-
   }
-  console.log("kafka connection success");
 };
 
 
