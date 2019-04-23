@@ -167,7 +167,7 @@ export const checkKafka = async (count = 0) => {
     console.log("kafka connection failed", count + 1);
     logger.info("kafka connection failed", count + 1);
     setTimeout( () => {
-      checkTika(count + 1);
+      checkKafka(count + 1);
     }, constants.KAFKA_CONNECTION_INTERVAL);
 
   }
