@@ -52,6 +52,38 @@ export const LOGGER_CONFIG = {
     }
   }
 };
+export const WORKER_LOGGER_CONFIG = {
+  appenders: {
+    default: {
+      type:     "dateFile",
+      filename: "logs/worker.log",
+      pattern:  "-yyyy-MM-dd",
+      layout:{
+        type: "pattern",
+        pattern: "[%d] [%p] %h - %m"
+      }
+    },
+    production: {
+      type:     "dateFile",
+      filename: "logs/worker.log",
+      pattern:  "-yyyy-MM-dd",
+      layout:{
+        type: "pattern",
+        pattern: "[%d] [%p] %h - %m"
+      }
+    }
+  },
+  categories:{
+    default: {
+      appenders:['default'],
+      level: 'ALL'
+    },
+    production: {
+      appenders:['production'],
+      level: 'ALL'
+    }
+  }
+};
 
 // 禁止文字一覧
 // 使い方: string.match( new RegExp(ILLIGAL_CHARACTERS.join("|")))

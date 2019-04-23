@@ -1739,7 +1739,7 @@ export const upload = async (req, res, next) => {
       const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
         topic: constants.KAFKA_TOPIC_TIKA,
         messages: JSON.stringify({
-          tenant_id,
+          tenant_name: res.user.tenant.name,
           file_id: file._id,
           //buffer: file.buffer,
         })
