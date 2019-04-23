@@ -35,4 +35,9 @@ tikaClient.getTextInfo = async buffer => {
     return await request.put(tikaUrl + "/tika").send(buffer);
 }
 
+tikaClient.checkConnection = async () => {
+  return await request.get(tikaUrl + "/tika")
+}
+
+
 export default tikaClient;

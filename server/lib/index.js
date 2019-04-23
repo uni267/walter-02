@@ -147,7 +147,10 @@ export const checkTika = async (count = 0) => {
   }catch(e){
     console.log("tika connection failed", count + 1);
     logger.info("tika connection failed", count + 1);
-    checkTika(count + 1);
+    setTimeout( () => {
+      checkTika(count + 1);
+    }, constants.TIKA_CONNECTION_INTERVAL);
+
   }
   console.log("tika connection success");
 };

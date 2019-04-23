@@ -141,8 +141,11 @@ export const ELASTIC_CONNECTION_RETRY = 20;
 export const ELASTIC_CONNECTION_TIMEOUT = 10 * 1000;
 export const ELASTIC_INDEXING_TIMEOUT = 60 * 1000;
 
+export const TIKA_CONNECTION_INTERVAL = 5 * 1000;
+
 // kafkaのタイムアウトm秒
 export const KAFKA_CONNECTION_TIMEOUT = 10 * 1000;
+export const KAFKA_CONNECTION_INTERVAL = 5 * 1000;
 export const KAFKA_TOPIC_TIKA = 'tika'
 
 // pdf->pngファイル変換の解像度
