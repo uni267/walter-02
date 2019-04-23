@@ -155,7 +155,22 @@ export const checkTika = async (count = 0) => {
   console.log("tika connection success");
 };
 export const checkKafka = async (count = 0) => {
-  //await createTopics(payloads)
+  try{
+    await createTopics([
+      {
+        topic: "ping test",
+        partitions: 1,
+        replicationFactor: 1
+      },
+    ])    
+  }catch(e){
+    console.log("kafka connection failed", count + 1);
+    logger.info("kafka connection failed", count + 1);
+    setTimeout( () => {
+      checkTika(count + 1);
+    }, constants.KAFKA_CONNECTION_INTERVAL);
+
+  }
   console.log("kafka connection success");
 };
 
