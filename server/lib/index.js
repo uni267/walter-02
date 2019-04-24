@@ -1,18 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
-import mongoose from "mongoose";
 // import morgan from "morgan";
 import path from "path";
 import log4js from "log4js";
 import { EventEmitter } from "events";
 import logger from "./logger";
-import { SERVER_CONF } from "./configs/server"; // mongoのipなど
 import router from "./routes";
-import * as constants from "./configs/constants";
-import { Swift } from "./storages/Swift";
-import esClient from "./elasticsearchclient";
-import tikaClient from "./tikaclient";
-import { produce, getConsumer, closeConsumer, createTopics } from "./kafkaclient";
+import { checkMongo, checkSwift, checkElastic, checkKafka, checkTika, getApiPort } from "./checkServices";
 
 
 const app = express();
@@ -34,44 +28,15 @@ app.use(bodyParser.json({limit: '300mb'}));
 app.use(express.static(path.join(__dirname, '../../client/build')));
 app.use(log4js.connectLogger(logger));
 
-// 環境変数
-// 開発 => development、社内テスト => integration、本番 => production
-const mode = process.env.NODE_ENV;
-
-let url;
-let db_name;
-let port;
-
-switch (mode) {
-case "integration":
-  url = SERVER_CONF.integration.url;
-  db_name = SERVER_CONF.integration.db_name;
-  port = SERVER_CONF.integration.port;
-  break;
-
-case "production":
-  if (! process.env.MONGO_HOST_NAME) throw new Error("env.MONGO_HOST_NAME is not set");
-
-  url = SERVER_CONF.production.url;
-  db_name = SERVER_CONF.production.db_name;
-  port = SERVER_CONF.production.port;
-  break;
-
-default:
-  url = SERVER_CONF.development.url;
-  db_name = SERVER_CONF.development.db_name;
-  port = SERVER_CONF.development.port;
-  break;
-}
-
 const event = new EventEmitter;
 const status = {};
 
-// mongo, swift, elasticsearchのヘルスチェックが完了通知を受け取ったらappを起動する
+// mongo, swift, elasticsearch, kafka, tikaのヘルスチェックが完了通知を受け取ったらappを起動する
 event.on("success", middleware_name => {
   status[middleware_name] = true;
-
-  if (status.mongo && status.swift && status.elastic) {
+  
+  if (status.mongo && status.swift && status.elastic &&  status.kafka &&  status.tika) {
+    const port = getApiPort()
     const server = app.listen(port, () => {
       console.log(`start server port: ${port}`);
       logger.info(`start server port: ${port}`);
@@ -81,104 +46,20 @@ event.on("success", middleware_name => {
   }
 });
 
-mongoose.Promise = global.Promise;
-
-const checkMongo = (count = 0) => {
-  mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( res => {
-    console.log("mongo connection success");
-    logger.info("mongo connection success");
-    event.emit("success", "mongo");
-  }).catch( e => {
-    console.log("mongo connection failed", count + 1);
-    logger.info("mongo connection failed", count + 1);
-
-    setTimeout( () => {
-      if (constants.MONGO_CONNECTION_RETRY <= count) throw new Error("mongodb connection failed");
-      checkMongo(count + 1);
-    }, constants.MONGO_CONNECTION_INTERVAL);
-  });
-};
-
-const checkSwift = (count = 0) => {
-  const swift = new Swift();
-
-  swift.getContainers().then( res => {
-    console.log("swift connection success");
-    logger.info("swift connection success");
-    event.emit("success", "swift");
-  }).catch( e => {
-    console.log("swift connection failed", count + 1);
-    logger.info("swift connection failed", count + 1);
-
-    if (constants.SWIFT_CONNECTION_RETRY <= count) throw new Error("swift connection failed");
-
-    setTimeout( () => {
-      checkSwift(count + 1);
-    }, constants.SWIFT_CONNECTION_INTERVAL);
-
-  });
-};
-
-const checkElastic = (count = 0) => {
-  esClient.ping({ requestTimeout: constants.ELASTIC_CONNECTION_TIMEOUT }, err => {
-    if (err) {
-      console.log("elasticsearch connection failed", count + 1);
-      logger.info("elasticsearch connection failed", count + 1);
-
-      if (constants.ELASTIC_CONNECTION_RETRY <= count) throw new Error("elasticsearch connection failed");
-
-      setTimeout( () => {
-        checkElastic(count + 1);
-      }, constants.ELASTIC_CONNECTION_INTERVAL );
-
-    }
-    else {
-      console.log("elasticsearch connection success");
-      logger.info("elasticsearch connection success");
-      event.emit("success", "elastic");
-    }
-  });
-};
-
-export const checkTika = async (count = 0) => {
-  //await createTopics(payloads)
-  try{
-    await tikaClient.checkConnection()
-    console.log("tika connection success");
-  }catch(e){
-    console.log("tika connection failed", count + 1);
-    logger.info("tika connection failed", count + 1);
-    setTimeout( () => {
-      checkTika(count + 1);
-    }, constants.TIKA_CONNECTION_INTERVAL);
+const process_checked = middleware_name => {
+  return () => {
+    console.log(`${middleware_name} connection success`);
+    logger.info(`${middleware_name} connection success`);
+    event.emit("success", middleware_name);
   }
-};
-export const checkKafka = async (count = 0) => {
-  try{
-    await createTopics([
-      {
-        topic: "ping test",
-        partitions: 1,
-        replicationFactor: 1
-      },
-    ])    
-    console.log("kafka connection success");
-  }catch(e){
-    console.log("kafka connection failed", count + 1);
-    logger.info("kafka connection failed", count + 1);
-    setTimeout( () => {
-      checkKafka(count + 1);
-    }, constants.KAFKA_CONNECTION_INTERVAL);
-  }
-};
-
+}
 
 try {
-  checkMongo();
-  checkSwift();
-  checkElastic();
-  checkKafka();
-  checkTika();  //全文検索オプションがONの時
+  checkMongo(process_checked('mongo'));
+  checkSwift(process_checked('swift'));
+  checkElastic(process_checked('elastic'));
+  checkTika(process_checked('tika'));  //全文検索オプションがONの時
+  checkKafka(process_checked('kafka'));
 } catch (e) {
   logger.error(e);
   process.exit();
