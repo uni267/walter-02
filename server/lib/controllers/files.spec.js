@@ -6,7 +6,6 @@ import supertest from "supertest";
 import { expect } from "chai";
 import * as test_helper from "../test/helper";
 import { Swift } from "../storages/Swift";
-import {sendQueueToTika} from "./files";
 
 
 describe("controllers/filesのテスト", () => {
@@ -34,10 +33,6 @@ describe("controllers/filesのテスト", () => {
     beforeEach( () => {
     });
 
-    it(`正常系 ascii更新`,async () => {
-      await sendQueueToTika(tenant_id, file_id, pdfFile)
-      expect(1).equal(1);
-    })
   })
 
 });

@@ -32,7 +32,6 @@ describe("kafkaclientのテスト", () => {
         }
       ])
     })
-
     it(`producer 単独キュー送信`,async () => {
       const partition = 0
       const uuid = test_helper.getUUID()
@@ -42,6 +41,21 @@ describe("kafkaclientのテスト", () => {
           topic: topic_double_partition,
           partition,
           messages: JSON.stringify({file_id: uuid})
+        },
+      ];
+      const result = await produce(payloads)
+      expect(result[topic_double_partition][partition]).to.not.be.undefined
+    })
+    it(`producer tikaメッセージ送信`,async () => {
+      const partition = 0
+      const payloads = [
+        {
+          topic: 'tika',
+          partition,
+          messages: JSON.stringify({
+            tenant_name: 'wakayama',
+            file_id: '5cbe6712b3136e00322f3bf4'
+          })
         },
       ];
       const result = await produce(payloads)
@@ -62,14 +76,14 @@ describe("kafkaclientのテスト", () => {
       }
     })
 
-    it.skip(`producer 存在しないホストに送信`,async () => {
+    it.only(`producer 存在しないホストに送信`,async () => {
       const partition = 0
       const uuid = test_helper.getUUID()
       const payloads = [{
-        topic_double_partition,
+        topic: topic_double_partition,
         messages: JSON.stringify({file_id: uuid})
       },];
-      const config = {kafkaHost:'unknown_host:11111', connectTimeout: 1000}
+      const config = {kafkaHost:'localhost:9092', connectTimeout: 1000}
       try{
         const result = await produce(payloads,config)
         expect("ここが評価されるのはNG").to.be.null

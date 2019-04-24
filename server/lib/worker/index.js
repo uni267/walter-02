@@ -1,75 +1,87 @@
+import logger from "../logger/worker";
+
 // worker process のダウン検知
 process.on('uncaughtException', err => {
   console.log('uncaughtException => ' + err);
+  logger.info("uncaughtException", JSON.stringify(err));
 });
 
-import kafka from "kafka-node"
-import { getConsumer } from "../kafkaclient";
-import { KAFKA_TOPIC_TIKA } from "../configs/constsants";
-//import logger from "../logger/worker";
-import esClient from "../elasticsearchclient";
-import tikaClient from "../tikaclient";
+import { EventEmitter } from "events";
+import * as constants from "../configs/constants";
+import { checkMongo, checkSwift, checkElastic, checkKafka, checkTika, getApiPort } from "../checkServices";
+import { produce, getConsumer, closeConsumer, createTopics } from "../kafkaclient";
+import { tika } from "./tika";
 
+console.log("checking conections ...");
+logger.info("checking conections ...");
 
-const tika_consumer = getConsumer({
-  topic: KAFKA_TOPIC_TIKA, //partition: 0, 
-})
-tika_consumer.on('message', async message => {
-  console.log(message)
-  if(message.offset == (message.highWaterOffset -1)){
-    //ここに記述
-    const response_meta_text = await tikaClient.getMetaInfo(buffer)
-    const response_full_text = await tikaClient.getTextInfo(buffer)
-    const meta_info = JSON.parse(response_meta_text.text)
-    const meta_text = ''  //meta_info.Content-Type || ''
-    await esClient.updateTextContents(tenant_id, file_id, meta_text, response_full_text.text)
+const event = new EventEmitter;
+const status = {};
+
+// mongo, swift, elasticsearch, kafka, tikaのヘルスチェックが完了通知を受け取ったらappを起動する
+event.on("success", middleware_name => {
+  status[middleware_name] = true;
+  
+  if (status.mongo && status.swift && status.elastic &&  status.kafka &&  status.tika) {
+    //ここがメイン処理
+    console.log("starting worker ...");
+    logger.info("starting worker ...");
+    
+    const tika_consumer_payloads = [{
+      topic: constants.KAFKA_TOPIC_TIKA, //partition: 0, 
+    }]
+    const tika_consumer = getConsumer(tika_consumer_payloads)
+    // logger.info("tika consumer created", JSON.stringify(tika_consumer_payloads));
+    
+    
+    tika_consumer.on('message', async message => {
+      console.log(message)
+      if(message.offset == (message.highWaterOffset -1)){
+        //console.log(message)
+        const json_message = JSON.parse(message.value)
+        await tika(json_message.tenant_name, json_message.file_id)
+        //ここでコミット
+        try{
+          // const result = await new Promise((resolve,reject)=>{
+          //   tika_consumer.commit((error, data)=>{
+          //     if(error) reject(error)
+          //     resolve(data)
+          //   })
+          // })
+          //console.log(result)
+        }catch(e){
+          console.log(e)
+          logger.info("tika consumer error: ", JSON.stringify(e));
+        }
+      }
+    });
+    tika_consumer.on('error', error => {
+      console.log('tika consumer error: ' + error)
+      logger.info("tika consumer error: ", JSON.stringify(error));
+    })
   }
 });
-tika_consumer.on('error', err => {
-  //
-})
 
-
-
-// classifyを実行するjob
-queue.process("classify", WORKER_CLASSIFY_CONCURRENT, async (job, done) => {
-// log fileはgrepで検索できたほうが便利
-logger.info("start classify", JSON.stringify(job.data));
-
-try {
-    switch(job.data.api){
-    case CLASSIFY_QUEUE_RYOHAN:
-    await ryohanCreate(job.data);
-    break;
-    case CLASSIFY_QUEUE_JIHAN:
-    await jihanCreate(job.data);
-    break;
-    default:
-    await ryohanCreate(job.data);
-    }
-
-    logger.info("classify success", JSON.stringify(job.data));
-    done();
-} catch(e) {
-    logger.error("classify error: ", JSON.stringify(job.data), JSON.stringify(e));
-    done(e);
+const process_checked = middleware_name => {
+  return () => {
+    console.log(`${middleware_name} connection success`);
+    logger.info(`${middleware_name} connection success`);
+    event.emit("success", middleware_name);
+  }
 }
 
-});
-
-queue.process("compression", 10, async (job, done) => {
-console.log("job: ", job.data)
 try {
-    await compression(job.data)
+  checkMongo(process_checked('mongo'));
+  checkSwift(process_checked('swift'));
+  checkElastic(process_checked('elastic'));
+  checkTika(process_checked('tika'));  //全文検索オプションがONの時
+  checkKafka(process_checked('kafka'));
 } catch (e) {
-    console.log(e)
+  logger.error(e);
+  process.exit();
 }
-done()
-})
 
 
-// kueのwebui apiの口もある
-const port = 3999;
-kue.app.listen(port);
-console.log("kue app start port: ", port);
+
+
 
