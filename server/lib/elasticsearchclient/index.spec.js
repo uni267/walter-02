@@ -25,8 +25,8 @@ describe("elasticsearchclientのテスト", () => {
     return { result_full_text: result.hits.hits[0]._source.file.full_text, result_meta_text: result.hits.hits[0]._source.file.meta_text}
   }
   describe(`updateTextContents()`, async () => {
-    const tenant_id = '5cb02dd57faea500c6a0acb7'
-    const file_id = '5cb03ac534679e36881995d4'
+    const tenant_id = '5cbea3de04b71c01f769627a'
+    const file_id = '5cc00e200f0b1d44403e5b33'
     let full_text = 'happy?'
     let meta_text = 'yes!'
     before( async () => {
@@ -61,6 +61,42 @@ describe("elasticsearchclientのテスト", () => {
       const file = await esClient.getFile(tenant_id, file_id)
       expect(full_text).equal(file.full_text);
       expect(meta_text).equal(file.meta_text);
+    })
+    it(` " のエスケープ`,async () => {
+      full_text = '"'
+      meta_text = '"'
+      await esClient.updateTextContents(tenant_id, file_id, meta_text, full_text)
+      await test_helper.sleep(3000) //elasticsearchの更新間隔を待つ
+      const file = await esClient.getFile(tenant_id, file_id)
+      expect(full_text).equal(file.full_text);
+      expect(meta_text).equal(file.meta_text);
+    })
+    it(` ' のエスケープ`,async () => {
+      full_text = "'"
+      meta_text = "'"
+      await esClient.updateTextContents(tenant_id, file_id, meta_text, full_text)
+      await test_helper.sleep(3000) //elasticsearchの更新間隔を待つ
+      const file = await esClient.getFile(tenant_id, file_id)
+      expect(full_text).equal(file.full_text);
+      expect(meta_text).equal(file.meta_text);
+    })
+    it(" ` のエスケープ",async () => {
+      full_text = '`'
+      meta_text = "`"
+      await esClient.updateTextContents(tenant_id, file_id, meta_text, full_text)
+      await test_helper.sleep(3000) //elasticsearchの更新間隔を待つ
+      const file = await esClient.getFile(tenant_id, file_id)
+      expect(full_text).equal(file.full_text);
+      expect(meta_text).equal(file.meta_text);
+    })
+    it.only("連続するスペースを単一スペースに置換",async () => {
+      full_text = ' aaa   bb cccc  '
+      meta_text = 'dd ee fff'
+      await esClient.updateTextContents(tenant_id, file_id, meta_text, full_text)
+      await test_helper.sleep(3000) //elasticsearchの更新間隔を待つ
+      const file = await esClient.getFile(tenant_id, file_id)
+      expect(file.full_text).equal(' aaa bb cccc ');
+      expect(file.meta_text).equal('dd ee fff');
     })
   })
 
