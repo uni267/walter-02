@@ -536,12 +536,16 @@ export const search = async (req, res, next, export_excel=false) => {
       file.actions = extractFileActions(file.authorities, res.user);          
 
       const es_file = await esClient.getFile(tenant_id.toString(), file._id)
-      if(es_file !== null || es_file !== undefined ){
+      if(es_file !== null && es_file !== undefined ){
         file.full_text = es_file.full_text
         file.meta_text = es_file.meta_text
         const search_words = q.toString().replace(/[　]/g,' ').replace(/ {2,}/g, ' ').trim().split(" ")
-        const hit_indexes = search_words.map( word => file.full_text.indexOf(word)).filter(index => index >= 0)
-        file.serch_result = file.full_text.slice(hit_indexes[0], 200)
+        if(file.full_text){
+          const hit_indexes = _.chain(search_words).map(word => file.full_text.indexOf(word)).filter(index => index >= 0).value()
+          file.serch_result = file.full_text.slice(hit_indexes[0], 200)
+        }else{
+          file.serch_result = ""
+        }
       }
 
       return file;
