@@ -15,7 +15,7 @@ import fs from "fs";
 
 export const startTikaConsumer = () => {
   const tika_consumer_payloads = [{
-    topic: constants.KAFKA_TOPIC_TIKA, //partition: 0, 
+    topic: constants.KAFKA_TOPIC_TIKA_NAME, //partition: 0, 
   }]
   const tika_consumer = getConsumer(tika_consumer_payloads)
   // logger.info("tika consumer created", JSON.stringify(tika_consumer_payloads));

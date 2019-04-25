@@ -1737,7 +1737,7 @@ export const upload = async (req, res, next) => {
       await esClient.createIndex(tenant_id, indexingFile);
       
       const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
-        topic: constants.KAFKA_TOPIC_TIKA,
+        topic: constants.KAFKA_TOPIC_TIKA_NAME,
         messages: JSON.stringify({
           tenant_id: tenant_id,
           tenant_name: res.user.tenant.name,
