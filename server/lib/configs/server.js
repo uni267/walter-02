@@ -98,17 +98,21 @@ export const TIKA_CONF = {
 };
 
 // kafkaの設定
+//   環境変数に以下のリスナーを設定している
+//   KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://localhost:9092
+//   LISTENER_DOCKER_INTERNAL ... 「他コンテナ→KAFKAコンテナ」のリスナー設定
+//   LISTENER_DOCKER_EXTERNAL ... 「ホストOS→KAFKAコンテナ」のリスナー設定
 export const KAFKA_CONF = {
   development: {
     host: "kafka",
-    port: "9092",
+    port: "19092",
   },
   integration: {
     host: "192.168.99.100",
-    port: "9092",
+    port: "19092",
   },
   production: {
     host: process.env.KAFKA_HOST_NAME,
-    port: "9092",
+    port: "19092",
   }
 };
