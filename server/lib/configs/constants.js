@@ -148,7 +148,9 @@ export const TIKA_CONNECTION_RETRY = 20;
 export const KAFKA_CONNECTION_TIMEOUT = 10 * 1000;
 export const KAFKA_CONNECTION_INTERVAL = 5 * 1000;
 export const KAFKA_CONNECTION_RETRY = 20;
-export const KAFKA_TOPIC_TIKA = 'tika'
+export const KAFKA_TOPIC_TIKA_NAME = 'tika'
+export const KAFKA_TOPIC_TIKA_PARTITIONS = 1  //パーティション数
+export const KAFKA_TOPIC_TIKA_REPLICATION_FACTOR = 3 //レプリケーションファクター数
 
 // pdf->pngファイル変換の解像度
 export const CONVERT_DPI = 144;

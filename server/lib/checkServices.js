@@ -115,9 +115,9 @@ export const checkKafka = async (checked, count = 0) => {
   try{
     await createTopics([
       {
-        topic: "ping_test",
-        partitions: 1,
-        replicationFactor: 1
+        topic: constants.KAFKA_TOPIC_TIKA_NAME,
+        partitions: constants.KAFKA_TOPIC_TIKA_PARTITIONS,
+        replicationFactor: constants.KAFKA_TOPIC_TIKA_REPLICATION_FACTOR
       },
     ])
     checked()    
