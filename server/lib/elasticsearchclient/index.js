@@ -128,11 +128,10 @@ esClient.createIndex = co.wrap(
 esClient.updateTextContents = async (tenant_id, file_id, meta_text, full_text) => {
 
   const script_helper = str => {
-    let converted = str
-    converted = converted.replace(/　/g, ' ') //全角スペース→半角スペース
-    converted = converted.replace(/\n|\r\n|\r/g, ' ') //改行コード→半角スペース
-    converted = converted.replace(/\'/g, '\\\'')  //シングルクオーテーションのエスケープ
-    converted = converted.replace(/ {2,}/g, ' ') //連続するスペース→単一半角スペース
+    const converted = str.replace(/　/g, ' ') //全角スペース→半角スペース
+      .replace(/\n|\r\n|\r/g, ' ') //改行コード→半角スペース
+      .replace(/\'/g, '\\\'')  //シングルクオーテーションのエスケープ
+      .replace(/ {2,}/g, ' ') //連続するスペース→単一半角スペース
     return ( converted !== null ? `'${converted}'` : "null" )
   }
 
