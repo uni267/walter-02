@@ -474,7 +474,15 @@ export const search = async (req, res, next, export_excel=false) => {
                 }}
               ]
             }
-        }
+        },
+        "highlight": {
+          "fields": {
+            "file.full_text": {
+              "pre_tags": "<b>",
+              "post_tags": "</b>"
+            }
+          }
+        }            
       }
     };
 
@@ -539,12 +547,10 @@ export const search = async (req, res, next, export_excel=false) => {
       if(es_file !== null && es_file !== undefined ){
         file.full_text = es_file.full_text
         file.meta_text = es_file.meta_text
-        const search_words = q.toString().replace(/[　]/g,' ').replace(/ {2,}/g, ' ').trim().split(" ")
-        if(file.full_text){
-          const hit_indexes = _.chain(search_words).map(word => file.full_text.indexOf(word)).filter(index => index >= 0).value()
-          file.serch_result = file.full_text.slice(hit_indexes[0], 200)
-        }else{
-          file.serch_result = ""
+        file.serch_result = ''
+        const hits = esResult.hits.hits.filter(hit => hit._id === file._id.toString())
+        if(hits.length > 0 ){
+          file.serch_result = hits[0].highlight['file.full_text'][0] || ''
         }
       }
 
