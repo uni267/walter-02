@@ -41,9 +41,9 @@ class UserContainer extends Component {
   render() {
     const headers = [
       { name: "有効/無効", width: "10%" },
-      { name: "アカウント名", width: "15%" },
-      { name: "表示名", width: "20%" },
-      { name: "メールアドレス", width: "15%" },
+      { name: "アカウント名", width: "25%" },
+      { name: "表示名", width: "25%" },
+      // { name: "メールアドレス", width: "15%" },
       { name: "所属グループ", width: "30%" },
       { name: "編集", width: "10%" }
     ];

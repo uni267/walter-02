@@ -32,12 +32,12 @@ export const toggleStarSuccessful = (file) => ({
   type: actionTypes.TOGGLE_STAR_SUCCESSFUL, file
 });
 
-export const addAuthorityToFile = (file, user, role) => ({
-  type: actionTypes.ADD_AUTHORITY_TO_FILE, file, user, role
+export const addAuthorityToFile = (file, user, group, role) => ({
+  type: actionTypes.ADD_AUTHORITY_TO_FILE, file, user, group, role
 });
 
-export const deleteAuthorityToFile = (file, user, role) => ({
-  type: actionTypes.DELETE_AUTHORITY_TO_FILE, file, user, role
+export const deleteAuthorityToFile = (file, user, group, role) => ({
+  type: actionTypes.DELETE_AUTHORITY_TO_FILE, file, user, group, role
 });
 
 export const setSortTarget = (sorted) => ({
@@ -58,9 +58,11 @@ export const requestFetchFiles = (
   type: actionTypes.REQUEST_FETCH_FILES, dir_id, page, sorted, desc
 });
 
-export const uploadFiles = (dir_id, files, disableFileBuffer = false) => ({
-  type: actionTypes.UPLOAD_FILES, dir_id, files, disableFileBuffer
-});
+export const uploadFiles = (dir_id, files, disableFileBuffer = false) => {
+  return {
+    type: actionTypes.UPLOAD_FILES, dir_id, files, disableFileBuffer
+  };
+};
 
 export const toggleDeleteFileDialog = (file) => ({
   type: actionTypes.TOGGLE_DELETE_FILE_DIALOG, file
@@ -120,6 +122,10 @@ export const requestFetchRoles = () => ({
 
 export const requestFetchUsers = () => ({
   type: actionTypes.REQUEST_FETCH_USERS
+});
+
+export const requestFetchGroups = () => ({
+  type: actionTypes.REQUEST_FETCH_GROUPS
 });
 
 export const toggleAuthorityFileDialog = (file) => ({

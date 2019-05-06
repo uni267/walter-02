@@ -168,7 +168,7 @@ class File extends Component {
     const { authorities } = this.props.file;
 
     const member = authorities.length > 1
-          ? `${uniq(authorities.map( auth => auth.users._id )).length} 人のメンバー`
+          ? `${authorities.length} 人のメンバー`
           : `${authorities[0].users.name} のみ`;
 
     return (

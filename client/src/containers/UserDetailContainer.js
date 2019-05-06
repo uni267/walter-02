@@ -97,7 +97,8 @@ const mapStateToProps = (state, ownProps) => {
     user: state.user,
     tenant: state.tenant,
     groups: state.groups.data,
-    roleMenus: state.roleMenus
+    roleMenus: state.roleMenus,
+    session: state.session
   };
 };
 

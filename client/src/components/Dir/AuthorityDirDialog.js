@@ -12,6 +12,7 @@ const AuthorityDirDialog = ({
   open,
   dir,
   users,
+  groups,
   roles,
   actions,
   session
@@ -34,6 +35,7 @@ const AuthorityDirDialog = ({
       <Authority
         file={dir}
         users={users}
+        groups={groups}
         roles={roles}
         addAuthorityToFile={actions.addAuthorityToFile}
         deleteAuthorityToFile={actions.deleteAuthorityToFile}

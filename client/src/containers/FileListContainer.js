@@ -129,6 +129,7 @@ class FileListContainer extends Component {
     this.props.actions.setFileListType(LIST_DEFAULT);
     this.props.actions.requestFetchMetaInfos();
     this.props.actions.requestFetchUsers();
+    this.props.actions.requestFetchGroups();
     this.props.actions.requestFetchRoles();
     this.props.actions.initFilePagination();
     this.props.actions.requestFetchDir(this.props.dir_id);

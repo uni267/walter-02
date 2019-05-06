@@ -163,13 +163,13 @@ export const add = (req, res, next) => {
         throw "name is too long";
       }
 
-      if (user.email === undefined
-          || user.email === null
-          || user.email === "") throw "email is empty";
+      // if (user.email === undefined
+      //     || user.email === null
+      //     || user.email === "") throw "email is empty";
 
-      if (user.email.length >= constants.MAX_EMAIL_LENGTH) {
-        throw "email is too long";
-      }
+      // if (user.email.length >= constants.MAX_EMAIL_LENGTH) {
+      //   throw "email is too long";
+      // }
 
       if (user.password === undefined
           || user.password === null
@@ -182,8 +182,8 @@ export const add = (req, res, next) => {
       let _user = yield User.findOne({ account_name: user.account_name });
       if (_user !== null) throw "account_name is duplicate";
 
-      _user = yield User.findOne({ email: user.email });
-      if (_user !== null) throw "email is duplicate";
+      // _user = yield User.findOne({ email: user.email });
+      // if (_user !== null) throw "email is duplicate";
 
       const hash = crypto.createHash("sha512").update(user.password).digest("hex");
       user.password = hash;

@@ -87,9 +87,13 @@ esClient.createIndex = co.wrap(
         file.authorities.forEach((authority,index) => {
           authority.actions.forEach((action, idx) => {
             if(esFile.actions[action._id] === undefined ) esFile.actions[action._id] = [];
-            esFile.actions[action._id].push(authority.users._id);
+            if(authority.users !== undefined && authority.users !== null) {
+              esFile.actions[action._id].push(authority.users._id);
+            }
+            if(authority.groups !== undefined && authority.groups !== null) {
+              esFile.actions[action._id].push(authority.groups._id);
+            }
           });
-          // esFile.users += (esFile.users==="" ? "": " ") + authority.users.name;
         });
         bulkBody.push({
           file: esFile

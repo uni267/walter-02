@@ -26,7 +26,7 @@ const UserTableBody = ({ user, headers }) => {
   const widths = headers.map( header => header.width );
 
   return (
-    <TableRow>
+    <TableRow style={{background: user.enabled ? "normal" : "#efefef"}}>
       <TableRowColumn style={{ width: widths[0] }}>
         {user.enabled ? "有効" : "無効"}
       </TableRowColumn>
@@ -36,15 +36,15 @@ const UserTableBody = ({ user, headers }) => {
       <TableRowColumn style={{ width: widths[2] }}>
         {user.name}
       </TableRowColumn>
+      {/* <TableRowColumn style={{ width: widths[3] }}> */}
+      {/*   {user.email} */}
+      {/* </TableRowColumn> */}
       <TableRowColumn style={{ width: widths[3] }}>
-        {user.email}
-      </TableRowColumn>
-      <TableRowColumn style={{ width: widths[4] }}>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {renderGroups(user.groups)}
         </div>
       </TableRowColumn>
-      <TableRowColumn style={{ width: widths[5] }}>
+      <TableRowColumn style={{ width: widths[4] }}>
         <IconButton containerElement={<Link to={`/users/${user._id}`} />}>
           <ImageEdit />
         </IconButton>
