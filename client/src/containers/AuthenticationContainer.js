@@ -31,12 +31,13 @@ class AuthenticationContainer extends Component {
 
   render() {
     const tenant_name = localStorage.getItem("tenant_name");
+    const loginPrefix = tenant_name ? tenant_name : "wakayama";
 
     return (
       this.haveToken() ? (
         <Route children={this.props.children} />
       ) : (
-        <Redirect to={`/${tenant_name}/login`} />
+        <Redirect to={`/${loginPrefix}/login`} />
       )
     );
   }
