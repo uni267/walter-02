@@ -62,6 +62,68 @@ const styles = {
   }
 };
 
+/*
+class MyDropzone extends Dropzone {
+  constructor(props, context) {
+    super(props, context);
+  }
+
+  onClick(evt) {
+    //return;
+     const { onClick, disableClick } = this.props
+     if (!disableClick) {
+       evt.stopPropagation()
+
+       if (onClick) {
+         onClick.call(this, evt)
+       }
+
+       // in IE11/Edge the file-browser dialog is blocking, ensure this is behind setTimeout
+       // this is so react can handle state changes in the onClick prop above above
+       // see: https://github.com/okonet/react-dropzone/issues/450
+       window.setTimeout(this.open.bind(this), 0);
+     }
+  }
+
+  onFileDialogCancel() {
+    const { onFileDialogCancel } = this.props
+    const { fileInputEl } = this
+    let { isFileDialogActive } = this
+    if (onFileDialogCancel && isFileDialogActive) {
+      console.log("dialogactive");
+      setTimeout(() => {
+        const FileList = fileInputEl.files
+        if (!FileList.length) {
+          isFileDialogActive = false
+          onFileDialogCancel()
+        }
+      }, 300)
+    }
+  }
+
+  setRefs(ref) {
+    console.log(ref);
+    this.fileInputEl = ref
+  }
+  open() {
+    console.log("run open");
+    this.isFileDialogActive = true
+    console.log("value");
+    this.fileInputEl.value = null
+    console.log("click");
+    this.fileInputEl.click()
+  }
+  onInputElementClick(evt) {
+    console.log("eclick")
+    evt.stopPropagation()
+    if (this.props.inputProps && this.props.inputProps.onClick) {
+      window.setTimeout(this.props.inputProps.onClick(),0);
+    }
+  }
+
+}
+*/
+
 const AddFileDialog = ({
   dir_id,
   open,
@@ -85,8 +147,8 @@ const AddFileDialog = ({
           {file.size} byte
         </div>
         <div style={{...styles.bufferCol, width: "5%" }}>
-          <IconButton>
-            <ActionDelete onClick={() => actions.deleteFileBuffer(file)} />
+          <IconButton onClick={() => actions.deleteFileBuffer(file)}>
+            <ActionDelete />
           </IconButton>
         </div>
       </div>
@@ -119,7 +181,10 @@ const AddFileDialog = ({
 
         <div>
           <Dropzone
-            onDrop={(files) => actions.uploadFiles(dir_id, files)}
+            onDrop={(files) => {
+              if(files != null && files != undefined && files.length > 0){
+                 actions.uploadFiles(dir_id, files);
+            }}}
             style={styles.dropzone}>
 
             <FileCloudUpload style={styles.cloudIcon} /><br />
