@@ -77,14 +77,14 @@ const task = async () => {
     // ユーザーグループの変更
     await Group.update(
       { name: "全社", tenant_id: tenant._id },
-      { $set: { name: '基本ユーザーG' } }, { multi:false }
+      { $set: { name: '一般ユーザG' } }, { multi:false }
     );
     await Group.update(
       { name: "管理者", tenant_id: tenant._id },
-      { $set: { name: 'ファイル管理者G' } }, { multi:false }
+      { $set: { name: '管理者G' } }, { multi:false }
     );
-    const group_norm = await Group.findOne({ name: '基本ユーザーG' } )
-    const group_file = await Group.findOne({ name: 'ファイル管理者G' } )
+    const group_norm = await Group.findOne({ name: '一般ユーザG' } )
+    const group_admin = await Group.findOne({ name: '管理者G' } )
     // 既存RoleMenuの削除
     const existing_rolemenu_ids = (await RoleMenu.find({ tenant_id: tenant._id})).map( rolemenu => rolemenu._id.toString() );
     await Promise.all(_.forEach(existing_rolemenu_ids, async id => {
@@ -93,7 +93,7 @@ const task = async () => {
     }))
     // RoleMenuの追加
     const roleMenu_norm = new RoleMenu();
-    roleMenu_norm.name= "一般ユーザ";
+    roleMenu_norm.name= "一般";
     roleMenu_norm.description= "";
     roleMenu_norm.menus= [
       (await Menu.findOne({ name: "home" }))._id,
@@ -101,31 +101,16 @@ const task = async () => {
     roleMenu_norm.tenant_id= tenant._id;
     await roleMenu_norm.save();
 
-    const roleMenu_file = new RoleMenu();
-    roleMenu_file.name= "ファイル管理者";
-    roleMenu_file.description= "";
-    roleMenu_file.menus= [
+    const roleMenu_admin = new RoleMenu();
+    roleMenu_admin.name= "システム管理";
+    roleMenu_admin.description= "";
+    roleMenu_admin.menus= [
       (await Menu.findOne({ name: "home" }))._id,
       (await Menu.findOne({ name: "tags" }))._id,
       (await Menu.findOne({ name: "users" }))._id,
     ];
-    roleMenu_file.tenant_id= tenant._id;
-    await roleMenu_file.save();
-
-    const roleMenu_sa = new RoleMenu();
-    roleMenu_sa.name= "システム管理者";
-    roleMenu_sa.description= "";
-    roleMenu_sa.menus= [
-      (await Menu.findOne({ name: "home" }))._id,
-      (await Menu.findOne({ name: "tags" }))._id,
-      (await Menu.findOne({ name: "analysis" }))._id,
-      (await Menu.findOne({ name: "users" }))._id,
-      (await Menu.findOne({ name: "groups" }))._id,
-      (await Menu.findOne({ name: "role_files" }))._id,
-      (await Menu.findOne({ name: "role_menus" }))._id,
-    ];
-    roleMenu_sa.tenant_id= tenant._id;
-    await roleMenu_sa.save();
+    roleMenu_admin.tenant_id= tenant._id;
+    await roleMenu_admin.save();
 
     //既存RoleFileの削除
     const existing_rolefile_ids = (await RoleFile.find({ tenant_id: tenant._id})).map( rolefile => rolefile._id.toString() );
@@ -143,17 +128,6 @@ const task = async () => {
           (await Action.findOne({ name: "list" }))._id,
           (await Action.findOne({ name: "detail" }))._id,
           (await Action.findOne({ name: "download" }))._id,
-        ],
-        tenant_id: tenant._id
-      },
-      {
-        name: "読み取り+アップロード",
-        description: "読み取り+アップロード",
-        actions: [
-          (await Action.findOne({ name: "list" }))._id,
-          (await Action.findOne({ name: "detail" }))._id,
-          (await Action.findOne({ name: "download" }))._id,
-          (await Action.findOne({ name: "upload" }))._id,
         ],
         tenant_id: tenant._id
       },
@@ -178,7 +152,6 @@ const task = async () => {
     ])
 
     const role_file_full_controll = await RoleFile.findOne({name:"フルコントロール", tenant_id: tenant._id});
-    const role_file_read_upload = await RoleFile.findOne({name:"読み取り+アップロード", tenant_id: tenant._id});
     const role_file_read_only = await RoleFile.findOne({name:"読み取りのみ", tenant_id: tenant._id});
 
     // Topとtrashフォルダの権限設定
@@ -187,7 +160,7 @@ const task = async () => {
         files: tenant.home_dir_id,
         role_files : role_file_full_controll._id,
         users : null,
-        groups : group_file._id
+        groups : group_admin._id
       },
       {
         files: tenant.home_dir_id,
@@ -199,7 +172,7 @@ const task = async () => {
         files: tenant.trash_dir_id,
         role_files : role_file_full_controll._id,
         users : null,
-        groups : group_file._id
+        groups : group_admin._id
       },
       {
         files: tenant.trash_dir_id,
@@ -217,52 +190,31 @@ const task = async () => {
     }))
     //初期ユーザー作成
     const pass = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff";
-    const user_sa = new User();
-    user_sa.type = "user";
-    user_sa.account_name= "cyber-sa";
-    user_sa.name= "システム管理者";
-    user_sa.email= `${user_sa.account_name}@${tenantName}`;
-    user_sa.password= pass;
-    user_sa.enabled= true;
-    user_sa.groups= [ (await Group.findOne({ name: "基本ユーザーG", tenant_id: tenant._id }, {_id: 1}))._id ];
-    user_sa.tenant_id= tenant._id;
-    await user_sa.save();
 
-    const user_center = new User();
-    user_center.type = "user";
-    user_center.account_name= "wakayama";
-    user_center.name= "管理者";
-    user_center.email= `${user_sa.account_name}@${tenantName}`;
-    user_center.password= pass;
-    user_center.enabled= true;
-    user_center.groups= [
-      (await Group.findOne({ name: "基本ユーザーG", tenant_id: tenant._id }, {_id: 1}))._id,
-      (await Group.findOne({ name: "ファイル管理者G", tenant_id: tenant._id }, {_id: 1}))._id,
+    const user_admin = new User();
+    user_admin.type = "user";
+    user_admin.account_name= "admin";
+    user_admin.name= "システム管理者";
+    user_admin.email= `${user_admin.account_name}@${tenantName}`;
+    user_admin.password= pass;
+    user_admin.enabled= true;
+    user_admin.groups= [
+      //(await Group.findOne({ name: "一般ユーザG", tenant_id: tenant._id }, {_id: 1}))._id,
+      (await Group.findOne({ name: "管理者G", tenant_id: tenant._id }, {_id: 1}))._id,
     ];
-    user_center.tenant_id= tenant._id;
-    await user_center.save();
+    user_admin.tenant_id= tenant._id;
+    await user_admin.save();
 
     await AuthorityMenu.insertMany([
       {
-        role_menus : roleMenu_sa._id,
-        users : user_sa._id,
-        groups : null
-      },
-      {
-        role_menus : roleMenu_file._id,
-        users : user_center._id,
+        role_menus : roleMenu_admin._id,
+        users : user_admin._id,
         groups : null
       },
     ])
 
     const normal_users = [
-      {account_name: 'nourin', name: '農林水産部'},
-      {account_name: 'soumu', name: '総務部'},
-      {account_name: 'fukushi', name: '福祉保健部'},
-      {account_name: 'kendo', name: '県土整備部'},
-      {account_name: 'kankyo', name: '環境生活部'},
-      {account_name: 'syoko', name: '商工観光労働部'},
-      {account_name: 'kikaku', name: '企画部'},
+      {account_name: 'user01', name: '一般ユーザー１'},
     ]
 
     await Promise.all(_.map(normal_users, async inf => {
@@ -273,7 +225,7 @@ const task = async () => {
       user.email= `${user.account_name}@${tenantName}`;
       user.password= pass;
       user.enabled= true;
-      user.groups= [ (await Group.findOne({ name: "基本ユーザーG", tenant_id: tenant._id }, {_id: 1}))._id ];
+      user.groups= [ (await Group.findOne({ name: "一般ユーザG", tenant_id: tenant._id }, {_id: 1}))._id ];
       user.tenant_id= tenant._id;
       await user.save();
       await AuthorityMenu.insertMany([{
@@ -282,7 +234,6 @@ const task = async () => {
           groups : null
       }])
      }))
-
 
   // ===============================
   //  tags collection
@@ -323,50 +274,85 @@ const task = async () => {
     await Dir.remove({ descendant: Types.ObjectId(id) })
   }))
 
-  //デフォルトフォルダの準備
-  await Promise.all(_.map(normal_users, async inf => {
-    const dir = new File();
-    dir.name = inf.name;
-    dir.modified = moment().format("YYYY-MM-DD HH:mm:ss");
-    dir.is_dir = true;
-    dir.dir_id = tenant.home_dir_id;
-    dir.is_display = true;
-    dir.is_star = false;
-    dir.tags = [];
-    dir.histories = [];
-    dir.authorities = [];
+  // //デフォルトフォルダの準備
+  //   const dir_public = new File();
+  //   dir_public.name = 'Public';
+  //   dir_public.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+  //   dir_public.is_dir = true;
+  //   dir_public.dir_id = tenant.home_dir_id;
+  //   dir_public.is_display = true;
+  //   dir_public.is_star = false;
+  //   dir_public.tags = [];
+  //   dir_public.histories = [];
+  //   dir_public.authorities = [];
 
-    // 管理者フルコントロール
-    const authFileDefault = new AuthorityFile();
-    authFileDefault.users = user_center;
-    authFileDefault.files = dir;
-    authFileDefault.role_files = role_file_full_controll;
-    // 共有ユーザー
-    const authFileShare = new AuthorityFile();
-    authFileShare.users = (await User.findOne({ account_name: inf.account_name, tenant_id: tenant._id }, {_id: 1}));
-    authFileShare.files = dir;
-    authFileShare.role_files = role_file_read_upload;
-    dir.authority_files = [ authFileDefault, authFileShare ];
-    //console.log(`フォルダ '${inf.name}' が作成開始`)
+  //   // 管理者Gフルコントロール
+  //   const authPublic_admin_full = new AuthorityFile();
+  //   authPublic_admin_full.users = null;
+  //   authPublic_admin_full.groups = group_admin._id;
+  //   authPublic_admin_full.files = dir_public;
+  //   authPublic_admin_full.role_files = role_file_full_controll;
+  //   // 一般ユーザーG閲覧
+  //   const authPublic_norm_read = new AuthorityFile();
+  //   authPublic_norm_read.users = null
+  //   authPublic_norm_read.groups = group_norm._id;
+  //   authPublic_norm_read.files = dir_public;
+  //   authPublic_norm_read.role_files = role_file_read_only;
+  //   dir_public.authority_files = [ authPublic_admin_full, authPublic_norm_read ];
 
-    await dir.save()
-    await authFileDefault.save()
-    await authFileShare.save()
-    await Dir.insertMany([
-      {
-        ancestor: dir._id,
-        descendant: dir._id,
-        depth: 0,
-      },
-      {
-        ancestor: tenant.home_dir_id,
-        descendant: dir._id,
-        depth: 1,
-      },
-    ])
-    console.log(`フォルダ '${inf.name}' が作成されました`)
-  }))
-}
+  //   await dir_public.save()
+  //   await authPublic_admin_full.save()
+  //   await authPublic_norm_read.save()
+  //   await Dir.insertMany([
+  //     {
+  //       ancestor: dir_public._id,
+  //       descendant: dir_public._id,
+  //       depth: 0,
+  //     },
+  //     {
+  //       ancestor: tenant.home_dir_id,
+  //       descendant: dir_public._id,
+  //       depth: 1,
+  //     },
+  //   ])
+  //   console.log(`フォルダ '${dir_public.name}' が作成されました`)
+
+  //   const dir_private = new File();
+  //   dir_private.name = 'Private';
+  //   dir_private.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+  //   dir_private.is_dir = true;
+  //   dir_private.dir_id = tenant.home_dir_id;
+  //   dir_private.is_display = true;
+  //   dir_private.is_star = false;
+  //   dir_private.tags = [];
+  //   dir_private.histories = [];
+  //   dir_private.authorities = [];
+
+  //   // 管理者Gフルコントロール
+  //   const authPrivate_admin_full = new AuthorityFile();
+  //   authPrivate_admin_full.users = null;
+  //   authPrivate_admin_full.groups = group_admin._id;
+  //   authPrivate_admin_full.files = dir_private;
+  //   authPrivate_admin_full.role_files = role_file_full_controll;
+  //   dir_private.authority_files = [ authPrivate_admin_full ];
+
+  //   await dir_private.save()
+  //   await authPrivate_admin_full.save()
+  //   await Dir.insertMany([
+  //     {
+  //       ancestor: dir_private._id,
+  //       descendant: dir_private._id,
+  //       depth: 0,
+  //     },
+  //     {
+  //       ancestor: tenant.home_dir_id,
+  //       descendant: dir_private._id,
+  //       depth: 1,
+  //     },
+  //   ])
+  //   console.log(`フォルダ '${dir_private.name}' が作成されました`)
+
+  }
   catch (e) {
     console.log(e)
     console.log(util.inspect(e, false, null));
