@@ -42,6 +42,7 @@ class FileOperationDialogContainer extends Component {
           open={this.props.authorityDirState.open}
           roles={this.props.roles}
           users={this.props.users}
+          groups={this.props.groups}
           dir={this.props.authorityDirTarget} />
         <AutoTimestampDialog
           { ...this.props }
@@ -53,6 +54,7 @@ class FileOperationDialogContainer extends Component {
           open={this.props.authorityFileState.open}
           file={this.props.authorityFileTarget}
           users={this.props.users}
+          groups={this.props.groups}
           roles={this.props.roles} />
         <DeleteFileDialog
           { ...this.props }
@@ -156,6 +158,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     users: state.users,
+    groups: state.groups.data,
     roles: state.roles.data,
     tags: state.tags,
     metaInfos: state.metaInfo.meta_infos,

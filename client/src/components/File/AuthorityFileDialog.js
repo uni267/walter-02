@@ -12,6 +12,7 @@ const AuthorityFileDialog = ({
   open,
   file,
   users,
+  groups,
   roles,
   actions,
   session
@@ -23,7 +24,7 @@ const AuthorityFileDialog = ({
       onTouchTap={actions.toggleAuthorityFileDialog}
       />
   );
-  
+
   return (
     <Dialog
       title="権限を変更"
@@ -35,6 +36,7 @@ const AuthorityFileDialog = ({
       <Authority
         file={file}
         users={users}
+        groups={groups}
         roles={roles}
         addAuthorityToFile={actions.addAuthorityToFile}
         deleteAuthorityToFile={actions.deleteAuthorityToFile}
@@ -49,6 +51,7 @@ AuthorityFileDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   file: PropTypes.object,
   users: PropTypes.array.isRequired,
+  groups: PropTypes.array,
   roles: PropTypes.array.isRequired,
   actions: PropTypes.object
 };

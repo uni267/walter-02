@@ -8,7 +8,7 @@ import errorParser from "../helper/errorParser";
 
 function* watchDeleteAuthorityToFile() {
   while (true) {
-    const { file, user, role } = yield take(
+    const { file, user, group, role } = yield take(
       actions.deleteAuthorityToFile().type
     );
 
@@ -16,7 +16,16 @@ function* watchDeleteAuthorityToFile() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(api.deleteAuthorityToFile, file, user, role);
+      const target = {};
+
+      if (user !== undefined && user !== null) {
+        yield call(api.deleteAuthorityToFile, file, user, role, "user");
+      } else if (group !== undefined && group !== null) {
+        yield call(api.deleteAuthorityToFile, file, group, role, "group");
+      } else {
+        throw new Error("user or group is invalid");
+      }
+
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initFile(payload.data.body));
       yield put(commons.triggerSnackbar("権限を削除しました"));

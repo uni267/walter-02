@@ -111,34 +111,65 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       const isDisplayUnvisibleCondition = isDisplayUnvisible
             ? {} : { "match": { "file.unvisible": false } };
 
+      // user_id or group_idで権限があるファイルを取得する
+      let authorityConditions = [
+        {
+          match: {
+            [`file.actions.${action_id}`]: {
+              query: res.user._id
+            }
+          }
+        }
+      ];
+
+      if(res.user.groups.length > 0) {
+        authorityConditions = authorityConditions.concat(
+          res.user.groups.map( group_id => {
+            return {
+              match: {
+                [`file.actions.${action_id}`]: {
+                  query: group_id
+                }
+              }
+            };
+          })
+        );
+      }
+
       const esQuery = {
         index: tenant_id.toString(),
         type: "files",
         sort: [ "file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`],
-        body:
-          {
-            "query" :{
-              "bool":{
-                "must": [
-                  {
-                    "match": {"file.dir_id":{ "query":dir_id, "operator": "and" }
-                  }},{
-                    "match" : {
-                    [`file.actions.${action_id}`]:
-                      {
-                        "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
-                        "operator": "and"         // operator の default は or なので and のする
-                      }
-                  }},{
-                    "match" : {
-                      "file.is_display": true
-                  }},{
-                    "match" : {
+        body: {
+          query: {
+            bool: {
+              must: [
+                {
+                  match: {
+                    "file.dir_id": {
+                      "query":dir_id, "operator": "and"
+                    }
+                  }
+                },
+                {
+                  match: {
+                    "file.is_display": true
+                  }
+                },
+                {
+                  match: {
                     "file.is_deleted": false
-                  }},
-                  isDisplayUnvisibleCondition
-                ]
-              }
+                  }
+                },
+                {
+                  bool: {
+                    should: authorityConditions
+                  }
+                },
+                isDisplayUnvisibleCondition,
+              ],
+
+            }
           }
         }
       };
@@ -396,29 +427,67 @@ export const search = async (req, res, next, export_excel=false) => {
     const isDisplayUnvisibleCondition = isDisplayUnvisible
           ? {} : { "match": { "file.unvisible": false } };
 
+    // user_id or group_idで権限があるファイルを取得する
+    let authorityConditions = [
+      {
+        match: {
+          [`file.actions.${action_id}`]: {
+            query: res.user._id
+          }
+        }
+      }
+    ];
+
+    if(res.user.groups.length > 0) {
+      authorityConditions = authorityConditions.concat(
+        res.user.groups.map( group_id => {
+          return {
+            match: {
+              [`file.actions.${action_id}`]: {
+                query: group_id
+              }
+            }
+          };
+        })
+      );
+    }
+          
     // 閲覧できるフォルダの一覧を取得する
     const esQueryDir = {
       index: tenant_id.toString(),
       type: "files",
       body:{
-        "query": {
-          "bool":{
-            "must_not": [{
-              "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
+        query: {
+          bool:{
+            must_not: [{
+              match: {
+                "file.dir_id":{
+                  // ゴミ箱内のファイルは対象外
+                  query: trash_dir_id.toString(),
+                  operator: "and" 
+                }
+              }
             }],
-            "must": [{
-              "match" : {
-                [`file.actions.${action_id}`]:
-                  {
-                    "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
-                    "operator": "and"         // operator の default は or なので and のする
-                  }
-              }},{
+            must: [
+              {
+              // "match" : {
+              //   [`file.actions.${action_id}`]:
+              //     {
+              //       "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+              //       "operator": "and"         // operator の default は or なので and のする
+              //     }
+              // }},{
                 "match" : {
                   "file.is_dir": true
                 }
-              }, isDisplayUnvisibleCondition
-            ]
+              },
+              {
+                bool: {
+                  should: authorityConditions
+                }
+              },
+            isDisplayUnvisibleCondition
+            ],
           }
         }
       }
@@ -461,40 +530,60 @@ export const search = async (req, res, next, export_excel=false) => {
       sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
       body:
         {
-          "query" :{
-            "bool":{
-              "must_not": [{
-                "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
-              }],
-              "must": [
-                {
-                "query_string":{
-                  "query": escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
-                  "default_operator": "AND",
-                  "fields": [...searchFields, "file.full_text"]
+          query: {
+            bool: {
+              must_not: [{
+                match: {
+                  "file.dir_id":{
+                    // ゴミ箱内のファイルは対象外
+                    query: trash_dir_id.toString(),
+                    "operator": "and" 
                   }
-                },{
-                "match" : {
-                  [`file.actions.${action_id}`]:
-                    {
-                      "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
-                      "operator": "and"         // operator の default は or なので and のする
-                    }
-                }},{
-                  "match" : {
-                  "file.is_display": true
-                }},{
-                  "match" : {
-                  "file.is_deleted": false
-                }},{
-                  "match" : {
-                  "file.is_trash": false
-                  }},
+                }   
+              }],
+              must: [
+                {
+                  query_string: {
+                    query: escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
+                    default_operator: "AND",
+                    fields: [...searchFields, "file.full_text"]
+                  }
+                },
+                // {
+                //   match : {
+                //     [`file.actions.${action_id}`]:
+                //       {
+                //         "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+                //         "operator": "and"         // operator の default は or なので and のする
+                //       }
+                //   }
+                // },
+                {
+                  match : {
+                    "file.is_display": true
+                  }
+                },
+                {
+                  match : {
+                    "file.is_deleted": false
+                  }
+                },
+                {
+                  match : {
+                    "file.is_trash": false
+                  }
+                },
                 isDisplayUnvisibleCondition,
                 {
-                  "terms" : {
+                  terms : {
                     "file.dir_id": authorizedDirIds
-                }}
+                  }
+                },
+                {
+                  bool: {
+                    should: authorityConditions
+                  }
+                }                  
               ]
             }
         },
@@ -735,6 +824,33 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
     const isDisplayUnvisibleCondition = isDisplayUnvisible
           ? {} : { "match": { "file.unvisible": false } };
 
+    const action_id = (await Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+
+    // user_id or group_idで権限があるファイルを取得する
+    let authorityConditions = [
+      {
+        match: {
+          [`file.actions.${action_id}`]: {
+            query: res.user._id
+          }
+        }
+      }
+    ];
+
+    if(res.user.groups.length > 0) {
+      authorityConditions = authorityConditions.concat(
+        res.user.groups.map( group_id => {
+          return {
+            match: {
+              [`file.actions.${action_id}`]: {
+                query: group_id
+              }
+            }
+          };
+        })
+      );
+    }
+    
     const esQueryDir = {
       index: tenant_id.toString(),
       type: "files",
@@ -744,18 +860,32 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
             must_not: [{
               match: {"file.dir_id": { query: trash_dir_id.toString(), operator: "and" }}
             }],
-            must: [{
-              match: {
-                [`file.actions.${action._id}`]: {
-                  query: res.user._id,
-                  operator: "and"
+            must: [
+              // {
+              //   match: {
+              //     [`file.actions.${action._id}`]: {
+              //       query: res.user._id,
+              //       operator: "and"
+              //     }
+              //   }
+              // },
+              {
+                match: {
+                  "file.is_dir": true
                 }
-              }
-            }, {
-              match: {
-                "file.is_dir": true
-              }
-            }, isDisplayUnvisibleCondition]
+              }, 
+              {
+                match: {
+                  "file.is_deleted": false
+                }
+              },
+              {
+                bool: {
+                  should: authorityConditions
+                }
+              },
+              isDisplayUnvisibleCondition
+            ]
           }
         }
       }
@@ -770,14 +900,15 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
     ];
 
     let esQueryMustsBase = [
+      // {
+      //   match: {
+      //     [`file.actions.${action._id}`]: {
+      //       query: res.user._id,
+      //       operator: "and"
+      //     }
+      //   }
+      // }, 
       {
-        match: {
-          [`file.actions.${action._id}`]: {
-            query: res.user._id,
-            operator: "and"
-          }
-        }
-      }, {
         match: {
           "file.is_display": true
         }
@@ -1707,18 +1838,22 @@ export const upload = async (req, res, next) => {
       authorityFile.files = model;
       authorityFile.role_files = role._id;
 
-      let authorityFiles = []
-
+      // フォルダの権限を継承する設定かどうか？      
       const inheritAuthSetting = await AppSetting.findOne({
         tenant_id: user.tenant_id,
         name: AppSetting.INHERIT_PARENT_DIR_AUTH
       });
 
-      if (inheritAuthSetting && inheritAuthSetting.enable) {
+      const inheritAuthEnabled = inheritAuthSetting && inheritAuthSetting.enable;
+
+      let authorityFiles = []
+
+      if (inheritAuthEnabled) {
         const parentFile = await File.findById(file.dir_id)
         const inheritAuths = await AuthorityFile.find({ files: parentFile._id })
         authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
-          users: mongoose.Types.ObjectId(ihr.users),
+          groups: ihr.groups === null ? null : mongoose.Types.ObjectId(ihr.groups),
+          users: ihr.users === null ? null : mongoose.Types.ObjectId(ihr.users),
           files: model,
           role_files: mongoose.Types.ObjectId(ihr.role_files),
         }))
@@ -1736,11 +1871,13 @@ export const upload = async (req, res, next) => {
 
       authorityFiles = authorityFiles.concat(authorityFile)
       authorityFiles = uniqWith(authorityFiles, (a, b) => (
-        isEqualWith(a, b, (a, b) => (
-          a.users.toString() === b.users.toString()
-          && a.files.toString() === b.files.toString()
-          && a.role_files.toString() === b.role_files.toString()
-        ))
+        isEqualWith(a, b, (a, b) => {
+          if (a.users === undefined || a.users === null) return false;
+          if (b.users === undefined || b.users === null) return false;
+          return a.users.toString() === b.users.toString()
+            && a.files.toString() === b.files.toString()
+            && a.role_files.toString() === b.role_files.toString()
+        })
       ))
       return authorityFiles;
     }));
@@ -2332,104 +2469,131 @@ export const toggleStar = async (req, res, next) => {
  * @param {*} res 
  * @param {*} next 
  */
-export const addAuthority = async (req, res, next) => {
-  try {
-    const { file_id } = req.params;
-    const { user, role } = req.body;
-    const { tenant_id } = res.user;
-
-    if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
-
-    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
-
-    const file = await File.findById(file_id);
-    if (file === null) throw "file is empty";
-
-    const _role = await RoleFile.findById(role._id);
-    if (_role === null) throw "role is empty";
-
-    if (! mongoose.Types.ObjectId.isValid(user._id)) throw "user_id is invalid";
-
-    if (user.type === undefined || user.type === null || user.type === "") throw new ValidationError( "user.type is empty" );
-
+const _addAuthority = (file, user, group, role, tenant_id) => {
+  return co(function*() {
     const authority = new AuthorityFile();
+    authority.files = file;
+    authority.role_files = role;
 
-    if(user.type === 'user'){
-      const _user = await User.findById(user._id);
+    if(user !== undefined && user !== null){
+      const _user = yield User.findById(user._id);
       if (_user === null) throw "user is empty";
-
-      authority.files = file;
       authority.users = _user;
-      authority.role_files = _role;
+      const duplicated = yield AuthorityFile.findOne({
+        files: authority.files,
+        users: authority.users,
+        role_files: authority.role_files
+      });
+
+      if (duplicated !== null) throw "role set is duplicate";
     }else{
-      const _group = await Group.findById(user._id);
+      const _group = yield Group.findById(group._id);
       if (_group === null) throw new RecordNotFoundException("group is empty");
-
-      authority.files = file;
       authority.groups = _group;
-      authority.role_files = _role;
+
+      const duplicated = yield AuthorityFile.findOne({
+        files: authority.files,
+        groups: authority.groups,
+        role_files: authority.role_files
+      });
+
+      if (duplicated !== null) throw "role set is duplicate";
     }
 
-    const duplicated = await AuthorityFile.findOne({
-      files: authority.files,
-      users: authority.users,
-      role_files: authority.role_files
-    });
-
-    if (duplicated !== null) throw "role set is duplicate";
-
-    const createdAuthority = await authority.save();
-
+    const createdAuthority = yield authority.save();
     // elasticsearch index作成
-    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
-    await esClient.syncDocument(tenant_id, updatedFile);    
+    const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file._id) });
+    const esResult = yield esClient.createIndex(tenant_id,[updatedFile]);
+    return new Promise( (resolve, reject) => resolve(esResult) );
+  });
+};
 
-    res.json({
-      status: { success: true },
-      body: createdAuthority
-    });
+export const addAuthority = (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      const { user, group, role } = req.body;
+      const { tenant_id } = res.user;
 
-  }
-  catch (e) {
-    const errors = {};
-    switch (e) {
-    case "file_id is empty":
-      errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
-      break;
-    case "file_id is invalid":
-      errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
-      break;
-    case "file is empty":
-      errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
-      break;
-    case "user is empty":
-      errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
-      break;
-    case "user_id is invalid":
-      errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
-      break;
-    case "role is empty":
-      errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
-      break;
-    case "user.type is empty":
-      errors.user = "ユーザの種類が不明です";
-      break;
-    case "group is empty":
-      errors.group = "追加対象のユーザが見つかりません";
-      break;
-    case "role set is duplicate":
-      errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
-      break;
-    default:
-      errors.unknown = e;
-      break;
+      if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+
+      const file = yield File.findById(file_id);
+      if (file === null) throw "file is empty";
+
+      const _role = yield RoleFile.findById(role._id);
+      if (_role === null) throw "role is empty";
+
+      const createdAuthority = yield _addAuthority(file, user, group, _role, res.user.tenant_id);
+
+      // 配下のフォルダに権限を浸透させる
+      if (file.is_dir === true) {
+        const childrenDirIds = (yield Dir.find({ ancestor: file._id, depth: { $gte: 0 } })).map( d => d.descendant );
+        const children = yield File.find({ dir_id: { $in: childrenDirIds } });
+        for (let idx in children) {
+          const child = children[idx];
+
+          if ( user !== undefined && user !== null ) {
+            const _authority = yield AuthorityFile.findOne({ files: child._id, users: user._id, role_files: _role.id });
+            if (_authority === null) {
+              yield _addAuthority(child, user, group, _role, res.user.tenant_id);
+            }
+          } else if ( group !== undefined && group !== null ) {
+            const _authority = yield AuthorityFile.findOne({ files: child._id, groups: group._id, role_files: _role.id });
+            if (_authority === null) {
+              yield _addAuthority(child, user, group, _role, res.user.tenant_id);
+            }
+          }
+        }
+      }
+
+      res.json({
+        status: { success: true },
+        body: createdAuthority
+      });
+
     }
-    logger.error(e);
-    res.status(400).json({
-      status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
-    });
-  }
+    catch (e) {
+      const errors = {};
+      switch (e) {
+      case "file_id is empty":
+        errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
+        break;
+      case "user is empty":
+        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
+        break;
+      case "role is empty":
+        errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
+        break;
+      case "user.type is empty":
+        errors.user = "ユーザの種類が不明です";
+        break;
+      case "group is empty":
+        errors.group = "追加対象のユーザが見つかりません";
+        break;
+      case "role set is duplicate":
+        errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+      logger.error(e);
+      res.status(400).json({
+        status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
+      });
+    }
+  });
 };
 
 /**
@@ -2438,107 +2602,138 @@ export const addAuthority = async (req, res, next) => {
  * @param {*} res 
  * @param {*} next 
  */
-export const removeAuthority = async (req, res, next) => {
-  try {
-    const { file_id } = req.params;
-    const { user_id, role_id } = req.query;
+const _removeAuthority = (file_id, user_id, group_id, role_id, tenant_id) => {
+  return co(function* () {
+    // userもしくはgroup
+    let role_target, target_is_user;
 
-    if (! mongoose.Types.ObjectId.isValid(file_id) ) throw "file_id is invalid";
+    if (user_id !== null && user_id !== undefined) {
+      target_is_user = true;
+      role_target = yield User.findById(user_id);
+    } else if (group_id !== null && group_id !== undefined) {
+      target_is_user = false;
+      role_target = yield Group.findById(group_id);
+    } else {
+      throw new Error("invalid user or group");
+    }
 
-    if (user_id === undefined ||
-        user_id === null ||
-        user_id === "") throw "user_id is empty";
-
-    if (role_id === undefined ||
-        role_id === null ||
-        role_id === "") throw "role_id is empty";
-
-    if (! mongoose.Types.ObjectId.isValid(user_id) ) throw "user_id is invalid";
-    if (! mongoose.Types.ObjectId.isValid(role_id) ) throw "role_id is invalid";
-
-    const file = await File.findById(file_id);
+    const file = yield File.findById(file_id);
     if (file === null) throw "file is empty";
 
-    const role_user = await User.findById(user_id);
-    if (role_user === null) throw "user is empty";
-
-    const role_file = await RoleFile.findById(role_id);
+    const role_file = yield RoleFile.findById(role_id);
     if (role_file === null) throw "role is empty";
 
-    if (role_user.type === undefined ||
-        role_user.type === null ||
-        role_user.type === "") throw "user.type is empty";
+    if (role_target === null) throw "user or group is empty";
 
-    const authority = AuthorityFile.findOne({
-      role_files: role_file._id,
-      users: role_user._id,
-      files: file._id
-    });
+    const find_conditions = target_is_user
+          ? { role_files: role_file._id, users: role_target._id, files: file._id }
+          : { role_files: role_file._id, groups: role_target._id, files: file._id };
+
+    const authority = AuthorityFile.findOne(find_conditions);
 
     if (authority === null) throw "authority is empty";
 
-    const removeResult = await authority.remove();
+    const removeResult = yield authority.remove();
 
     if (removeResult.result.ok !== 1) throw "remove authority is failed";
 
     // elasticsearch index作成
-    const { tenant_id }= res.user;
-    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
-    await esClient.syncDocument(tenant_id, updatedFile);
+    const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    yield esClient.createIndex(tenant_id,[updatedFile]);
+    return new Promise( (resolve, reject) => resolve({ file, role_file, role_target }));
+  });
+};
 
-    res.json({
-      status: { success: true },
-      body: { role_files: role_file, users: role_user, files: file }
-    });
-  }
-  catch (e) {
-    let errors = {};
+export const removeAuthority = (req, res, next) => {
+  co(function* () {
+    try {
+      const { file_id } = req.params;
+      const { user_id, group_id, role_id } = req.query;
 
-    switch (e) {
-    case "file_id is invalid":
-      errors.file_id = "ファイルIDが不正のためファイルへの権限の削除に失敗しました";
-      break;
-    case "user_id is empty":
-      errors.user_id = "ユーザIDが空のためファイルへの権限の削除に失敗しました";
-      break;
-    case "role_id is empty":
-      errors.role_id = "ファイル権限IDが空のためファイルへの権限の削除に失敗しました";
-      break;
-    case "user_id is invalid":
-      errors.user_id = "ユーザIDが不正のためファイルへの権限の削除に失敗しました";
-      break;
-    case "role_id is invalid":
-      errors.role_id = "ファイル権限IDが不正のためファイルへの権限の削除に失敗しました";
-      break;
-    case "file is empty":
-      errors.file_id = "指定されたファイルが存在しないためファイルへの権限の削除に失敗しました";
-      break;
-    case "user is empty":
-      errors.user_id = "指定されたユーザが存在しないためファイルへの権限の削除に失敗しました";
-      break;
-    case "role is empty":
-      errors.role_id = "指定されたファイル権限が存在しないためファイルへの権限の削除に失敗しました";
-      break;
-    case "user.type is empty":
-      errors.user_type = "ユーザ種別が空のためファイルへの権限の削除に失敗しました";
-      break;
-    case "authority is empty":
-      errors.role = "指定された権限セットが存在しないためファイルへの権限の削除に失敗しました";
-      break;
-    case "remove authority is failed":
-      errors.remove = "原因不明のエラーで権限の削除に失敗しました";
-      errors.unknown = e;
-      break;
-    default:
-      errors.unknown = e;
-      break;
+      if (! mongoose.Types.ObjectId.isValid(file_id) ) throw "file_id is invalid";
+
+      if (role_id === undefined ||
+          role_id === null ||
+          role_id === "") throw "role_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(role_id) ) throw "role_id is invalid";
+
+      const { file, role_file, role_target } = yield _removeAuthority(file_id, user_id, group_id, role_id, res.user.tenant_id);
+
+      // 配下のフォルダに権限を浸透させる
+      if (file.is_dir === true) {
+        const childrenDirIds = (yield Dir.find({ ancestor: file._id, depth: { $gte: 0 } })).map( d => d.descendant );
+        const children = yield File.find({ dir_id: { $in: childrenDirIds } });
+        for (let idx in children) {
+          const child = children[idx];
+
+          if ( user_id !== undefined && user_id !== null ) {
+            const _authority = yield AuthorityFile.findOne({ files: child._id, users: user_id, role_files: role_id });
+            if (_authority !== null) {
+              yield _removeAuthority(child._id, user_id, group_id, role_id, res.user.tenant_id);
+            }
+          } else if ( group_id !== undefined && group_id !== null ) {
+            const _authority = yield AuthorityFile.findOne({ files: child._id, groups: group_id, role_files: role_id });
+            if (_authority !== null) {
+              yield _removeAuthority(child._id, user_id, group_id, role_id, res.user.tenant_id);
+            }
+          }
+        }
+      }
+
+      res.json({
+        status: { success: true },
+        body: { role_files: role_file, users: role_target, files: file }
+      });
     }
+    catch (e) {
+      let errors = {};
 
-    res.status(400).json({
-      status: { success: false, message: "ファイルへの権限の削除に失敗しました", errors }
-    });
-  }
+      switch (e) {
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正のためファイルへの権限の削除に失敗しました";
+        break;
+      case "user_id is empty":
+        errors.user_id = "ユーザIDが空のためファイルへの権限の削除に失敗しました";
+        break;
+      case "role_id is empty":
+        errors.role_id = "ファイル権限IDが空のためファイルへの権限の削除に失敗しました";
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためファイルへの権限の削除に失敗しました";
+        break;
+      case "role_id is invalid":
+        errors.role_id = "ファイル権限IDが不正のためファイルへの権限の削除に失敗しました";
+        break;
+      case "file is empty":
+        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "user is empty":
+        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "role is empty":
+        errors.role_id = "指定されたファイル権限が存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "user.type is empty":
+        errors.user_type = "ユーザ種別が空のためファイルへの権限の削除に失敗しました";
+        break;
+      case "authority is empty":
+        errors.role = "指定された権限セットが存在しないためファイルへの権限の削除に失敗しました";
+        break;
+      case "remove authority is failed":
+        errors.remove = "原因不明のエラーで権限の削除に失敗しました";
+        errors.unknown = e;
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, message: "ファイルへの権限の削除に失敗しました", errors }
+      });
+    }
+  });
 };
 
 /**

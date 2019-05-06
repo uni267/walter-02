@@ -14,6 +14,7 @@ import Tenant from "../models/Tenant";
 import User from "../models/User";
 import RoleFile from "../models/RoleFile";
 import AuthorityFile from "../models/AuthorityFile";
+import AppSetting from "../models/AppSetting";
 
 import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
@@ -195,7 +196,6 @@ export const tree = (req, res, next) => {
 export const create = (req, res, next) => {
   co(function*(){
     try {
-
       const { dir_name } = req.body;
       let dir_id = req.body.dir_id;
 
@@ -232,12 +232,60 @@ export const create = (req, res, next) => {
         name: "フルコントロール" // @fixme
       });
 
+      const tenant = yield Tenant.findById(res.user.tenant_id);
+
+      // フォルダの権限を継承する設定かどうか？
+      const inheritAuthSetting = yield AppSetting.findOne({
+        tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
+        name: AppSetting.INHERIT_PARENT_DIR_AUTH
+      });
+
+      const inheritAuthEnabled = inheritAuthSetting && inheritAuthSetting.enable;
+      var authorityFiles = [];
+
+      if (inheritAuthEnabled) {
+        // 親フォルダの権限継承用
+        const parent = yield File.findById(dir_id);
+        const inheritAuths = yield AuthorityFile.find({ files: parent._id });
+
+        const _authorityFiles = inheritAuths.map( ihr => {
+          return new AuthorityFile({
+            groups: ihr.groups === null ? null : mongoose.Types.ObjectId(ihr.groups),
+            users: ihr.users === null ? null : mongoose.Types.ObjectId(ihr.users),
+            files: dir,
+            role_files: mongoose.Types.ObjectId(ihr.role_files)
+          });
+        });
+        authorityFiles = authorityFiles.concat(_authorityFiles);
+      }
+
       // 作成したユーザが所有者となる
-      const authority = new AuthorityFile();
-      authority.users = user;
-      authority.files = dir;
-      authority.role_files = role;
-      dir.authority_files = [ authority ];
+      if (inheritAuthEnabled) {
+        // 作成したユーザが親フォルダと同一であれば追加しない(雪ダルマになるので)
+        const parent = yield File.findById(dir_id);
+        const inheritAuths = yield AuthorityFile.find({ files: parent._id });
+        const duplicateAuths = inheritAuths.filter( ihr => {
+          return ihr.users !== undefined
+            && ihr.users !== null
+            && ihr.users.toString() === user._id.toString()
+            && ihr.role_files.toString() === role._id.toString();
+        });
+        if (duplicateAuths.length === 0) {
+          const authority = new AuthorityFile();
+          authority.users = user._id;
+          authority.files = dir._id;
+          authority.role_files = role._id;
+          authorityFiles = authorityFiles.concat(authority);
+        }
+      } else {
+        const authority = new AuthorityFile();
+        authority.users = user._id;
+        authority.files = dir._id;
+        authority.role_files = role._id;
+        authorityFiles = authorityFiles.concat(authority);
+      }
+
+      dir.authority_files = authorityFiles;
 
       const history = {
         modified: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -259,7 +307,9 @@ export const create = (req, res, next) => {
 
       if (_dir.length > 0) throw "name is duplication";
 
-      const { newDir, newAuthority} = yield { newDir: dir.save(), newAuthority: authority.save() };
+      const newDir = yield dir.save();
+      const newAuthorities = yield authorityFiles.map( af => af.save() );
+      // const { newDir, newAuthority} = yield { newDir: dir.save(), newAuthority: authority.save() };
 
       // elasticsearch index作成
       const { tenant_id }= res.user;

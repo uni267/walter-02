@@ -1,6 +1,59 @@
 import axios from "axios";
 import { DEFAULT_API_TIMEOUT, PREVIEW_API_TIMEOUT } from "../constants/index";
 
+export class API_STREAM {
+  generateUuid = () => {
+    let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
+    for (let i = 0, len = chars.length; i < len; i++) {
+        switch (chars[i]) {
+            case "x":
+                chars[i] = Math.floor(Math.random() * 16).toString(16);
+                break;
+            case "y":
+                chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
+                break;
+        }
+    }
+    return chars.join("");
+  }
+  constructor() {
+    this.client = axios.create({
+      responseType: "arraybuffer",
+      headers: {
+        "X-Auth-Cloud-Storage": localStorage.getItem("token"),
+        "X-Cloud-Storage-Use-Stream": 1
+      }
+    });
+    this.uuid = this.generateUuid();
+  }
+
+  filesUploadStream = (files) => {
+    return this.client.post("/stream_api", files);
+  };
+
+  uploadChank = (blob, name, size, type, lastModified ,md5, dir_id) => {
+    // http headerに仕込む際、日本語が都合悪いので
+    const base64FileName = btoa(unescape(encodeURIComponent(name)));
+    //type = type.length <=  1 ? "1a" : type;
+    this.client=axios.create({
+      responseType: "application/arraybuffer",
+      headers: {
+        "X-Cloud-Storage-Use-Stream": "1",
+        "X-Auth-Cloud-Storage": localStorage.getItem("token"),
+        "X-File-Name": base64FileName,
+        "X-File-Size": size,
+        "X-File-Mime-type": type,
+        "X-File-modified": lastModified,
+        "x-File-checksum": md5,
+        "X-File-UUID": this.uuid,
+        "X-Dir-Id": dir_id
+      }
+    });
+    return this.client.post("/api/v1/files/binary",blob);
+  }
+
+}
+
 export class API {
   constructor() {
     this.client = axios.create({
@@ -369,14 +422,30 @@ export class API {
     return this.client.get(`/api/v1/files/download`, config);
   };
 
-  addAuthorityToFile = (file, user, role) => {
-    const body = { user, role };
+  addAuthorityToFile = (file, userOrGroup, role, type) => {
+    const body = { role: role };
+    if (type === "user") {
+      body.user = userOrGroup;
+    } else if (type === "group") {
+      body.group = userOrGroup;
+    } else {
+      throw new Error("user or group is invalid");
+    }
+
     return this.client.post(
       `/api/v1/files/${file._id}/authorities`, body);
   };
 
-  deleteAuthorityToFile = (file, user, role) => {
-    const params = { user_id: user._id, role_id: role._id };
+  deleteAuthorityToFile = (file, userOrGroup, role, type) => {
+    const params = { role_id: role._id };
+    if (type === "user") {
+      params.user_id = userOrGroup._id;
+    } else if (type === "group") {
+      params.group_id = userOrGroup._id;
+    } else {
+      throw new Error("user or group is invalid");
+    }
+
     return this.client.delete(`/api/v1/files/${file._id}/authorities`, { params });
   };
 

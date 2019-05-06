@@ -8,7 +8,7 @@ import errorParser from "../helper/errorParser";
 
 function* watchAddAuthorityToFile() {
   while (true) {
-    const { file, user, role } = yield take(
+    const { file, user, group, role } = yield take(
       actions.addAuthorityToFile().type
     );
 
@@ -16,7 +16,13 @@ function* watchAddAuthorityToFile() {
     yield put(commons.loadingStart());
 
     try {
-      yield call(api.addAuthorityToFile, file, user, role);
+      if (user !== undefined && user !== null) {
+        yield call(api.addAuthorityToFile, file, user, role, "user");
+      } else if (group !== undefined && group !== null) {
+        yield call(api.addAuthorityToFile, file, group, role, "group");
+      } else {
+        throw new Error("user or group is invalid");
+      }
       const payload = yield call(api.fetchFile, file._id);
       yield put(actions.initFile(payload.data.body));
       yield put(commons.triggerSnackbar("権限を追加しました"));

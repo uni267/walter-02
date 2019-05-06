@@ -129,10 +129,18 @@ class FileDetailContainer extends Component {
 
   renderAuthorities = () => {
     const renderAuthority = (auth, idx) => {
+      let account;
+
+      if(auth.users !== undefined && auth.users !== null) {
+        account = auth.users;
+      }else if(auth.groups !== undefined && auth.groups !== null){
+        account = auth.groups;
+      }
+
       return (
         <div key={idx} style={styles.metaRow}>
           <div style={{...styles.metaCell, width: "30%"}}>
-            {auth.users.name}
+            {account.name}
           </div>
           <div>{auth.role_files.name}</div>
         </div>

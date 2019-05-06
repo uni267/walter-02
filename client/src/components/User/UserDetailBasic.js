@@ -10,6 +10,7 @@ import MenuItem from 'material-ui/MenuItem';
 
 const UserDetailBasic = ({
   user,
+  session,
   actions,
   roleMenus,
   displaySaveButton = true
@@ -26,6 +27,7 @@ const UserDetailBasic = ({
             style={{ maxWidth: 200 }}
             label="無効/有効"
             defaultToggled={user.data.enabled}
+            disabled={session.user_id === user.data._id}
             />
           </div>
         ) : null}
@@ -66,21 +68,21 @@ const UserDetailBasic = ({
        ) : null}
       </div>
       <div>
-      <TextField
-        value={user.changed.email}
-        onChange={(e, value) => actions.changeUserEmail(value)}
-        errorText={user.errors.email}
-        floatingLabelText="メールアドレス"
-      />
-      {displaySaveButton ?
-       (
-         <FlatButton
-           label="保存"
-           primary={true}
-           onClick={() => actions.saveUserEmail(user.changed)}
-           style={{ marginLeft: 10 }}
-           />
-       ) : null}
+      {/* <TextField */}
+      {/*   value={user.changed.email} */}
+      {/*   onChange={(e, value) => actions.changeUserEmail(value)} */}
+      {/*   errorText={user.errors.email} */}
+      {/*   floatingLabelText="メールアドレス" */}
+      {/* /> */}
+      {/* {displaySaveButton ? */}
+      {/*  ( */}
+      {/*    <FlatButton */}
+      {/*      label="保存" */}
+      {/*      primary={true} */}
+      {/*      onClick={() => actions.saveUserEmail(user.changed)} */}
+      {/*      style={{ marginLeft: 10 }} */}
+      {/*      /> */}
+      {/*  ) : null} */}
       </div>
       <div>
       <TextField
