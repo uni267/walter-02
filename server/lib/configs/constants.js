@@ -1,5 +1,8 @@
 import fs from "fs";
 
+// ファイルアップロードの上限
+export const FILE_MAX_UPLOAD_SIZE = "500mb";
+
 // ファイル一覧 1pageあたりの件数
 export const FILE_LIMITS_PER_PAGE = 30;
 
