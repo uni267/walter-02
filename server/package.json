@@ -6,8 +6,7 @@
   "scripts": {
     "start": "nodemon lib/index.js --exec babel-node",
     "build": "rm -fR dist && babel lib -d dist",
-    "serve": "node dist/index.js",
-
+    "serve": "node --max-old-space-size=3096 dist/index.js",
     "add-tenant:dev": "babel-node lib/batches/index.js addTenant",
     "init-tenant-w:dev": "babel-node lib/batches/index.js initTenantW",
     "init-elasticsearch:dev": "babel-node lib/batches/index.js initElasticsearch",
@@ -16,7 +15,6 @@
     "init-tenant-w:prod": "node dist/batches/index.js initTenantW",
     "init-elasticsearch:prod": "node dist/batches/index.js initElasticsearch",
     "re-create-elastic-cache:prod": "node dist/batches/index.js reCreateElasticCache",
-
     "analyze": "babel-node batches/index.js analyze",
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
     "debug-re-create-elastic-cache": "babel-node batches/index.js reCreateElasticCache --inspect-brk=9229",
@@ -34,6 +32,7 @@
     "elasticsearch": "14.0.0",
     "exceljs": "0.7.1",
     "express": "4.15.5",
+    "file-type": "^10.10.0",
     "jade": "1.11.0",
     "jsonwebtoken": "7.4.3",
     "lodash": "4.17.4",
