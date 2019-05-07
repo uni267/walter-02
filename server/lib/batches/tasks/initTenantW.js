@@ -176,12 +176,12 @@ const task = async () => {
         users : null,
         groups : group_admin._id
       },
-      {
-        files: tenant.trash_dir_id,
-        role_files : role_file_read_only._id,
-        users : null,
-        groups : group_norm._id
-      },
+      // {
+      //   files: tenant.trash_dir_id,
+      //   role_files : role_file_read_only._id,
+      //   users : null,
+      //   groups : group_norm._id
+      // },
     ]);
 
     //既存ユーザーの削除
