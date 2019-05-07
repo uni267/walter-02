@@ -193,6 +193,9 @@ export const add = (req, res, next) => {
       authority_menus.users = user;
       authority_menus.groups = null;
 
+      // 県庁向け独自対応:  所属グループにデフォルトで「一般ユーザG」を設定する
+      user.groups= [ (yield Group.findOne({ name: "一般ユーザG", tenant_id }, {_id: 1}))._id ];
+
       const {createdUser,createdAuthorityMenu} = yield { createdUser:user.save(), createdAuthorityMenu:authority_menus.save() };
 
       res.json({
