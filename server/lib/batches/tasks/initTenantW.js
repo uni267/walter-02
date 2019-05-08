@@ -193,7 +193,7 @@ const task = async () => {
 
     const user_admin = new User();
     user_admin.type = "user";
-    user_admin.account_name= "admin";
+    user_admin.account_name= "wakayama";
     user_admin.name= "システム管理者";
     user_admin.email= `${user_admin.account_name}@${tenantName}`;
     user_admin.password= pass;
@@ -213,27 +213,27 @@ const task = async () => {
       },
     ])
 
-    const normal_users = [
-      {account_name: 'user01', name: '一般ユーザー１'},
-    ]
+    // const normal_users = [
+    //   {account_name: 'user01', name: '一般ユーザー１'},
+    // ]
 
-    await Promise.all(_.map(normal_users, async inf => {
-      const user = new User();
-      user.type = "user";
-      user.account_name= inf.account_name;
-      user.name= inf.name;
-      user.email= `${user.account_name}@${tenantName}`;
-      user.password= pass;
-      user.enabled= true;
-      user.groups= [ (await Group.findOne({ name: "一般ユーザG", tenant_id: tenant._id }, {_id: 1}))._id ];
-      user.tenant_id= tenant._id;
-      await user.save();
-      await AuthorityMenu.insertMany([{
-          role_menus : roleMenu_norm._id,
-          users : user._id,
-          groups : null
-      }])
-     }))
+    // await Promise.all(_.map(normal_users, async inf => {
+    //   const user = new User();
+    //   user.type = "user";
+    //   user.account_name= inf.account_name;
+    //   user.name= inf.name;
+    //   user.email= `${user.account_name}@${tenantName}`;
+    //   user.password= pass;
+    //   user.enabled= true;
+    //   user.groups= [ (await Group.findOne({ name: "一般ユーザG", tenant_id: tenant._id }, {_id: 1}))._id ];
+    //   user.tenant_id= tenant._id;
+    //   await user.save();
+    //   await AuthorityMenu.insertMany([{
+    //       role_menus : roleMenu_norm._id,
+    //       users : user._id,
+    //       groups : null
+    //   }])
+    //  }))
 
   // ===============================
   //  tags collection
