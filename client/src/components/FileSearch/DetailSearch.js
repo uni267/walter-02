@@ -67,7 +67,7 @@ class DetailSearch extends Component {
         }else{
           return item._id === _item._id ? _item : item;
         }
-    });
+      });
 
       this.setState({ items: _items });
     }
@@ -165,6 +165,7 @@ class DetailSearch extends Component {
 
     return (
       <MultipleAutoComplete
+        items={this.state.items}
         item={item}
         dataSource={data_source}
         execSearch={this.execSearch}
