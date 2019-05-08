@@ -165,7 +165,6 @@ class DetailSearch extends Component {
 
     return (
       <MultipleAutoComplete
-        items={this.state.items}
         item={item}
         dataSource={data_source}
         execSearch={this.execSearch}
