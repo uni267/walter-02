@@ -602,8 +602,8 @@ export const search = (req, res, next, export_excel=false) => {
 
           file.actions = chain(file.authorities)
             .filter( auth => {
-              return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString());
-              // lodashのintersectionでlengthを
+              return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString())
+                || (auth.groups !== undefined && res.user.groups.filter(g => g.toString() === auth.groups._id.toString()).length > 0 );
             })
             .map( auth => auth.actions )
             .flattenDeep()
@@ -1041,8 +1041,8 @@ export const searchDetail = (req, res, next, export_excel=false) => {
 
           file.actions = chain(file.authorities)
             .filter( auth => {
-              return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString());
-              // lodashのintersectionでlengthを
+              return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString())
+                || (auth.groups !== undefined && res.user.groups.filter(g => g.toString() === auth.groups._id.toString()).length > 0 );
             })
             .map( auth => auth.actions )
             .flattenDeep()
