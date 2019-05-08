@@ -598,16 +598,19 @@ export const search = (req, res, next, export_excel=false) => {
           ? route.reverse().join("/")
           : "";
 
-        // files = files.map( file => {
+        files = files.map( file => {
 
-        //   file.actions = chain(file.authorities)
-        //     .filter( auth => auth.users._id.toString() === res.user._id.toString() )
-        //     .map( auth => auth.actions )
-        //     .flattenDeep()
-        //     .uniq();
+          file.actions = chain(file.authorities)
+            .filter( auth => {
+              return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString());
+              // lodashのintersectionでlengthを
+            })
+            .map( auth => auth.actions )
+            .flattenDeep()
+            .uniq();
 
-        //   return file;
-        // });
+          return file;
+        });
 
         return file;
       });
@@ -758,6 +761,33 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       const isDisplayUnvisibleCondition = isDisplayUnvisible
             ? {} : { "match": { "file.unvisible": false } };
 
+      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+
+      // user_id or group_idで権限があるファイルを取得する
+      let authorityConditions = [
+        {
+          match: {
+            [`file.actions.${action_id}`]: {
+              query: res.user._id
+            }
+          }
+        }
+      ];
+
+      if(res.user.groups.length > 0) {
+        authorityConditions = authorityConditions.concat(
+          res.user.groups.map( group_id => {
+            return {
+              match: {
+                [`file.actions.${action_id}`]: {
+                  query: group_id
+                }
+              }
+            };
+          })
+        );
+      }
+
       const esQueryDir = {
         index: tenant_id.toString(),
         type: "files",
@@ -767,18 +797,32 @@ export const searchDetail = (req, res, next, export_excel=false) => {
               must_not: [{
                 match: {"file.dir_id": { query: trash_dir_id.toString(), operator: "and" }}
               }],
-              must: [{
-                match: {
-                  [`file.actions.${action._id}`]: {
-                    query: res.user._id,
-                    operator: "and"
+              must: [
+                // {
+                //   match: {
+                //     [`file.actions.${action._id}`]: {
+                //       query: res.user._id,
+                //       operator: "and"
+                //     }
+                //   }
+                // },
+                {
+                  match: {
+                    "file.is_dir": true
                   }
-                }
-              }, {
-                match: {
-                  "file.is_dir": true
-                }
-              }, isDisplayUnvisibleCondition]
+                },
+                {
+                  match: {
+                    "file.is_deleted": false
+                  }
+                },
+                {
+                  bool: {
+                    should: authorityConditions
+                  }
+                },
+                isDisplayUnvisibleCondition
+              ]
             }
           }
         }
@@ -793,14 +837,15 @@ export const searchDetail = (req, res, next, export_excel=false) => {
       ];
 
       let esQueryMustsBase = [
+        // {
+        //   match: {
+        //     [`file.actions.${action._id}`]: {
+        //       query: res.user._id,
+        //       operator: "and"
+        //     }
+        //   }
+        // },
         {
-          match: {
-            [`file.actions.${action._id}`]: {
-              query: res.user._id,
-              operator: "and"
-            }
-          }
-        }, {
           match: {
             "file.is_display": true
           }
@@ -995,7 +1040,10 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         files = files.map( file => {
 
           file.actions = chain(file.authorities)
-            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
+            .filter( auth => {
+              return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString());
+              // lodashのintersectionでlengthを
+            })
             .map( auth => auth.actions )
             .flattenDeep()
             .uniq();

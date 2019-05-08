@@ -78,7 +78,7 @@ class FileSearchContainer extends Component {
           </div>
 
           <div style={{paddingRight: 10}} >
-            <AddDownloadBtn { ...this.props } />
+            {/* <AddDownloadBtn { ...this.props } /> */}
           </div>
 
         </div>

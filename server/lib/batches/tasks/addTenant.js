@@ -160,7 +160,7 @@ const task = () => {
       name: "name",
       search_value_type: "String",
       is_display: true,
-      is_excel: false,
+      is_excel: true,
       is_search: true,
       width: "50%",
       order: 20
@@ -173,7 +173,7 @@ const task = () => {
       search_value_type: "Date",
       value_type: "Date",
       is_display: true,
-      is_excel: false,
+      is_excel: true,
       is_search: true,
       between: true,
       width: "20%",
@@ -228,6 +228,18 @@ const task = () => {
       is_excel: true,
       is_search: true,
       order: 140
+    },
+    {
+      tenant_id: tenant._id,
+      meta_info_id: null,
+      label: "場所",
+      name: "dir_route",
+      search_value_type: "String",
+      value_type: "String",
+      is_display: false,
+      is_excel: true,
+      is_search: false,
+      order: 999
     }
   ])
 

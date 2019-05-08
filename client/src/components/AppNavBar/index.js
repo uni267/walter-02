@@ -78,18 +78,18 @@ const AppNavBar = ({
 
     return (
       <div style={{paddingRight: 70}}>
-        <div id="notificationRoot" style={{display:"inline"}}>
-        { unreadNotificationCount > 0 ?(
-          <Badge
-          badgeContent={unreadNotificationCount}
-          style={{padding: 5}}
-          secondary={true} >
-            {notificationIcon}
-          </Badge>
-        ):(
-          notificationIcon
-        )}
-        </div>
+        {/* <div id="notificationRoot" style={{display:"inline"}}> */}
+        {/* { unreadNotificationCount > 0 ?( */}
+        {/*   <Badge */}
+        {/*   badgeContent={unreadNotificationCount} */}
+        {/*   style={{padding: 5}} */}
+        {/*   secondary={true} > */}
+        {/*     {notificationIcon} */}
+        {/*   </Badge> */}
+        {/* ):( */}
+        {/*   notificationIcon */}
+        {/* )} */}
+        {/* </div> */}
 
         <Popover
           open={notificationsIsOpen.open}
@@ -118,11 +118,11 @@ const AppNavBar = ({
           </List>
         </IconMenu>
 
-        <IconButton iconStyle={{ color: "white" }} onClick={() => {
-            window.open(`/manuals/${tenant.name}/manual.pdf`, '_blank');
-          }} >
-          <HelpIcon />
-        </IconButton>
+        {/* <IconButton iconStyle={{ color: "white" }} onClick={() => { */}
+        {/*     window.open(`/manuals/${tenant.name}/manual.pdf`, '_blank'); */}
+        {/*   }} > */}
+        {/*   <HelpIcon /> */}
+        {/* </IconButton> */}
       </div>
     );
 
