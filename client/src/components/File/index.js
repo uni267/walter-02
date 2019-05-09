@@ -232,7 +232,7 @@ class File extends Component {
               trashDirId={this.props.tenant.trashDirId} />
           </div>
         </div>
-        <div style={{ ...rowStyle, opacity, backgroundColor }} dangerouslySetInnerHTML={{__html: file.serch_result}} ></div>
+        <div style={{ ...rowStyle, display: 'block', 'font-size': '12px',  opacity, backgroundColor }} dangerouslySetInnerHTML={{__html: file.search_result}} ></div>
       </div>
     );
 
