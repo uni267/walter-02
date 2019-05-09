@@ -445,6 +445,15 @@ class FileDetailContainer extends Component {
               { (this.props.metaInfo.meta_infos && this.props.metaInfo.meta_infos.length > 0) ? this.renderMetaInfos() : null}
               {this.renderHistories()}
               {this.renderTimestamp()}
+
+              <Card style={styles.innerCard}>
+                <CardHeader title="テキスト" />
+                <CardText>
+                {this.props.file.full_text}
+                {this.props.file.meta_text}
+                </CardText>
+              </Card>
+
             </div>
 
           </div>

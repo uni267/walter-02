@@ -10,6 +10,8 @@ import { exec } from "child_process";
 import util from "util";
 import crypto from "crypto";
 import esClient from "../elasticsearchclient";
+import { produce } from "../kafkaclient/index";
+import * as _ from "lodash";
 import {
   intersection,
   zipWith,
@@ -233,70 +235,74 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
   });
 };
 
-export const view = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id } = req.params;
+export const view = async (req, res, next) => {
+  try {
+    const { file_id } = req.params;
 
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") {
-        throw new ValidationError("file_idが空です");
-      }
-      if( !mongoose.Types.ObjectId.isValid( file_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
-
-      const file_ids = yield getAllowedFileIds(
-        res.user._id, constants.PERMISSION_VIEW_DETAIL
-      );
-
-      if (!file_ids.map( f => f.toString() ).includes(file_id)) {
-        throw new PermisstionDeniedException("指定されたファイルが見つかりません");
-      }
-
-      const conditions = {
-        $and:[
-          {_id: mongoose.Types.ObjectId(file_id)},
-          {_id: {$in : file_ids}}
-        ]
-      };
-
-      const file = yield File.searchFileOne(conditions);
-
-      if (file === null || file === "" || file === undefined) {
-        throw new RecordNotFoundException("指定されたファイルが見つかりません");
-      }
-
-      if (file.is_deleted) {
-        throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
-      }
-
-      const tags = yield Tag.find({ _id: { $in: file.tags } });
-
-      const actions = extractFileActions(file.authorities, res.user);
-
-      const route = file.dirs
-      .filter( dir => dir.ancestor.is_display )
-      .map( dir => dir.ancestor.name );
-
-      file.dir_route = route.length > 0
-        ? route.reverse().join("/")
-        : "";
-
-
-      res.json({
-        status: { success: true },
-        body: { ...file, tags, actions }
-      });
-
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") {
+      throw new ValidationError("file_idが空です");
     }
-    catch (e) {
-      logger.error(e);
+    if( !mongoose.Types.ObjectId.isValid( file_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
-      res.status(400).json({
-        status: { success: false,message:"ファイルの取得に失敗しました", errors: e }
-      });
+    const file_ids = await getAllowedFileIds(
+      res.user._id, constants.PERMISSION_VIEW_DETAIL
+    );
+
+    if (!file_ids.map( f => f.toString() ).includes(file_id)) {
+      throw new PermisstionDeniedException("指定されたファイルが見つかりません");
     }
-  });
+
+    const conditions = {
+      $and:[
+        {_id: mongoose.Types.ObjectId(file_id)},
+        {_id: {$in : file_ids}}
+      ]
+    };
+
+    const file = await File.searchFileOne(conditions);
+
+    if (file === null || file === "" || file === undefined) {
+      throw new RecordNotFoundException("指定されたファイルが見つかりません");
+    }
+
+    if (file.is_deleted) {
+      throw new RecordNotFoundException("ファイルは既に削除されているためファイルの取得に失敗しました");
+    }
+
+    const tags = await Tag.find({ _id: { $in: file.tags } });
+
+    const actions = extractFileActions(file.authorities, res.user);
+
+    const route = file.dirs
+    .filter( dir => dir.ancestor.is_display )
+    .map( dir => dir.ancestor.name );
+
+    file.dir_route = route.length > 0
+      ? route.reverse().join("/")
+      : "";
+
+    let response_body = { ...file, tags, actions }
+
+    const { tenant_id } = res.user;
+    const es_file = await esClient.getFile(tenant_id.toString(), file_id)
+    if(es_file !== null || es_file !== undefined ){
+      response_body = {...response_body, full_text: es_file.full_text, meta_text: es_file.meta_text }
+    }
+    res.json({
+      status: { success: true },
+      body: response_body
+    });
+
+  }
+  catch (e) {
+    logger.error(e);
+
+    res.status(400).json({
+      status: { success: false,message:"ファイルの取得に失敗しました", errors: e }
+    });
+  }
 };
 
 export const download = (req, res, next) => {
@@ -348,37 +354,103 @@ export const download = (req, res, next) => {
   });
 };
 
-export const search = (req, res, next, export_excel=false) => {
-  return co(function* () {
-    try {
+export const search = async (req, res, next, export_excel=false) => {
+  try {
 
-      const { q, page, sort, order, is_display_unvisible } = req.query;
-      const { tenant_id } = res.user;
+    const { q, page, sort, order, is_display_unvisible } = req.query;
+    const { tenant_id } = res.user;
 
-      if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
-      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
+    if(q=== undefined || q===null || q==="") throw new ValidationError( "q is empty" );
+    const { trash_dir_id } = await Tenant.findOne(tenant_id);
 
-      const _page = page === undefined || page === null
-        ? 0 : page;
-      if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
+    const _page = page === undefined || page === null
+      ? 0 : page;
+    if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+    const action_id = (await Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
-      const isDisplayUnvisible = is_display_unvisible === "true";
-      const isDisplayUnvisibleCondition = isDisplayUnvisible
-            ? {} : { "match": { "file.unvisible": false } };
+    const isDisplayUnvisible = is_display_unvisible === "true";
+    const isDisplayUnvisibleCondition = isDisplayUnvisible
+          ? {} : { "match": { "file.unvisible": false } };
 
-      // 閲覧できるフォルダの一覧を取得する
-      const esQueryDir = {
-        index: tenant_id.toString(),
-        type: "files",
-        body:{
-          "query": {
+    // 閲覧できるフォルダの一覧を取得する
+    const esQueryDir = {
+      index: tenant_id.toString(),
+      type: "files",
+      body:{
+        "query": {
+          "bool":{
+            "must_not": [{
+              "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
+            }],
+            "must": [{
+              "match" : {
+                [`file.actions.${action_id}`]:
+                  {
+                    "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
+                    "operator": "and"         // operator の default は or なので and のする
+                  }
+              }},{
+                "match" : {
+                  "file.is_dir": true
+                }
+              }, isDisplayUnvisibleCondition
+            ]
+          }
+        }
+      }
+    };
+    let esResultDir = await esClient.search(esQueryDir);
+
+    // 取得した一覧とTopが閲覧可能なフォルダとなる
+    const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
+
+    // 検索対象のフィールドを取得する
+    const searchFields = (await DisplayItem.aggregate([
+      { $match: {
+        is_search: true
+      }},
+      { $lookup: {
+          from: "meta_infos",
+          localField: "meta_info_id",
+          foreignField: "_id",
+          as: "meta_info"
+      }},
+      {
+        $unwind: {
+          path: "$meta_info",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: {
+          $or: [
+            {"search_value_type": 'String'},
+            {"meta_info.value_type":"String"}
+          ]
+        }
+      }
+    ])).map(item => ( item.meta_info_id !== null ? `file.${item.meta_info_id.toString()}` : `file.${item.name}` ));
+
+    const esQuery = {
+      index: tenant_id.toString(),
+      type: "files",
+      sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
+      body:
+        {
+          "query" :{
             "bool":{
               "must_not": [{
                 "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
               }],
-              "must": [{
+              "must": [
+                {
+                "query_string":{
+                  "query": escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
+                  "default_operator": "AND",
+                  "fields": [...searchFields, "file.full_text"]
+                  }
+                },{
                 "match" : {
                   [`file.actions.${action_id}`]:
                     {
@@ -387,192 +459,134 @@ export const search = (req, res, next, export_excel=false) => {
                     }
                 }},{
                   "match" : {
-                    "file.is_dir": true
-                  }
-                }, isDisplayUnvisibleCondition
+                  "file.is_display": true
+                }},{
+                  "match" : {
+                  "file.is_deleted": false
+                }},{
+                  "match" : {
+                  "file.is_trash": false
+                  }},
+                isDisplayUnvisibleCondition,
+                {
+                  "terms" : {
+                    "file.dir_id": authorizedDirIds
+                }}
               ]
             }
-          }
-        }
-      };
-      let esResultDir = yield esClient.search(esQueryDir);
-
-      // 取得した一覧とTopが閲覧可能なフォルダとなる
-      const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
-
-      // 検索対象のフィールドを取得する
-      const searchFields = (yield DisplayItem.aggregate([
-        { $match: {
-          is_search: true
-        }},
-        { $lookup: {
-            from: "meta_infos",
-            localField: "meta_info_id",
-            foreignField: "_id",
-            as: "meta_info"
-        }},
-        {
-          $unwind: {
-            path: "$meta_info",
-            preserveNullAndEmptyArrays: true
-          }
         },
-        {
-          $match: {
-            $or: [
-              {"search_value_type": 'String'},
-              {"meta_info.value_type":"String"}
-            ]
+        "highlight": {
+          "fields": {
+            "file.full_text": {
+              "pre_tags": "<b>",
+              "post_tags": "</b>"
+            }
           }
-        }
-      ])).map(item => ( item.meta_info_id !== null ? `file.${item.meta_info_id.toString()}` : `file.${item.name}` ));
-
-      const esQuery = {
-        index: tenant_id.toString(),
-        type: "files",
-        sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
-        body:
-          {
-            "query" :{
-              "bool":{
-                "must_not": [{
-                  "match": {"file.dir_id":{ "query":trash_dir_id.toString(), "operator": "and" }}   // ゴミ箱内のファイルは対象外
-                }],
-                "must": [
-                  {
-                  "query_string":{
-                    "query": escapeRegExp( q.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
-                    "default_operator": "AND",
-                    "fields": searchFields
-                    }
-                  },{
-                  "match" : {
-                    [`file.actions.${action_id}`]:
-                      {
-                        "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
-                        "operator": "and"         // operator の default は or なので and のする
-                      }
-                  }},{
-                    "match" : {
-                    "file.is_display": true
-                  }},{
-                    "match" : {
-                    "file.is_deleted": false
-                  }},{
-                    "match" : {
-                    "file.is_trash": false
-                    }},
-                  isDisplayUnvisibleCondition,
-                  {
-                    "terms" : {
-                      "file.dir_id": authorizedDirIds
-                  }}
-                ]
-              }
-          }
-        }
-      };
-
-      const offset = _page * constants.FILE_LIMITS_PER_PAGE;
-      if(!export_excel){
-        esQuery["from"] = offset;
-        esQuery["size"] = parseInt( offset ) + 30;
-      }else{
-        esQuery["from"] = 0;
-        esQuery["size"] = 0;
+        }            
       }
+    };
 
-      let esResult = yield esClient.search(esQuery);
-      const { total } = esResult.hits;
-
-      if(export_excel){
-        // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
-        esQuery["size"] = total;
-        esResult = yield esClient.search(esQuery);
-      }
-
-      const esResultIds = esResult.hits.hits
-      .map(hit => {
-        return mongoose.Types.ObjectId( hit._id );
-      });
-
-      const conditions = {
-        dir_id: { $ne: trash_dir_id },
-        is_display: true,
-        is_deleted: false,
-        $and: [
-          {_id: {$in : esResultIds} },
-        ]
-      };
-
-      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-
-      // if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
-      if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
-
-      const _sort = yield createSortOption(sort, order);
-
-      let files;
-      if (mongoose.Types.ObjectId.isValid(sort)) {
-        files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
-      } else {
-        files = yield File.searchFiles(conditions, 0, limit, _sort);
-      }
-
-      files = files.map( file => {
-        const route = file.dirs
-              .filter( dir => dir.ancestor.is_display )
-              .map( dir => dir.ancestor.name );
-
-        file.dir_route = route.length > 0
-          ? route.reverse().join("/")
-          : "";
-
-        files = files.map( file => {
-
-          file.actions = chain(file.authorities)
-            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
-            .map( auth => auth.actions )
-            .flattenDeep()
-            .uniq();
-
-          return file;
-        });
-
-        return file;
-      });
-
-      if(export_excel){
-        return files;
-      }else{
-        res.json({
-          status: { success: true, total },
-          body: files
-        });
-      }
+    const offset = _page * constants.FILE_LIMITS_PER_PAGE;
+    if(!export_excel){
+      esQuery["from"] = offset;
+      esQuery["size"] = parseInt( offset ) + 30;
+    }else{
+      esQuery["from"] = 0;
+      esQuery["size"] = 0;
     }
-    catch (e) {
-      let errors = {};
-      switch (e.message) {
-      case "q is empty":
-        errors.q = "検索文字列が空のためファイル一覧の取得に失敗しました";
-        break;
-      case "page is not number":
-        errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
-        break;
-      case "sort is empty":
-        errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
+
+    let esResult = await esClient.search(esQuery);
+    const { total } = esResult.hits;
+
+    if(export_excel){
+      // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
+      esQuery["size"] = total;
+      esResult = await esClient.search(esQuery);
+    }
+
+    const esResultIds = esResult.hits.hits
+    .map(hit => {
+      return mongoose.Types.ObjectId( hit._id );
+    });
+
+    const conditions = {
+      dir_id: { $ne: trash_dir_id },
+      is_display: true,
+      is_deleted: false,
+      $and: [
+        {_id: {$in : esResultIds} },
+      ]
+    };
+
+    const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
+
+    // if ( typeof sort === "string" && !mongoose.Types.ObjectId.isValid(sort)  ) throw new ValidationError("sort is empty");
+    if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
+
+    const _sort = await createSortOption(sort, order);
+
+    let files;
+    if (mongoose.Types.ObjectId.isValid(sort)) {
+      files = await File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+    } else {
+      files = await File.searchFiles(conditions, 0, limit, _sort);
+    }
+
+    files = await Promise.all(files.map( async file => {
+      const route = file.dirs
+            .filter( dir => dir.ancestor.is_display )
+            .map( dir => dir.ancestor.name );
+
+      file.dir_route = route.length > 0
+        ? route.reverse().join("/")
+        : "";
+
+      file.actions = extractFileActions(file.authorities, res.user);          
+
+      const es_file = await esClient.getFile(tenant_id.toString(), file._id)
+      if(es_file !== null && es_file !== undefined ){
+        file.full_text = es_file.full_text
+        file.meta_text = es_file.meta_text
+        file.search_result = ''
+        const hits = esResult.hits.hits.filter(hit => hit._id === file._id.toString())
+        if(hits.length > 0 ){
+          file.search_result = (hits[0].highlight && hits[0].highlight['file.full_text'][0]) || ''
+        }
       }
-      logger.error(errors);
-      res.status(400).json({
-        status: { success: false, message: "ファイル一覧の取得に失敗しました", errors },
-        body: []
+
+      return file;
+    }));
+
+    if(export_excel){
+      return files;
+    }else{
+      res.json({
+        status: { success: true, total },
+        body: files
       });
     }
-  });
+  }
+  catch (e) {
+    let errors = {};
+    switch (e.message) {
+    case "q is empty":
+      errors.q = "検索文字列が空のためファイル一覧の取得に失敗しました";
+      break;
+    case "page is not number":
+      errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
+      break;
+    case "sort is empty":
+      errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+    }
+    logger.error(errors);
+    res.status(400).json({
+      status: { success: false, message: "ファイル一覧の取得に失敗しました", errors },
+      body: []
+    });
+  }
 };
 
 export const searchItems = (req, res, next) => {
@@ -669,345 +683,341 @@ export const searchItems = (req, res, next) => {
   });
 };
 
-export const searchDetail = (req, res, next, export_excel=false) => {
-  co(function* () {
-    try {
-      const { queries, page, sort, order, is_display_unvisible } = req.body;
+export const searchDetail = async (req, res, next, export_excel=false) => {
+  try {
+    const { queries, page, sort, order, is_display_unvisible } = req.body;
 
-      const _page = page === undefined || page === null
-        ? 0 : page;
-      if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
+    const _page = page === undefined || page === null
+      ? 0 : page;
+    if ( _page === "" || isNaN( parseInt(_page) ) ) throw new ValidationError("page is not number");
 
-      const { tenant_id } = res.user;
+    const { tenant_id } = res.user;
 
-      const { trash_dir_id } = yield Tenant.findById(tenant_id);
-      const action = yield Action.findOne({ name: constants.PERMISSION_VIEW_LIST });
+    const { trash_dir_id } = await Tenant.findById(tenant_id);
+    const action = await Action.findOne({ name: constants.PERMISSION_VIEW_LIST });
 
-      const isDisplayUnvisible = is_display_unvisible === "true";
+    const isDisplayUnvisible = is_display_unvisible === "true";
 
-      const isDisplayUnvisibleCondition = isDisplayUnvisible
-            ? {} : { "match": { "file.unvisible": false } };
+    const isDisplayUnvisibleCondition = isDisplayUnvisible
+          ? {} : { "match": { "file.unvisible": false } };
 
-      const esQueryDir = {
-        index: tenant_id.toString(),
-        type: "files",
-        body: {
-          query: {
-            bool: {
-              must_not: [{
-                match: {"file.dir_id": { query: trash_dir_id.toString(), operator: "and" }}
-              }],
-              must: [{
-                match: {
-                  [`file.actions.${action._id}`]: {
-                    query: res.user._id,
-                    operator: "and"
-                  }
-                }
-              }, {
-                match: {
-                  "file.is_dir": true
-                }
-              }, isDisplayUnvisibleCondition]
-            }
-          }
-        }
-      };
-
-      let esResultDir = yield esClient.search(esQueryDir);
-
-      // 取得した一覧とTopが閲覧可能なフォルダとなる
-      const authorizedDirIds = [
-        ...(esResultDir.hits.hits.map(file=> file._id)),
-        res.user.tenant.home_dir_id.toString()
-      ];
-
-      let esQueryMustsBase = [
-        {
-          match: {
-            [`file.actions.${action._id}`]: {
-              query: res.user._id,
-              operator: "and"
-            }
-          }
-        }, {
-          match: {
-            "file.is_display": true
-          }
-        }, {
-          match: {
-            "file.is_deleted": false
-          }
-        }, {
-          match: {
-            "file.is_trash": false
-          }
-        }, isDisplayUnvisibleCondition, {
-          terms: {
-            "file.dir_id": authorizedDirIds
-          }
-        }
-      ];
-
-      const _queries = yield queries.map( q => {
-        // メタ情報、文字列
-        if (q.meta_info_id && q.value_type === "String") {
-          return {
-            query_string: {
-              query: escapeRegExp( q.value.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
-              default_operator: "AND",
-              fields: [ `file.${q.meta_info_id}` ]
-            }
-          };
-        }
-        // メタ情報、日付、between
-        else if (q.meta_info_id && q.value_type === "Date" && q.between) {
-          const between = {};
-
-          if ( q.value.gt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
-            between.gte = moment( q.value.gt ).utc();
-          } else {
-            between.gte = null;
-          }
-
-          if ( q.value.lt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
-            between.lte = moment( q.value.lt ).add(1,"days").utc();
-          } else {
-            between.lte = null;
-          }
-
-          return {
-            range: {
-              [`file.${q.meta_info_id}`]: between
-            }
-          };
-        }
-
-        // フォルダパス(場所)
-        if (q.name === "dir_route") {
-          const dirQuery = {
-            name: {
-              $regex: escapeRegExp( q.value )
-            },
-            is_dir: true
-          };
-
-          return File.findOne(dirQuery).then( dir => {
-            return dir ? {
+    const esQueryDir = {
+      index: tenant_id.toString(),
+      type: "files",
+      body: {
+        query: {
+          bool: {
+            must_not: [{
+              match: {"file.dir_id": { query: trash_dir_id.toString(), operator: "and" }}
+            }],
+            must: [{
               match: {
-                "file.dir_id": dir._id
+                [`file.actions.${action._id}`]: {
+                  query: res.user._id,
+                  operator: "and"
+                }
               }
-            } : {
+            }, {
               match: {
-                "file.dir_id": ""
+                "file.is_dir": true
               }
-            };
-          });
-        }
-
-        // 更新日時などメタ情報以外の日付範囲
-        // @todo elasticsearchでindex化されていない
-        if (q.value_type === "Date" && q.between) {
-          const between = {};
-
-          if ( q.value.gt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
-            between.gte = moment( q.value.gt ).utc();
-          } else {
-            between.gte = null;
-          }
-
-          if ( q.value.lt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
-            between.lte = moment( q.value.lt ).add(1,"days").utc();
-          } else {
-            between.lte = null;
-          }
-
-          return {
-            range: {
-              [`file.${q.name}`]: between
-            }
-          };
-        }
-
-        // タイムスタンプ処理
-        if (q.name === "timestamp") {
-          switch (q.value) {
-            case "valid_timestamp":
-              return { bool: { must: [
-                {
-                  match: {
-                    "file.tstStatus": "Success"
-                  }
-                },
-                {
-                  range: {
-                    "file.tstExpirationDate": {
-                        "gte": "now+1y/d"
-                    }
-                  }
-                }
-              ]}}
-            case "expire_soon":
-              return { bool: { must: [
-                {
-                  match: {
-                    "file.tstStatus": "Success"
-                  }
-                },
-                {
-                  range: {
-                    "file.tstExpirationDate": {
-                        "gte": "now/d",
-                        "lt": "now+1y/d"
-                    }
-                  }
-                }
-              ]}}
-            case "invalid_timestamp":
-            default:
-              return {
-                match: {
-                  "file.tstStatus": "Failed"
-                }
-              }
+            }, isDisplayUnvisibleCondition]
           }
         }
+      }
+    };
 
-        // タグ @todo elasticsearchにindex化されていない
+    let esResultDir = await esClient.search(esQueryDir);
 
-        // メタ情報以外の文字列
+    // 取得した一覧とTopが閲覧可能なフォルダとなる
+    const authorizedDirIds = [
+      ...(esResultDir.hits.hits.map(file=> file._id)),
+      res.user.tenant.home_dir_id.toString()
+    ];
+
+    let esQueryMustsBase = [
+      {
+        match: {
+          [`file.actions.${action._id}`]: {
+            query: res.user._id,
+            operator: "and"
+          }
+        }
+      }, {
+        match: {
+          "file.is_display": true
+        }
+      }, {
+        match: {
+          "file.is_deleted": false
+        }
+      }, {
+        match: {
+          "file.is_trash": false
+        }
+      }, isDisplayUnvisibleCondition, {
+        terms: {
+          "file.dir_id": authorizedDirIds
+        }
+      }
+    ];
+
+    const _queries = await queries.map( q => {
+      // メタ情報、文字列
+      if (q.meta_info_id && q.value_type === "String") {
         return {
           query_string: {
             query: escapeRegExp( q.value.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
             default_operator: "AND",
-            fields: [ `file.${q.name}` ]
+            fields: [ `file.${q.meta_info_id}` ]
           }
         };
-      });
+      }
+      // メタ情報、日付、between
+      else if (q.meta_info_id && q.value_type === "Date" && q.between) {
+        const between = {};
 
-      const must = [ ...esQueryMustsBase, ..._queries ];
+        if ( q.value.gt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+          between.gte = moment( q.value.gt ).utc();
+        } else {
+          between.gte = null;
+        }
 
-      const esQuery = {
-        index: tenant_id.toString(),
-        type: "files",
-        sort: [
-          "file.is_dir:desc",
-          (sort === undefined || sort === null) ? "_score" : `file.${sort}.raw:${order}`,
-          `file.name:${order}`
-        ],
-        body: {
-          query: {
-            bool: {
-              must_not: [{
+        if ( q.value.lt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+          between.lte = moment( q.value.lt ).add(1,"days").utc();
+        } else {
+          between.lte = null;
+        }
+
+        return {
+          range: {
+            [`file.${q.meta_info_id}`]: between
+          }
+        };
+      }
+
+      // フォルダパス(場所)
+      if (q.name === "dir_route") {
+        const dirQuery = {
+          name: {
+            $regex: escapeRegExp( q.value )
+          },
+          is_dir: true
+        };
+
+        return File.findOne(dirQuery).then( dir => {
+          return dir ? {
+            match: {
+              "file.dir_id": dir._id
+            }
+          } : {
+            match: {
+              "file.dir_id": ""
+            }
+          };
+        });
+      }
+
+      // 更新日時などメタ情報以外の日付範囲
+      // @todo elasticsearchでindex化されていない
+      if (q.value_type === "Date" && q.between) {
+        const between = {};
+
+        if ( q.value.gt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+          between.gte = moment( q.value.gt ).utc();
+        } else {
+          between.gte = null;
+        }
+
+        if ( q.value.lt !== undefined && q.value.gt !== null && q.value.gt !== "" ) {
+          between.lte = moment( q.value.lt ).add(1,"days").utc();
+        } else {
+          between.lte = null;
+        }
+        
+        return {
+          range: {
+            [`file.${q.name}`]: between
+          }
+        };
+      }
+
+      // タイムスタンプ処理
+      if (q.name === "timestamp") {
+        switch (q.value) {
+          case "valid_timestamp":
+            return { bool: { must: [
+              {
                 match: {
-                  "file.dir_id": {
-                    query: trash_dir_id.toString(),
-                    operator: "AND"
+                  "file.tstStatus": "Success"
+                }
+              },
+              {
+                range: {
+                  "file.tstExpirationDate": {
+                      "gte": "now+1y/d"
                   }
                 }
-              }],
-              must
+              }
+            ]}}
+          case "expire_soon":
+            return { bool: { must: [
+              {
+                match: {
+                  "file.tstStatus": "Success"
+                }
+              },
+              {
+                range: {
+                  "file.tstExpirationDate": {
+                      "gte": "now/d",
+                      "lt": "now+1y/d"
+                  }
+                }
+              }
+            ]}}
+          case "invalid_timestamp":
+          default:
+            return {
+              match: {
+                "file.tstStatus": "Failed"
+              }
             }
-          }
+        }
+      }
+
+      // タグ @todo elasticsearchにindex化されていない
+
+      // メタ情報以外の文字列
+      return {
+        query_string: {
+          query: escapeRegExp( q.value.toString().replace(/[　]/g,' ') ).split(" ").map(s => `"${s}"`).join(" "),
+          default_operator: "AND",
+          fields: [ `file.${q.name}` ]
         }
       };
+    });
 
-      const offset = _page * constants.FILE_LIMITS_PER_PAGE;
+    const must = [ ...esQueryMustsBase, ..._queries ];
 
-      if (! export_excel) {
-        esQuery["from"] = offset;
-        esQuery["size"] = parseInt( offset ) + 30;
-      } else {
-        esQuery["from"] = 0;
-        esQuery["size"] = 0;
+    const esQuery = {
+      index: tenant_id.toString(),
+      type: "files",
+      sort: [
+        "file.is_dir:desc",
+        (sort === undefined || sort === null) ? "_score" : `file.${sort}.raw:${order}`,
+        `file.name:${order}`
+      ],
+      body: {
+        query: {
+          bool: {
+            must_not: [{
+              match: {
+                "file.dir_id": {
+                  query: trash_dir_id.toString(),
+                  operator: "AND"
+                }
+              }
+            }],
+            must
+          }
+        }
       }
+    };
 
-      let esResult = yield esClient.search(esQuery);
-      const { total } = esResult.hits;
+    const offset = _page * constants.FILE_LIMITS_PER_PAGE;
 
-      if(export_excel){
-        esQuery["size"] = total;
-        esResult = yield esClient.search(esQuery);
-      }
-
-      const esResultIds = esResult.hits.hits
-      .map(hit => {
-        return mongoose.Types.ObjectId( hit._id );
-      });
-
-      const conditions = {
-        dir_id: { $ne: trash_dir_id },
-        is_display: true,
-        is_deleted: false,
-        $and: [
-          {_id: {$in : esResultIds} },
-        ]
-      };
-
-      const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
-
-      if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
-
-      const _sort = yield createSortOption(sort, order);
-
-      let files;
-      if (mongoose.Types.ObjectId.isValid(sort)) {
-        files = yield File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
-      } else {
-        files = yield File.searchFiles(conditions, 0, limit, _sort);
-      }
-
-      files = files.map( file => {
-        const route = file.dirs
-              .filter( dir => dir.ancestor.is_display )
-              .map( dir => dir.ancestor.name );
-
-        file.dir_route = route.length > 0
-          ? route.reverse().join("/")
-          : "";
-
-        files = files.map( file => {
-
-          file.actions = chain(file.authorities)
-            .filter( auth => auth.users._id.toString() === res.user._id.toString() )
-            .map( auth => auth.actions )
-            .flattenDeep()
-            .uniq();
-
-          return file;
-        });
-
-        return file;
-      });
-
-      if (export_excel) {
-        return files;
-      } else {
-        res.json({
-          status: { success: true, total },
-          body: files
-        });
-      }
+    if (! export_excel) {
+      esQuery["from"] = offset;
+      esQuery["size"] = parseInt( offset ) + 30;
+    } else {
+      esQuery["from"] = 0;
+      esQuery["size"] = 0;
     }
-    catch (e) {
-      let errors = {};
-      switch (e.message) {
-      case "page is not number":
-        errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
-        break;
-      case "sort is empty":
-        errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
+
+    let esResult = await esClient.search(esQuery);
+    const { total } = esResult.hits;
+
+    if(export_excel){
+      esQuery["size"] = total;
+      esResult = await esClient.search(esQuery);
+    }
+
+    const esResultIds = esResult.hits.hits
+    .map(hit => {
+      return mongoose.Types.ObjectId( hit._id );
+    });
+
+    const conditions = {
+      dir_id: { $ne: trash_dir_id },
+      is_display: true,
+      is_deleted: false,
+      $and: [
+        {_id: {$in : esResultIds} },
+      ]
+    };
+
+    const limit = ( export_excel && total !== 0 ) ? total : constants.FILE_LIMITS_PER_PAGE;
+
+    if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
+
+    const _sort = await createSortOption(sort, order);
+
+    let files;
+    if (mongoose.Types.ObjectId.isValid(sort)) {
+      files = await File.searchFiles(conditions, 0, limit, _sort, mongoose.Types.ObjectId(sort));
+    } else {
+      files = await File.searchFiles(conditions, 0, limit, _sort);
+    }
+
+    files = await Promise.all(files.map( async file => {
+      const route = file.dirs
+            .filter( dir => dir.ancestor.is_display )
+            .map( dir => dir.ancestor.name );
+
+      file.dir_route = route.length > 0
+        ? route.reverse().join("/")
+        : "";
+
+      file.actions = extractFileActions(file.authorities, res.user)
+
+      const es_file = await esClient.getFile(tenant_id.toString(), file._id)
+      if(es_file !== null || es_file !== undefined ){
+        file.full_text = es_file.full_text
+        file.meta_text = es_file.meta_text 
+        file.search_result = ''
       }
 
-      logger.error(errors);
-      res.status(400).json({
-        status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }
+      return file;
+    }));
+
+    if (export_excel) {
+      return files;
+    } else {
+      res.json({
+        status: { success: true, total },
+        body: files
       });
     }
-  });
+  }
+  catch (e) {
+    let errors = {};
+    switch (e.message) {
+    case "page is not number":
+      errors.page = "pageが数字ではないためファイル一覧の取得に失敗しました";
+      break;
+    case "sort is empty":
+      errors.sort = "ソート条件が不正なためファイル一覧の取得に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+    }
+
+    logger.error(errors);
+    res.status(400).json({
+      status: { success: false, message:"ファイル一覧の取得に失敗しました", errors }
+    });
+  }
 };
 
 export const rename = (req, res, next) => {
@@ -1231,551 +1241,511 @@ export const move = (req, res, next) => {
   });
 };
 
-export const upload = (req, res, next) => {
-  co(function* () {
-    try {
-      const myFiles  = req.body.files;
-      let dir_id = req.body.dir_id;
-      const tenant_id  = res.user.tenant_id.toString();
+export const upload = async (req, res, next) => {
+  try {
+    const myFiles  = req.body.files;
+    let dir_id = req.body.dir_id;
+    const tenant_id  = res.user.tenant_id.toString();
 
-      if (myFiles === null ||
-          myFiles === undefined ||
-          myFiles === "" ||
-          myFiles.length === 0) throw "files is empty";
+    if (myFiles === null ||
+        myFiles === undefined ||
+        myFiles === "" ||
+        myFiles.length === 0) throw "files is empty";
 
-      if (dir_id === null ||
-          dir_id === undefined ||
-          dir_id === "" ||
-          dir_id === "undefined") {
+    if (dir_id === null ||
+        dir_id === undefined ||
+        dir_id === "" ||
+        dir_id === "undefined") {
 
-        dir_id = res.user.tenant.home_dir_id; // デフォルトはテナントのホーム
+      dir_id = res.user.tenant.home_dir_id; // デフォルトはテナントのホーム
+    }
+
+    const dir = await File.findById(dir_id);
+
+    if (dir === null) throw "dir is not found";
+
+    const user = await User.findById(res.user._id);
+
+    if (user === null) throw "user is not found";
+
+    const isPermitted = await checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD );
+    if(isPermitted === false ) throw "permission denied";
+
+    // ファイルの基本情報
+    // Modelで定義されていないプロパティを使いたいので
+    // オブジェクトで作成し、後でModelObjectに一括変換する
+    let files = myFiles.map( _file => {
+      const file = {
+        hasError: false,  // エラーフラグ
+        errors: {}        // エラー情報
+      };
+
+      if (_file.name === null || _file.name === undefined ||
+          _file.name === "" || _file.name === "undefined") {
+        file.hasError = true;
+        file.errors = { name: "ファイル名が空のためファイルのアップロードに失敗しました" };
+        return file;
       }
 
-      const dir = yield File.findById(dir_id);
+      if (_file.name.match( new RegExp(constants.ILLIGAL_CHARACTERS.join("|")))) {
+        file.hasError = true;
+        file.errors = { name: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました" };
+        return file;
+      }
 
-      if (dir === null) throw "dir is not found";
+      if (_file.mime_type === null || _file.mime_type === undefined ||
+          _file.mime_type === "" || _file.mime_type === "undefined") {
+        file.hasError = true;
+        file.errors = { mime_type: "mime_typeが空のためファイルのアップロードに失敗しました" };
+        return file;
+      }
 
-      const user = yield User.findById(res.user._id);
+      if (_file.size === null || _file.size === undefined ||
+          _file.size === "" || _file.size === "undefined") {
+        file.hasError = true;
+        file.errors = { size: "size is empty" };
+        return file;
+      }
 
-      if (user === null) throw "user is not found";
+      if (_file.base64 === null || _file.base64 === undefined ||
+          _file.base64 === "" || _file.base64 === "undefined") {
+        file.hasError = true;
+        file.errors = { base64: "base64が空のためファイルのアップロードに失敗しました" };
+        return file;
+      }
 
-      const isPermitted = yield checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD );
-      if(isPermitted === false ) throw "permission denied";
+      if (_file.base64.match(/;base64,(.*)$/) === null) {
+        file.hasError = true;
+        file.errors = { base64: "base64が不正のためファイルのアップロードに失敗しました" };
+        return file;
+      }
 
-      // ファイルの基本情報
-      // Modelで定義されていないプロパティを使いたいので
-      // オブジェクトで作成し、後でModelObjectに一括変換する
-      let files = myFiles.map( _file => {
-        const file = {
-          hasError: false,  // エラーフラグ
-          errors: {}        // エラー情報
+      if (_file.checksum === null || _file.checksum === undefined ||
+          _file.checksum === "" ) {
+        file.hasError = true;
+        file.errors = { checksum: "checksumが空のためファイルのアップロードに失敗しました" };
+        return file;
+      }
+
+      file.name = _file.name;
+      file.mime_type = _file.mime_type;
+      file.size = _file.size;
+      file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
+      file.is_dir = false;
+      file.dir_id = dir_id;
+      file.is_display = true;
+      file.is_star = false;
+      file.tags = _file.tags;
+      file.is_crypted = constants.USE_CRYPTO;
+      file.meta_infos = _file.meta_infos;
+      file.base64 = _file.base64;
+      file.checksum = _file.checksum;
+      file.authorities = _file.authorities;
+
+      return file;
+    });
+
+    // checksumを比較
+    files = files.map( file => {
+      if (file.hasError) return file;
+
+      const hexdigest = crypto.createHash("md5")
+            .update(new Buffer(file.base64))
+            .digest("hex");
+
+      if (file.checksum === hexdigest) {
+        return file;
+      } else {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            checksum: "checksumが不正のためファイルのアップロードに失敗しました"
+          }
         };
+      }
 
-        if (_file.name === null || _file.name === undefined ||
-            _file.name === "" || _file.name === "undefined") {
-          file.hasError = true;
-          file.errors = { name: "ファイル名が空のためファイルのアップロードに失敗しました" };
-          return file;
-        }
+    });
 
-        if (_file.name.match( new RegExp(constants.ILLIGAL_CHARACTERS.join("|")))) {
-          file.hasError = true;
-          file.errors = { name: "ファイル名に禁止文字(\\, / , :, *, ?, <, >, |)が含まれているためファイルのアップロードに失敗しました" };
-          return file;
-        }
+    // postされたメタ情報の_idがマスタに存在するかのチェック用
+    const metainfos = await MetaInfo.find({ tenant_id: res.user.tenant_id });
 
-        if (_file.mime_type === null || _file.mime_type === undefined ||
-            _file.mime_type === "" || _file.mime_type === "undefined") {
-          file.hasError = true;
-          file.errors = { mime_type: "mime_typeが空のためファイルのアップロードに失敗しました" };
-          return file;
-        }
+    // メタ情報のチェック
+    files = files.map( file => {
+      if (file.hasError) return file;
 
-        if (_file.size === null || _file.size === undefined ||
-            _file.size === "" || _file.size === "undefined") {
-          file.hasError = true;
-          file.errors = { size: "size is empty" };
-          return file;
-        }
+      if (file.meta_infos === undefined ||
+          file.meta_infos.length === 0) return file;
 
-        if (_file.base64 === null || _file.base64 === undefined ||
-            _file.base64 === "" || _file.base64 === "undefined") {
-          file.hasError = true;
-          file.errors = { base64: "base64が空のためファイルのアップロードに失敗しました" };
-          return file;
-        }
-
-        if (_file.base64.match(/;base64,(.*)$/) === null) {
-          file.hasError = true;
-          file.errors = { base64: "base64が不正のためファイルのアップロードに失敗しました" };
-          return file;
-        }
-
-        if (_file.checksum === null || _file.checksum === undefined ||
-            _file.checksum === "" ) {
-          file.hasError = true;
-          file.errors = { checksum: "checksumが空のためファイルのアップロードに失敗しました" };
-          return file;
-        }
-
-        file.name = _file.name;
-        file.mime_type = _file.mime_type;
-        file.size = _file.size;
-        file.modified = moment().format("YYYY-MM-DD HH:mm:ss");
-        file.is_dir = false;
-        file.dir_id = dir_id;
-        file.is_display = true;
-        file.is_star = false;
-        file.tags = _file.tags;
-        file.is_crypted = constants.USE_CRYPTO;
-        file.meta_infos = _file.meta_infos;
-        file.base64 = _file.base64;
-        file.checksum = _file.checksum;
-        file.authorities = _file.authorities;
-
-        return file;
-      });
-
-      // checksumを比較
-      files = files.map( file => {
-        if (file.hasError) return file;
-
-        const hexdigest = crypto.createHash("md5")
-              .update(Buffer.from(file.base64))
-              .digest("hex");
-
-        if (file.checksum === hexdigest) {
-          return file;
-        } else {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              checksum: "checksumが不正のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-      });
-
-      // postされたメタ情報の_idがマスタに存在するかのチェック用
-      const metainfos = yield MetaInfo.find({ tenant_id: res.user.tenant_id });
-
-      // メタ情報のチェック
-      files = files.map( file => {
-        if (file.hasError) return file;
-
-        if (file.meta_infos === undefined ||
-            file.meta_infos.length === 0) return file;
-
-        // 値の空チェック
-        const valueCheck = file.meta_infos.filter( meta => (
-          meta.value === undefined || meta.value === null ||
-          meta.value === "" || meta.value === "undefined"
-        ));
-
-        if (valueCheck.length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              meta_info_value: "指定されたメタ情報の値が空のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        // idのnullチェック
-        const idIsEmpty = file.meta_infos.filter( meta => (
-          meta._id === undefined || meta._id === null ||
-          meta._id === "" || meta._id === "undefined"
-        ));
-
-        if (idIsEmpty.length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              meta_info_id: "メタ情報IDが空のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        const idIsInvalid = file.meta_infos.filter( meta => (
-          ! mongoose.Types.ObjectId.isValid(meta._id)
-        ));
-
-        if (idIsInvalid.length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              meta_info_id: "メタ情報IDが不正のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        // メタ情報idが存在するかのチェック
-        const intersec = intersection(
-          file.meta_infos.map( meta => meta._id),
-          metainfos.map( meta => meta._id.toString() )
-        );
-
-        if (file.meta_infos.length !== intersec.length) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              meta_info_id: "指定されたメタ情報が存在しないためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        // 日付型チェック
-        const date_is_invalid = file.meta_infos.filter( meta => {
-          const _meta = metainfos.filter( m => m._id.toString() === meta._id )[0];
-
-          if (_meta.value_type === "Date") {
-            return ! moment(meta.value).isValid();
-          }
-          else {
-            return false;
-          }
-        });
-
-        if (date_is_invalid.length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              meta_info_value: "指定されたメタ情報の値が日付型ではないためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        return file;
-      });
-
-      // タグがマスタに存在するかのチェック
-      const tags = (yield Tag.find({ tenant_id: res.user.tenant_id }))
-            .map( tag => tag._id.toString() );
-
-      files = files.map( file => {
-        if (file.hasError) return file;
-        if (file.tags === undefined || file.tags === null ||
-            file.tags === "" || file.tags.length === 0) {
-          return file;
-        }
-
-        const tagIsEmpty = file.tags.filter( tag => (
-          tag === undefined || tag === null || tag === ""
-        ));
-
-        if (tagIsEmpty.length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              tag_id: "指定されたタグIDが空のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        if (uniq(file.tags).length === intersection(file.tags, tags).length) {
-          // stringからBSONに変換
-          file.tags = file.tags.map( tag => mongoose.Types.ObjectId(tag) );
-          return file;
-        } else {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              tag_id: "タグIDが不正のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-      });
-
-      // ロール、ユーザ、グループがマスタに存在するかのチェック
-      const role_files = (yield RoleFile.find({ tenant_id: res.user.tenant_id }))
-            .map( role => role._id.toString() );
-
-      const users = (yield User.find({ tenant_id: res.user.tenant_id }))
-            .map( user => user._id.toString() );
-
-      const groups = (yield Group.find({ tenant_id: res.user.tenant_id }))
-            .map( group => group._id.toString() );
-
-      files = files.map( file => {
-        if (file.hasError) return file;
-
-        if (file.authorities === undefined || file.authorities === null ||
-            file.authorities === "" || file.authorities.length === 0) {
-
-          file.authorities = [];
-          return file;
-        }
-
-        const roleIds = file.authorities.map( auth => auth.role_files );
-
-        if (roleIds.filter( id => id === undefined || id === null || id === "").length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              role_file_id: "指定されたロールIDが空のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        if (roleIds.filter( id => ! mongoose.Types.ObjectId.isValid(id) ).length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              role_file_id: "指定されたロールIDが不正のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        if (uniq(roleIds).length !== intersection(roleIds, role_files).length) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              role_file_id: "指定されたロールが存在しないためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        const userIds = file.authorities.map( auth => auth.users );
-
-        if (userIds.filter( id => id === undefined || id === null || id === "").length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              role_user_id: "指定されたユーザIDが空のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        if (userIds.filter( id => ! mongoose.Types.ObjectId.isValid(id) ).length > 0) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              role_user_id: "指定されたユーザIDが不正のためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        if (userIds.length !== intersection(userIds, users).length) {
-          return {
-            ...file,
-            hasError: true,
-            errors: {
-              role_user_id: "指定されたユーザが存在しないためファイルのアップロードに失敗しました"
-            }
-          };
-        }
-
-        return file;
-      });
-
-      // 履歴
-      files = files.map( file => {
-        if (file.hasError) return file;
-
-        const histories = [{
-          modified: moment().format("YYYY-MM-DD hh:mm:ss"),
-          user: user,
-          action: "新規作成",
-          body: ""
-        }];
-
-        file.histories = histories;
-        return file;
-      });
-
-      // ファイルオブジェクト作成
-      let fileModels = files.map( file => (
-        file.hasError ? false : new File(file)
+      // 値の空チェック
+      const valueCheck = file.meta_infos.filter( meta => (
+        meta.value === undefined || meta.value === null ||
+        meta.value === "" || meta.value === "undefined"
       ));
 
-      // swift
-      const swift = new Swift();
-      const zipFiles = zipWith(files, fileModels, (file, model) => ({ file: file, model: model }));
-
-      for ( let i = 0; i < zipFiles.length; i++ ) {
-        const { file, model } = zipFiles[i];
-
-        if (file.hasError) continue;
-
-        const regex = /;base64,(.*)$/;
-        const matches = file.base64.match(regex);
-        let data = matches[1];
-        const tenant_name = res.user.tenant.name;
-
-        try {
-          yield swift.upload(tenant_name, Buffer.from(data, 'base64'), model._id.toString());
-        } catch (e) {
-          logger.error(e);
-          fileModels[i] = false;
-          files[i] = {
-            ...files[i],
-            hasError: true,
-            errors: {
-              data: "ファイル本体の保存に失敗しました"
-            }
-          };
-        }
+      if (valueCheck.length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            meta_info_value: "指定されたメタ情報の値が空のためファイルのアップロードに失敗しました"
+          }
+        };
       }
 
-      // for ( let i = 0; i < zipFiles.length; i++ ) {
-      //   const { file, model } = zipFiles[i];
+      // idのnullチェック
+      const idIsEmpty = file.meta_infos.filter( meta => (
+        meta._id === undefined || meta._id === null ||
+        meta._id === "" || meta._id === "undefined"
+      ));
 
-      //   if (file.hasError) continue;
+      if (idIsEmpty.length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            meta_info_id: "メタ情報IDが空のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
 
-      //   const regex = /;base64,(.*)$/;
-      //   const matches = file.base64.match(regex);
-      //   let data = matches[1];
-      //   const tsaAuth = res.user.tenant.tsaAuth
-      //   const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
-      //   const tsData = yield tsaApi.inspect(model._id, data).catch(e => { throw e })
-      //   if (tsData.file) data = tsData.file
-      //   if (tsData.timestampToken) {
-      //     const metaInfo = yield MetaInfo.findOne({ name: "timestamp" })
+      const idIsInvalid = file.meta_infos.filter( meta => (
+        ! mongoose.Types.ObjectId.isValid(meta._id)
+      ));
 
-      //     yield FileMetaInfo.create({
-      //       file_id: model._id,
-      //       meta_info_id: metaInfo._id,
-      //       value: [tsData.timestampToken]
-      //     })
-      //   }
-      // }
+      if (idIsInvalid.length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            meta_info_id: "メタ情報IDが不正のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
 
-      // 権限
-      const role = yield RoleFile.findOne({
-        tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
-        name: "フルコントロール" // @fixme
+      // メタ情報idが存在するかのチェック
+      const intersec = intersection(
+        file.meta_infos.map( meta => meta._id),
+        metainfos.map( meta => meta._id.toString() )
+      );
+
+      if (file.meta_infos.length !== intersec.length) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            meta_info_id: "指定されたメタ情報が存在しないためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      // 日付型チェック
+      const date_is_invalid = file.meta_infos.filter( meta => {
+        const _meta = metainfos.filter( m => m._id.toString() === meta._id )[0];
+
+        if (_meta.value_type === "Date") {
+          return ! moment(meta.value).isValid();
+        }
+        else {
+          return false;
+        }
       });
 
-      const authorityFiles = yield zipWith(files, fileModels, (file, model) => {
-        return co(function*() {
-          if (file.hasError) return false;
+      if (date_is_invalid.length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            meta_info_value: "指定されたメタ情報の値が日付型ではないためファイルのアップロードに失敗しました"
+          }
+        };
+      }
 
+      return file;
+    });
+
+    // タグがマスタに存在するかのチェック
+    const tags = (await Tag.find({ tenant_id: res.user.tenant_id }))
+          .map( tag => tag._id.toString() );
+
+    files = files.map( file => {
+      if (file.hasError) return file;
+      if (file.tags === undefined || file.tags === null ||
+          file.tags === "" || file.tags.length === 0) {
+        return file;
+      }
+
+      const tagIsEmpty = file.tags.filter( tag => (
+        tag === undefined || tag === null || tag === ""
+      ));
+
+      if (tagIsEmpty.length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            tag_id: "指定されたタグIDが空のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      if (uniq(file.tags).length === intersection(file.tags, tags).length) {
+        // stringからBSONに変換
+        file.tags = file.tags.map( tag => mongoose.Types.ObjectId(tag) );
+        return file;
+      } else {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            tag_id: "タグIDが不正のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+    });
+
+    // ロール、ユーザ、グループがマスタに存在するかのチェック
+    const role_files = (await RoleFile.find({ tenant_id: res.user.tenant_id }))
+          .map( role => role._id.toString() );
+
+    const users = (await User.find({ tenant_id: res.user.tenant_id }))
+          .map( user => user._id.toString() );
+
+    const groups = (await Group.find({ tenant_id: res.user.tenant_id }))
+          .map( group => group._id.toString() );
+
+    files = files.map( file => {
+      if (file.hasError) return file;
+
+      if (file.authorities === undefined || file.authorities === null ||
+          file.authorities === "" || file.authorities.length === 0) {
+
+        file.authorities = [];
+        return file;
+      }
+
+      const roleIds = file.authorities.map( auth => auth.role_files );
+
+      if (roleIds.filter( id => id === undefined || id === null || id === "").length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            role_file_id: "指定されたロールIDが空のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      if (roleIds.filter( id => ! mongoose.Types.ObjectId.isValid(id) ).length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            role_file_id: "指定されたロールIDが不正のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      if (uniq(roleIds).length !== intersection(roleIds, role_files).length) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            role_file_id: "指定されたロールが存在しないためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      const userIds = file.authorities.map( auth => auth.users );
+
+      if (userIds.filter( id => id === undefined || id === null || id === "").length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            role_user_id: "指定されたユーザIDが空のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      if (userIds.filter( id => ! mongoose.Types.ObjectId.isValid(id) ).length > 0) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            role_user_id: "指定されたユーザIDが不正のためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      if (userIds.length !== intersection(userIds, users).length) {
+        return {
+          ...file,
+          hasError: true,
+          errors: {
+            role_user_id: "指定されたユーザが存在しないためファイルのアップロードに失敗しました"
+          }
+        };
+      }
+
+      return file;
+    });
+
+    // 履歴
+    files = files.map( file => {
+      if (file.hasError) return file;
+
+      const histories = [{
+        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+        user: user,
+        action: "新規作成",
+        body: ""
+      }];
+
+      file.histories = histories;
+      return file;
+    });
+
+
+    // ファイルオブジェクト作成
+    let fileModels = files.map( file => (
+      file.hasError ? false : new File(file)
+    ));
+
+    // swift
+    const swift = new Swift();
+    const zipFiles = zipWith(files, fileModels, (file, model) => ({ file: file, model: model }));
+
+    for ( let i = 0; i < zipFiles.length; i++ ) {
+      const { file, model } = zipFiles[i];
+
+      if (file.hasError) continue;
+
+      const regex = /;base64,(.*)$/;
+      const matches = file.base64.match(regex);
+      const data = matches[1];
+      const tenant_name = res.user.tenant.name;
+
+      try {
+        file.buffer = new Buffer(data, 'base64')
+        await swift.upload(tenant_name, file.buffer, model._id.toString());
+      } catch (e) {
+        logger.info(e);
+        fileModels[i] = false;
+        files[i] = {
+          ...files[i],
+          hasError: true,
+          errors: {
+            data: "ファイル本体の保存に失敗しました"
+          }
+        };
+      }
+    }
+
+    // 権限
+    const role = await RoleFile.findOne({
+      tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
+      name: "フルコントロール" // @fixme
+    });
+
+    const authorityFiles = await Promise.all(zipWith(files, fileModels, async (file, model) => {
+      if (file.hasError) return false;
+
+      const authorityFile = new AuthorityFile();
+      authorityFile.users = user._id;
+      authorityFile.files = model;
+      authorityFile.role_files = role._id;
+
+      let authorityFiles = []
+
+      const inheritAuthSetting = await AppSetting.findOne({
+        tenant_id: user.tenant_id,
+        name: AppSetting.INHERIT_PARENT_DIR_AUTH
+      });
+
+      if (inheritAuthSetting && inheritAuthSetting.enable) {
+        const parentFile = await File.findById(file.dir_id)
+        const inheritAuths = await AuthorityFile.find({ files: parentFile._id })
+        authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
+          users: mongoose.Types.ObjectId(ihr.users),
+          files: model,
+          role_files: mongoose.Types.ObjectId(ihr.role_files),
+        }))
+      }
+
+      if (file.authorities.length > 0) {
+        authorityFiles = file.authorities.map( auth => {
           const authorityFile = new AuthorityFile();
-          authorityFile.users = user._id;
+          authorityFile.users = mongoose.Types.ObjectId(auth.users);
           authorityFile.files = model;
-          authorityFile.role_files = role._id;
+          authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
+          return authorityFile;
+        }).concat(authorityFiles)
+      }
 
-          let authorityFiles = []
+      authorityFiles = authorityFiles.concat(authorityFile)
+      authorityFiles = uniqWith(authorityFiles, (a, b) => (
+        isEqualWith(a, b, (a, b) => (
+          a.users.toString() === b.users.toString()
+          && a.files.toString() === b.files.toString()
+          && a.role_files.toString() === b.role_files.toString()
+        ))
+      ))
+      return authorityFiles;
+    }));
 
-          const inheritAuthSetting = yield AppSetting.findOne({
-            tenant_id: user.tenant_id,
-            name: AppSetting.INHERIT_PARENT_DIR_AUTH
-          });
+    // メタ情報
+    const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
+      if (file.hasError) return false;
+      if (file.meta_infos === undefined ||
+          file.meta_infos === null ||
+          file.meta_infos.length === 0) return false;
 
-          if (inheritAuthSetting && inheritAuthSetting.enable) {
-            const parentFile = yield File.findById(file.dir_id)
-            const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
-            authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
-              users: mongoose.Types.ObjectId(ihr.users),
-              files: model,
-              role_files: mongoose.Types.ObjectId(ihr.role_files),
-            }))
-          }
-
-          if (file.authorities.length > 0) {
-            authorityFiles = file.authorities.map( auth => {
-              const authorityFile = new AuthorityFile();
-              authorityFile.users = mongoose.Types.ObjectId(auth.users);
-              authorityFile.files = model;
-              authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
-              return authorityFile;
-            }).concat(authorityFiles)
-          }
-
-          authorityFiles = authorityFiles.concat(authorityFile)
-          authorityFiles = uniqWith(authorityFiles, (a, b) => (
-            isEqualWith(a, b, (a, b) => (
-              a.users.toString() === b.users.toString()
-              && a.files.toString() === b.files.toString()
-              && a.role_files.toString() === b.role_files.toString()
-            ))
-          ))
-
-          return Promise.resolve(authorityFiles);
+      return file.meta_infos.map( meta => (
+        new FileMetaInfo({
+          file_id: model._id,
+          meta_info_id: meta._id,
+          value: meta.value
         })
-      });
+      ));
+    });
 
-      // メタ情報
-      const fileMetaInfos = zipWith(files, fileModels, (file, model) => {
-        if (file.hasError) return false;
-        if (file.meta_infos === undefined ||
-            file.meta_infos === null ||
-            file.meta_infos.length === 0) return false;
+    // mongoへの保存開始
+    let changedFiles = [];
 
-        return file.meta_infos.map( meta => (
-          new FileMetaInfo({
-            file_id: model._id,
-            meta_info_id: meta._id,
-            value: meta.value
-          })
-        ));
-      });
+    for ( let i = 0; i < fileModels.length; i++ ) {
 
-      // mongoへの保存開始
-      let changedFiles = [];
+      // ファイル本体(files)の保存
+      if (! fileModels[i]) continue;
 
-      for ( let i = 0; i < fileModels.length; i++ ) {
+      const saveFileModel = await fileModels[i].save();
+      changedFiles.push(saveFileModel);
 
-        // ファイル本体(files)の保存
-        if (! fileModels[i]) continue;
-
-        const saveFileModel = yield fileModels[i].save();
-        changedFiles.push(saveFileModel);
-
-        if (! saveFileModel) {
-          files[i] = {
-            ...files[i],
-            hasError: true,
-            errors: {
-              body: "基本情報の書き込みに失敗しました"
-            }
-          };
-          continue;  // 保存に失敗した場合、メタ情報や権限の書き込みは行わない
-        }
-
-        // メタ情報の保存
-        if (fileMetaInfos[i].length > 0) {
-          for ( let j = 0; j < fileMetaInfos[i].length; j++ ) {
-            if (fileMetaInfos[i][j]) {
-              const saveFileMetaInfo = yield fileMetaInfos[i][j].save();
-              if (! saveFileMetaInfo) {
-
-                files[i] = {
-                  ...files[i],
-                  hasError: true,
-                  errors: {
-                    meta_infos: "メタ情報の書き込みに失敗しました"
-                  }
-                };
-              }
-            }
+      if (! saveFileModel) {
+        files[i] = {
+          ...files[i],
+          hasError: true,
+          errors: {
+            body: "基本情報の書き込みに失敗しました"
           }
-        }
+        };
+        continue;  // 保存に失敗した場合、メタ情報や権限の書き込みは行わない
+      }else{
+        files[i]._id = saveFileModel._id.toString()
+      }
 
-        // 権限の保存
-        if (authorityFiles[i].length > 0) {
-          for ( let j = 0; j < authorityFiles[i].length; j++ ) {
-            const saveAuthorityFile = yield authorityFiles[i][j].save();
-            if (! saveAuthorityFile) {
+      // メタ情報の保存
+      if (fileMetaInfos[i].length > 0) {
+        for ( let j = 0; j < fileMetaInfos[i].length; j++ ) {
+          if (fileMetaInfos[i][j]) {
+            const saveFileMetaInfo = await fileMetaInfos[i][j].save();
+            if (! saveFileMetaInfo) {
+
               files[i] = {
                 ...files[i],
                 hasError: true,
                 errors: {
-                  authority_files: "権限の書き込みに失敗しました"
+                  meta_infos: "メタ情報の書き込みに失敗しました"
                 }
               };
             }
@@ -1783,73 +1753,101 @@ export const upload = (req, res, next) => {
         }
       }
 
-      // elasticsearchへ登録
-      let returnfiles;
-
-      if (changedFiles.length > 0) {
-        const changedFileIds = changedFiles.map(file => file._id);
-
-        yield Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant._id))).catch(e => Promise.reject(e))
-
-        const sortOption = yield createSortOption();
-        const indexingFile = yield File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
-        yield esClient.createIndex(tenant_id, indexingFile);
-
-        returnfiles = indexingFile.map( file => {
-          file.actions = extractFileActions(file.authorities, res.user);
-          return file;
-        });
-      }
-
-      // validationErrors
-      if (files.filter( f => f.hasError ).length > 0) {
-        const _errors = files.map( f => {
-          if (f.hasError === false) return {};
-          return f.errors;
-        });
-
-        logger.error(_errors);
-        res.status(400).json({
-          status: {
-            success: false,
-            message: "ファイルのアップロードに失敗しました",
-            errors: _errors
+      // 権限の保存
+      if (authorityFiles[i].length > 0) {
+        for ( let j = 0; j < authorityFiles[i].length; j++ ) {
+          const saveAuthorityFile = await authorityFiles[i][j].save();
+          if (! saveAuthorityFile) {
+            files[i] = {
+              ...files[i],
+              hasError: true,
+              errors: {
+                authority_files: "権限の書き込みに失敗しました"
+              }
+            };
           }
-        });
-      } else {
-        res.json({
-          status: { success: true },
-          body: returnfiles
-        });
+        }
       }
     }
-    catch (e) {
-      let errors = {};
-      logger.error(e);
 
-      switch(e) {
-      case "files is empty":
-        errors.files = "アップロード対象のファイルが空のためファイルのアップロードに失敗しました";
-        break;
-      case "dir_id is empty":
-        errors.dir_id = "フォルダIDが空のためファイルのアップロードに失敗しました";
-        break;
-      case "permission denied":
-        errors.dir_id = "フォルダにアップロード権限が無いためファイルのアップロードに失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
+    // elasticsearchへ登録
+    let returnfiles;
+
+    if (changedFiles.length > 0) {
+      const changedFileIds = changedFiles.map(file => file._id);
+
+      await Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant._id))).catch(e => Promise.reject(e))
+      
+      const sortOption = await createSortOption();
+      const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
+      await esClient.createIndex(tenant_id, indexingFile);
+      
+      const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
+        topic: constants.KAFKA_TOPIC_TIKA_NAME,
+        messages: JSON.stringify({
+          tenant_id: tenant_id,
+          tenant_name: res.user.tenant.name,
+          file_id: file._id,
+          //buffer: file.buffer,
+        })
+      }))
+      // kafkaに送信
+      await produce(kafka_payloads)
+
+      returnfiles = indexingFile.map( file => {
+        file.actions = extractFileActions(file.authorities, res.user);
+        return file;
+      });
+    }
+
+    // validationErrors
+    if (files.filter( f => f.hasError ).length > 0) {
+      const _errors = files.map( f => {
+        if (f.hasError === false) return {};
+        return f.errors;
+      });
+
+      logger.error(_errors);
       res.status(400).json({
         status: {
           success: false,
           message: "ファイルのアップロードに失敗しました",
-          errors
+          errors: _errors
         }
       });
+    } else {
+      res.json({
+        status: { success: true },
+        body: returnfiles
+      });
     }
-  });
+  }
+  catch (e) {
+    let errors = {};
+    logger.error(e);
+
+    switch(e) {
+    case "files is empty":
+      errors.files = "アップロード対象のファイルが空のためファイルのアップロードに失敗しました";
+      break;
+    case "dir_id is empty":
+      errors.dir_id = "フォルダIDが空のためファイルのアップロードに失敗しました";
+      break;
+    case "permission denied":
+      errors.dir_id = "フォルダにアップロード権限が無いためファイルのアップロードに失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
+    }
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "ファイルのアップロードに失敗しました",
+        errors
+      }
+    });
+  }
 };
 
 const grantTimestamp = async (file, tenant_id) => {

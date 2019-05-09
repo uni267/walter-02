@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon lib/index.js --exec babel-node",
     "build": "rm -fR dist && babel lib -d dist",
+    "worker": "nodemon lib/worker/index.js --exec babel-node",
     "serve": "node dist/index.js",
     "add-tenant:dev": "babel-node lib/batches/index.js addTenant",
     "init-tenant-w:dev": "babel-node lib/batches/index.js initTenantW",
@@ -18,12 +19,14 @@
     "re-create-elastic-cache:prod": "node dist/batches/index.js reCreateElasticCache",
     "add-timestamp-setting:prod": "node dist/batches/index.js addTimestampSetting",
     "analyze": "babel-node batches/index.js analyze",
-    "test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/test/*.spec.js",
+    "test": "mocha --watch --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/kafkaclient/*.spec.js",
     "debug-re-create-elastic-cache": "babel-node batches/index.js reCreateElasticCache --inspect-brk=9229",
     "move-unvisible-files": "babel-node batches/index.js moveUnvisibleFiles",
     "create-admin": "babel-node batches/index.js createAdmin",
     "delete-admin": "babel-node batches/index.js deleteAdmin",
-    "debug_main": "nodemon lib/index.js --exec babel-node --inspect-brk=9229"
+    "debug_main": "nodemon lib/index.js --exec babel-node --inspect-brk=9229",
+    "debug_worker": "nodemon lib/worker/index.js --exec babel-node --inspect-brk=9229",
+    "debug_test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/kafkaclient/*.spec.js --inspect-brk=9229"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -37,6 +40,7 @@
     "express": "4.15.5",
     "jade": "1.11.0",
     "jsonwebtoken": "7.4.3",
+    "kafka-node": "4.1.1",
     "lodash": "4.17.4",
     "log4js": "4.0.2",
     "moment": "2.20.1",

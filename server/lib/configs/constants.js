@@ -62,6 +62,38 @@ export const LOGGER_CONFIG = {
     }
   }
 };
+export const WORKER_LOGGER_CONFIG = {
+  appenders: {
+    default: {
+      type:     "dateFile",
+      filename: "logs/worker.log",
+      pattern:  "-yyyy-MM-dd",
+      layout:{
+        type: "pattern",
+        pattern: "[%d] [%p] %h - %m"
+      }
+    },
+    production: {
+      type:     "dateFile",
+      filename: "logs/worker.log",
+      pattern:  "-yyyy-MM-dd",
+      layout:{
+        type: "pattern",
+        pattern: "[%d] [%p] %h - %m"
+      }
+    }
+  },
+  categories:{
+    default: {
+      appenders:['default'],
+      level: 'ALL'
+    },
+    production: {
+      appenders:['production'],
+      level: 'ALL'
+    }
+  }
+};
 
 // 禁止文字一覧
 // 使い方: string.match( new RegExp(ILLIGAL_CHARACTERS.join("|")))
@@ -118,6 +150,17 @@ export const ELASTIC_CONNECTION_RETRY = 20;
 // elasticsearchのタイムアウトm秒
 export const ELASTIC_CONNECTION_TIMEOUT = 10 * 1000;
 export const ELASTIC_INDEXING_TIMEOUT = 60 * 1000;
+
+export const TIKA_CONNECTION_INTERVAL = 5 * 1000;
+export const TIKA_CONNECTION_RETRY = 20;
+
+// kafkaのタイムアウトm秒
+export const KAFKA_CONNECTION_TIMEOUT = 10 * 1000;
+export const KAFKA_CONNECTION_INTERVAL = 5 * 1000;
+export const KAFKA_CONNECTION_RETRY = 20;
+export const KAFKA_TOPIC_TIKA_NAME = 'tika'
+export const KAFKA_TOPIC_TIKA_PARTITIONS = 1  //パーティション数
+export const KAFKA_TOPIC_TIKA_REPLICATION_FACTOR = 3 //レプリケーションファクター数
 
 // pdf->pngファイル変換の解像度
 export const CONVERT_DPI = 144;

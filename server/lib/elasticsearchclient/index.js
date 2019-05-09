@@ -54,6 +54,17 @@ esClient.createIndex = co.wrap(
 
         const tags = file.tags.map(t => t._id)
 
+        // // tikaへアクセス
+        // const swift = new Swift();
+        // const readStream = yield swift.getFile("wakayama", file._id.toString());
+  
+        let meta = null, text = null
+        if(file.buffer){
+          const tika_result = getTikaResult(file.buffer)
+          meta = tika_result.meta
+          text = tika_result.text
+        }
+
         const esFile = {
           _id: file._id,
           name: file.name,
@@ -70,7 +81,9 @@ esClient.createIndex = co.wrap(
           preview_id: file.preview_id,
           sort_target: file.sort_target,
           unvisible: file.unvisible,
-          tag: tags
+          tag: tags,
+          full_text: meta,
+          meta_text: text,
         };
 
         file.meta_infos.filter(m => m.name !== "timestamp").forEach(meta =>{
@@ -120,5 +133,53 @@ esClient.createIndex = co.wrap(
 
   }
 );
+
+//全文検索用フィールドの更新
+esClient.updateTextContents = async (tenant_id, file_id, meta_text, full_text) => {
+
+  const script_helper = str => {
+    const converted = str.replace(/　/g, ' ') //全角スペース→半角スペース
+      .replace(/\n|\r\n|\r/g, ' ') //改行コード→半角スペース
+      .replace(/\'/g, '\\\'')  //シングルクオーテーションのエスケープ
+      .replace(/ {2,}/g, ' ') //連続するスペース→単一半角スペース
+    return ( converted !== null ? `'${converted}'` : "null" )
+  }
+
+  await esClient.updateByQuery({ 
+    index: tenant_id,
+    type: "files",
+    body: { 
+      "query": {
+        "bool": {
+          "must": [
+            {"term": {
+              "_id": file_id
+            }}
+          ]
+        }
+      },
+      "script": "ctx._source.file.full_text = " + script_helper(full_text) + ";"
+              + "ctx._source.file.meta_text = " + script_helper(meta_text) +  ";" 
+    }
+  })
+}
+
+// file_idよりfile情報を取得
+esClient.getFile = async (tenant_id, file_id) => {
+  const result = await esClient.search({
+    index: tenant_id,
+    type: "files",
+    body:
+    {
+      "query": {
+        "term": {
+            "_id": file_id
+        }
+      }
+    }
+  })
+  return result.hits.hits[0]._source.file
+}
+
 
 export default esClient;

@@ -302,41 +302,43 @@ class File extends Component {
       <div
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        style={{ ...rowStyle, opacity, backgroundColor }}>
+        >
+        <div style={{ ...rowStyle, opacity, backgroundColor }}>
+          <div style={{ ...cellStyle, width: headers[0].width }}>
+            <Checkbox
+              checked={file.checked}
+              style={{ ...style.checkbox, opacity: checkOpacity }}
+              onCheck={() => {
+                this.props.actions.setPageYOffset(window.pageYOffset)
+                this.props.actions.toggleFileCheck(file);
+              }} />
 
-        <div style={{ ...cellStyle, width: headers[0].width }}>
-          <Checkbox
-            checked={file.checked}
-            style={{ ...style.checkbox, opacity: checkOpacity }}
-            onCheck={() => {
-              this.props.actions.setPageYOffset(window.pageYOffset)
-              this.props.actions.toggleFileCheck(file);
-            }} />
+            <Checkbox
+              style={style.checkbox}
+              checkedIcon={<ActionFavorite />}
+              uncheckedIcon={<ActionFavoriteBorder />}
+              checked={file.is_star}
+              onCheck={() => {
+                this.props.actions.setPageYOffset(window.pageYOffset)
+                this.props.actions.toggleStar(file)
+              }} />
+          </div>
 
-          <Checkbox
-            style={style.checkbox}
-            checkedIcon={<ActionFavorite />}
-            uncheckedIcon={<ActionFavoriteBorder />}
-            checked={file.is_star}
-            onCheck={() => {
-              this.props.actions.setPageYOffset(window.pageYOffset)
-              this.props.actions.toggleStar(file)
-            }} />
+          {headers.filter( header => (
+            !["file_checkbox", "action"].includes(header.name)
+            )).map( (header, idx) => (
+            this.renderCell(header, file, cellStyle, idx)
+          ))}
+
+          <div style={{ ...cellStyle, width: headers[4].width }}>
+            <FileDialogMenu
+              actions={this.props.actions}
+              file={this.props.file}
+              hover={this.state.hover}
+              trashDirId={this.props.tenant.trashDirId} />
+          </div>
         </div>
-
-        {headers.filter( header => (
-          !["file_checkbox", "action"].includes(header.name)
-          )).map( (header, idx) => (
-          this.renderCell(header, file, cellStyle, idx)
-        ))}
-
-        <div style={{ ...cellStyle, width: headers[4].width }}>
-          <FileDialogMenu
-            actions={this.props.actions}
-            file={this.props.file}
-            hover={this.state.hover}
-            trashDirId={this.props.tenant.trashDirId} />
-        </div>
+        <div style={{ ...rowStyle, display: 'block', 'font-size': '12px',  opacity, backgroundColor }} dangerouslySetInnerHTML={{__html: file.search_result}} ></div>
       </div>
     );
 
