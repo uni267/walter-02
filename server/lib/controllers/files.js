@@ -550,7 +550,7 @@ export const search = async (req, res, next, export_excel=false) => {
         file.search_result = ''
         const hits = esResult.hits.hits.filter(hit => hit._id === file._id.toString())
         if(hits.length > 0 ){
-          file.search_result = hits[0].highlight['file.full_text'][0] || ''
+          file.search_result = (hits[0].highlight && hits[0].highlight['file.full_text'][0]) || ''
         }
       }
 
@@ -941,7 +941,7 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
       if(es_file !== null || es_file !== undefined ){
         file.full_text = es_file.full_text
         file.meta_text = es_file.meta_text 
-        file.search_result = '検索結果'
+        file.search_result = ''
       }
 
       return file;
