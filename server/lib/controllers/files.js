@@ -1929,7 +1929,8 @@ export const addTag = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2002,7 +2003,8 @@ export const removeTag = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2092,8 +2094,8 @@ export const addMeta = async (req, res, next) => {
 
     // elasticsearch index作成
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
-
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2175,7 +2177,8 @@ export const removeMeta = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2241,7 +2244,8 @@ export const toggleStar = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2327,7 +2331,8 @@ export const addAuthority = async (req, res, next) => {
 
     // elasticsearch index作成
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);    
 
     res.json({
       status: { success: true },
@@ -2422,7 +2427,8 @@ export const removeAuthority = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2511,7 +2517,8 @@ export const moveTrash = async (req, res, next) => {
         await movedFiles[i].save();
         // フォルダ内のファイルについて elasticsearch index更新
         const updatedFile = await File.searchFileOne({_id: movedFiles[i]._id });
-        await esClient.createIndex(tenant_id,[updatedFile]);
+        //await esClient.createIndex(tenant_id,[updatedFile]);
+        await esClient.syncDocument(tenant_id, updatedFile);        
       }
 
     } else {
@@ -2521,7 +2528,8 @@ export const moveTrash = async (req, res, next) => {
 
     // 選択したファイルについて elasticsearchのindex更新
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2576,7 +2584,9 @@ export const restore = async (req, res, next) => {
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
 
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
+
     res.json({
       status: { success: true },
       body: changedFile
@@ -2646,7 +2656,8 @@ export const deleteFileLogical = async (req,res,next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    await esClient.createIndex(tenant_id,[updatedFile]);
+    //await esClient.createIndex(tenant_id,[updatedFile]);
+    await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
       status: { success: true },
@@ -2926,7 +2937,9 @@ export const toggleUnvisible = async (req, res, next) => {
     if (! result) throw new Error("ファイルの非表示状態の変更に失敗しました");
 
     const esFile = await File.searchFileOne({ _id: result._id });
-    await esClient.createIndex(tenant_id, [ esFile ] );
+    //await esClient.createIndex(tenant_id, [ esFile ] );
+    await esClient.syncDocument(tenant_id, esFile);
+
     res.json({
       status: { success: true },
       body: result
