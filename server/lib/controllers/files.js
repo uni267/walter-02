@@ -65,8 +65,15 @@ import { moveDir } from "./dirs";
 
 import { grantTimestampToken } from "./timestamps";
 
-export const index = (req, res, next, export_excel=false, no_limit=false) => {
-  return co(function* () {
+/**
+ * ファイル一覧
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} export_excel 
+ * @param {*} no_limit 
+ */
+export const index = async (req, res, next, export_excel=false, no_limit=false) => {
     try {
       let { dir_id, page ,sort ,order, is_display_unvisible } = req.query;
       const { tenant_id } = res.user;
@@ -77,13 +84,13 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       }
 
       if ( !mongoose.Types.ObjectId.isValid(dir_id) ) throw new ValidationError("dir_id is not valid");
-      const _dir = yield File.findById(dir_id);
+      const _dir = await File.findById(dir_id);
 
       if(_dir === null) throw new RecordNotFoundException("dir is not found");
 
       // 権限チェック
       const file_ids = [
-        ...(yield getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
+        ...(await getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
         res.user.tenant.home_dir_id,
         res.user.tenant.trash_dir_id
       ];
@@ -91,13 +98,13 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
 
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
-      const sortOption = yield createSortOption(sort, order);
+      const sortOption = await createSortOption(sort, order);
 
       // pagination
       if ( page === undefined || page === null ) page = 0;
       if ( page === "" || isNaN( parseInt(page) ) ) throw new ValidationError("page is not number");
 
-      const action_id = (yield Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
+      const action_id = (await Action.findOne({name:constants.PERMISSION_VIEW_LIST}))._id;  // 一覧表示のアクションID
 
       // デフォルト表示させたくないファイル
       const isDisplayUnvisible = is_display_unvisible === "true";
@@ -145,13 +152,13 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
         esQuery["size"] = 0;
       }
 
-      let esResult = yield esClient.search(esQuery);
+      let esResult = await esClient.search(esQuery);
       const { total } = esResult.hits;
 
       if(export_excel){
         // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
         esQuery["size"] = total;
-        esResult = yield esClient.search(esQuery);
+        esResult = await esClient.search(esQuery);
       }
 
       const esResultIds = esResult.hits.hits
@@ -171,9 +178,9 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
 
       let files;
       if (mongoose.Types.ObjectId.isValid(sort)) {
-        files = yield File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
+        files = await File.searchFiles(conditions, 0, limit, sortOption, mongoose.Types.ObjectId(sort));
       }  else {
-        files = yield File.searchFiles(conditions, 0, limit, sortOption);
+        files = await File.searchFiles(conditions, 0, limit, sortOption);
       }
 
       files = files.map( file => {
@@ -232,9 +239,14 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
       });
 
     }
-  });
 };
 
+/**
+ * ファイル詳細
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const view = async (req, res, next) => {
   try {
     const { file_id } = req.params;
@@ -305,22 +317,27 @@ export const view = async (req, res, next) => {
   }
 };
 
-export const download = (req, res, next) => {
-  co(function* () {
+/**
+ * ファイルダウンロード
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+export const download = async (req, res, next) => {
     try {
       const { file_id }  = req.query;
 
       if ( file_id === null || file_id === undefined || file_id === "") throw new ValidationError( "file_id is empty" );
       if (! mongoose.Types.ObjectId.isValid(file_id)) throw new ValidationError( "file_id is invalid" );
 
-      const fileRecord = yield File.findById(file_id);
+      const fileRecord = await File.findById(file_id);
       if (fileRecord === null) throw new ValidationError( "file is empty" );
       if (fileRecord.is_deleted) throw new ValidationError( "file is deleted" );
 
       const tenant_name = res.user.tenant.name;
 
       const swift = new Swift();
-      const readStream = yield swift.downloadFile(tenant_name, fileRecord);
+      const readStream = await swift.downloadFile(tenant_name, fileRecord);
       readStream.on("data", data => res.write(data) );
       readStream.on("end", () => res.end() );
     }
@@ -351,9 +368,15 @@ export const download = (req, res, next) => {
         }
       });
     }
-  });
 };
 
+/**
+ * 簡易検索
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} export_excel 
+ */
 export const search = async (req, res, next, export_excel=false) => {
   try {
 
@@ -589,8 +612,13 @@ export const search = async (req, res, next, export_excel=false) => {
   }
 };
 
-export const searchItems = (req, res, next) => {
-  co(function* () {
+/**
+ * ファイル詳細検索項目一覧
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+export const searchItems = async (req, res, next) => {
     try {
       const { tenant_id } = res.user;
 
@@ -620,15 +648,15 @@ export const searchItems = (req, res, next) => {
       let items;
 
       if (meta_only === "true") {
-        items = yield MetaInfo.find(conditions);
+        items = await MetaInfo.find(conditions);
       } else {
-        const metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+        const metaInfos = (await MetaInfo.find(conditions)).map( meta => {
           meta = meta.toObject();
           meta.meta_info_id = meta._id;
           return meta;
         });
 
-        const displayItems = yield DisplayItem.find({
+        const displayItems = await DisplayItem.find({
           ...conditions,
           // meta_info_id: null,
           name: { $nin: ["file_checkbox", "action"] }
@@ -680,9 +708,15 @@ export const searchItems = (req, res, next) => {
         status: { success: false, message: "検索項目の取得に失敗しました", errors }
       });
     }
-  });
 };
 
+/**
+ * ファイル詳細検索
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} export_excel 
+ */
 export const searchDetail = async (req, res, next, export_excel=false) => {
   try {
     const { queries, page, sort, order, is_display_unvisible } = req.body;
@@ -1020,8 +1054,13 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
   }
 };
 
-export const rename = (req, res, next) => {
-  co(function* () {
+/**
+ * ファイル名変更
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+export const rename = async (req, res, next) => {
     try {
       const { file_id } = req.params;
       const changedFileName = req.body.name;
@@ -1040,15 +1079,15 @@ export const rename = (req, res, next) => {
         throw "name is invalid";
       }
 
-      const file = yield File.findById(file_id);
+      const file = await File.findById(file_id);
       if (file === null) throw "file is empty";
       file.name = changedFileName;
-      const changedFile = yield file.save();
+      const changedFile = await file.save();
 
       // elasticsearch index作成
       const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+      const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+      await esClient.syncDocument(tenant_id, updatedFile);
 
       res.json({
         status: { success: true },
@@ -1088,157 +1127,162 @@ export const rename = (req, res, next) => {
         }
       });
     }
-  });
 };
 
-export const move = (req, res, next) => {
-  co(function* () {
-    try {
-      const file_id = req.params.file_id;
-      const { tenant_id }= res.user;
-      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
+/**
+ * ファイルの移動
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+export const move = async (req, res, next) => {
+  try {
+    const file_id = req.params.file_id;
+    const { tenant_id }= res.user;
+    const { trash_dir_id } = await Tenant.findOne(tenant_id);
 
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      const dir_id = req.body.dir_id;
+    const dir_id = req.body.dir_id;
 
-      if (dir_id === undefined ||
-          dir_id === null ||
-          dir_id === "") throw "dir_id is empty";
+    if (dir_id === undefined ||
+        dir_id === null ||
+        dir_id === "") throw "dir_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(dir_id)) throw "dir_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(dir_id)) throw "dir_id is invalid";
 
-      const user = yield User.findById(res.user._id);
+    const user = await User.findById(res.user._id);
 
-      if (user === null) throw "user is empty";
+    if (user === null) throw "user is empty";
 
-      const isPermittedFile = yield checkFilePermission(file_id, user._id, constants.PERMISSION_MOVE);
-      const isPermittedDir = yield checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD);
+    const isPermittedFile = await checkFilePermission(file_id, user._id, constants.PERMISSION_MOVE);
+    const isPermittedDir = await checkFilePermission(dir_id, user._id, constants.PERMISSION_UPLOAD);
 
-      if( !(isPermittedFile && isPermittedDir ) ) throw "permission denied";
+    if( !(isPermittedFile && isPermittedDir ) ) throw "permission denied";
 
-      const [ file, dir ] = yield [ File.findById(file_id), File.findById(dir_id) ];
+    //const [ file, dir ] = await [ File.findById(file_id), File.findById(dir_id) ];
+    const file = await File.findById(file_id)
+    const dir = await File.findById(dir_id)
 
-      if (file === null) throw "file is empty";
-      if (dir === null) throw "dir is empty";
+    if (file === null) throw "file is empty";
+    if (dir === null) throw "dir is empty";
 
-      let changedFile;
-      if( file.is_dir ){
-        if(file._id.toString() === dir._id.toString()) throw "target is the same as folder";
+    let changedFile;
+    if( file.is_dir ){
+      if(file._id.toString() === dir._id.toString()) throw "target is the same as folder";
 
-        const movedDirs = ( yield moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
+      const movedDirs = ( await moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
 
-        // フォルダ権限を移動先フォルダの権限に張替え
-        for (let i in movedDirs) {
-          yield AuthorityFile.remove({ files: movedDirs[i]._id })
-          const docs = yield AuthorityFile.find({ files: movedDirs[i].dir_id })
-          for (let j in docs ) {
-            yield AuthorityFile.create({
-              files: movedDirs[i]._id,
-              role_files: docs[j].role_files,
-              users: docs[j].users,
-              group: docs[j].group,
-            })
-          }
-        }
-
-        // 移動フォルダ自身と子を取得
-        const movedFiles = yield File.find({
-          $or: [
-            { _id: { $in: movedDirs }},
-            { dir_id:{ $in: movedDirs }}
-          ]
-        });
-        for(let i in movedFiles ){
-          movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
-          yield movedFiles[i].save();
-          // フォルダ権限を移動先フォルダの権限に張替え
-          yield AuthorityFile.remove({ files: movedFiles[i]._id })
-          const docs = yield AuthorityFile.find({ files: movedFiles[i].dir_id })
-          for (let j in docs ) {
-            yield AuthorityFile.create({
-              files: movedFiles[i]._id,
-              role_files: docs[j].role_files,
-              users: docs[j].users,
-              group: docs[j].group,
-            })
-          }
-          // フォルダ内のファイルについて elasticsearch index更新
-          const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
-          yield esClient.createIndex(tenant_id,[updatedFile]);
-        }
-
-      } else {
-        file.is_trash = dir._id.toString() === trash_dir_id;
-        changedFile = yield moveFile(file, dir._id, user, "移動");
-
-        // ファイル権限を移動先フォルダの権限に張替え
-        yield AuthorityFile.remove({ files: changedFile._id })
-        const docs = yield AuthorityFile.find({ files: changedFile.dir_id })
-        for (let i in docs ) {
-          yield AuthorityFile.create({
-            files: file._id,
-            role_files: docs[i].role_files,
-            users: docs[i].users,
-            group: docs[i].group,
+      // フォルダ権限を移動先フォルダの権限に張替え
+      for (let i in movedDirs) {
+        await AuthorityFile.remove({ files: movedDirs[i]._id })
+        const docs = await AuthorityFile.find({ files: movedDirs[i].dir_id })
+        for (let j in docs ) {
+          await AuthorityFile.create({
+            files: movedDirs[i]._id,
+            role_files: docs[j].role_files,
+            users: docs[j].users,
+            group: docs[j].group,
           })
         }
       }
-      // elasticsearch index作成
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
 
-      res.json({
-        status: { success: true },
-        body: changedFile
+      // 移動フォルダ自身と子を取得
+      const movedFiles = await File.find({
+        $or: [
+          { _id: { $in: movedDirs }},
+          { dir_id:{ $in: movedDirs }}
+        ]
       });
-    }
-    catch (e) {
-      let errors = {};
-
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "";
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためファイルの移動に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためファイルの移動に失敗しました";
-        break;
-      case "dir_id is empty":
-        errors.dir_id = "フォルダIDが空のためファイルの移動に失敗しました";
-        break;
-      case "dir_id is invalid":
-        errors.dir_id = "フォルダIDが不正のためファイルの移動に失敗しました";
-        break;
-      case "dir is empty":
-        errors.dir_id = "指定されたフォルダが存在しないためファイルの移動に失敗しました";
-        break;
-      case "target is the same as folder":
-        errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました";
-        break;
-      case "permission denied":
-        errors.file_id = "指定されたファイルを移動する権限がないため移動に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
+      for(let i in movedFiles ){
+        movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
+        await movedFiles[i].save();
+        // フォルダ権限を移動先フォルダの権限に張替え
+        await AuthorityFile.remove({ files: movedFiles[i]._id })
+        const docs = await AuthorityFile.find({ files: movedFiles[i].dir_id })
+        for (let j in docs ) {
+          await AuthorityFile.create({
+            files: movedFiles[i]._id,
+            role_files: docs[j].role_files,
+            users: docs[j].users,
+            group: docs[j].group,
+          })
+        }
+        // フォルダ内のファイルについて elasticsearch index更新
+        const updatedFile = await File.searchFileOne({_id: movedFiles[i]._id });
+        await esClient.syncDocument(tenant_id, updatedFile);
       }
 
-      res.status(400).json({
-        status: {
-          success: false,
-          message: "ファイルの移動に失敗しました",
-          errors
-        }
-      });
+    } else {
+      file.is_trash = dir._id.toString() === trash_dir_id;
+      changedFile = await moveFile(file, dir._id, user, "移動");
+
+      // ファイル権限を移動先フォルダの権限に張替え
+      await AuthorityFile.remove({ files: changedFile._id })
+      const docs = await AuthorityFile.find({ files: changedFile.dir_id })
+      for (let i in docs ) {
+        await AuthorityFile.create({
+          files: file._id,
+          role_files: docs[i].role_files,
+          users: docs[i].users,
+          group: docs[i].group,
+        })
+      }
     }
-  });
+    // elasticsearch index作成
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.syncDocument(tenant_id, updatedFile);
+
+    res.json({
+      status: { success: true },
+      body: changedFile
+    });
+  }
+  catch (e) {
+    let errors = {};
+
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "";
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためファイルの移動に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためファイルの移動に失敗しました";
+      break;
+    case "dir_id is empty":
+      errors.dir_id = "フォルダIDが空のためファイルの移動に失敗しました";
+      break;
+    case "dir_id is invalid":
+      errors.dir_id = "フォルダIDが不正のためファイルの移動に失敗しました";
+      break;
+    case "dir is empty":
+      errors.dir_id = "指定されたフォルダが存在しないためファイルの移動に失敗しました";
+      break;
+    case "target is the same as folder":
+      errors.dir_id = "移動対象のフォルダと指定されたフォルダが同じため移動に失敗しました";
+      break;
+    case "permission denied":
+      errors.file_id = "指定されたファイルを移動する権限がないため移動に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
+    }
+
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "ファイルの移動に失敗しました",
+        errors
+      }
+    });
+  }
 };
 
 export const upload = async (req, res, next) => {
@@ -1856,1095 +1900,727 @@ const grantTimestamp = async (file, tenant_id) => {
   if (autoGrantTsInfo && autoGrantTsInfo.value) await grantTimestampToken(file._id, tenant_id)
 }
 
-export const addTag = (req, res, next) => {
-  co(function* () {
-    try {
-      const file_id = req.params.file_id;
-      const tag_id = req.body._id;
-      if (file_id === null ||
-          file_id === undefined ||
-          file_id === "") throw "file_id is empty";
+export const addTag = async (req, res, next) => {
+  try {
+    const file_id = req.params.file_id;
+    const tag_id = req.body._id;
+    if (file_id === null ||
+        file_id === undefined ||
+        file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      if (tag_id === null ||
-          tag_id === undefined ||
-          tag_id === "") throw "tag_id is empty";
+    if (tag_id === null ||
+        tag_id === undefined ||
+        tag_id === "") throw "tag_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
 
-      const [ file, tag ] = yield [ File.findById(file_id), Tag.findById(tag_id)];
+    const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id)];
 
-      if (file === null) throw "file is empty";
-      if (tag === null) throw "tag is empty";
+    if (file === null) throw "file is empty";
+    if (tag === null) throw "tag is empty";
 
-      file.tags = [ ...file.tags, tag._id ];
-      const changedFile = yield file.save();
+    file.tags = [ ...file.tags, tag._id ];
+    const changedFile = await file.save();
 
-      const tags = yield Tag.find({ _id: { $in: file.tags } });
+    const tags = await Tag.find({ _id: { $in: file.tags } });
 
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
 
-      res.json({
-        status: { success: true },
-        body: { ...file.toObject(), tags }
-      });
+    res.json({
+      status: { success: true },
+      body: { ...file.toObject(), tags }
+    });
+  }
+  catch (e) {
+    let errors = {};
+
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = e;
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためタグの追加に失敗しました";
+      break;
+    case "tag_id is empty":
+      errors.tag_id = e;
+      break;
+    case "tag_id is invalid":
+      errors.tag_id = "タグIDが不正のためタグの追加に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためタグの追加に失敗しました";
+      break;
+    case "tag is empty":
+      errors.tag_id = "指定されたタグが存在しないためタグの追加に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      let errors = {};
 
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = e;
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためタグの追加に失敗しました";
-        break;
-      case "tag_id is empty":
-        errors.tag_id = e;
-        break;
-      case "tag_id is invalid":
-        errors.tag_id = "タグIDが不正のためタグの追加に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためタグの追加に失敗しました";
-        break;
-      case "tag is empty":
-        errors.tag_id = "指定されたタグが存在しないためタグの追加に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "タグの追加に失敗しました",
+        errors
       }
-
-      res.status(400).json({
-        status: {
-          success: false,
-          message: "タグの追加に失敗しました",
-          errors
-        }
-      });
-    }
-  });
+    });
+  }
 };
 
-export const removeTag = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id, tag_id } = req.params;
+export const removeTag = async (req, res, next) => {
+  try {
+    const { file_id, tag_id } = req.params;
 
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      if (tag_id === undefined ||
-          tag_id === null ||
-          tag_id === "") throw "tag_id is empty";
+    if (tag_id === undefined ||
+        tag_id === null ||
+        tag_id === "") throw "tag_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
 
-      const [ file, tag ] = yield [ File.findById(file_id), Tag.findById(tag_id) ];
+    const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id) ];
 
-      if (file === null) throw "file is empty";
-      if (tag === null) throw "tag is empty";
+    if (file === null) throw "file is empty";
+    if (tag === null) throw "tag is empty";
 
-      file.tags = file.tags.filter( file_tag => file_tag.toString() !== tag.id );
-      const changedFile = yield file.save();
+    file.tags = file.tags.filter( file_tag => file_tag.toString() !== tag.id );
+    const changedFile = await file.save();
 
-      const tags = yield Tag.find({ _id: { $in: file.tags } });
+    const tags = await Tag.find({ _id: { $in: file.tags } });
 
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
 
-      res.json({
-        status: { success: true },
-        body: { ...file.toObject(), tags }
-      });
+    res.json({
+      status: { success: true },
+      body: { ...file.toObject(), tags }
+    });
+  }
+  catch (e) {
+    let errors = {};
+
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = e;
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためタグの削除に失敗しました";
+      break;
+    case "tag_id is empty":
+      errors.tag_id = e;
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためタグの削除に失敗しました";
+      break;
+    case "tag is empty":
+      errors.tag_id = "指定されたタグが存在しないためタグの削除に失敗しました";
+      break;
+    case "tag_id is invalid":
+      errors.tag_id = "タグIDが不正のためタグの削除に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      let errors = {};
 
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = e;
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためタグの削除に失敗しました";
-        break;
-      case "tag_id is empty":
-        errors.tag_id = e;
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためタグの削除に失敗しました";
-        break;
-      case "tag is empty":
-        errors.tag_id = "指定されたタグが存在しないためタグの削除に失敗しました";
-        break;
-      case "tag_id is invalid":
-        errors.tag_id = "タグIDが不正のためタグの削除に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "タグの削除に失敗しました",
+        errors
       }
-
-      res.status(400).json({
-        status: {
-          success: false,
-          message: "タグの削除に失敗しました",
-          errors
-        }
-      });
-    }
-  });
+    });
+  }
 };
 
-export const addMeta = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id } = req.params;
-      const { tenant_id } = res.user;
+export const addMeta = async (req, res, next) => {
+  try {
+    const { file_id } = req.params;
+    const { tenant_id } = res.user;
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      const { meta, value } = req.body;
+    const { meta, value } = req.body;
 
-      if (meta._id === undefined || meta._id === null || meta._id === "") throw "metainfo_id is empty";
+    if (meta._id === undefined || meta._id === null || meta._id === "") throw "metainfo_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(meta._id)) throw "metainfo_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(meta._id)) throw "metainfo_id is invalid";
 
-      if (value === undefined ||
-          value === null ||
-          value === "") throw "metainfo value is empty";
+    if (value === undefined ||
+        value === null ||
+        value === "") throw "metainfo value is empty";
 
-      const [ file, metaInfo ] = yield [
-        File.findById(file_id),
-        MetaInfo.findById(meta._id)
-      ];
+    const [ file, metaInfo ] = await [
+      File.findById(file_id),
+      MetaInfo.findById(meta._id)
+    ];
 
-      if (file === null) throw "file is empty";
-      if (metaInfo === null) throw "metainfo is empty";
+    if (file === null) throw "file is empty";
+    if (metaInfo === null) throw "metainfo is empty";
 
-      const registMetaInfo = yield FileMetaInfo.findOne({
-        file_id: file_id,
-        meta_info_id: meta._id
+    const registMetaInfo = await FileMetaInfo.findOne({
+      file_id: file_id,
+      meta_info_id: meta._id
+    });
+
+    let changedMeta;
+
+    // 既に登録されている場合
+    if (registMetaInfo) {
+      registMetaInfo.value = value;
+      changedMeta = await registMetaInfo.save();
+    } else {
+      const addMeta = new FileMetaInfo({
+        file_id, meta_info_id: metaInfo._id, value
       });
 
-      let changedMeta;
-
-      // 既に登録されている場合
-      if (registMetaInfo) {
-        registMetaInfo.value = value;
-        changedMeta = yield registMetaInfo.save();
-      } else {
-        const addMeta = new FileMetaInfo({
-          file_id, meta_info_id: metaInfo._id, value
-        });
-
-        changedMeta = yield addMeta.save();
-      }
-
-      // elasticsearch index作成
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
-
-
-      res.json({
-        status: { success: true },
-        body: changedMeta
-      });
-
+      changedMeta = await addMeta.save();
     }
-    catch (e) {
-      let errors = {};
-      switch(e) {
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためメタ情報の追加に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためメタ情報の追加に失敗しました";
-        break;
-      case "metainfo_id is empty":
-        errors.metainfo_id = "メタ情報IDが空のためメタ情報の追加に失敗しました";
-        break;
-      case "metainfo_id is invalid":
-        errors.metainfo_id = "メタ情報IDが不正のためメタ情報の追加に失敗しました";
-        break;
-      case "metainfo is empty":
-        errors.metainfo_id = "指定されたメタ情報が存在しないためメタ情報の追加に失敗しました";
-        break;
-      case "metainfo value is empty":
-        errors.metainfo_value = "メタ情報の値が空のためメタ情報の追加に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
 
-      res.status(400).json({
-        status: {
-          success: false,
-          message: "メタ情報の追加に失敗しました",
-          errors
-        }
-      });
+    // elasticsearch index作成
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
+
+
+    res.json({
+      status: { success: true },
+      body: changedMeta
+    });
+
+  }
+  catch (e) {
+    let errors = {};
+    switch(e) {
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためメタ情報の追加に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためメタ情報の追加に失敗しました";
+      break;
+    case "metainfo_id is empty":
+      errors.metainfo_id = "メタ情報IDが空のためメタ情報の追加に失敗しました";
+      break;
+    case "metainfo_id is invalid":
+      errors.metainfo_id = "メタ情報IDが不正のためメタ情報の追加に失敗しました";
+      break;
+    case "metainfo is empty":
+      errors.metainfo_id = "指定されたメタ情報が存在しないためメタ情報の追加に失敗しました";
+      break;
+    case "metainfo value is empty":
+      errors.metainfo_value = "メタ情報の値が空のためメタ情報の追加に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-  });
+
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "メタ情報の追加に失敗しました",
+        errors
+      }
+    });
+  }
 };
 
-export const removeMeta = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id, meta_id } = req.params;
+export const removeMeta = async (req, res, next) => {
+  try {
+    const { file_id, meta_id } = req.params;
 
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      if (meta_id === undefined ||
-          meta_id === null ||
-          meta_id === "") throw "meta_id is empty";
+    if (meta_id === undefined ||
+        meta_id === null ||
+        meta_id === "") throw "meta_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(meta_id)) throw "meta_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(meta_id)) throw "meta_id is invalid";
 
-      const [ file, metaInfo ] = yield [
-        File.findById(file_id),
-        MetaInfo.findById(meta_id)
-      ];
+    const [ file, metaInfo ] = await [
+      File.findById(file_id),
+      MetaInfo.findById(meta_id)
+    ];
 
-      if (file === null) throw "file is empty";
-      if (metaInfo === null) throw "metaInfo is empty";
+    if (file === null) throw "file is empty";
+    if (metaInfo === null) throw "metaInfo is empty";
 
-      const removeMeta = yield FileMetaInfo.findOne({
-        file_id: mongoose.Types.ObjectId(file_id),
-        meta_info_id: mongoose.Types.ObjectId(meta_id)
-      });
+    const removeMeta = await FileMetaInfo.findOne({
+      file_id: mongoose.Types.ObjectId(file_id),
+      meta_info_id: mongoose.Types.ObjectId(meta_id)
+    });
 
-      if (removeMeta) {
-        removeMeta.remove();
-      } else {
-        throw "meta_id is not registered";
-      }
-
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
-
-      res.json({
-        status: { success: true },
-        body: removeMeta
-      });
+    if (removeMeta) {
+      removeMeta.remove();
+    } else {
+      throw "meta_id is not registered";
     }
-    catch (e) {
-      let errors = {};
 
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "ファイルIDが空のためメタ情報の削除に失敗しました";
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためメタ情報の削除に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためメタ情報の削除に失敗しました";
-        break;
-      case "meta_id is empty":
-        errors.meta_id = e;
-        break;
-      case "meta_id is invalid":
-        errors.meta_id = "メタ情報IDが不正のためメタ情報の削除に失敗しました";
-        break;
-      case "metaInfo is empty":
-        errors.meta_id = "指定されたメタ情報が存在しないためメタ情報の削除に失敗しました";
-        break;
-      case "meta_id is not registered":
-        errors.meta_id = "指定されたメタ情報IDがファイルに存在しないためメタ情報の削除に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
 
-      res.status(400).json({
-        status: {
-          success: false,
-          message: "メタ情報の削除に失敗しました",
-          errors
-        }
-      });
+    res.json({
+      status: { success: true },
+      body: removeMeta
+    });
+  }
+  catch (e) {
+    let errors = {};
+
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "ファイルIDが空のためメタ情報の削除に失敗しました";
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためメタ情報の削除に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためメタ情報の削除に失敗しました";
+      break;
+    case "meta_id is empty":
+      errors.meta_id = e;
+      break;
+    case "meta_id is invalid":
+      errors.meta_id = "メタ情報IDが不正のためメタ情報の削除に失敗しました";
+      break;
+    case "metaInfo is empty":
+      errors.meta_id = "指定されたメタ情報が存在しないためメタ情報の削除に失敗しました";
+      break;
+    case "meta_id is not registered":
+      errors.meta_id = "指定されたメタ情報IDがファイルに存在しないためメタ情報の削除に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-  });
+
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "メタ情報の削除に失敗しました",
+        errors
+      }
+    });
+  }
 };
 
-export const toggleStar = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id } = req.params;
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
+export const toggleStar = async (req, res, next) => {
+  try {
+    const { file_id } = req.params;
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      const file = yield File.findById(file_id);
+    const file = await File.findById(file_id);
 
-      if (file === null) throw "file is empty";
+    if (file === null) throw "file is empty";
 
-      file.is_star = !file.is_star;
-      const changedFile = yield file.save();
+    file.is_star = !file.is_star;
+    const changedFile = await file.save();
 
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
 
-      res.json({
-        status: { success: true },
-        body: changedFile
-      });
+    res.json({
+      status: { success: true },
+      body: changedFile
+    });
 
+  }
+  catch (e) {
+    let errors = {};
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "ファイルIDが空のためファイルのお気に入りの設定に失敗しました";
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためファイルのお気に入りの設定に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためファイルのお気に入りの設定に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      let errors = {};
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "ファイルIDが空のためファイルのお気に入りの設定に失敗しました";
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためファイルのお気に入りの設定に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためファイルのお気に入りの設定に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
+
+    res.status(400).json({
+      status: {
+        success: false,
+        message: "ファイルのお気に入りの設定に失敗しました",
+        errors
       }
+    });
 
-      res.status(400).json({
-        status: {
-          success: false,
-          message: "ファイルのお気に入りの設定に失敗しました",
-          errors
-        }
-      });
-
-    }
-  });
+  }
 };
 
-export const addAuthority = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id } = req.params;
-      const { user, role } = req.body;
-      const { tenant_id } = res.user;
+export const addAuthority = async (req, res, next) => {
+  try {
+    const { file_id } = req.params;
+    const { user, role } = req.body;
+    const { tenant_id } = res.user;
 
-      if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
+    if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      const file = yield File.findById(file_id);
-      if (file === null) throw "file is empty";
+    const file = await File.findById(file_id);
+    if (file === null) throw "file is empty";
 
-      const _role = yield RoleFile.findById(role._id);
-      if (_role === null) throw "role is empty";
+    const _role = await RoleFile.findById(role._id);
+    if (_role === null) throw "role is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(user._id)) throw "user_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(user._id)) throw "user_id is invalid";
 
-      if (user.type === undefined || user.type === null || user.type === "") throw new ValidationError( "user.type is empty" );
+    if (user.type === undefined || user.type === null || user.type === "") throw new ValidationError( "user.type is empty" );
 
-      const authority = new AuthorityFile();
+    const authority = new AuthorityFile();
 
-      if(user.type === 'user'){
-        const _user = yield User.findById(user._id);
-        if (_user === null) throw "user is empty";
+    if(user.type === 'user'){
+      const _user = await User.findById(user._id);
+      if (_user === null) throw "user is empty";
 
-        authority.files = file;
-        authority.users = _user;
-        authority.role_files = _role;
-      }else{
-        const _group = yield Group.findById(user._id);
-        if (_group === null) throw new RecordNotFoundException("group is empty");
+      authority.files = file;
+      authority.users = _user;
+      authority.role_files = _role;
+    }else{
+      const _group = await Group.findById(user._id);
+      if (_group === null) throw new RecordNotFoundException("group is empty");
 
-        authority.files = file;
-        authority.groups = _group;
-        authority.role_files = _role;
-      }
-
-      const duplicated = yield AuthorityFile.findOne({
-        files: authority.files,
-        users: authority.users,
-        role_files: authority.role_files
-      });
-
-      if (duplicated !== null) throw "role set is duplicate";
-
-      const createdAuthority = yield authority.save();
-
-      // elasticsearch index作成
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
-
-      res.json({
-        status: { success: true },
-        body: createdAuthority
-      });
-
+      authority.files = file;
+      authority.groups = _group;
+      authority.role_files = _role;
     }
-    catch (e) {
-      const errors = {};
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
-        break;
-      case "user is empty":
-        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
-        break;
-      case "user_id is invalid":
-        errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
-        break;
-      case "role is empty":
-        errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
-        break;
-      case "user.type is empty":
-        errors.user = "ユーザの種類が不明です";
-        break;
-      case "group is empty":
-        errors.group = "追加対象のユーザが見つかりません";
-        break;
-      case "role set is duplicate":
-        errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-      logger.error(e);
-      res.status(400).json({
-        status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
-      });
+
+    const duplicated = await AuthorityFile.findOne({
+      files: authority.files,
+      users: authority.users,
+      role_files: authority.role_files
+    });
+
+    if (duplicated !== null) throw "role set is duplicate";
+
+    const createdAuthority = await authority.save();
+
+    // elasticsearch index作成
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
+
+    res.json({
+      status: { success: true },
+      body: createdAuthority
+    });
+
+  }
+  catch (e) {
+    const errors = {};
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
+      break;
+    case "user is empty":
+      errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
+      break;
+    case "user_id is invalid":
+      errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
+      break;
+    case "role is empty":
+      errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
+      break;
+    case "user.type is empty":
+      errors.user = "ユーザの種類が不明です";
+      break;
+    case "group is empty":
+      errors.group = "追加対象のユーザが見つかりません";
+      break;
+    case "role set is duplicate":
+      errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-  });
+    logger.error(e);
+    res.status(400).json({
+      status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
+    });
+  }
 };
 
-export const removeAuthority = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id } = req.params;
-      const { user_id, role_id } = req.query;
+export const removeAuthority = async (req, res, next) => {
+  try {
+    const { file_id } = req.params;
+    const { user_id, role_id } = req.query;
 
-      if (! mongoose.Types.ObjectId.isValid(file_id) ) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id) ) throw "file_id is invalid";
 
-      if (user_id === undefined ||
-          user_id === null ||
-          user_id === "") throw "user_id is empty";
+    if (user_id === undefined ||
+        user_id === null ||
+        user_id === "") throw "user_id is empty";
 
-      if (role_id === undefined ||
-          role_id === null ||
-          role_id === "") throw "role_id is empty";
+    if (role_id === undefined ||
+        role_id === null ||
+        role_id === "") throw "role_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(user_id) ) throw "user_id is invalid";
-      if (! mongoose.Types.ObjectId.isValid(role_id) ) throw "role_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(user_id) ) throw "user_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(role_id) ) throw "role_id is invalid";
 
-      const file = yield File.findById(file_id);
-      if (file === null) throw "file is empty";
+    const file = await File.findById(file_id);
+    if (file === null) throw "file is empty";
 
-      const role_user = yield User.findById(user_id);
-      if (role_user === null) throw "user is empty";
+    const role_user = await User.findById(user_id);
+    if (role_user === null) throw "user is empty";
 
-      const role_file = yield RoleFile.findById(role_id);
-      if (role_file === null) throw "role is empty";
+    const role_file = await RoleFile.findById(role_id);
+    if (role_file === null) throw "role is empty";
 
-      if (role_user.type === undefined ||
-          role_user.type === null ||
-          role_user.type === "") throw "user.type is empty";
+    if (role_user.type === undefined ||
+        role_user.type === null ||
+        role_user.type === "") throw "user.type is empty";
 
-      const authority = AuthorityFile.findOne({
-        role_files: role_file._id,
-        users: role_user._id,
-        files: file._id
-      });
+    const authority = AuthorityFile.findOne({
+      role_files: role_file._id,
+      users: role_user._id,
+      files: file._id
+    });
 
-      if (authority === null) throw "authority is empty";
+    if (authority === null) throw "authority is empty";
 
-      const removeResult = yield authority.remove();
+    const removeResult = await authority.remove();
 
-      if (removeResult.result.ok !== 1) throw "remove authority is failed";
+    if (removeResult.result.ok !== 1) throw "remove authority is failed";
 
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
 
-      res.json({
-        status: { success: true },
-        body: { role_files: role_file, users: role_user, files: file }
-      });
+    res.json({
+      status: { success: true },
+      body: { role_files: role_file, users: role_user, files: file }
+    });
+  }
+  catch (e) {
+    let errors = {};
+
+    switch (e) {
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためファイルへの権限の削除に失敗しました";
+      break;
+    case "user_id is empty":
+      errors.user_id = "ユーザIDが空のためファイルへの権限の削除に失敗しました";
+      break;
+    case "role_id is empty":
+      errors.role_id = "ファイル権限IDが空のためファイルへの権限の削除に失敗しました";
+      break;
+    case "user_id is invalid":
+      errors.user_id = "ユーザIDが不正のためファイルへの権限の削除に失敗しました";
+      break;
+    case "role_id is invalid":
+      errors.role_id = "ファイル権限IDが不正のためファイルへの権限の削除に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためファイルへの権限の削除に失敗しました";
+      break;
+    case "user is empty":
+      errors.user_id = "指定されたユーザが存在しないためファイルへの権限の削除に失敗しました";
+      break;
+    case "role is empty":
+      errors.role_id = "指定されたファイル権限が存在しないためファイルへの権限の削除に失敗しました";
+      break;
+    case "user.type is empty":
+      errors.user_type = "ユーザ種別が空のためファイルへの権限の削除に失敗しました";
+      break;
+    case "authority is empty":
+      errors.role = "指定された権限セットが存在しないためファイルへの権限の削除に失敗しました";
+      break;
+    case "remove authority is failed":
+      errors.remove = "原因不明のエラーで権限の削除に失敗しました";
+      errors.unknown = e;
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      let errors = {};
 
-      switch (e) {
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためファイルへの権限の削除に失敗しました";
-        break;
-      case "user_id is empty":
-        errors.user_id = "ユーザIDが空のためファイルへの権限の削除に失敗しました";
-        break;
-      case "role_id is empty":
-        errors.role_id = "ファイル権限IDが空のためファイルへの権限の削除に失敗しました";
-        break;
-      case "user_id is invalid":
-        errors.user_id = "ユーザIDが不正のためファイルへの権限の削除に失敗しました";
-        break;
-      case "role_id is invalid":
-        errors.role_id = "ファイル権限IDが不正のためファイルへの権限の削除に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の削除に失敗しました";
-        break;
-      case "user is empty":
-        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の削除に失敗しました";
-        break;
-      case "role is empty":
-        errors.role_id = "指定されたファイル権限が存在しないためファイルへの権限の削除に失敗しました";
-        break;
-      case "user.type is empty":
-        errors.user_type = "ユーザ種別が空のためファイルへの権限の削除に失敗しました";
-        break;
-      case "authority is empty":
-        errors.role = "指定された権限セットが存在しないためファイルへの権限の削除に失敗しました";
-        break;
-      case "remove authority is failed":
-        errors.remove = "原因不明のエラーで権限の削除に失敗しました";
-        errors.unknown = e;
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-
-      res.status(400).json({
-        status: { success: false, message: "ファイルへの権限の削除に失敗しました", errors }
-      });
-    }
-  });
+    res.status(400).json({
+      status: { success: false, message: "ファイルへの権限の削除に失敗しました", errors }
+    });
+  }
 };
 
-export const moveTrash = (req, res, next) => {
-  co(function* () {
-    try {
-      const file_id = req.params.file_id;
+export const moveTrash = async (req, res, next) => {
+  try {
+    const file_id = req.params.file_id;
 
-      const { tenant_id } = res.user;
-      const { trash_dir_id } = yield Tenant.findOne(tenant_id);
+    const { tenant_id } = res.user;
+    const { trash_dir_id } = await Tenant.findOne(tenant_id);
 
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
 
-      const user = yield User.findById(res.user._id);
-      const file = yield File.findById(file_id);
+    const user = await User.findById(res.user._id);
+    const file = await File.findById(file_id);
 
-      if (file === null) throw "file is empty";
-      if (user === null) throw "user is empty";
+    if (file === null) throw "file is empty";
+    if (user === null) throw "user is empty";
 
-      let changedFile;
-      if( file.is_dir ){
-        const changedFiles = yield moveDir(file._id, trash_dir_id, user, "削除");
-        changedFile = changedFiles[0];  // response用。指定されたフォルダを返す
-        const movedDirs = changedFiles.map(dir=>dir._id );
-        const movedFiles = yield File.find({
-          $or: [
-            { _id: { $in: movedDirs }},
-            { dir_id:{ $in: movedDirs }}
-          ]
-        });
-        for(let i in movedFiles ){
-          movedFiles[i].is_trash = true;
-          yield movedFiles[i].save();
-          // フォルダ内のファイルについて elasticsearch index更新
-          const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
-          yield esClient.createIndex(tenant_id,[updatedFile]);
-        }
-
-      } else {
-        file.is_trash = true;
-        changedFile = yield moveFile(file, trash_dir_id, user, "削除");
+    let changedFile;
+    if( file.is_dir ){
+      const changedFiles = await moveDir(file._id, trash_dir_id, user, "削除");
+      changedFile = changedFiles[0];  // response用。指定されたフォルダを返す
+      const movedDirs = changedFiles.map(dir=>dir._id );
+      const movedFiles = await File.find({
+        $or: [
+          { _id: { $in: movedDirs }},
+          { dir_id:{ $in: movedDirs }}
+        ]
+      });
+      for(let i in movedFiles ){
+        movedFiles[i].is_trash = true;
+        await movedFiles[i].save();
+        // フォルダ内のファイルについて elasticsearch index更新
+        const updatedFile = await File.searchFileOne({_id: movedFiles[i]._id });
+        await esClient.createIndex(tenant_id,[updatedFile]);
       }
 
-      // 選択したファイルについて elasticsearchのindex更新
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+    } else {
+      file.is_trash = true;
+      changedFile = await moveFile(file, trash_dir_id, user, "削除");
+    }
 
-      res.json({
-        status: { success: true },
-        body: changedFile
-      });
-    } catch (e) {
-      const errors = {};
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "削除対象のファイルが見つかりません";
-        break;
-      case "file is empty":
-        errors.file = "削除対象のファイルが見つかりません";
-        break;
-      case "user is empty":
+    // 選択したファイルについて elasticsearchのindex更新
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
+
+    res.json({
+      status: { success: true },
+      body: changedFile
+    });
+  } catch (e) {
+    const errors = {};
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "削除対象のファイルが見つかりません";
+      break;
+    case "file is empty":
+      errors.file = "削除対象のファイルが見つかりません";
+      break;
+    case "user is empty":
+    errors.user = "実行ユーザーが見つかりません";
+    break;
+    case "file is dir":
+      errors.file = "削除対象がフォルダです";
+      break;
+    default:
+      errors.unknown = e;
+      break;
+    }
+
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+
+  }
+};
+
+export const restore = async (req, res, next) => {
+  try {
+    const file_id = req.params.file_id;
+
+    if (file_id === undefined ||
+        file_id === null ||
+        file_id === "") throw "file_id is empty";
+
+    const user = await User.findById(res.user._id);
+    const file = await File.findById(file_id);
+    const { dir_id } = file.histories[file.histories.length - 1].body;
+
+    if (file === null) throw "file is empty";
+    if (user === null) throw "user is empty";
+    if (dir_id === null || dir_id === undefined || dir_id === "" ) throw "dir_id is empty";
+
+    const changedFile = await moveFile(file, dir_id, user, "復元");
+
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+
+    await esClient.createIndex(tenant_id,[updatedFile]);
+    res.json({
+      status: { success: true },
+      body: changedFile
+    });
+
+  } catch (e) {
+    const errors = {};
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "対象のファイルが見つかりません";
+      break;
+    case "file is empty":
+      errors.file = "対象のファイルが見つかりません";
+      break;
+    case "user is empty":
       errors.user = "実行ユーザーが見つかりません";
       break;
-      case "file is dir":
-        errors.file = "削除対象がフォルダです";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-
-    }
-  });
-};
-
-export const restore = (req, res, next) => {
-  co(function* () {
-    try {
-      const file_id = req.params.file_id;
-
-      if (file_id === undefined ||
-          file_id === null ||
-          file_id === "") throw "file_id is empty";
-
-      const user = yield User.findById(res.user._id);
-      const file = yield File.findById(file_id);
-      const { dir_id } = file.histories[file.histories.length - 1].body;
-
-      if (file === null) throw "file is empty";
-      if (user === null) throw "user is empty";
-      if (dir_id === null || dir_id === undefined || dir_id === "" ) throw "dir_id is empty";
-
-      const changedFile = yield moveFile(file, dir_id, user, "復元");
-
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-
-      yield esClient.createIndex(tenant_id,[updatedFile]);
-      res.json({
-        status: { success: true },
-        body: changedFile
-      });
-
-    } catch (e) {
-      const errors = {};
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "対象のファイルが見つかりません";
-        break;
-      case "file is empty":
-        errors.file = "対象のファイルが見つかりません";
-        break;
-      case "user is empty":
-        errors.user = "実行ユーザーが見つかりません";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-
-    }
-  });
-};
-
-export const deleteFileLogical = (req,res,next) => {
-  co(function* (){
-    try {
-      const file_id = req.params.file_id;
-
-      if (file_id === undefined ||
-        file_id === null ||
-        file_id === "") throw "file_id is empty";
-
-      const user = yield User.findById(res.user._id);
-      const file = yield File.findById(file_id);
-
-      const history = {
-        modified: moment().format("YYYY-MM-DD hh:mm:ss"),
-        user: user,
-        action: "完全削除",
-        body: {
-          _id: file._id,
-          is_star: file.is_star,
-          is_display: file.is_display,
-          dir_id: file.dir_id,
-          is_dir: file.is_dir,
-          size: file.size,
-          mime_type: file.mime_type,
-          blob_path: file.blob_path,
-          name: file.name,
-          meta_infos: file.meta_infos,
-          tags: file.tags,
-          is_deleted: file.is_deleted,
-          modified: file.modified,
-          __v: file.__v
-        }
-      };
-      file.histories = file.histories.concat(history);
-
-      file.is_deleted = true;
-      const deletedFile = yield file.save();
-
-      // elasticsearch index作成
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
-
-      res.json({
-        status: { success: true },
-        body: deletedFile
-      });
-
-    } catch (e) {
-      const errors = {};
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "対象のファイルが見つかりません";
-        break;
-      case "file is empty":
-        errors.file = "対象のファイルが見つかりません";
-        break;
-      case "user is empty":
-        errors.user = "実行ユーザーが見つかりません";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-
-    }
-  });
-
-
-};
-
-export const deleteFilePhysical = (req,res,next) => {
-  co(function* (){
-    try {
-      // is_delete === true のみ対象ファイル
-      // swiftコンテナから削除
-      // mongoから削除
-      const swift = new Swift();
-
-      const file_id = req.params.file_id;
-
-      const fileRecord = yield File.findById(file_id);
-      if (fileRecord === null) throw "file not found";
-      if (fileRecord.is_deleted !== true) throw "file is not deleted";
-
-      const tenant_name = res.user.tenant.name;
-      const readStream = yield swift.remove(tenant_name, fileRecord);
-
-      const deletedFile = yield fileRecord.remove();
-
-      const deletedAutholity = yield AuthorityFile.remove({files: fileRecord._id });
-
-      // elasticsearch index削除
-      const { tenant_id }= res.user;
-      yield esClient.delete({ index:tenant_id, type:"files", id:file_id });
-
-      res.json({
-        status:{ success: true },
-        body: deletedFile
-      });
-
-    } catch (e) {
-      const errors = {};
+    default:
       errors.unknown = e;
-      res.status(400).json({
-        status: { success: false, errors }
-      });
+      break;
     }
-  });
-};
 
-export const previewExists = (req, res, next) => {
-  co(function* (){
-    try {
-      // プレビュー画像の存在チェック
-      const { file_id } = req.params;
-
-      if (file_id === undefined ||
-        file_id === null ||
-        file_id === "") throw "file_id is empty";
-
-      const file = yield File.findById(file_id);
-
-      if(file.size > constants.MAX_CREATE_PREVIEW_FILE_SIZE) throw "file size is too large";
-
-      let { preview_id } = file;
-
-      let preview;
-      if(preview_id === null || preview_id === undefined || preview_id === ""){
-        preview = new Preview();
-      }else{
-        preview = yield Preview.findById(preview_id);
-      }
-
-      if(preview.image === undefined && preview.creating === false){
-        const tmpDirPath = path.join(__dirname,'../../tmp');
-        const tmpFileName = path.join(tmpDirPath,file.name);
-
-        fs.mkdir(tmpDirPath, err => {
-          if(err && err.code !== "EEXIST") logger.error(err);
-        });
-
-        const tenant_name = res.user.tenant.name;
-        const swift = new Swift();
-        const downloadFile = yield swift.exportFile(tenant_name, file, tmpFileName);
-
-        let command = '';
-
-        switch(file.mime_type){
-          case "text/csv":
-          case "text/plain":
-            // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
-            command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png buf.pdf[0] "${file.name}.png" && rm "${file.name}" buf.*`;
-            break;
-          case "application/msword":
-          case "application/vnd.ms-excel":
-          case "application/vnd.ms-powerpoint":
-          case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-          case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-          case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
-          case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
-          case "application/vnd.openxmlformats-officedocument.presentationml.template":
-          const pdfFileName = path.extname(file.name) === ""
-            ? file.name + ".pdf"
-            : file.name.replace(path.extname(file.name),".pdf" );
-
-            command = `cd ${tmpDirPath} && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
-          break;
-          case "application/pdf":
-            command = `cd ${tmpDirPath} && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
-            break;
-          case "image/jpeg":
-          case "image/png":
-          case "image/gif":
-          case "image/tiff":
-            command = `cd ${tmpDirPath} && convert -density ${constants.CONVERT_DPI} -antialias -format png "${file.name}" -resize 1024x\\> "${file.name}.png" && rm "${file.name}"`;
-            break;
-          default:
-            throw "this mime_type is not supported yet";
-            break;
-        }
-
-        if(command !== ""){
-          preview.creating = true;
-          // 大きいファイルの場合、タイムアウトするので一度idだけ登録してコマンドの再実行を防止する
-          yield preview.save();
-          file.preview_id = preview._id;
-          const changedFile = yield file.save();
-
-          try {
-            const execResult = yield _exec(command);
-            preview.image = fs.readFileSync(`${tmpFileName}.png`);
-          }catch(error){
-            throw error;
-          }finally{
-            preview.creating = false;
-            const previewImage = yield preview.save();
-          }
-          preview_id = file.preview_id;
-          fs.unlinkSync(path.join(`${tmpFileName}.png`));
-        }
-      }else{
-        if(preview.image === undefined) preview_id = null;
-      }
-
-
-      res.json({
-        status:{ success: true },
-        body: {
-          preview_id: preview_id
-        }
-      });
-
-
-    } catch (e) {
-      logger.error(e);
-      const errors = {};
-      switch(e){
-        case "this mime_type is not supported yet":
-          errors.mime_type = "このファイルはプレビュー画像を表示できません";
-          break;
-        case "file size is too large":
-          errors.file_size = "このファイルはプレビュー画像を表示できません";
-          break;
-        default:
-          errors.unknown = e;
-          break;
-      }
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
-};
-
-export const exists = (req, res, next) => {
-  co(function* () {
-    try {
-      const { dir_id, files } = req.body;
-
-      if (dir_id === null ||
-          dir_id === undefined ||
-          dir_id === "") throw new ValidationError("dir_idが空です");
-
-      if (files === null ||
-          files === undefined ||
-          files === "" ||
-          files.length === 0) {
-        // validationErrorではなく空で返却するのが正解？
-        res.json({ status: { success: true }, body: [] });
-      }
-
-      const fileNames = reject( files.map( f => f.name ), name => (
-        name === undefined || name === null ||
-        name === "" || name === "undefined"
-      ));
-
-      if (files.length !== fileNames.length) {
-        throw new ValidationError("ファイル名に空のものが存在します");
-      }
-
-      const records = yield files.map( file => (
-        File.findOne({
-          dir_id: mongoose.Types.ObjectId(dir_id),
-          name: file.name
-        })
-      ));
-
-      const exists = zipWith(records, files, (record, file) => {
-        if (record === null) {
-          return {
-            name: file.name,
-            is_exists: false
-          };
-        }
-        else {
-          return {
-            name: record.name,
-            is_exists: true
-          };
-        }
-      });
-
-      res.json({
-        status: { success: true },
-        body: exists
-      });
-
-    }
-    catch (e) {
-      let errors;
-
-      if (e.name === "Error") {
-        errors = commons.errorParser(e);
-      } else {
-        errors = e;
-      }
-
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
-};
-
-export const toggleUnvisible = (req, res, next) => {
-  co(function* () {
-    const { file_id } = req.params;
-
-    try {
-      if (file_id === undefined || file_id === null || file_id === "") throw new Error("ファイルが存在しないため非表示状態の変更に失敗しました");
-
-      const { tenant_id } = res.user;
-
-      const tenant = yield Tenant.findById(tenant_id);
-
-      if (tenant === null) throw new Error("指定されたテナントが存在しないため非表示状態の変更に失敗しました");
-
-      const file = yield File.findById(file_id);
-      file.unvisible = !file.unvisible;
-
-      const result = yield file.save();
-
-      if (! result) throw new Error("ファイルの非表示状態の変更に失敗しました");
-
-      const esFile = yield File.searchFileOne({ _id: result._id });
-      yield esClient.createIndex(tenant_id, [ esFile ] );
-      res.json({
-        status: { success: true },
-        body: result
-      });
-
-    }
-    catch (e) {
-      let errors;
-
-      res.status(400).json({
-        status: { success: false }
-      });
-    }
-  });
-};
-
-// ここからプライベート的なメソッド
-const _exec = command => {
-  return new Promise((resolve, reject)=>{
-    exec(command, (err,stdout,stderr) => {
-      if(err) return reject({ err, stderr });
-      return resolve(true);
+    res.status(400).json({
+      status: { success: false, errors }
     });
-  });
+
+  }
 };
 
-const moveFile = (file, dir_id, user, action) => {
-    if(file.is_dir) throw "file is dir";
+export const deleteFileLogical = async (req,res,next) => {
+  try {
+    const file_id = req.params.file_id;
+
+    if (file_id === undefined ||
+      file_id === null ||
+      file_id === "") throw "file_id is empty";
+
+    const user = await User.findById(res.user._id);
+    const file = await File.findById(file_id);
 
     const history = {
       modified: moment().format("YYYY-MM-DD hh:mm:ss"),
       user: user,
-      action: action,
+      action: "完全削除",
       body: {
         _id: file._id,
         is_star: file.is_star,
@@ -2962,18 +2638,355 @@ const moveFile = (file, dir_id, user, action) => {
         __v: file.__v
       }
     };
-
     file.histories = file.histories.concat(history);
 
-    file.dir_id = dir_id;
+    file.is_deleted = true;
+    const deletedFile = await file.save();
 
-    const changedFile = file.save();
+    // elasticsearch index作成
+    const { tenant_id }= res.user;
+    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
+    await esClient.createIndex(tenant_id,[updatedFile]);
 
-    return changedFile;
+    res.json({
+      status: { success: true },
+      body: deletedFile
+    });
 
+  } catch (e) {
+    const errors = {};
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "対象のファイルが見つかりません";
+      break;
+    case "file is empty":
+      errors.file = "対象のファイルが見つかりません";
+      break;
+    case "user is empty":
+      errors.user = "実行ユーザーが見つかりません";
+      break;
+    default:
+      errors.unknown = e;
+      break;
+    }
+
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+
+  }
 };
 
-const createSortOption = co.wrap( function* (_sort=null, _order=null) {
+export const deleteFilePhysical = async (req,res,next) => {
+  try {
+    // is_delete === true のみ対象ファイル
+    // swiftコンテナから削除
+    // mongoから削除
+    const swift = new Swift();
+
+    const file_id = req.params.file_id;
+
+    const fileRecord = await File.findById(file_id);
+    if (fileRecord === null) throw "file not found";
+    if (fileRecord.is_deleted !== true) throw "file is not deleted";
+
+    const tenant_name = res.user.tenant.name;
+    const readStream = await swift.remove(tenant_name, fileRecord);
+
+    const deletedFile = await fileRecord.remove();
+
+    const deletedAutholity = await AuthorityFile.remove({files: fileRecord._id });
+
+    // elasticsearch index削除
+    const { tenant_id }= res.user;
+    await esClient.delete({ index:tenant_id, type:"files", id:file_id });
+
+    res.json({
+      status:{ success: true },
+      body: deletedFile
+    });
+
+  } catch (e) {
+    const errors = {};
+    errors.unknown = e;
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+  }
+};
+
+export const previewExists = async (req, res, next) => {
+  try {
+    // プレビュー画像の存在チェック
+    const { file_id } = req.params;
+
+    if (file_id === undefined ||
+      file_id === null ||
+      file_id === "") throw "file_id is empty";
+
+    const file = await File.findById(file_id);
+
+    if(file.size > constants.MAX_CREATE_PREVIEW_FILE_SIZE) throw "file size is too large";
+
+    let { preview_id } = file;
+
+    let preview;
+    if(preview_id === null || preview_id === undefined || preview_id === ""){
+      preview = new Preview();
+    }else{
+      preview = await Preview.findById(preview_id);
+    }
+
+    if(preview.image === undefined && preview.creating === false){
+      const tmpDirPath = path.join(__dirname,'../../tmp');
+      const tmpFileName = path.join(tmpDirPath,file.name);
+
+      fs.mkdir(tmpDirPath, err => {
+        if(err && err.code !== "EEXIST") logger.error(err);
+      });
+
+      const tenant_name = res.user.tenant.name;
+      const swift = new Swift();
+      const downloadFile = await swift.exportFile(tenant_name, file, tmpFileName);
+
+      let command = '';
+
+      switch(file.mime_type){
+        case "text/csv":
+        case "text/plain":
+          // csv,txtファイルはnkfでUTF8に変換後,PDFを経てpng形式に変換する
+          command = `cd ${tmpDirPath} && nkf -w "${file.name}" > buf.txt && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf buf.txt && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png buf.pdf[0] "${file.name}.png" && rm "${file.name}" buf.*`;
+          break;
+        case "application/msword":
+        case "application/vnd.ms-excel":
+        case "application/vnd.ms-powerpoint":
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.template":
+        case "application/vnd.openxmlformats-officedocument.presentationml.template":
+        const pdfFileName = path.extname(file.name) === ""
+          ? file.name + ".pdf"
+          : file.name.replace(path.extname(file.name),".pdf" );
+
+          command = `cd ${tmpDirPath} && ${constants.LIBRE_OFFICE_PATH()} --headless --nologo --nofirststartwizard --convert-to pdf "${file.name}" && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png "${pdfFileName}[0]" "${file.name}.png" && rm "${file.name}" "${pdfFileName}"`;
+        break;
+        case "application/pdf":
+          command = `cd ${tmpDirPath} && convert -background white -alpha remove -density ${constants.CONVERT_DPI} -antialias -format png "${file.name}[0]" "${file.name}.png" && rm "${file.name}"`;
+          break;
+        case "image/jpeg":
+        case "image/png":
+        case "image/gif":
+        case "image/tiff":
+          command = `cd ${tmpDirPath} && convert -density ${constants.CONVERT_DPI} -antialias -format png "${file.name}" -resize 1024x\\> "${file.name}.png" && rm "${file.name}"`;
+          break;
+        default:
+          throw "this mime_type is not supported yet";
+          break;
+      }
+
+      if(command !== ""){
+        preview.creating = true;
+        // 大きいファイルの場合、タイムアウトするので一度idだけ登録してコマンドの再実行を防止する
+        await preview.save();
+        file.preview_id = preview._id;
+        const changedFile = await file.save();
+
+        try {
+          const execResult = await _exec(command);
+          preview.image = fs.readFileSync(`${tmpFileName}.png`);
+        }catch(error){
+          throw error;
+        }finally{
+          preview.creating = false;
+          const previewImage = await preview.save();
+        }
+        preview_id = file.preview_id;
+        fs.unlinkSync(path.join(`${tmpFileName}.png`));
+      }
+    }else{
+      if(preview.image === undefined) preview_id = null;
+    }
+
+
+    res.json({
+      status:{ success: true },
+      body: {
+        preview_id: preview_id
+      }
+    });
+
+
+  } catch (e) {
+    logger.error(e);
+    const errors = {};
+    switch(e){
+      case "this mime_type is not supported yet":
+        errors.mime_type = "このファイルはプレビュー画像を表示できません";
+        break;
+      case "file size is too large":
+        errors.file_size = "このファイルはプレビュー画像を表示できません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+    }
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+  }
+};
+
+export const exists = async (req, res, next) => {
+  try {
+    const { dir_id, files } = req.body;
+
+    if (dir_id === null ||
+        dir_id === undefined ||
+        dir_id === "") throw new ValidationError("dir_idが空です");
+
+    if (files === null ||
+        files === undefined ||
+        files === "" ||
+        files.length === 0) {
+      // validationErrorではなく空で返却するのが正解？
+      res.json({ status: { success: true }, body: [] });
+    }
+
+    const fileNames = reject( files.map( f => f.name ), name => (
+      name === undefined || name === null ||
+      name === "" || name === "undefined"
+    ));
+
+    if (files.length !== fileNames.length) {
+      throw new ValidationError("ファイル名に空のものが存在します");
+    }
+
+    const records = await files.map( file => (
+      File.findOne({
+        dir_id: mongoose.Types.ObjectId(dir_id),
+        name: file.name
+      })
+    ));
+
+    const exists = zipWith(records, files, (record, file) => {
+      if (record === null) {
+        return {
+          name: file.name,
+          is_exists: false
+        };
+      }
+      else {
+        return {
+          name: record.name,
+          is_exists: true
+        };
+      }
+    });
+
+    res.json({
+      status: { success: true },
+      body: exists
+    });
+
+  }
+  catch (e) {
+    let errors;
+
+    if (e.name === "Error") {
+      errors = commons.errorParser(e);
+    } else {
+      errors = e;
+    }
+
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+  }
+};
+
+export const toggleUnvisible = async (req, res, next) => {
+  const { file_id } = req.params;
+
+  try {
+    if (file_id === undefined || file_id === null || file_id === "") throw new Error("ファイルが存在しないため非表示状態の変更に失敗しました");
+
+    const { tenant_id } = res.user;
+
+    const tenant = await Tenant.findById(tenant_id);
+
+    if (tenant === null) throw new Error("指定されたテナントが存在しないため非表示状態の変更に失敗しました");
+
+    const file = await File.findById(file_id);
+    file.unvisible = !file.unvisible;
+
+    const result = await file.save();
+
+    if (! result) throw new Error("ファイルの非表示状態の変更に失敗しました");
+
+    const esFile = await File.searchFileOne({ _id: result._id });
+    await esClient.createIndex(tenant_id, [ esFile ] );
+    res.json({
+      status: { success: true },
+      body: result
+    });
+
+  }
+  catch (e) {
+    let errors;
+
+    res.status(400).json({
+      status: { success: false }
+    });
+  }
+};
+
+// ここからプライベート的なメソッド
+const _exec = command => {
+  return new Promise((resolve, reject)=>{
+    exec(command, (err,stdout,stderr) => {
+      if(err) return reject({ err, stderr });
+      return resolve(true);
+    });
+  });
+};
+
+const moveFile = (file, dir_id, user, action) => {
+  if(file.is_dir) throw "file is dir";
+
+  const history = {
+    modified: moment().format("YYYY-MM-DD hh:mm:ss"),
+    user: user,
+    action: action,
+    body: {
+      _id: file._id,
+      is_star: file.is_star,
+      is_display: file.is_display,
+      dir_id: file.dir_id,
+      is_dir: file.is_dir,
+      size: file.size,
+      mime_type: file.mime_type,
+      blob_path: file.blob_path,
+      name: file.name,
+      meta_infos: file.meta_infos,
+      tags: file.tags,
+      is_deleted: file.is_deleted,
+      modified: file.modified,
+      __v: file.__v
+    }
+  };
+
+  file.histories = file.histories.concat(history);
+
+  file.dir_id = dir_id;
+
+  const changedFile = file.save();
+
+  return changedFile;
+};
+
+const createSortOption = async (_sort=null, _order=null) => {
   let sort = {"is_dir":"desc"};
   const order =  _order === "DESC" || _order === "desc" ? -1 : 1;
 
@@ -2984,13 +2997,13 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
     let conditions, metaInfos;
     if (mongoose.Types.ObjectId.isValid(_sort)) {
       conditions = { _id: mongoose.Types.ObjectId(_sort) };
-      metaInfos = (yield MetaInfo.find(conditions)).map( meta => {
+      metaInfos = (await MetaInfo.find(conditions)).map( meta => {
         meta = meta.toObject();
         meta.meta_info_id = meta._id;
         return meta;
       });
 
-      const displayItems = (yield DisplayItem.find({
+      const displayItems = (await DisplayItem.find({
         ...conditions,
         name: { $nin: ["file_checkbox", "action"] }
       })).map(items => items.toObject()) ;
@@ -3015,51 +3028,49 @@ const createSortOption = co.wrap( function* (_sort=null, _order=null) {
   }
   sort["name"] = order;
   return Promise.resolve(sort);
-});
-
-export const getAllowedFileIds = (user_id, permission) => {
-  return co(function*(){
-
-    const action = yield Action.findOne({ name:permission });
-    const role = (yield RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
-
-    const user = yield User.findById(user_id);
-
-    const authorities = yield AuthorityFile.find(
-      {
-        $or : [
-          { users: mongoose.Types.ObjectId(user_id) },
-          { groups: {$in: user.groups } }],
-        role_files: {$in: role }
-      });
-
-    const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
-
-    return new Promise((resolve, reject) => resolve(file_ids) );
-
-  });
 };
 
-export const checkFilePermission = (file_id, user_id, permission) => {
-  return co(function*(){
+export const getAllowedFileIds = async (user_id, permission) => {
+  const action = await Action.findOne({ name:permission });
+  const role = (await RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
 
-    const action = yield Action.findOne({ name:permission });
-    const role = (yield RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+  const user = await User.findById(user_id);
 
-    const user = yield User.findById(user_id);
+  const authorities = await AuthorityFile.find(
+    {
+      $or : [
+        { users: mongoose.Types.ObjectId(user_id) },
+        { groups: {$in: user.groups } }],
+      role_files: {$in: role }
+    });
 
-    const authorities = yield AuthorityFile.find(
-      {
-        $or : [
-          { users: mongoose.Types.ObjectId(user_id) },
-          { groups: {$in: user.groups } }],
-        role_files: {$in: role },
-        files: file_id
-      });
+  const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
-    return new Promise((resolve, reject) => resolve( authorities.length > 0 ) );
+  return new Promise((resolve, reject) => resolve(file_ids) );
+};
 
-  });
+/**
+ * ファイルに対するアクションの権限があるかどうかを判断する
+ * @param {*} file_id 
+ * @param {*} user_id 
+ * @param {*} permission 
+ */
+export const checkFilePermission = async (file_id, user_id, permission) => {
+  const action = await Action.findOne({ name:permission });
+  const role = (await RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+
+  const user = await User.findById(user_id);
+
+  const authorities = await AuthorityFile.find(
+    {
+      $or : [
+        { users: mongoose.Types.ObjectId(user_id) },
+        { groups: {$in: user.groups } }],
+      role_files: {$in: role },
+      files: file_id
+    });
+
+  return new Promise((resolve, reject) => resolve( authorities.length > 0 ) );
 };
 
 const escapeRegExp = (input) => {
