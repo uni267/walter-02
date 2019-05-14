@@ -1916,7 +1916,9 @@ export const addTag = async (req, res, next) => {
 
     if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
 
-    const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id)];
+    //const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id)];
+    const file = await File.findById(file_id)
+    const tag = await Tag.findById(tag_id)
 
     if (file === null) throw "file is empty";
     if (tag === null) throw "tag is empty";
@@ -1990,7 +1992,9 @@ export const removeTag = async (req, res, next) => {
 
     if (! mongoose.Types.ObjectId.isValid(tag_id)) throw "tag_id is invalid";
 
-    const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id) ];
+    //const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id) ];
+    const file =  await File.findById(file_id)
+    const tag =  Tag.findById(tag_id)
 
     if (file === null) throw "file is empty";
     if (tag === null) throw "tag is empty";
