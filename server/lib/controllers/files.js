@@ -1134,6 +1134,7 @@ export const rename = async (req, res, next) => {
  * @param {*} req 
  * @param {*} res 
  * @param {*} next 
+ * 不具合: quz 下階層から上階層へ移動するとエラー
  */
 export const move = async (req, res, next) => {
   try {
@@ -1285,6 +1286,12 @@ export const move = async (req, res, next) => {
   }
 };
 
+/**
+ * ファイルのアップロード
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const upload = async (req, res, next) => {
   try {
     const myFiles  = req.body.files;
@@ -1900,6 +1907,12 @@ const grantTimestamp = async (file, tenant_id) => {
   if (autoGrantTsInfo && autoGrantTsInfo.value) await grantTimestampToken(file._id, tenant_id)
 }
 
+/**
+ * ファイルタグを追加する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const addTag = async (req, res, next) => {
   try {
     const file_id = req.params.file_id;
@@ -1976,6 +1989,12 @@ export const addTag = async (req, res, next) => {
   }
 };
 
+/**
+ * ファイルタグを削除する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const removeTag = async (req, res, next) => {
   try {
     const { file_id, tag_id } = req.params;
@@ -1994,7 +2013,7 @@ export const removeTag = async (req, res, next) => {
 
     //const [ file, tag ] = await [ File.findById(file_id), Tag.findById(tag_id) ];
     const file =  await File.findById(file_id)
-    const tag =  Tag.findById(tag_id)
+    const tag =  await Tag.findById(tag_id)
 
     if (file === null) throw "file is empty";
     if (tag === null) throw "tag is empty";
@@ -2052,6 +2071,13 @@ export const removeTag = async (req, res, next) => {
   }
 };
 
+/**
+ * メタ情報を追加する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * quz 2019/05/14 非同期方式変更後、動作未確認
+ */
 export const addMeta = async (req, res, next) => {
   try {
     const { file_id } = req.params;
@@ -2069,10 +2095,12 @@ export const addMeta = async (req, res, next) => {
         value === null ||
         value === "") throw "metainfo value is empty";
 
-    const [ file, metaInfo ] = await [
-      File.findById(file_id),
-      MetaInfo.findById(meta._id)
-    ];
+    // const [ file, metaInfo ] = await [
+    //   File.findById(file_id),
+    //   MetaInfo.findById(meta._id)
+    // ];
+    const file = await File.findById(file_id)
+    const metaInfo = await MetaInfo.findById(meta._id)
 
     if (file === null) throw "file is empty";
     if (metaInfo === null) throw "metainfo is empty";
@@ -2143,6 +2171,13 @@ export const addMeta = async (req, res, next) => {
   }
 };
 
+/**
+ * メタ情報を削除する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * quz 2019/05/14 非同期方式変更後、動作未確認
+ */
 export const removeMeta = async (req, res, next) => {
   try {
     const { file_id, meta_id } = req.params;
@@ -2159,10 +2194,12 @@ export const removeMeta = async (req, res, next) => {
 
     if (! mongoose.Types.ObjectId.isValid(meta_id)) throw "meta_id is invalid";
 
-    const [ file, metaInfo ] = await [
-      File.findById(file_id),
-      MetaInfo.findById(meta_id)
-    ];
+    // const [ file, metaInfo ] = await [
+    //   File.findById(file_id),
+    //   MetaInfo.findById(meta_id)
+    // ];
+    const file = await File.findById(file_id)
+    const metaInfo = await MetaInfo.findById(meta_id)
 
     if (file === null) throw "file is empty";
     if (metaInfo === null) throw "metaInfo is empty";
@@ -2229,6 +2266,12 @@ export const removeMeta = async (req, res, next) => {
   }
 };
 
+/**
+ * お気に入り印を着脱
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const toggleStar = async (req, res, next) => {
   try {
     const { file_id } = req.params;
@@ -2285,6 +2328,12 @@ export const toggleStar = async (req, res, next) => {
   }
 };
 
+/**
+ * ファイルの権限を追加
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const addAuthority = async (req, res, next) => {
   try {
     const { file_id } = req.params;
@@ -2385,6 +2434,12 @@ export const addAuthority = async (req, res, next) => {
   }
 };
 
+/**
+ * ファイルの権限を削除
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const removeAuthority = async (req, res, next) => {
   try {
     const { file_id } = req.params;
@@ -2488,6 +2543,12 @@ export const removeAuthority = async (req, res, next) => {
   }
 };
 
+/**
+ * ごみ箱へ移動する（削除アクション）
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const moveTrash = async (req, res, next) => {
   try {
     const file_id = req.params.file_id;
@@ -2566,6 +2627,12 @@ export const moveTrash = async (req, res, next) => {
   }
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const restore = async (req, res, next) => {
   try {
     const file_id = req.params.file_id;
@@ -2620,6 +2687,12 @@ export const restore = async (req, res, next) => {
   }
 };
 
+/**
+ * ファイルの論理削除（ごみ箱から削除）
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const deleteFileLogical = async (req,res,next) => {
   try {
     const file_id = req.params.file_id;
@@ -2692,6 +2765,12 @@ export const deleteFileLogical = async (req,res,next) => {
   }
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const deleteFilePhysical = async (req,res,next) => {
   try {
     // is_delete === true のみ対象ファイル
@@ -2730,6 +2809,12 @@ export const deleteFilePhysical = async (req,res,next) => {
   }
 };
 
+/**
+ * プレビュー画像の存在チェック
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const previewExists = async (req, res, next) => {
   try {
     // プレビュー画像の存在チェック
@@ -2853,6 +2938,12 @@ export const previewExists = async (req, res, next) => {
   }
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const exists = async (req, res, next) => {
   try {
     const { dir_id, files } = req.body;
@@ -2921,6 +3012,12 @@ export const exists = async (req, res, next) => {
   }
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const toggleUnvisible = async (req, res, next) => {
   const { file_id } = req.params;
 
