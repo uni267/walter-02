@@ -26,14 +26,13 @@ import Tag from "../../models/Tag";
 import DisplayItem from "../../models/DisplayItem";
 import MetaInfo from "../../models/MetaInfo";
 
-const task = () => {
-  co(function* () {
+const task = async () => {
   try{
     console.log('start')
 
     if (! process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
     const tenantName = process.argv[3]
-    const _tenant = yield Tenant.findOne({ name: tenantName})
+    const _tenant = await Tenant.findOne({ name: tenantName})
     if(_tenant) throw new Error("すでに存在しているテナントです");
 
     const now = new Date()
@@ -55,10 +54,10 @@ const task = () => {
         authority_files: []
       }
     ];
-    yield File.insertMany(root_files)
+    await File.insertMany(root_files)
 
-    const topDir = yield File.findOne({ name: 'Top', modified: {"$gte": now}})
-    const trashDir = yield File.findOne({ name: 'Trash', modified: {"$gte": now} })
+    const topDir = await File.findOne({ name: 'Top', modified: {"$gte": now}})
+    const trashDir = await File.findOne({ name: 'Trash', modified: {"$gte": now} })
     //console.log(topDir)
     //console.log(trashDir)
 
@@ -68,7 +67,7 @@ const task = () => {
       { ancestor: trashDir._id, descendant: trashDir._id, depth: 0 },
       { ancestor: topDir._id, descendant: trashDir._id, depth: 1 }
     ];
-    yield Dir.insertMany(dirs)
+    await Dir.insertMany(dirs)
 
     // ===============================
     //  tenants collection
@@ -78,7 +77,7 @@ const task = () => {
     tenant.home_dir_id= topDir._id;
     tenant.trash_dir_id= trashDir._id;
     tenant.threshold= 1024 * 1024 * 1024 * 100;
-    yield tenant.save();
+    await tenant.save();
 
     // ===============================
     // groups collection
@@ -88,14 +87,14 @@ const task = () => {
     group1.description= "全社員が所属するグループ";
     group1.role_files= [];
     group1.tenant_id= tenant._id;
-    yield group1.save();
+    await group1.save();
 
     const group2 = new Group();
     group2.name= "管理者";
     group2.description= "システム管理者";
     group2.role_files= [];
     group2.tenant_id= tenant._id;
-    yield group2.save();
+    await group2.save();
 
   // ===============================
   //  users collection
@@ -110,9 +109,9 @@ const task = () => {
   user1.email= user1.account_name + '@' + tenantName;
   user1.password= pass;
   user1.enabled= true;
-  user1.groups= [ (yield Group.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1}))._id ];
+  user1.groups= [ (await Group.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1}))._id ];
   user1.tenant_id= tenant._id;
-  yield user1.save();
+  await user1.save();
   console.log(`一般ユーザー ${user1.account_name}が作成されました`)
   const user2 = new User();
   user2.type = "user";
@@ -121,15 +120,18 @@ const task = () => {
   user2.email= user2.account_name + '@' + tenantName;
   user2.password= pass;
   user2.enabled= true;
-  user2.groups= [ (yield Group.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1}))._id ];
+  user2.groups= [ 
+    (await Group.findOne({ name: "全社", tenant_id: tenant._id }, {_id: 1}))._id,
+    (await Group.findOne({ name: "管理者", tenant_id: tenant._id }, {_id: 1}))._id,
+  ];
   user2.tenant_id= tenant._id;
-  yield user2.save();
+  await user2.save();
   console.log(`管理ユーザー ${user2.account_name}が作成されました`)
 
   // ===============================
   //  tags collection
   // ===============================
-  yield Tag.insertMany([
+  await Tag.insertMany([
     {
       color: "#f55",
       label: "非表示",
@@ -140,7 +142,7 @@ const task = () => {
   // ===============================
   //  display_items collection
   // ===============================
-  yield DisplayItem.insertMany([
+  await DisplayItem.insertMany([
     {
       tenant_id: tenant._id,
       meta_info_id: null,
@@ -234,15 +236,15 @@ const task = () => {
   // ===============================
   //  role_files collection
   // ===============================
-  yield RoleFile.insertMany([
+  await RoleFile.insertMany([
     {
       name: "読み取りのみ",
       description: "",
       actions: [
-        (yield Action.findOne({ name: "list" }))._id,
-        (yield Action.findOne({ name: "detail" }))._id,
-        (yield Action.findOne({ name: "history" }))._id,
-        (yield Action.findOne({ name: "download" }))._id,
+        (await Action.findOne({ name: "list" }))._id,
+        (await Action.findOne({ name: "detail" }))._id,
+        (await Action.findOne({ name: "history" }))._id,
+        (await Action.findOne({ name: "download" }))._id,
       ],
       tenant_id: tenant._id
     },
@@ -250,19 +252,19 @@ const task = () => {
       name: "編集可能",
       description: "読み取り + 書き込み",
       actions: [
-        (yield Action.findOne({ name: "list" }))._id,
-        (yield Action.findOne({ name: "detail" }))._id,
-        (yield Action.findOne({ name: "history" }))._id,
-        (yield Action.findOne({ name: "download" }))._id,
-        (yield Action.findOne({ name: "change-name" }))._id,
-        (yield Action.findOne({ name: "change-tag" }))._id,
-        //(yield Action.findOne({ name: "change-meta-info" }))._id,
-        (yield Action.findOne({ name: "upload" }))._id,
-        (yield Action.findOne({ name: "makedir" }))._id,
-        (yield Action.findOne({ name: "copy" }))._id,
-        (yield Action.findOne({ name: "restore" }))._id,
-        (yield Action.findOne({ name: "delete" }))._id,
-        //(yield Action.findOne({ name: "revert" }))._id
+        (await Action.findOne({ name: "list" }))._id,
+        (await Action.findOne({ name: "detail" }))._id,
+        (await Action.findOne({ name: "history" }))._id,
+        (await Action.findOne({ name: "download" }))._id,
+        (await Action.findOne({ name: "change-name" }))._id,
+        (await Action.findOne({ name: "change-tag" }))._id,
+        //(await Action.findOne({ name: "change-meta-info" }))._id,
+        (await Action.findOne({ name: "upload" }))._id,
+        (await Action.findOne({ name: "makedir" }))._id,
+        (await Action.findOne({ name: "copy" }))._id,
+        (await Action.findOne({ name: "restore" }))._id,
+        (await Action.findOne({ name: "delete" }))._id,
+        //(await Action.findOne({ name: "revert" }))._id
       ],
       tenant_id: tenant._id
     },
@@ -270,21 +272,21 @@ const task = () => {
       name: "フルコントロール",
       description: "読み取り + 書き込み + 権限変更",
       actions: [
-        (yield Action.findOne({ name: "list" }))._id,
-        (yield Action.findOne({ name: "detail" }))._id,
-        (yield Action.findOne({ name: "history" }))._id,
-        (yield Action.findOne({ name: "download" }))._id,
-        (yield Action.findOne({ name: "change-name" }))._id,
-        (yield Action.findOne({ name: "change-tag" }))._id,
-        //(yield Action.findOne({ name: "change-meta-info" }))._id,
-        (yield Action.findOne({ name: "upload" }))._id,
-        (yield Action.findOne({ name: "makedir" }))._id,
-        (yield Action.findOne({ name: "copy" }))._id,
-        (yield Action.findOne({ name: "restore" }))._id,
-        (yield Action.findOne({ name: "delete" }))._id,
-        //(yield Action.findOne({ name: "revert" }))._id,
-        (yield Action.findOne({ name: "authority" }))._id,
-        (yield Action.findOne({ name: "move" }))._id
+        (await Action.findOne({ name: "list" }))._id,
+        (await Action.findOne({ name: "detail" }))._id,
+        (await Action.findOne({ name: "history" }))._id,
+        (await Action.findOne({ name: "download" }))._id,
+        (await Action.findOne({ name: "change-name" }))._id,
+        (await Action.findOne({ name: "change-tag" }))._id,
+        //(await Action.findOne({ name: "change-meta-info" }))._id,
+        (await Action.findOne({ name: "upload" }))._id,
+        (await Action.findOne({ name: "makedir" }))._id,
+        (await Action.findOne({ name: "copy" }))._id,
+        (await Action.findOne({ name: "restore" }))._id,
+        (await Action.findOne({ name: "delete" }))._id,
+        //(await Action.findOne({ name: "revert" }))._id,
+        (await Action.findOne({ name: "authority" }))._id,
+        (await Action.findOne({ name: "move" }))._id
       ],
       tenant_id: tenant._id
     }
@@ -295,29 +297,29 @@ const task = () => {
   roleMenu1.name= "一般ユーザ";
   roleMenu1.description= "";
   roleMenu1.menus= [
-    (yield Menu.findOne({ name: "home" }))._id,
-    (yield Menu.findOne({ name: "tags" }))._id,
+    (await Menu.findOne({ name: "home" }))._id,
+    (await Menu.findOne({ name: "tags" }))._id,
   ];
   roleMenu1.tenant_id= tenant._id;
-  yield roleMenu1.save();
+  await roleMenu1.save();
 
   const roleMenu2 = new RoleMenu();
   roleMenu2.name= "システム管理者";
   roleMenu2.description= "";
   roleMenu2.menus= [
-    (yield Menu.findOne({ name: "home" }))._id,
-    (yield Menu.findOne({ name: "tags" }))._id,
-    (yield Menu.findOne({ name: "analysis" }))._id,
-    (yield Menu.findOne({ name: "users" }))._id,
-    (yield Menu.findOne({ name: "groups" }))._id,
-    (yield Menu.findOne({ name: "role_files" }))._id,
-    (yield Menu.findOne({ name: "role_menus" }))._id,
-    //(yield Menu.findOne({ name: "meta_infos" }))._id
+    (await Menu.findOne({ name: "home" }))._id,
+    (await Menu.findOne({ name: "tags" }))._id,
+    (await Menu.findOne({ name: "analysis" }))._id,
+    (await Menu.findOne({ name: "users" }))._id,
+    (await Menu.findOne({ name: "groups" }))._id,
+    (await Menu.findOne({ name: "role_files" }))._id,
+    (await Menu.findOne({ name: "role_menus" }))._id,
+    //(await Menu.findOne({ name: "meta_infos" }))._id
   ];
   roleMenu2.tenant_id= tenant._id;
-  yield roleMenu2.save();
+  await roleMenu2.save();
 
-  yield AuthorityMenu.insertMany([{
+  await AuthorityMenu.insertMany([{
     role_menus : roleMenu1._id,
     users : user1._id,
     groups : null
@@ -327,14 +329,14 @@ const task = () => {
     groups : null
   }])
 
-  // yield Preview.insertMany([{
+  // await Preview.insertMany([{
   //   image: null
   // }]);
 
-  const role_file_full_controll = yield RoleFile.findOne({name:"フルコントロール", tenant_id: tenant._id});
-  const role_file_read_only = yield RoleFile.findOne({name:"読み取りのみ", tenant_id: tenant._id});
+  const role_file_full_controll = await RoleFile.findOne({name:"フルコントロール", tenant_id: tenant._id});
+  const role_file_read_only = await RoleFile.findOne({name:"読み取りのみ", tenant_id: tenant._id});
 
-  yield AuthorityFile.insertMany([{
+  await AuthorityFile.insertMany([{
     files: topDir._id,
     role_files : role_file_read_only._id,
     users : null,
@@ -344,26 +346,24 @@ const task = () => {
     role_files : role_file_read_only._id,
     users : null,
     groups : group1._id
-  }]);
-
-  yield AuthorityFile.insertMany([{
+  },{
     files: topDir._id,
     role_files : role_file_full_controll._id,
     users : user2._id,
-    groups : null
+    groups : null //  groups :  group2._id
   },{
     files: trashDir._id,
     role_files : role_file_full_controll._id,
     users : user2._id,
-    groups : null
+    groups : null //  groups :  group2._id
   }]);
 
     // ===============================
     //  ダウンロードファイルの命名規則
     // ===============================
-    var display_file_name_id = (yield MetaInfo.findOne({name: "display_file_name"}))._id;
-    var send_date_time_id = (yield MetaInfo.findOne({name: "send_date_time"}))._id;
-    yield DownloadInfo.insertMany([{
+    var display_file_name_id = (await MetaInfo.findOne({name: "display_file_name"}))._id;
+    var send_date_time_id = (await MetaInfo.findOne({name: "send_date_time"}))._id;
+    await DownloadInfo.insertMany([{
       type: "file",
       value:`{${display_file_name_id}}{${send_date_time_id}:YYYYMMDD}{extension}`,
       tenant_id: tenant._id,
@@ -373,7 +373,7 @@ const task = () => {
   // ===============================
   //  テナント毎のグローバル設定(app_settings)
   // ===============================
-  yield AppSetting.insertMany([
+  await AppSetting.insertMany([
     {
       tenant_id: tenant._id,
       // ファイル一覧の設定項目
@@ -402,7 +402,6 @@ const task = () => {
     console.log("################# add tenant end #################");
     process.exit();
   }
-});
 
 }
 
