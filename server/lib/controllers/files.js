@@ -2076,7 +2076,6 @@ export const removeTag = async (req, res, next) => {
  * @param {*} req 
  * @param {*} res 
  * @param {*} next 
- * quz 2019/05/14 非同期方式変更後、動作未確認
  */
 export const addMeta = async (req, res, next) => {
   try {
@@ -2176,7 +2175,6 @@ export const addMeta = async (req, res, next) => {
  * @param {*} req 
  * @param {*} res 
  * @param {*} next 
- * quz 2019/05/14 非同期方式変更後、動作未確認
  */
 export const removeMeta = async (req, res, next) => {
   try {
@@ -3066,7 +3064,7 @@ const _exec = command => {
   });
 };
 
-const moveFile = (file, dir_id, user, action) => {
+const moveFile = async (file, dir_id, user, action) => {
   if(file.is_dir) throw "file is dir";
 
   const history = {
@@ -3095,7 +3093,7 @@ const moveFile = (file, dir_id, user, action) => {
 
   file.dir_id = dir_id;
 
-  const changedFile = file.save();
+  const changedFile = await file.save();
 
   return changedFile;
 };
