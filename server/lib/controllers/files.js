@@ -654,6 +654,14 @@ export const search = async (req, res, next, export_excel=false) => {
         : "";
 
       file.actions = extractFileActions(file.authorities, res.user);          
+      // file.actions = chain(file.authorities) quz:ここを消しても大丈夫？
+      //   .filter( auth => {
+      //     return (auth.users !== undefined && auth.users._id.toString() === res.user._id.toString())
+      //       || (auth.groups !== undefined && res.user.groups.filter(g => g.toString() === auth.groups._id.toString()).length > 0 );
+      //   })
+      //   .map( auth => auth.actions )
+      //   .flattenDeep()
+      //   .uniq();
 
       const es_file = await esClient.getFile(tenant_id.toString(), file._id)
       if(es_file !== null && es_file !== undefined ){
