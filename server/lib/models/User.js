@@ -9,6 +9,7 @@ const UserSchema = Schema({
   email: String,
   password: String,
   enabled: Boolean,
+  deleted: Boolean,
   groups: Array,
   tenant_id: Schema.Types.ObjectId
 });

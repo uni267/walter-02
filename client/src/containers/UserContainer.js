@@ -51,6 +51,14 @@ class UserContainer extends Component {
   }
 
   handleDelete = (user) => {
+    this.props.actions.deleteUser(
+      user._id,
+      this.props.history
+    )
+    this.handleOpenDialog(user)
+  }
+
+  handleOpenDialog = (user) => {
     this.setState({
       deleteDialog: {
         open: !this.state.deleteDialog.open,
@@ -71,8 +79,8 @@ class UserContainer extends Component {
     ];
 
     const deleteDialogActions = [
-      <FlatButton label="削除" secondary={true} onClick={this.handleDelete} />,
-      <FlatButton label="閉じる" primary={true} onClick={this.handleDelete} />
+      <FlatButton label="削除" secondary={true} onClick={() => (this.handleDelete(this.state.deleteDialog.user))} />,
+      <FlatButton label="閉じる" primary={true} onClick={this.handleOpenDialog} />
     ];
     return (
       <div>
@@ -98,7 +106,7 @@ class UserContainer extends Component {
                   </TableHeader>
                   <TableBody displayRowCheckbox={false}>
                     {this.props.users.map( (user, idx) => {
-                      return <UserTableBody headers={headers} user={user} key={idx} handleDelete={this.handleDelete} />;
+                      return <UserTableBody headers={headers} user={user} key={idx} handleDelete={this.handleOpenDialog} loginUserId={this.props.session.user_id} />;
                     })}
                   </TableBody>
                 </Table>
@@ -120,7 +128,7 @@ class UserContainer extends Component {
           title={`${this.state.deleteDialog.user.name}(${this.state.deleteDialog.user.account_name}) を削除します`}
           modal={false}
           open={this.state.deleteDialog.open}
-          onRequestClose={this.handleDelete}
+          onRequestClose={this.handleOpenDialog}
           actions={deleteDialogActions}
         >
           <b>※ 削除したユーザは元に戻すことができません</b>
@@ -133,7 +141,8 @@ class UserContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     users: state.users,
-    tenant: state.tenant
+    tenant: state.tenant,
+    session: state.session
   };
 };
 

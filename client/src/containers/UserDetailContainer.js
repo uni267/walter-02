@@ -13,6 +13,7 @@ import {
   CardText,
   CardActions
 } from 'material-ui/Card';
+import Dialog from "material-ui/Dialog";
 
 // actions
 import * as UserActions from "../actions/users";
@@ -29,6 +30,10 @@ class UserDetailContainer extends Component {
     this.state = {
       group: {
         text: ""
+      },
+      deleteDialog: {
+        open: false,
+        user: {}
       }
     };
   }
@@ -45,8 +50,29 @@ class UserDetailContainer extends Component {
     this.props.actions.clearUserValidationError();
   }
 
+  handleDelete = () => {
+    this.props.actions.deleteUser(
+      this.props.user.data._id,
+      this.props.history
+    )
+    this.handleOpenDialog()
+  }
+
+  handleOpenDialog = () => {
+    this.setState({
+      deleteDialog: {
+        open: !this.state.deleteDialog.open,
+      }
+    });
+  }
+
   render() {
     const title = `${this.props.user.data.name}の詳細`;
+    const deleteDialogActions = [
+      <FlatButton label="削除" secondary={true} onClick={() => (this.handleDelete(this.state.deleteDialog.user))} />,
+      <FlatButton label="閉じる" primary={true} onClick={this.handleOpenDialog} />
+    ];
+
     return (
       <div>
         <NavigationContainer />
@@ -85,8 +111,23 @@ class UserDetailContainer extends Component {
               label="閉じる"
               onTouchTap={() => this.props.history.push("/users")}
               primary={true} />
+            <FlatButton
+              label="削除"
+              secondary={true}
+              onTouchTap={this.handleOpenDialog}
+              disabled={this.props.session.user_id === this.props.user.data._id}
+            />
           </CardActions>
         </Card>
+        <Dialog
+          title={`${this.props.user.data.name}(${this.props.user.data.account_name}) を削除します`}
+          modal={false}
+          open={this.state.deleteDialog.open}
+          onRequestClose={this.handleOpenDialog}
+          actions={deleteDialogActions}
+        >
+          <b>※ 削除したユーザは元に戻すことができません</b>
+        </Dialog>
       </div>
     );
   }

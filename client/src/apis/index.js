@@ -294,6 +294,10 @@ export class API {
     return this.client.post(`/api/v1/users`, body);
   };
 
+  deleteUser = user_id => {
+    return this.client.delete(`/api/v1/users/${user_id}`);
+  };
+
   createGroup = (group) => {
     const body = { group };
     body.group.tenant_id = localStorage.getItem("tenantId");
