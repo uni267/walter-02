@@ -32,6 +32,7 @@ import watchFetchGroup from "./watchFetchGroup";
 import watchSaveGroupName from "./watchSaveGroupName";
 import watchSaveGroupDescription from "./watchSaveGroupDescription";
 import watchCreateUser from "./watchCreateUser";
+import watchDeleteUser from "./watchDeleteUser";
 import watchCreateGroup from "./watchCreateGroup";
 import watchSaveUserPasswordForce from "./watchSaveUserPasswordForce";
 import watchDeleteGroup from "./watchDeleteGroup";
@@ -138,6 +139,7 @@ function* Saga() {
   yield fork(watchSaveGroupName);
   yield fork(watchSaveGroupDescription);
   yield fork(watchCreateUser);
+  yield fork(watchDeleteUser);
   yield fork(watchCreateGroup);
   yield fork(watchSaveUserPasswordForce);
   yield fork(watchDeleteGroup);

@@ -5,6 +5,7 @@ import { logger } from "../logger";
 import User from "./User";
 import Group from "./Group";
 import RoleFile from "./RoleFile";
+import * as _ from "lodash";
 
 mongoose.Promise = global.Promise;
 
@@ -35,10 +36,10 @@ const FileSchema = Schema({
 FileSchema.index({ dir_id: 1 });
 FileSchema.index({ preview_id: 1 });
 
-FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_id=null) => {
+FileSchema.statics.searchFiles = async (conditions,offset,limit,sortOption,meta_info_id=null) => {
   return co(function* (){
     try {
-      return yield File.aggregate([
+      const files = yield File.aggregate([
         { $match: conditions },
         {
           $lookup: {
@@ -323,6 +324,16 @@ FileSchema.statics.searchFiles = (conditions,offset,limit,sortOption,meta_info_i
         }
       ]).sort(sortOption).skip(offset).limit(limit);
 
+      // 削除されたユーザの権限をカット
+      const users = yield User.find({deleted: {$not: {$eq: true}}})
+      const uids = users.map(user => user.id)
+      const filtered_files = files.map(file => {
+        const filtered_auth = file.authorities.filter(authority => {
+          return !authority.users || _.intersection([authority.users._id.toString()],uids ).length > 0
+        })
+        return {...file, authorities: filtered_auth}
+      })
+      return filtered_files
     } catch (error) {
       throw error;
     }

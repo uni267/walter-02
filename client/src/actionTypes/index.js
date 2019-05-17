@@ -221,6 +221,9 @@ export const INIT_USER = "INIT_USER";
 export const INIT_NEW_USER_TEMPLATE = "INIT_NEW_USER_TEMPLATE";
 export const CREATE_USER = "CREATE_USER";
 
+// ユーザ削除
+export const DELETE_USER = "DELETE_USER";
+
 // ユーザ変更
 export const TOGGLE_USER = "TOGGLE_USER";
 export const CHANGE_USER_NAME = "CHANGE_USER_NAME";

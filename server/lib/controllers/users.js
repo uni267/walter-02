@@ -31,7 +31,10 @@ export const index = (req, res, next) => {
       if (q) {
         conditions = {
           $and: [
-            { tenant_id: mongoose.Types.ObjectId(tenant_id) }
+            { 
+              tenant_id: mongoose.Types.ObjectId(tenant_id),
+              deleted: {$not: {$eq: true}}
+            }
           ],
           $or: [
             { name: new RegExp(q, "i") },
@@ -41,7 +44,8 @@ export const index = (req, res, next) => {
       }
       else {
         conditions = {
-          tenant_id: mongoose.Types.ObjectId(tenant_id)
+          tenant_id: mongoose.Types.ObjectId(tenant_id),
+          deleted: {$not: {$eq: true}}
         };
       }
 
@@ -817,6 +821,53 @@ export const updateRoleMenus = (req, res, next ) => {
         status: { success: false, message: "メニュー権限の変更に失敗しました", errors }
       });
 
+    }
+  });
+};
+
+export const remove = async (req, res, next) => {
+  co(function* () {
+    try {
+      const { user_id } = req.params;
+      if (user_id === undefined ||
+          user_id === null ||
+          user_id === "") throw "user_id is empty";
+
+      if (! mongoose.Types.ObjectId.isValid(user_id)) throw "user_id is invalid";
+
+      const user = yield User.findById(user_id);
+      if (user === null) throw "user is empty";
+
+      user.enabled = false;
+      user.deleted = true;
+      
+      const changedUser = yield user.save();
+
+      res.json({
+        status: { success: true },
+        body: changedUser
+      });
+    }
+    catch (e) {
+      let errors = {};
+      switch (e) {
+      case "user_id is empty":
+        errors.user_id = e;
+        break;
+      case "user_id is invalid":
+        errors.user_id = "ユーザIDが不正のためユーザの有効化/無効化に失敗しました";
+        break;
+      case "user is empty":
+        errors.user = "指定されたユーザは存在しません";
+        break;
+      default:
+        errors.unknown = e;
+        break;
+      }
+
+      res.status(400).json({
+        status: { success: false, message: "ユーザの有効化/無効化に失敗しました", errors }
+      });
     }
   });
 };

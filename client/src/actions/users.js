@@ -16,6 +16,10 @@ export const createUser = (user, history) => ({
   type: actionTypes.CREATE_USER, user, history
 });
 
+export const deleteUser = (user_id, history) => ({
+  type: actionTypes.DELETE_USER, user_id, history
+});
+
 export const changeUserValidationError = (errors) => ({
   type: actionTypes.CHANGE_USER_VALIDATION_ERROR, errors
 });
