@@ -30,6 +30,7 @@ const AuthorityDirDialog = ({
       modal={false}
       actions={dialogActions}
       open={open}
+      autoScrollBodyContent={true}
       onRequestClose={actions.toggleAuthorityDirDialog} >
 
       <Authority
