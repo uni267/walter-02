@@ -23,6 +23,9 @@ import {
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import SocialPersonAdd from "material-ui/svg-icons/social/person-add";
+import Dialog from "material-ui/Dialog";
+import FlatButton from 'material-ui/FlatButton';
+import {List, ListItem} from 'material-ui/List';
 
 // components
 import NavigationContainer from "./NavigationContainer";
@@ -34,8 +37,26 @@ import UserTableBody from "../components/User/UserTableBody";
 import * as UserActions from "../actions/users";
 
 class UserContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      deleteDialog: {
+        open: false,
+        user: {}
+      }
+    };
+  }
   componentWillMount() {
     this.props.actions.requestFetchUsers();
+  }
+
+  handleDelete = (user) => {
+    this.setState({
+      deleteDialog: {
+        open: !this.state.deleteDialog.open,
+        user
+      }
+    });
   }
 
   render() {
@@ -44,11 +65,15 @@ class UserContainer extends Component {
       { name: "アカウント名", width: "25%" },
       { name: "表示名", width: "25%" },
       // { name: "メールアドレス", width: "15%" },
-      { name: "所属グループ", width: "30%" },
-      { name: "編集", width: "10%" }
+      { name: "所属グループ", width: "20%" },
+      { name: "編集", width: "10%" },
+      { name: "削除", width: "10%" }
     ];
 
-
+    const deleteDialogActions = [
+      <FlatButton label="削除" secondary={true} onClick={this.handleDelete} />,
+      <FlatButton label="閉じる" primary={true} onClick={this.handleDelete} />
+    ];
     return (
       <div>
         <NavigationContainer />
@@ -73,7 +98,7 @@ class UserContainer extends Component {
                   </TableHeader>
                   <TableBody displayRowCheckbox={false}>
                     {this.props.users.map( (user, idx) => {
-                      return <UserTableBody headers={headers} user={user} key={idx} />;
+                      return <UserTableBody headers={headers} user={user} key={idx} handleDelete={this.handleDelete} />;
                     })}
                   </TableBody>
                 </Table>
@@ -91,6 +116,15 @@ class UserContainer extends Component {
             </div>
           </CardText>
         </Card>
+        <Dialog
+          title={`${this.state.deleteDialog.user.name}(${this.state.deleteDialog.user.account_name}) を削除します`}
+          modal={false}
+          open={this.state.deleteDialog.open}
+          onRequestClose={this.handleDelete}
+          actions={deleteDialogActions}
+        >
+          <b>※ 削除したユーザは元に戻すことができません</b>
+        </Dialog>
       </div>
     );
   }
