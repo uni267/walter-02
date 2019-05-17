@@ -13,8 +13,9 @@ import {
 import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
 import ImageEdit from "material-ui/svg-icons/image/edit";
+import ImageDelete from "material-ui/svg-icons/action/delete";
 
-const UserTableBody = ({ user, headers }) => {
+const UserTableBody = ({ user, headers, handleDelete }) => {
   const renderGroups = (groups) => {
     return groups.map( (group, idx)  => (
       <Chip key={idx} style={{ marginRight: 10, marginTop: 5, marginBottom: 5 }}>
@@ -49,6 +50,12 @@ const UserTableBody = ({ user, headers }) => {
           <ImageEdit />
         </IconButton>
       </TableRowColumn>
+      <TableRowColumn style={{ width: widths[5] }}>
+        <IconButton onClick={() => handleDelete(user)}>
+          <ImageDelete />
+        </IconButton>
+      </TableRowColumn>
+
     </TableRow>
   );
 };
