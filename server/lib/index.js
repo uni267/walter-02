@@ -28,8 +28,8 @@ app.use( (req, res, next) => {
   next();
 });
 
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json({limit: '300mb'}));
+//app.use(bodyParser.urlencoded({extended: true}));
+//app.use(bodyParser.json({limit: '300mb'}));
 
 // ie11にてファイルサイズが大きい場合、メモリオーバーになる対策
 const streamMiddleware = (req, res, next) => {
