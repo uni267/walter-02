@@ -1369,7 +1369,7 @@ export const move = async (req, res, next) => {
           files: file._id,
           role_files: docs[i].role_files,
           users: docs[i].users,
-          group: docs[i].group,
+          group: docs[i].groups,
         })
       }
     }
