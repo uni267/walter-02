@@ -1326,7 +1326,7 @@ export const move = async (req, res, next) => {
             files: movedDirs[i]._id,
             role_files: docs[j].role_files,
             users: docs[j].users,
-            group: docs[j].group,
+            group: docs[j].groups,
           })
         }
       }
@@ -1349,7 +1349,7 @@ export const move = async (req, res, next) => {
             files: movedFiles[i]._id,
             role_files: docs[j].role_files,
             users: docs[j].users,
-            group: docs[j].group,
+            group: docs[j].groups,
           })
         }
         // フォルダ内のファイルについて elasticsearch index更新
