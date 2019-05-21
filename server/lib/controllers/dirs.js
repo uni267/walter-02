@@ -393,6 +393,7 @@ export const move = (req, res, next) => {
     try {
       const moving_id = mongoose.Types.ObjectId(req.params.moving_id);  // 対象
       const destination_id = mongoose.Types.ObjectId(req.body.destinationDir._id);  // 行き先
+      const { trash_dir_id } = yield Tenant.findOne(res.user.tenant_id);
 
       if(moving_id.toString() === destination_id.toString()) throw "target is the same as folder";
 
@@ -401,27 +402,68 @@ export const move = (req, res, next) => {
       const isPermitted =  yield checkFilePermission(moving_id, user._id, constants.PERMISSION_MOVE );
       if( !isPermitted ) throw "permission denied";
 
-      const moved_dir = yield moveDir(moving_id, destination_id, user, "移動");
+      const movedDirs = (yield moveDir(moving_id, destination_id, user, "移動")).map( d => d._id );
+
       // フォルダ権限を移動先フォルダの権限に張替え
-      yield AuthorityFile.remove({ files: moved_dir._id })
-      const docs = yield AuthorityFile.find({ files: moved_dir.dir_id })
-      for (let i in docs ) {
-        yield AuthorityFile.create({
-          files: moved_dir._id,
-          role_files: docs[i].role_files,
-          users: docs[i].users,
-          group: docs[i].group,
-        })
+      for (let i in movedDirs) {
+        yield AuthorityFile.remove({ files: movedDirs[i]._id });
+        const docs = yield AuthorityFile.find({ files: movedDirs[i].dir_id });
+        for (let j in docs ) {
+          yield AuthorityFile.create({
+            files: movedDirs[i]._id,
+            role_files: docs[j].role_files,
+            users: docs[j].users,
+            groups: docs[j].groups,
+          });
+        }
       }
 
-      // 移動したフォルダについて elasticsearch index更新
-      const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(moving_id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+      // 移動フォルダ自身と子を取得
+      const movedFiles = yield File.find({
+        $or: [
+          { _id: { $in: movedDirs }},
+          { dir_id:{ $in: movedDirs }}
+        ]
+      });
+      for(let i in movedFiles ){
+        // movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
+        yield movedFiles[i].save();
+        // フォルダ権限を移動先フォルダの権限に張替え
+        yield AuthorityFile.remove({ files: movedFiles[i]._id });
+        const docs = yield AuthorityFile.find({ files: movedFiles[i].dir_id });
+        for (let j in docs ) {
+          yield AuthorityFile.create({
+            files: movedFiles[i]._id,
+            role_files: docs[j].role_files,
+            users: docs[j].users,
+            groups: docs[j].groups,
+          });
+        }
+        // フォルダ内のファイルについて elasticsearch index更新
+        const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
+        yield esClient.createIndex(res.user.tenant_id,[updatedFile]);
+      }
+
+      // // フォルダ権限を移動先フォルダの権限に張替え
+      // yield AuthorityFile.remove({ files: moved_dir._id })
+      // const docs = yield AuthorityFile.find({ files: moved_dir.dir_id })
+      // for (let i in docs ) {
+      //   yield AuthorityFile.create({
+      //     files: moved_dir._id,
+      //     role_files: docs[i].role_files,
+      //     users: docs[i].users,
+      //     group: docs[i].group,
+      //   })
+      // }
+
+      // // 移動したフォルダについて elasticsearch index更新
+      // const { tenant_id }= res.user;
+      // const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(moving_id) });
+      // yield esClient.createIndex(tenant_id,[updatedFile]);
 
       res.json({
         status: { success: true },
-        body: moved_dir
+        body: movedDirs
       });
 
     } catch(e){
