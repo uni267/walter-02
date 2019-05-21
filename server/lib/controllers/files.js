@@ -1228,7 +1228,7 @@ export const move = (req, res, next) => {
               files: movedFiles[i]._id,
               role_files: docs[j].role_files,
               users: docs[j].users,
-              group: docs[j].group,
+              groups: docs[j].groups,
             })
           }
           // フォルダ内のファイルについて elasticsearch index更新
