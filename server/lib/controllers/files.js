@@ -1205,7 +1205,7 @@ export const move = (req, res, next) => {
               files: movedDirs[i]._id,
               role_files: docs[j].role_files,
               users: docs[j].users,
-              group: docs[j].group,
+              groups: docs[j].groups,
             })
           }
         }
@@ -1248,7 +1248,7 @@ export const move = (req, res, next) => {
             files: file._id,
             role_files: docs[i].role_files,
             users: docs[i].users,
-            group: docs[i].group,
+            groups: docs[i].groups,
           })
         }
       }
