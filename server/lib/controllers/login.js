@@ -35,6 +35,8 @@ export const authentication = (req, res, next) => {
 
       if (user === null) throw "user is empty";
 
+      if (user.deleted === true) throw "user is deleted";
+
       if (user.enabled === false) throw "user is disabled";
 
       const hash = crypto.createHash("sha512").update(password).digest("hex");
@@ -73,6 +75,9 @@ export const authentication = (req, res, next) => {
         break;
       case "user is disabled":
         errors.account_name = "指定されたユーザは現在無効状態のためユーザ認証に失敗しました";
+        break;
+      case "user is disabled":
+        errors.account_name = "指定されたユーザは現在削除されています";
         break;
       case "tenant_name is empty":
         errors.tenant_name = "テナント名が空のためユーザ認証に失敗しました";
