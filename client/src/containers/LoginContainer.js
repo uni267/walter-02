@@ -85,7 +85,6 @@ class LoginContainer extends Component {
                 <TextField
                   ref="account_name"
                   onKeyDown={this.handleKeyDown}
-                  hintText="example"
                   floatingLabelText="ユーザID"
                   errorText={this.props.session.errors.account_name}
                   style={styles.text} />
