@@ -76,8 +76,8 @@ export const authentication = (req, res, next) => {
       case "user is disabled":
         errors.account_name = "指定されたユーザは現在無効状態のためユーザ認証に失敗しました";
         break;
-      case "user is disabled":
-        errors.account_name = "指定されたユーザは現在削除されています";
+      case "user is deleted":
+        errors.account_name = "指定されたユーザは削除されています";
         break;
       case "tenant_name is empty":
         errors.tenant_name = "テナント名が空のためユーザ認証に失敗しました";
