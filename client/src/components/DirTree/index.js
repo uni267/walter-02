@@ -24,6 +24,7 @@ class DirTree extends Component {
 
   getChild = () => {
     const api = new API();
+    if(this.props.node._id !== this.props.dirTree.move_dir._id){
     api.fetchDirTree(this.props.node._id)
       .then( payload => {
         this.setState({
@@ -33,6 +34,7 @@ class DirTree extends Component {
       .catch( err => {
         console.log(err);
       });
+    }
   };
 
   renderChildren = () => {
