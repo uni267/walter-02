@@ -124,6 +124,7 @@ FileSchema.statics.searchFiles = async (conditions,offset,limit,sortOption,meta_
             unvisible: { $first: "$unvisible" },
             authorities: {
               $push: {
+                is_default: "$authorities.is_default",
                 role_files: "$authorities_role_files",
                 users: "$authorities_users",
                 groups: "$authorities_groups",

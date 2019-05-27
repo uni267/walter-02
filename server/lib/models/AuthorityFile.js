@@ -8,7 +8,8 @@ const AuthoritySchema = Schema({
   files : Schema.Types.ObjectId,
   role_files : { type:Schema.Types.ObjectId, ref:'role_files'},
   users : { type:Schema.Types.ObjectId, ref:'users'},
-  groups : { type:Schema.Types.ObjectId, ref:'groups'}
+  groups : { type:Schema.Types.ObjectId, ref:'groups'},
+  is_default: Schema.Types.Boolean, // デフォルトの権限
 });
 
 AuthoritySchema.index({ files: 1 });
