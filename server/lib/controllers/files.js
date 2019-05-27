@@ -455,7 +455,7 @@ export const search = (req, res, next, export_excel=false) => {
           }
         }
       };
-      let esResultDir = yield esClient.search(esQueryDir);
+      let esResultDir = yield esClient.searchAll(esQueryDir);
 
       // 取得した一覧とTopが閲覧可能なフォルダとなる
       const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
@@ -828,7 +828,7 @@ export const searchDetail = (req, res, next, export_excel=false) => {
         }
       };
 
-      let esResultDir = yield esClient.search(esQueryDir);
+      let esResultDir = yield esClient.searchAll(esQueryDir);
 
       // 取得した一覧とTopが閲覧可能なフォルダとなる
       const authorizedDirIds = [

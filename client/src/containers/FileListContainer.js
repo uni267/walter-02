@@ -24,6 +24,7 @@ import FileOperationDialogContainer from "./FileOperationDialogContainer";
 // actions
 import * as FileActions from "../actions/files";
 import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants/index";
+import * as commonActions from "../actions/commons";
 
 const styles = {
   row: {
@@ -221,6 +222,7 @@ class FileListContainer extends Component {
   handleFileDrop = (item, monitor) => {
     if (monitor) {
       const disableFileBuffer = true
+      // commonActions.openException('アップロード権限がありません。', null ) todo:ここで権限を判断してエラーメッセージ出力
       this.props.actions.uploadFiles(
         this.props.match.params.id, monitor.getItem().files, disableFileBuffer
       );

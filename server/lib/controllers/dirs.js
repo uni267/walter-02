@@ -243,6 +243,13 @@ export const create = (req, res, next) => {
       const inheritAuthEnabled = inheritAuthSetting && inheritAuthSetting.enable;
       var authorityFiles = [];
 
+      const is_current_user_and_role = auth => {
+        return auth.users !== undefined
+        && auth.users !== null
+        && auth.users.toString() === user._id.toString()
+        && auth.role_files.toString() === role._id.toString();
+      } 
+
       if (inheritAuthEnabled) {
         // 親フォルダの権限継承用
         const parent = yield File.findById(dir_id);
@@ -253,7 +260,8 @@ export const create = (req, res, next) => {
             groups: ihr.groups === null ? null : mongoose.Types.ObjectId(ihr.groups),
             users: ihr.users === null ? null : mongoose.Types.ObjectId(ihr.users),
             files: dir,
-            role_files: mongoose.Types.ObjectId(ihr.role_files)
+            role_files: mongoose.Types.ObjectId(ihr.role_files),
+            is_default: is_current_user_and_role(ihr)
           });
         });
         authorityFiles = authorityFiles.concat(_authorityFiles);
@@ -265,16 +273,14 @@ export const create = (req, res, next) => {
         const parent = yield File.findById(dir_id);
         const inheritAuths = yield AuthorityFile.find({ files: parent._id });
         const duplicateAuths = inheritAuths.filter( ihr => {
-          return ihr.users !== undefined
-            && ihr.users !== null
-            && ihr.users.toString() === user._id.toString()
-            && ihr.role_files.toString() === role._id.toString();
+          return is_current_user_and_role(ihr)
         });
         if (duplicateAuths.length === 0) {
           const authority = new AuthorityFile();
           authority.users = user._id;
           authority.files = dir._id;
           authority.role_files = role._id;
+          authority.is_default = true;
           authorityFiles = authorityFiles.concat(authority);
         }
       } else {
@@ -282,6 +288,7 @@ export const create = (req, res, next) => {
         authority.users = user._id;
         authority.files = dir._id;
         authority.role_files = role._id;
+        authority.is_default = true;
         authorityFiles = authorityFiles.concat(authority);
       }
 
@@ -402,6 +409,7 @@ export const move = (req, res, next) => {
       const isPermitted =  yield checkFilePermission(moving_id, user._id, constants.PERMISSION_MOVE );
       if( !isPermitted ) throw "permission denied";
 
+      const destination_dir = yield File.findById(destination_id)
       const movedDirs = (yield moveDir(moving_id, destination_id, user, "移動")).map( d => d._id );
 
       // フォルダ権限を移動先フォルダの権限に張替え
@@ -426,7 +434,7 @@ export const move = (req, res, next) => {
         ]
       });
       for(let i in movedFiles ){
-        // movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
+        movedFiles[i].is_trash = destination_dir.is_trash
         yield movedFiles[i].save();
         // フォルダ権限を移動先フォルダの権限に張替え
         yield AuthorityFile.remove({ files: movedFiles[i]._id });
