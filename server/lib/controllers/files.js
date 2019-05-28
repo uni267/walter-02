@@ -1242,16 +1242,24 @@ export const move = (req, res, next) => {
         file.is_trash = dir._id.toString() === trash_dir_id;
         changedFile = yield moveFile(file, dir._id, user, "移動");
 
+        const defaultAuthArray = yield AuthorityFile.find({ files: file._id, is_default: true }) // デフォルト権限を取得
+        let defaultAuth = null
+        if(defaultAuthArray.length > 0){
+          defaultAuth = defaultAuthArray[0]
+        }
+
         // ファイル権限を移動先フォルダの権限に張替え
-        yield AuthorityFile.remove({ files: changedFile._id })
+        yield AuthorityFile.remove({ files: changedFile._id, is_default: {$ne: true} })
         const docs = yield AuthorityFile.find({ files: changedFile.dir_id })
         for (let i in docs ) {
-          yield AuthorityFile.create({
-            files: file._id,
-            role_files: docs[i].role_files,
-            users: docs[i].users,
-            groups: docs[i].groups,
-          })
+          if( !AuthorityFile.equal(defaultAuth, docs[i]) ){ //デフォルト権限との重複を防ぐ
+            yield AuthorityFile.create({
+              files: file._id,
+              role_files: docs[i].role_files,
+              users: docs[i].users,
+              groups: docs[i].groups,
+            })
+            }
         }
       }
       // elasticsearch index作成
@@ -1736,8 +1744,8 @@ export const upload = (req, res, next) => {
             const parentFile = yield File.findById(file.dir_id)
             const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
             authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
-              groups: ihr.groups === null ? null : mongoose.Types.ObjectId(ihr.groups),
-              users: ihr.users === null ? null : mongoose.Types.ObjectId(ihr.users),
+              groups: ihr.groups ? mongoose.Types.ObjectId(ihr.groups) : null,
+              users: ihr.users ? mongoose.Types.ObjectId(ihr.users) : null,
               files: model,
               role_files: mongoose.Types.ObjectId(ihr.role_files)
             }));
@@ -1756,14 +1764,17 @@ export const upload = (req, res, next) => {
           authorityFiles = authorityFiles.concat(authorityFile)
           authorityFiles = uniqWith(authorityFiles, (a, b) => (
             isEqualWith(a, b, (a, b) => {
-              if (a.users === undefined || a.users === null) return false;
-              if (b.users === undefined || b.users === null) return false;
-              return a.users.toString() === b.users.toString()
-              && a.files.toString() === b.files.toString()
-              && a.role_files.toString() === b.role_files.toString()
+              return a.files.toString() === b.files.toString() && AuthorityFile.equal(a,b)
             })
           ))
 
+          authorityFiles = authorityFiles.map(auth => new AuthorityFile({
+            groups: auth.groups,
+            users: auth.users,
+            files: auth.files,
+            role_files: auth.role_files,
+            is_default: AuthorityFile.equal(authorityFile, auth)
+          }))
           return Promise.resolve(authorityFiles);
         })
       });
@@ -2446,7 +2457,7 @@ const _removeAuthority = (file_id, user_id, group_id, role_id, tenant_id) => {
     if (role_target === null) throw "user or group is empty";
 
     const find_conditions = target_is_user
-          ? { role_files: role_file._id, users: role_target._id, files: file._id }
+          ? { role_files: role_file._id, users: role_target._id, files: file._id, is_default: {$ne: true} }   // default権限は削除対象外
           : { role_files: role_file._id, groups: role_target._id, files: file._id };
 
     const authority = AuthorityFile.findOne(find_conditions);
