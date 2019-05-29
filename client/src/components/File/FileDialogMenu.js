@@ -29,12 +29,6 @@ const FileDialogMenu = ({
 }) => {
   const opacity = hover ? 1 : 0.1;
 
-  const action_menu_icon = (
-    <IconButton style={{ opacity }}>
-      <NavigationMenu />
-    </IconButton>
-  );
-
   let menuItems = [
     {
       name: constants.PERMISSION_DOWNLOAD,
@@ -164,6 +158,13 @@ const FileDialogMenu = ({
       })
     : menuItems;
 
+  const disabled = _.intersection(menuItems.map(item=>item.name), file.actions.map(act=>act.name)).length === 0  // メニュー内容が0件の場合、非表示
+  const action_menu_icon = (
+    <IconButton style={{ opacity }} disabled={disabled}>
+      <NavigationMenu />
+    </IconButton>
+  );
+  
   const renderMenu = (menu, file, idx) => {
     if (file.actions === undefined) return null;
 

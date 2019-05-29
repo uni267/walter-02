@@ -23,8 +23,7 @@ import FileOperationDialogContainer from "./FileOperationDialogContainer";
 
 // actions
 import * as FileActions from "../actions/files";
-import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL } from "../constants/index";
-import * as commonActions from "../actions/commons";
+import { LIST_DEFAULT, LIST_SEARCH_SIMPLE, LIST_SEARCH_DETAIL, PERMISSION_UPLOAD } from "../constants/index";
 
 const styles = {
   row: {
@@ -222,7 +221,6 @@ class FileListContainer extends Component {
   handleFileDrop = (item, monitor) => {
     if (monitor) {
       const disableFileBuffer = true
-      // commonActions.openException('アップロード権限がありません。', null ) todo:ここで権限を判断してエラーメッセージ出力
       this.props.actions.uploadFiles(
         this.props.match.params.id, monitor.getItem().files, disableFileBuffer
       );
@@ -275,6 +273,15 @@ class FileListContainer extends Component {
   render() {
     const { FILE } = NativeTypes;
 
+    const canUpload = this.props.dirAction.actions.filter(action => action.name === PERMISSION_UPLOAD).length > 0
+    const tableBodyContents = (
+      <div style={{ paddingBottom: 30 }} >
+      {this.props.files.length === 0
+        ? this.renderFileIsEmpty()
+        : this.props.files.map( (file, idx) => this.renderRow(file, idx) )}
+      </div>
+    )
+
     return (
       <div>
         <div style={styles.row}>
@@ -287,17 +294,17 @@ class FileListContainer extends Component {
           ))}
         </div>
 
+        {canUpload? //アップロード権限がある場合のみTableBodyWrapperを使用する
         <TableBodyWrapper
           accepts={[FILE]}
           onDrop={this.handleFileDrop}>
-
-          <div style={{ paddingBottom: 30 }} >
-            {this.props.files.length === 0
-              ? this.renderFileIsEmpty()
-              : this.props.files.map( (file, idx) => this.renderRow(file, idx) )}
-          </div>
-
+          {tableBodyContents}
         </TableBodyWrapper>
+        :
+        <div>
+          {tableBodyContents}
+        </div>
+        }
 
         <FileOperationDialogContainer { ...this.props } />
       </div>
@@ -318,7 +325,8 @@ const mapStateToProps = (state, ownProps) => {
     downloadBlob: state.downloadFile,
     addAuthority: state.addAuthorityFile,
     headers: state.displayItems,
-    fileListType: state.fileListType
+    fileListType: state.fileListType,
+    dirAction: state.dirAction
   };
 };
 
