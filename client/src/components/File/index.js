@@ -192,6 +192,7 @@ class File extends Component {
     const checkOpacity = this.state.hover || file.checked ? 1 : 0.1;
 
     // react-dndの仕様でinjectされたDnDコンポーネントの関数でラップし返却する
+    const canMove = this.props.dirAction.actions.filter(action => action.name === constants.PERMISSION_MOVE).length > 0
     const elements = (
       <div
         onMouseEnter={() => this.setState({ hover: true })}
@@ -233,8 +234,8 @@ class File extends Component {
         </div>
       </div>
     );
-
-    return connectDragSource ? connectDragSource(elements) : elements;
+    
+    return connectDragSource && canMove ? connectDragSource(elements) : elements;
   }
 }
 

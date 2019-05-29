@@ -1,4 +1,5 @@
 import React from "react";
+import * as _ from "lodash";
 
 import * as constants from "../../constants";
 
@@ -24,11 +25,6 @@ const DirDialogMenu = ({
   actions
 }) => {
   const opacity = hover ? 1 : 0.1;
-  const action_menu_icon = (
-    <IconButton style={{ opacity }}>
-      <NavigationMenu />
-    </IconButton>
-  );
 
   let menuItems = [
     {
@@ -110,6 +106,13 @@ const DirDialogMenu = ({
       }
     ) : menuItems;
 
+  const disabled = _.intersection(menuItems.map(item=>item.name), dir.actions.map(act=>act.name)).length === 0  // メニュー内容が0件の場合、非表示
+  const action_menu_icon = (
+    <IconButton style={{ opacity }} disabled={disabled}>
+      <NavigationMenu />
+    </IconButton>
+  );
+  
   const renderMenu = (menu, dir, idx) => {
     if (dir.actions === undefined) return null;
 
