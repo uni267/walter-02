@@ -68,20 +68,6 @@ AuthoritySchema.statics.getActions = function(condition){
   })
 };
 
-// ２つの権限が同じものかどうか
-AuthoritySchema.statics.equal = (foo, bar) => {
-  let result = false
-  
-  if(foo && bar && foo.role_files.toString() === bar.role_files.toString() ){
-    if(foo.users && bar.users){
-      result = foo.users.toString() === bar.users.toString()
-    }else if(foo.groups && bar.groups){
-      result = foo.groups.toString() === bar.groups.toString()
-    }
-  }
-  return result
-}
-
 const AuthorityFile = mongoose.model("authority_files", AuthoritySchema, "authority_files");
 
 export default AuthorityFile;

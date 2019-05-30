@@ -414,24 +414,15 @@ export const move = (req, res, next) => {
 
       // フォルダ権限を移動先フォルダの権限に張替え
       for (let i in movedDirs) {
-        const defaultAuthArray = yield AuthorityFile.find({ files: movedDirs[i]._id, is_default: true })  //デフォルト権限の取得
-        let defaultAuth = null
-        if(defaultAuthArray.length > 0){
-          defaultAuth = defaultAuthArray[0]
-        }
-        yield AuthorityFile.remove({ files: movedDirs[i]._id, is_default: {$ne: true} });
+        yield AuthorityFile.remove({ files: movedDirs[i]._id });
         const docs = yield AuthorityFile.find({ files: movedDirs[i].dir_id });
-
         for (let j in docs ) {
-          if( !AuthorityFile.equal(defaultAuth, docs[j]) ){ //デフォルト権限との重複を防ぐ
-            yield AuthorityFile.create({
-              files: movedDirs[i]._id,
-              role_files: docs[j].role_files,
-              users: docs[j].users,
-              groups: docs[j].groups,
-              is_default: false
-            });
-          }
+          yield AuthorityFile.create({
+            files: movedDirs[i]._id,
+            role_files: docs[j].role_files,
+            users: docs[j].users,
+            groups: docs[j].groups,
+          });
         }
       }
 
@@ -446,24 +437,15 @@ export const move = (req, res, next) => {
         movedFiles[i].is_trash = destination_dir.is_trash
         yield movedFiles[i].save();
         // フォルダ権限を移動先フォルダの権限に張替え
-        const defaultAuthArray = yield AuthorityFile.find({ files: movedFiles[i]._id, is_default: true })  //デフォルト権限の取得
-        let defaultAuth = null
-        if(defaultAuthArray.length > 0){
-          defaultAuth = defaultAuthArray[0]
-        }
-        yield AuthorityFile.remove({ files: movedFiles[i]._id, is_default: {$ne: true} });
-        //yield AuthorityFile.remove({ files: movedFiles[i]._id });
+        yield AuthorityFile.remove({ files: movedFiles[i]._id });
         const docs = yield AuthorityFile.find({ files: movedFiles[i].dir_id });
         for (let j in docs ) {
-          if( !AuthorityFile.equal(defaultAuth, docs[j]) ){ //デフォルト権限との重複を防ぐ
-            yield AuthorityFile.create({
-              files: movedFiles[i]._id,
-              role_files: docs[j].role_files,
-              users: docs[j].users,
-              groups: docs[j].groups,
-              is_default: false
-            });
-          }
+          yield AuthorityFile.create({
+            files: movedFiles[i]._id,
+            role_files: docs[j].role_files,
+            users: docs[j].users,
+            groups: docs[j].groups,
+          });
         }
         // フォルダ内のファイルについて elasticsearch index更新
         const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
