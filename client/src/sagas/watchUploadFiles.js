@@ -136,7 +136,7 @@ function* watchUploadFiles() {
     }
     catch (e) {
       console.log(e);
-      const { message, errors } = errorParser(e,"ファイルのアップロードに失敗しました。");
+      const { message, errors } = errorParser(e,"タグ名の保存に失敗しました");
       yield put(commons.openException(message, errors[ Object.keys(errors)[0] ]));
     }
     finally {

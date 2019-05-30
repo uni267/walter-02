@@ -63,10 +63,10 @@ class Authority extends Component {
   }
 
   renderAuthorities = (file) => {
-    const no_default = file.authorities.filter(auth => auth.is_default || false ).length === 0 // デフォルトauthの設定がない（＝古い形式のデータ）
     return file.authorities.map( (auth, idx) => {
-      const deletable = no_default ? auth.users !== undefined && auth.users._id === this.props.session.user_id && auth.role_files.name === 'フルコントロール'
-          : auth.is_default || false
+
+      const deletable = auth.users !== undefined 
+            && auth.users._id === this.props.session.user_id;
 
       let account;
       let isUser;
@@ -121,25 +121,22 @@ class Authority extends Component {
       };
     });
 
-    const authorities = this.props.file.authorities
     let users = this.props.users.filter(user => user.enabled).map( user => {
-      const disabled = authorities.filter(auth => auth.users && auth.users._id ===  user._id).length > 0
       return {
         text: user.name,
         user: user,
         value: (
-          <MenuItem primaryText={user.name} leftIcon={<SocialPerson />} disabled={disabled} />
+          <MenuItem primaryText={user.name} leftIcon={<SocialPerson />} />
         )
       };
     });
 
     users = users.concat( this.props.groups.map( group => {
-      const disabled = authorities.filter(auth => auth.groups && auth.groups._id ===  group._id).length > 0
       return {
         text: group.name,
         group: group,
         value: (
-          <MenuItem primaryText={group.name} leftIcon={<SocialGroup />} disabled={disabled} />
+          <MenuItem primaryText={group.name} leftIcon={<SocialGroup />} />
         )
       };
     }));
@@ -218,17 +215,6 @@ class Authority extends Component {
                 this.state.user.group,
                 this.state.role.role
               );
-              this.setState({
-                user: {
-                  text: ""
-                },
-                group: {
-                  text: ""
-                },
-                role: {
-                  text: ""
-                },
-              })              
             }} />
         </div>
 
