@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as _ from "lodash";
 
 // material-uis
 import AutoComplete from "material-ui/AutoComplete";
@@ -11,6 +12,9 @@ import Dialog from "material-ui/Dialog";
 import SocialPerson from "material-ui/svg-icons/social/person";
 import SocialGroup from "material-ui/svg-icons/social/group";
 import HardwareSecurity from "material-ui/svg-icons/hardware/security";
+import { ActionSettingsInputHdmi } from "material-ui/svg-icons";
+
+import * as constants from "../../constants";
 
 const style = {
   row: {
@@ -58,6 +62,9 @@ class Authority extends Component {
         group: {},
         role: {},
         group: {}
+      },
+      deleteErrorDialog: {
+        open: false,
       }
     };
   }
@@ -93,15 +100,23 @@ class Authority extends Component {
               label="削除"
               disabled={deletable}
               onClick={() => {
-                this.setState({
-                  deleteDialog: {
-                    open: true,
-                    file: file,
-                    user: isUser ? account : null,
-                    group: isUser ? null : account,
-                    role: auth.role_files
-                  }
-                });
+                if(auth.role_files.name === constants.ROLE_NAME_FULL_CONTROLL && file.authorities.filter(auth => auth.role_files.name === constants.ROLE_NAME_FULL_CONTROLL).length === 1 ){
+                  this.setState({
+                    deleteErrorDialog: {
+                      open: true,
+                    }
+                  });
+                }else{
+                  this.setState({
+                    deleteDialog: {
+                      open: true,
+                      file: file,
+                      user: isUser ? account : null,
+                      group: isUser ? null : account,
+                      role: auth.role_files
+                    }
+                  });
+                }
               }}
               />
           </div>
@@ -167,6 +182,16 @@ class Authority extends Component {
       )
     ];
 
+    const deleteErrorDialogActions = [
+      (
+        <FlatButton
+          label="閉じる"
+          primary={true}
+          onTouchTap={() => this.setState({ deleteErrorDialog: { open: false } })}
+          />
+      )
+    ];
+
     let addClickable = this.state.user.text !== "" && this.state.role.text !== "";
 
     return (
@@ -227,6 +252,12 @@ class Authority extends Component {
           open={this.state.deleteDialog.open}
           modal={true}
           actions={deleteDialogActions} >
+        </Dialog>
+        <Dialog
+          title="全てのフルコントロール権限を削除することはできません"
+          open={this.state.deleteErrorDialog.open}
+          modal={true}
+          actions={deleteErrorDialogActions} >
         </Dialog>
 
       </div>

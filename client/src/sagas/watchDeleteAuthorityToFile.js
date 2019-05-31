@@ -1,4 +1,5 @@
 import { call, put, take } from "redux-saga/effects";
+import * as _ from "lodash";
 
 import { API } from "../apis";
 
@@ -31,11 +32,17 @@ function* watchDeleteAuthorityToFile() {
       yield put(commons.triggerSnackbar("権限を削除しました"));
     }
     catch (e) {
-      const { message, errors } = errorParser(e,"権限の削除に失敗しました");
-      if(!errors.unknown){
-        yield put(commons.openException(message, JSON.stringify(errors)));
+      if(_.get(e, 'response.data.status.errors.name') === 'PermisstionDeniedException'){
+        yield put(commons.openException("操作権限がありません", '' ));
+        // 読取権限すらないことが想定されるため、「権限を変更」ダイアログを消して一覧もリフレッシュ。
+        window.location.reload();
       }else{
-        yield put(commons.openException(message, errors.unknown ));
+        const { message, errors } = errorParser(e,"権限の削除に失敗しました");
+        if(!errors.unknown){
+          yield put(commons.openException(message, JSON.stringify(errors)));
+        }else{
+          yield put(commons.openException(message, errors.unknown ));
+        }
       }
     } finally {
       yield put(commons.loadingEnd());
