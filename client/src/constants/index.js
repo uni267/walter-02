@@ -24,6 +24,8 @@ export const PERMISSION_VERIFY_TIMESTAMP = "verify-timestamp";
 export const PERMISSION_AUTO_TIMESTAMP = "auto-timestamp";
 
 
+export const ROLE_NAME_FULL_CONTROLL = "フルコントロール";    //フルコントロールroleのname
+
 // 権限(menu)
 export const PERMISSION_META_INFOS = "meta_infos";
 export const PERMISSION_GROUPS = "groups";

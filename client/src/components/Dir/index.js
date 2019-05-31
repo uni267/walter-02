@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
+import * as _ from "lodash";
 
 // material
 import Checkbox from 'material-ui/Checkbox';
@@ -57,10 +58,10 @@ class Dir extends Component {
 
   renderMember = () => {
     const { authorities } = this.props.dir;
-
+    const firstMemberName = _.get(authorities[0], 'users.name') || _.get(authorities[0], 'groups.name') || 'none'  //super user が実装されると、権限ゼロの時に'none'表示される
     const member = authorities.length > 1
           ? `${authorities.length} 人のメンバー`
-          : `${authorities[0].users.name} のみ`;
+          : `${firstMemberName} のみ`;
 
     return (
       <span
