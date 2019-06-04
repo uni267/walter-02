@@ -936,7 +936,12 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
         terms: {
           "file.dir_id": authorizedDirIds
         }
-      }
+      },
+      {
+        bool: {
+          should: authorityConditions
+        }
+      }      
     ];
 
     const _queries = await queries.map( q => {
