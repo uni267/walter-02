@@ -865,7 +865,12 @@ export const searchDetail = (req, res, next, export_excel=false) => {
           terms: {
             "file.dir_id": authorizedDirIds
           }
-        }
+        },
+        {
+          bool: {
+            should: authorityConditions
+          }
+        }                  
       ];
 
       const _queries = yield queries.map( q => {
