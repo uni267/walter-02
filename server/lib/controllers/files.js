@@ -487,7 +487,7 @@ export const search = async (req, res, next, export_excel=false) => {
     };
     let esResultDir = await esClient.searchAll(esQueryDir);
     esQueryDir["size"] = esResultDir.hits.total;
-    esResultDir = yield esClient.search(esQueryDir);      
+    esResultDir = await esClient.search(esQueryDir);      
 
     // 取得した一覧とTopが閲覧可能なフォルダとなる
     const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
@@ -887,7 +887,7 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
 
     let esResultDir = await esClient.searchAll(esQueryDir);
     esQueryDir["size"] = esResultDir.hits.total;
-    esResultDir = yield esClient.search(esQueryDir);      
+    esResultDir = await esClient.search(esQueryDir);      
 
     // 取得した一覧とTopが閲覧可能なフォルダとなる
     const authorizedDirIds = [
@@ -1310,20 +1310,20 @@ export const move = async (req, res, next) => {
 
     } else {
       file.is_trash = dir._id.toString() === trash_dir_id;
-      changedFile = yield moveFile(file, dir._id, user, "移動");
+      changedFile = await moveFile(file, dir._id, user, "移動");
 
-      const defaultAuthArray = yield AuthorityFile.find({ files: file._id, is_default: true }) // デフォルト権限を取得
+      const defaultAuthArray = await AuthorityFile.find({ files: file._id, is_default: true }) // デフォルト権限を取得
       let defaultAuth = null
       if(defaultAuthArray.length > 0){
         defaultAuth = defaultAuthArray[0]
       }
 
       // ファイル権限を移動先フォルダの権限に張替え
-      yield AuthorityFile.remove({ files: changedFile._id, is_default: {$ne: true} })
-      const docs = yield AuthorityFile.find({ files: changedFile.dir_id })
+      await AuthorityFile.remove({ files: changedFile._id, is_default: {$ne: true} })
+      const docs = await AuthorityFile.find({ files: changedFile.dir_id })
       for (let i in docs ) {
         if( !AuthorityFile.equal(defaultAuth, docs[i]) ){ //デフォルト権限との重複を防ぐ
-          yield AuthorityFile.create({
+          await AuthorityFile.create({
             files: file._id,
             role_files: docs[i].role_files,
             users: docs[i].users,
@@ -1815,8 +1815,8 @@ export const upload = async (req, res, next) => {
       let authorityFiles = [];
 
       if (inheritAuthEnabled) {
-        const parentFile = yield File.findById(file.dir_id)
-        const inheritAuths = yield AuthorityFile.find({ files: parentFile._id })
+        const parentFile = await File.findById(file.dir_id)
+        const inheritAuths = await AuthorityFile.find({ files: parentFile._id })
         authorityFiles = inheritAuths.map(ihr => new AuthorityFile({
           groups: ihr.groups ? mongoose.Types.ObjectId(ihr.groups) : null,
           users: ihr.users ? mongoose.Types.ObjectId(ihr.users) : null,
