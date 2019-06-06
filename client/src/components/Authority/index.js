@@ -243,17 +243,6 @@ class Authority extends Component {
                 this.state.user.group,
                 this.state.role.role
               );
-              this.setState({
-                user: {
-                  text: ""
-                },
-                group: {
-                  text: ""
-                },
-                role: {
-                  text: ""
-                },
-              })              
             }} />
         </div>
 

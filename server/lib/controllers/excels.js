@@ -240,8 +240,8 @@ const exportExcelBook = co.wrap( function*(displayItems, tags,roles, files){
         case "role":
           const file_role = files[i].authorities
             .filter(authority => (authority.role_files._id.toString() === column[j].role_id.toString()))
-            .map(authority => authority.users.name ).join();
-          value = file_role;
+            .map(authority => authority.users === undefined ? "" : authority.users.name ).join();
+            value = file_role;
           break;
         default:
           value =  get(files[i], column[j].name);

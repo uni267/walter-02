@@ -53,13 +53,6 @@ esClient.createIndex = async (tenant_id, files) =>{
 
       const tags = file.tags.map(t => t._id)
 
-      // let meta = null, text = null
-      // if(file.buffer){
-      //   const tika_result = getTikaResult(file.buffer)
-      //   meta = tika_result.meta
-      //   text = tika_result.text
-      // }
-
       const esFile = {
         _id: file._id,
         name: file.name,
@@ -106,7 +99,6 @@ esClient.createIndex = async (tenant_id, files) =>{
             esFile.actions[action._id].push(authority.groups._id);
           }
         });
-        // esFile.users += (esFile.users==="" ? "": " ") + authority.users.name;
       });
 
       if (timestampOptionEnabled) {
@@ -139,26 +131,6 @@ esClient.syncDocument = async (tenant_id,file) =>{
   await esClient.createIndex(tenant_id,[file])
 }
 
-
-
-// esClient.updateName = async (tenant_id, file_id, name) => {
-//   await esClient.updateByQuery({ 
-//     index: tenant_id,
-//     type: "files",
-//     body: { 
-//       "query": {
-//         "bool": {
-//           "must": [
-//             {"term": {
-//               "_id": file_id
-//             }}
-//           ]
-//         }
-//       },
-//       "script": "ctx._source.file.name = " + name.replace(/\'/g, '\\\'') + ";"
-//     }
-//   })
-// }
 //全文検索用フィールドの更新
 esClient.updateTextContents = async (tenant_id, file_id, meta_text, full_text) => {
 
@@ -218,6 +190,5 @@ esClient.searchAll = co.wrap(
     return yield esClient.search(query);
   }
 );
-
 
 export default esClient;

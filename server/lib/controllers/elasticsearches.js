@@ -111,11 +111,11 @@ export const reIndexAll = (req, res, next) => {
   co(function*(){
     try {
       // 検索
-      console.log(process.memoryUsage());
+      logger.info(process.memoryUsage());
       const { tenant_id }= res.user;
 
       const total = yield File.find().count();
-      console.log({total});
+      logger.info({total});
 
 
       // mongoからデータを取得
@@ -130,10 +130,10 @@ export const reIndexAll = (req, res, next) => {
 
         ct += files.length;
         yield esClient.createIndex(tenant_id, files);
-        console.log(`reindex ${ct}件目 memory usage:`,process.memoryUsage().rss);
+        logger.info(`reindex ${ct}件目 memory usage:`,process.memoryUsage().rss);
 
       }
-      console.log("reindex complete!");
+      logger.info("reindex complete!");
       res.json({
         status: { success: true },
         body: {}

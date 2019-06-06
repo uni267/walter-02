@@ -470,13 +470,6 @@ export const search = async (req, res, next, export_excel=false) => {
             }],
             must: [
               {
-              // "match" : {
-              //   [`file.actions.${action_id}`]:
-              //     {
-              //       "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
-              //       "operator": "and"         // operator の default は or なので and のする
-              //     }
-              // }},{
                 "match" : {
                   "file.is_dir": true
                 }
@@ -551,15 +544,6 @@ export const search = async (req, res, next, export_excel=false) => {
                     fields: [...searchFields, "file.full_text"]
                   }
                 },
-                // {
-                //   match : {
-                //     [`file.actions.${action_id}`]:
-                //       {
-                //         "query": res.user._id,　  // 一覧の表示権限のあるユーザを対象
-                //         "operator": "and"         // operator の default は or なので and のする
-                //       }
-                //   }
-                // },
                 {
                   match : {
                     "file.is_display": true
@@ -1324,50 +1308,6 @@ export const move = async (req, res, next) => {
     if( file.is_dir ){
       // directoryの移動は別のapi(dirs.move)がコールされるはずだが...
 
-      // if(file._id.toString() === dir._id.toString()) throw "target is the same as folder";
-
-      // const movedDirs = ( await moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
-
-      // // フォルダ権限を移動先フォルダの権限に張替え
-      // for (let i in movedDirs) {
-      //   await AuthorityFile.remove({ files: movedDirs[i]._id })
-      //   const docs = await AuthorityFile.find({ files: movedDirs[i].dir_id })
-      //   for (let j in docs ) {
-      //     await AuthorityFile.create({
-      //       files: movedDirs[i]._id,
-      //       role_files: docs[j].role_files,
-      //       users: docs[j].users,
-      //       group: docs[j].groups,
-      //     })
-      //   }
-      // }
-
-      // // 移動フォルダ自身と子を取得
-      // const movedFiles = await File.find({
-      //   $or: [
-      //     { _id: { $in: movedDirs }},
-      //     { dir_id:{ $in: movedDirs }}
-      //   ]
-      // });
-      // for(let i in movedFiles ){
-      //   movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
-      //   await movedFiles[i].save();
-      //   // フォルダ権限を移動先フォルダの権限に張替え
-      //   await AuthorityFile.remove({ files: movedFiles[i]._id })
-      //   const docs = await AuthorityFile.find({ files: movedFiles[i].dir_id })
-      //   for (let j in docs ) {
-      //     await AuthorityFile.create({
-      //       files: movedFiles[i]._id,
-      //       role_files: docs[j].role_files,
-      //       users: docs[j].users,
-      //       group: docs[j].groups,
-      //     })
-      //   }
-      //   // フォルダ内のファイルについて elasticsearch index更新
-      //   const updatedFile = await File.searchFileOne({_id: movedFiles[i]._id });
-      //   await esClient.syncDocument(tenant_id, updatedFile);
-      // }
-
     } else {
       file.is_trash = dir._id.toString() === trash_dir_id;
       changedFile = yield moveFile(file, dir._id, user, "移動");
@@ -1815,7 +1755,6 @@ export const upload = async (req, res, next) => {
       return file;
     });
 
-
     // ファイルオブジェクト作成
     let fileModels = files.map( file => (
       file.hasError ? false : new File(file)
@@ -1873,7 +1812,7 @@ export const upload = async (req, res, next) => {
 
       const inheritAuthEnabled = inheritAuthSetting && inheritAuthSetting.enable;
 
-      let authorityFiles = []
+      let authorityFiles = [];
 
       if (inheritAuthEnabled) {
         const parentFile = yield File.findById(file.dir_id)
@@ -1893,7 +1832,7 @@ export const upload = async (req, res, next) => {
           authorityFile.files = model;
           authorityFile.role_files = mongoose.Types.ObjectId(auth.role_files);
           return authorityFile;
-        }).concat(authorityFiles)
+        }).concat(authorityFiles);
       }
 
       authorityFiles = authorityFiles.concat(authorityFile)
@@ -2112,7 +2051,6 @@ export const addTag = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
     await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
@@ -2293,7 +2231,6 @@ export const addMeta = async (req, res, next) => {
 
     // elasticsearch index作成
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
     await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
@@ -2384,7 +2321,6 @@ export const removeMeta = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
     await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
@@ -2457,7 +2393,6 @@ export const toggleStar = async (req, res, next) => {
     // elasticsearch index作成
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
     await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
@@ -2806,7 +2741,6 @@ export const moveTrash = async (req, res, next) => {
         await movedFiles[i].save();
         // フォルダ内のファイルについて elasticsearch index更新
         const updatedFile = await File.searchFileOne({_id: movedFiles[i]._id });
-        //await esClient.createIndex(tenant_id,[updatedFile]);
         await esClient.syncDocument(tenant_id, updatedFile);        
       }
 
@@ -2817,7 +2751,6 @@ export const moveTrash = async (req, res, next) => {
 
     // 選択したファイルについて elasticsearchのindex更新
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
     await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
@@ -2879,7 +2812,6 @@ export const restore = async (req, res, next) => {
     const { tenant_id }= res.user;
     const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
 
-    //await esClient.createIndex(tenant_id,[updatedFile]);
     await esClient.syncDocument(tenant_id, updatedFile);
 
     res.json({
@@ -3066,7 +2998,7 @@ export const previewExists = async (req, res, next) => {
       const tmpFileName = path.join(tmpDirPath,file.name);
 
       fs.mkdir(tmpDirPath, err => {
-        if(err && err.code !== "EEXIST") logger.error(err);
+        if(err && err.code !== "EEXIST") logger.info(err);
       });
 
       const tenant_name = res.user.tenant.name;
@@ -3132,7 +3064,6 @@ export const previewExists = async (req, res, next) => {
     }else{
       if(preview.image === undefined) preview_id = null;
     }
-
 
     res.json({
       status:{ success: true },
@@ -3262,7 +3193,6 @@ export const toggleUnvisible = async (req, res, next) => {
     if (! result) throw new Error("ファイルの非表示状態の変更に失敗しました");
 
     const esFile = await File.searchFileOne({ _id: result._id });
-    //await esClient.createIndex(tenant_id, [ esFile ] );
     await esClient.syncDocument(tenant_id, esFile);
 
     res.json({
