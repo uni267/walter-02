@@ -78,6 +78,7 @@ const AppNavBar = ({
 
     return (
       <div style={{paddingRight: 70}}>
+        {/* release/2019030500 独自対応 通知アイコンを隠す↓↓↓ */}
         {/* <div id="notificationRoot" style={{display:"inline"}}> */}
         {/* { unreadNotificationCount > 0 ?( */}
         {/*   <Badge */}
@@ -90,6 +91,7 @@ const AppNavBar = ({
         {/*   notificationIcon */}
         {/* )} */}
         {/* </div> */}
+        {/* release/2019030500 独自対応 通知アイコンを隠す↑↑↑ */}
 
         <Popover
           open={notificationsIsOpen.open}
@@ -118,11 +120,13 @@ const AppNavBar = ({
           </List>
         </IconMenu>
 
+        {/* release/2019030500 独自対応 マニュアルリンクを隠す↓↓↓ */}
         {/* <IconButton iconStyle={{ color: "white" }} onClick={() => { */}
         {/*     window.open(`/manuals/${tenant.name}/manual.pdf`, '_blank'); */}
         {/*   }} > */}
         {/*   <HelpIcon /> */}
         {/* </IconButton> */}
+        {/* release/2019030500 独自対応 マニュアルリンクを隠す↑↑↑ */}
       </div>
     );
 

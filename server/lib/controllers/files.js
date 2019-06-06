@@ -60,6 +60,14 @@ import { Swift } from "../storages/Swift";
 
 import { moveDir } from "./dirs";
 
+/**
+ * ファイル一覧
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} export_excel 
+ * @param {*} no_limit 
+ */
 export const index = (req, res, next, export_excel=false, no_limit=false) => {
   return co(function* () {
     try {
@@ -261,6 +269,12 @@ export const index = (req, res, next, export_excel=false, no_limit=false) => {
   });
 };
 
+/**
+ * ファイル詳細
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const view = (req, res, next) => {
   co(function* () {
     try {
@@ -327,6 +341,12 @@ export const view = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルダウンロード
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const download = (req, res, next) => {
   co(function* () {
     try {
@@ -376,6 +396,13 @@ export const download = (req, res, next) => {
   });
 };
 
+/**
+ * 簡易検索
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} export_excel 
+ */
 export const search = (req, res, next, export_excel=false) => {
   return co(function* () {
     try {
@@ -450,7 +477,6 @@ export const search = (req, res, next, export_excel=false) => {
                 },
                 isDisplayUnvisibleCondition
               ],
-
             }
           }
         }
@@ -493,7 +519,8 @@ export const search = (req, res, next, export_excel=false) => {
         index: tenant_id.toString(),
         type: "files",
         sort: ["file.is_dir:desc", (sort === undefined) ? "_score" : `file.${sort}.raw:${order}`, `file.name:${order}`],
-        body: {
+        body: 
+        {
           query: {
             bool: {
               must_not: [{
@@ -539,7 +566,7 @@ export const search = (req, res, next, export_excel=false) => {
                     should: authorityConditions
                   }
                 }                  
-              ],
+              ]
             }
           }
         }
@@ -650,6 +677,12 @@ export const search = (req, res, next, export_excel=false) => {
   });
 };
 
+/**
+ * ファイル詳細検索項目一覧
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const searchItems = (req, res, next) => {
   co(function* () {
     try {
@@ -744,6 +777,13 @@ export const searchItems = (req, res, next) => {
   });
 };
 
+/**
+ * ファイル詳細検索
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @param {*} export_excel 
+ */
 export const searchDetail = (req, res, next, export_excel=false) => {
   co(function* () {
     try {
@@ -1093,6 +1133,12 @@ export const searchDetail = (req, res, next, export_excel=false) => {
   });
 };
 
+/**
+ * ファイル名変更
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const rename = (req, res, next) => {
   co(function* () {
     try {
@@ -1164,6 +1210,13 @@ export const rename = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルの移動
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * 不具合: quz 下階層から上階層へ移動するとエラー
+ */
 export const move = (req, res, next) => {
   co(function* () {
     try {
@@ -1200,52 +1253,8 @@ export const move = (req, res, next) => {
       if (dir === null) throw "dir is empty";
 
       let changedFile;
-
       if( file.is_dir ){
         // directoryの移動は別のapi(dirs.move)がコールされるはずだが...
-
-        // if(file._id.toString() === dir._id.toString()) throw "target is the same as folder";
-        // const movedDirs = ( yield moveDir(file._id, dir._id, user, "移動") ).map(dir=>dir._id );
-
-        // // フォルダ権限を移動先フォルダの権限に張替え
-        // for (let i in movedDirs) {
-        //   yield AuthorityFile.remove({ files: movedDirs[i]._id })
-        //   const docs = yield AuthorityFile.find({ files: movedDirs[i].dir_id })
-        //   for (let j in docs ) {
-        //     yield AuthorityFile.create({
-        //       files: movedDirs[i]._id,
-        //       role_files: docs[j].role_files,
-        //       users: docs[j].users,
-        //       groups: docs[j].groups,
-        //     })
-        //   }
-        // }
-
-        // // 移動フォルダ自身と子を取得
-        // const movedFiles = yield File.find({
-        //   $or: [
-        //     { _id: { $in: movedDirs }},
-        //     { dir_id:{ $in: movedDirs }}
-        //   ]
-        // });
-        // for(let i in movedFiles ){
-        //   movedFiles[i].is_trash = dir._id.toString() === trash_dir_id;
-        //   yield movedFiles[i].save();
-        //   // フォルダ権限を移動先フォルダの権限に張替え
-        //   yield AuthorityFile.remove({ files: movedFiles[i]._id })
-        //   const docs = yield AuthorityFile.find({ files: movedFiles[i].dir_id })
-        //   for (let j in docs ) {
-        //     yield AuthorityFile.create({
-        //       files: movedFiles[i]._id,
-        //       role_files: docs[j].role_files,
-        //       users: docs[j].users,
-        //       groups: docs[j].groups,
-        //     })
-        //   }
-        //   // フォルダ内のファイルについて elasticsearch index更新
-        //   const updatedFile = yield File.searchFileOne({_id: movedFiles[i]._id });
-        //   yield esClient.createIndex(tenant_id,[updatedFile]);
-        // }
 
       } else {
         file.is_trash = dir._id.toString() === trash_dir_id;
@@ -1316,6 +1325,12 @@ export const move = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルのアップロード
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const upload = (req, res, next) => {
   co(function* () {
     try {
@@ -1917,6 +1932,12 @@ export const upload = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルタグを追加する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const addTag = (req, res, next) => {
   co(function* () {
     try {
@@ -1992,6 +2013,12 @@ export const addTag = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルタグを削除する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const removeTag = (req, res, next) => {
   co(function* () {
     try {
@@ -2067,6 +2094,12 @@ export const removeTag = (req, res, next) => {
   });
 };
 
+/**
+ * メタ情報を追加する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const addMeta = (req, res, next) => {
   co(function* () {
     try {
@@ -2160,6 +2193,12 @@ export const addMeta = (req, res, next) => {
   });
 };
 
+/**
+ * メタ情報を削除する
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const removeMeta = (req, res, next) => {
   co(function* () {
     try {
@@ -2247,6 +2286,12 @@ export const removeMeta = (req, res, next) => {
   });
 };
 
+/**
+ * お気に入り印を着脱
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const toggleStar = (req, res, next) => {
   co(function* () {
     try {
@@ -2304,6 +2349,12 @@ export const toggleStar = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルの権限を追加
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const _addAuthority = (file, user, group, role, tenant_id) => {
   return co(function*() {
     const authority = new AuthorityFile();
@@ -2431,6 +2482,12 @@ export const addAuthority = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルの権限を削除
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const _removeAuthority = (file_id, user_id, group_id, role_id, tenant_id) => {
   return co(function* () {
     // userもしくはgroup
@@ -2565,6 +2622,12 @@ export const removeAuthority = (req, res, next) => {
   });
 };
 
+/**
+ * ごみ箱へ移動する（削除アクション）
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const moveTrash = (req, res, next) => {
   co(function* () {
     try {
@@ -2643,6 +2706,12 @@ export const moveTrash = (req, res, next) => {
   });
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const restore = (req, res, next) => {
   co(function* () {
     try {
@@ -2667,6 +2736,7 @@ export const restore = (req, res, next) => {
       const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
 
       yield esClient.createIndex(tenant_id,[updatedFile]);
+      
       res.json({
         status: { success: true },
         body: changedFile
@@ -2697,6 +2767,12 @@ export const restore = (req, res, next) => {
   });
 };
 
+/**
+ * ファイルの論理削除（ごみ箱から削除）
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const deleteFileLogical = (req,res,next) => {
   co(function* (){
     try {
@@ -2768,10 +2844,14 @@ export const deleteFileLogical = (req,res,next) => {
 
     }
   });
-
-
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const deleteFilePhysical = (req,res,next) => {
   co(function* (){
     try {
@@ -2812,6 +2892,12 @@ export const deleteFilePhysical = (req,res,next) => {
   });
 };
 
+/**
+ * プレビュー画像の存在チェック
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const previewExists = (req, res, next) => {
   co(function* (){
     try {
@@ -2839,7 +2925,7 @@ export const previewExists = (req, res, next) => {
         const tmpDirPath = path.join(__dirname,'../../tmp');
         const tmpFileName = path.join(tmpDirPath,file.name);
 
-        fs.mkdir(tmpDirPath, (err)=>{
+        fs.mkdir(tmpDirPath, err =>{
           if(err && err.code !== "EEXIST") logger.info(err);
         });
 
@@ -2936,6 +3022,12 @@ export const previewExists = (req, res, next) => {
   });
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const exists = (req, res, next) => {
   co(function* () {
     try {
@@ -3006,6 +3098,12 @@ export const exists = (req, res, next) => {
   });
 };
 
+/**
+ * ？？？？？？
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 export const toggleUnvisible = (req, res, next) => {
   co(function* () {
     const { file_id } = req.params;
@@ -3086,7 +3184,6 @@ const moveFile = (file, dir_id, user, action) => {
     const changedFile = file.save();
 
     return changedFile;
-
 };
 
 const createSortOption = co.wrap( function* (_sort=null, _order=null) {
@@ -3152,13 +3249,17 @@ export const getAllowedFileIds = (user_id, permission) => {
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
 
     return new Promise((resolve, reject) => resolve(file_ids) );
-
   });
 };
 
+/**
+ * ファイルに対するアクションの権限があるかどうかを判断する
+ * @param {*} file_id 
+ * @param {*} user_id 
+ * @param {*} permission 
+ */
 export const checkFilePermission = (file_id, user_id, permission) => {
   return co(function*(){
-
     const action = yield Action.findOne({ name:permission });
     const role = (yield RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
 
@@ -3174,7 +3275,6 @@ export const checkFilePermission = (file_id, user_id, permission) => {
       });
 
     return new Promise((resolve, reject) => resolve( authorities.length > 0 ) );
-
   });
 };
 

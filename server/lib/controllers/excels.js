@@ -46,7 +46,7 @@ export const index = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-      logger.info(e);
+      logger.error(e);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -83,7 +83,7 @@ export const search = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-      logger.info(e);
+      logger.error(e);
       res.status(400).json({
         status: { success: false, errors }
       });
@@ -120,7 +120,7 @@ export const searchDetail = (req, res, next) => {
         errors.unknown = e;
         break;
       }
-      logger.info(e);
+      logger.error(e);
       res.status(400).json({
         status: { success: false, errors }
       });

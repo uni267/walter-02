@@ -169,7 +169,6 @@ class Dir extends Component {
               this.props.actions.setPageYOffset(window.pageYOffset)
               this.props.actions.toggleFileCheck(dir)
             }} />
-
           <Checkbox
             disabled={true}
             style={style.checkbox}

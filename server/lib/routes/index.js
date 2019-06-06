@@ -24,7 +24,7 @@ import DownloadInfoRouter from "./downloadInfos";
 import AppSettingRouter from "./appSettings";
 
 // debug
-import TestRouter from "./test";
+// import TestRouter from "./test";
 
 const router = Router();
 
@@ -54,6 +54,6 @@ router.use("/api/v1/app_settings", AppSettingRouter);
 router.use("/*",ClientRouter);
 
 // debug
-router.use("/test", TestRouter);
+// router.use("/test", TestRouter);
 
 export default router;

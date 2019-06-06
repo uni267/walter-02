@@ -31,13 +31,13 @@ class AuthenticationContainer extends Component {
 
   render() {
     const tenant_name = localStorage.getItem("tenant_name");
-    const loginPrefix = tenant_name ? tenant_name : "wakayama";
+    const loginPrefix = tenant_name ? tenant_name : "wakayama";	/* release/2019030500 独自対応 リダイレクト先テナントを固定 */
 
     return (
       this.haveToken() ? (
         <Route children={this.props.children} />
       ) : (
-        <Redirect to={`/${loginPrefix}/login`} />
+        <Redirect to={`/${loginPrefix}/login`} />	/* release/2019030500 独自対応 リダイレクト先テナントを固定 */
       )
     );
   }

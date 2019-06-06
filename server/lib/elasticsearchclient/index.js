@@ -98,7 +98,6 @@ esClient.createIndex = co.wrap(
         bulkBody.push({
           file: esFile
         });
-
       });
 
       const result = yield esClient.bulk({ refresh:"true", body:bulkBody });

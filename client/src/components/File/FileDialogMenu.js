@@ -137,7 +137,7 @@ const FileDialogMenu = ({
       component: idx => (
         <MenuItem
           key={idx}
-          primaryText="タイムスタンプ発行"
+          primaryText="タイムスタンプ"
           leftIcon={<ActionFingerprint />} />
       )
     }

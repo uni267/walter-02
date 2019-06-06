@@ -200,7 +200,6 @@ class File extends Component {
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
         style={{ ...rowStyle, opacity, backgroundColor }}>
-
         <div style={{ ...cellStyle, width: headers[0].width }}>
           <Checkbox
             checked={file.checked}

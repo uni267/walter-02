@@ -112,7 +112,7 @@ const fileApp = combineReducers({
   fileSimpleSearch,
   fileListType,
   dirAction,
-  appSettings
+  appSettings,
 });
 
 export default fileApp;

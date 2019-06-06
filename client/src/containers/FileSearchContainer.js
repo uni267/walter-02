@@ -78,7 +78,7 @@ class FileSearchContainer extends Component {
           </div>
 
           <div style={{paddingRight: 10}} >
-            {/* <AddDownloadBtn { ...this.props } /> */}
+            {/* <AddDownloadBtn { ...this.props } /> release/2019030500 独自対応 検索結果ダウンロードを隠す */}
           </div>
 
         </div>
