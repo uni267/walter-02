@@ -12,34 +12,34 @@ import fs from "fs";
 import util from "util";
 
 export const grantToken = async (req, res, next) => {
-    try {
-      const { file_id } = req.params;
-      const meta_info = await grantTimestampToken(file_id, res.user.tenant._id)
+  try {
+    const { file_id } = req.params;
+    const meta_info = await grantTimestampToken(file_id, res.user.tenant._id)
 
-      res.json({
-        status: { success: true },
-        body: { meta_info },
-      });
-    }
-    catch (e) {
-      logger.error(e)
-      let errors = {};
-      switch (e) {
+    res.json({
+      status: { success: true },
+      body: { meta_info },
+    });
+  }
+  catch (e) {
+    logger.error(e)
+    let errors = {};
+    switch (e) {
       case "file_id is empty":
-        errors.file_id = e;
-        break;
+      errors.file_id = e;
+      break;
       default:
-        break;
-      }
-      res.status(400).json({
-        status: { success: false, message: "タイムスタンプの発行に失敗しました" , errors }
-      });
+      break;
     }
+    res.status(400).json({
+      status: { success: false, message: "タイムスタンプの発行に失敗しました" , errors }
+    });
+  }
 };
 
 export const grantTimestampToken = async (file_id, tenant_id) => {
   try {
-
+    let tsMetaInfo
     const tenant =  await Tenant.findById(tenant_id)
     if (!tenant) throw `Tenant ${tenant_id} is not found`
     if (!tenant.tsaAuth || !tenant.tsaAuth.user || !tenant.tsaAuth.pass) throw "TSA authentication info is not found"
@@ -72,26 +72,30 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
     const tsaApi = new TsaApi(tenant.tsaAuth.user, tenant.tsaAuth.pass)
     if (file.mime_type !== "application/pdf") {
       ({data: grantData} = await tsaApi.grantToken(file._id.toString(), encodedFile))
-    }
-    else {
-      ({data: grantData} = await tsaApi.grantPades(file._id.toString(), encodedFile))
-      try {
-        await new Swift().upload(tenant.name, Buffer.from(grantData.file, 'base64'), file._id.toString());
-      }
-      catch (e) {
-        logger.error(e)
-        throw "ファイル本体の保存に失敗しました"
-      }
-    }
 
-    let tsMetaInfo
+    } else {
+      let ts_flg=false
+      let verifresult=null
+      try {
+        verifresult = await tsaApi.verifyPades(file._id.toString(),encodedFile);
+        if(verifresult.data.result.status === "Success"){
+          ts_flg=true
+        }
+      } catch (e) {
+      } finally {
+
+      }
+      if(ts_flg){
+        ({data: grantData} = await tsaApi.grantaddLTV(file._id.toString(), encodedFile))
+      }else{
+        ({data: grantData} = await tsaApi.grantEst(file._id.toString(), encodedFile))
+      }
+    }
     if (grantData.timestampToken) {
       let verifyData
       if (file.mime_type !== "application/pdf") {
         ({data: verifyData} = await tsaApi.verifyToken(file._id.toString(), encodedFile, grantData.timestampToken.token))
-        console.log(util.inspect(verifyData, false, null));
-      }
-      else {
+      } else {
         ({data: verifyData} = await tsaApi.verifyPades(file._id.toString(), grantData.file))
       }
       fileMetaInfo.value = [...fileMetaInfo.value, { ...grantData.timestampToken, ...verifyData.result }]
@@ -100,8 +104,21 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
       const updatedFile = await File.searchFileOne({_id: file._id})
       tsMetaInfo = updatedFile.meta_infos.find(m => m.name === metaInfo.name)
       if (!tsMetaInfo) throw "Failed to create timestamp meta info."
-
       await esClient.createIndex(tenant_id, [updatedFile]);
+    }
+    if(file.mime_type === "application/pdf"){
+      try {
+        await new Swift().upload(tenant.name, Buffer.from(grantData.file, 'base64'), file._id.toString());
+        let update_info = await File.findById(file._id);
+        let itemsize = Buffer.from(grantData.file, 'base64').length
+        update_info.modified = Date.now()
+        update_info.size = itemsize
+        await update_info.save()
+      }
+      catch (e) {
+        logger.error(e)
+        throw "ファイル本体の保存に失敗しました"
+      }
     }
 
     return tsMetaInfo
@@ -124,39 +141,59 @@ export const verifyToken = async (req, res, next) => {
 
     const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
 
+
     let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
-    if (!fileMetaInfo || fileMetaInfo.value.length === 0) throw "The file does not have timestamp token"
 
     const tenant_name = res.user.tenant.name;
     const readStream = await new Swift().downloadFile(tenant_name, file);
     const encodedFile = await (new Promise((resolve, reject) => {
       let chunks = []
       readStream
-        .on("data", chunk => chunks.push(chunk))
-        .on("end", () => resolve(Buffer.concat(chunks).toString("base64")))
-        .on("error", e => reject(e))
+      .on("data", chunk => chunks.push(chunk))
+      .on("end", () => resolve(Buffer.concat(chunks).toString("base64")))
+      .on("error", e => reject(e))
     }))
+    const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
 
-    const timestamp = fileMetaInfo.value[fileMetaInfo.value.length - 1]
+    let inspectresult
+    let timestamp
+    if (!fileMetaInfo || fileMetaInfo.value.length === 0) {
+      inspectresult = (await tsaApi.inspect( file._id.toString(), encodedFile )).data;
+      if(!inspectresult.hasToken){
+        throw "The file does not have timestamp token"
+      }
+      timestamp = inspectresult.timestampToken;
+    }else{
+      timestamp = fileMetaInfo.value[fileMetaInfo.value.length - 1] ;
+    }
 
     let verifyData
-    const tsaApi = new TsaApi(tsaAuth.user, tsaAuth.pass)
     if (file.mime_type !== "application/pdf") {
       ({data: verifyData} = await tsaApi.verifyToken(file._id.toString(), encodedFile, timestamp.token))
     }
     else {
       ({data: verifyData} = await tsaApi.verifyPades(file._id.toString(), encodedFile))
     }
-
-    await fileMetaInfo.update({
-      $set: {
-        [`value.${fileMetaInfo.value.length - 1}`]: {
-          ...timestamp,
-          ...verifyData.result,
+    if (!fileMetaInfo || fileMetaInfo.value.length === 0) {
+      fileMetaInfo = new FileMetaInfo({
+        file_id: file._id,
+        meta_info_id: metaInfo._id,
+      })
+      fileMetaInfo.value=[{
+        ...timestamp,
+        ...verifyData.result
+      }];
+      await fileMetaInfo.save();
+    }else{
+      await fileMetaInfo.update({
+        $set: {
+          [`value.${fileMetaInfo.value.length - 1}`]: {
+            ...timestamp,
+            ...verifyData.result,
+          }
         }
-      }
-    })
-
+      })
+    }
     const updatedFile = await File.searchFileOne({_id: file._id})
     const tsMetaInfo = updatedFile.meta_infos.find(m => m.name === metaInfo.name)
     if (!tsMetaInfo) throw "Failed to create timestamp meta info."

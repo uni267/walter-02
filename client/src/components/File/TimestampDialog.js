@@ -33,6 +33,8 @@ const TimestampDialog = ({
   const stampedDate = ts ? moment(firstTs.stampedDate).format("YYYY-MM-DD HH:mm:ss") : null
   const expirationDate = ts ? moment(ts.expirationDate).format("YYYY-MM-DD HH:mm:ss") : null
   const verifiedDate = ts && ts.verifiedDate ? moment(ts.verifiedDate).format("YYYY-MM-DD HH:mm:ss") : null
+  const ispdf = file.mime_type !== "application/pdf" ? false : true;
+  const verif_ts_flg= ispdf || ts;
 
   return (
     <Dialog
@@ -65,7 +67,7 @@ const TimestampDialog = ({
           />
           <RaisedButton
             primary={true}
-            disabled={!ts}
+            disabled={!verif_ts_flg}
             label="タイムスタンプ検証"
             onClick={() => actions.verifyTimestamp(file)}
           />

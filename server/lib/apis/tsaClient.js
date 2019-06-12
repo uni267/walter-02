@@ -43,6 +43,9 @@ export class API {
   grantPades(requestId = "", file) {
     return this.client.post("/grant/pades/binary", { requestId, file })
   }
+  grantaddLTV(requestId = "", file) {
+    return this.client.post("/grant/addLTV/binary", { requestId, file })
+  }
 
   grantEst(requestId = "", file) {
     return this.client.post("/grant/ES-T/binary", { requestId, file });

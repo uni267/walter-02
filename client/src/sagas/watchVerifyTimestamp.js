@@ -16,9 +16,18 @@ function* watchVerifyTimestamp() {
       const { data: { body: { meta_info }}} = yield call(api.verifyTimestamp, file._id);
 
       if (meta_info && meta_info.name === "timestamp") {
-        const updateFile = {
-          ...file, meta_infos: file.meta_infos.map(m => m.name === "timestamp" ? meta_info : m )
+        let updateFile
+        if(file.meta_infos.length > 0){
+           updateFile = {
+            ...file, meta_infos: file.meta_infos.map(m => m.name === "timestamp" ? meta_info : m )
+          }
+        }else{
+           updateFile = {
+            ...file, meta_infos: [meta_info]
+          }
         }
+
+        yield put(commonActions.triggerSnackbar("タイムスタンプの検証を実行しました"));
         yield put(actions.updateFileRow(updateFile))
         yield put(actions.updateTimestampTargetFile(updateFile))
       }
