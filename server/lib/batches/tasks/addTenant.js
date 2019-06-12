@@ -349,13 +349,13 @@ const task = async () => {
   },{
     files: topDir._id,
     role_files : role_file_full_controll._id,
-    users : user2._id,
-    groups : null //  groups :  group2._id
+    users : null,
+    groups : group2._id
   },{
     files: trashDir._id,
     role_files : role_file_full_controll._id,
-    users : user2._id,
-    groups : null //  groups :  group2._id
+    users : null,
+    groups : group2._id
   }]);
 
     // ===============================
