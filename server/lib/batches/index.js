@@ -31,7 +31,7 @@ default:
   break;
 }
 
-mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( () => {
+mongoose.connect(`${url}/${db_name}`, {useNewUrlParser: true}).then( () => {
   const args = process.argv[2];
   switch (args) {
   case "analyze":

@@ -44,7 +44,7 @@ export const getApiPort = () => port
 mongoose.Promise = global.Promise;
 
 export const checkMongo = (checked, count = 0) => {
-  mongoose.connect(`${url}/${db_name}`, {useMongoClient: true}).then( res => {
+  mongoose.connect(`${url}/${db_name}`, {useNewUrlParser: true}).then( res => {
     checked()
   }).catch( e => {
     console.log("mongo connection failed", count + 1);
@@ -98,7 +98,7 @@ export const checkElastic = (checked, count = 0) => {
 export const checkTika = async (checked, count = 0) => {
   //await createTopics(payloads)
   try{
-    await tikaClient.checkConnection()
+    //await tikaClient.checkConnection()
     checked()
   }catch(e){
     console.log("tika connection failed", count + 1);
@@ -113,13 +113,13 @@ export const checkTika = async (checked, count = 0) => {
 };
 export const checkKafka = async (checked, count = 0) => {
   try{
-    await createTopics([
-      {
-        topic: constants.KAFKA_TOPIC_TIKA_NAME,
-        partitions: constants.KAFKA_TOPIC_TIKA_PARTITIONS,
-        replicationFactor: constants.KAFKA_TOPIC_TIKA_REPLICATION_FACTOR
-      },
-    ])
+    //await createTopics([
+    //  {
+    //    topic: constants.KAFKA_TOPIC_TIKA_NAME,
+    //    partitions: constants.KAFKA_TOPIC_TIKA_PARTITIONS,
+    //    replicationFactor: constants.KAFKA_TOPIC_TIKA_REPLICATION_FACTOR
+    //  },
+    //])
     checked()    
   }catch(e){
     console.log(e);

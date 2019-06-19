@@ -23,7 +23,7 @@ AuthorityMenuSchema.statics.getMenus = function(condition){
   const _this = this;
   return co(function* (){
     try {
-      const authorityMenus = yield _this.aggregate(
+      const authorityMenus = yield _this.aggregate([
         { $match: condition},
         { $lookup: {
           from: "role_menus",
@@ -55,7 +55,7 @@ AuthorityMenuSchema.statics.getMenus = function(condition){
           _id:0,
           menus: { $arrayElemAt: ["$menus", 0]  },
         }}
-      );
+      ]);
 
       const menus = authorityMenus.map(menu => menu.menus);
 

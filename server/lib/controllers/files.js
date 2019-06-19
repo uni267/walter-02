@@ -1940,18 +1940,19 @@ export const upload = async (req, res, next) => {
       const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       await esClient.createIndex(tenant_id, indexingFile);
       
-      const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
-        topic: constants.KAFKA_TOPIC_TIKA_NAME,
-        messages: JSON.stringify({
-          tenant_id: tenant_id,
-          tenant_name: res.user.tenant.name,
-          file_id: file._id,
-          //buffer: file.buffer,
-        })
-      }))
-      // kafkaに送信
-      await produce(kafka_payloads)
-
+      if(1){
+        const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
+          topic: constants.KAFKA_TOPIC_TIKA_NAME,
+          messages: JSON.stringify({
+            tenant_id: tenant_id,
+            tenant_name: res.user.tenant.name,
+            file_id: file._id,
+            //buffer: file.buffer,
+          })
+        }))
+        // kafkaに送信
+        await produce(kafka_payloads)
+      }
       returnfiles = indexingFile.map( file => {
         file.actions = extractFileActions(file.authorities, res.user);
         return file;
