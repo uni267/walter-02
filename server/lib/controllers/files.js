@@ -1940,7 +1940,12 @@ export const upload = async (req, res, next) => {
       const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       await esClient.createIndex(tenant_id, indexingFile);
       
-      if(1){
+      const fullTextSetting = await AppSetting.findOne({
+        tenant_id: user.tenant_id,
+        name: AppSetting.FULL_TEXT_SEARCH_ENABLED
+      });
+      
+      if(fullTextSetting && fullTextSetting.enable === true){
         const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
           topic: constants.KAFKA_TOPIC_TIKA_NAME,
           messages: JSON.stringify({
