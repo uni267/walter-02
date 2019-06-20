@@ -1,0 +1,40 @@
+@startuml
+group get auth token
+agrex -> cloudstorage: Authentication Request
+note right
+http://localhost:3000/api/login
+account_name: "test"
+password: ""
+tenant_name: "wakayama"
+end note
+cloudstorage -> agrex: Authentication Response
+note left: token
+end
+group File upload
+agrex -> cloudstorage: file updload Request
+note left :DataFile
+note right
+http://localhost:3000/api/v1/files
+dir_id
+file
+end note
+cloudstorage -> agrex: file upload Response
+note left :FileID
+end
+group TimeStamp
+agrex -> cloudstorage: timestamp Request
+note left:FileID
+note right: http://localhost:3000/api/v1/files/[FileID]/timestamp/grant
+cloudstorage -> tsaclientAPI: timestamp Request
+tsaclientAPI -> cloudstorage: timestamp Responce
+cloudstorage -> agrex: timestamp Response
+note left:result
+end
+group File download
+agrex -> cloudstorage: file Download Request
+note left:FileID
+note right: http://localhost:3000/api/v1/files/download?file_id=[FileID]
+cloudstorage -> agrex: file Download Response
+note left:StampedFile
+end
+@enduml

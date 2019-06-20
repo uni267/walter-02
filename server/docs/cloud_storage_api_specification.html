@@ -1,0 +1,1986 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2018-01-11 木 09:47 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>クラウドストレージAPI仕様</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="y_wakayama" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">クラウドストレージAPI仕様</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgc4d9247">1. ログインAPI</a>
+<ul>
+<li><a href="#org43a1005">1.1. 基本情報</a></li>
+<li><a href="#org3d0a7d5">1.2. request header</a></li>
+<li><a href="#orgfadf9f9">1.3. request body</a></li>
+<li><a href="#orgff490f8">1.4. 返却値の解説</a></li>
+<li><a href="#org08b94c1">1.5. request payloadの例</a></li>
+<li><a href="#org75d0834">1.6. response payloadの例</a>
+<ul>
+<li><a href="#org67b103d">1.6.1. 成功した場合</a></li>
+<li><a href="#orgefc2cfc">1.6.2. 失敗した場合</a></li>
+</ul>
+</li>
+<li><a href="#org90c6d00">1.7. 備考</a></li>
+</ul>
+</li>
+<li><a href="#org71a54b2">2. メタ情報 一覧取得用API</a>
+<ul>
+<li><a href="#org7ba253c">2.1. 基本情報</a></li>
+<li><a href="#org2a93537">2.2. request header</a></li>
+<li><a href="#orga1606fe">2.3. request body</a></li>
+<li><a href="#org3fea714">2.4. 返却値の解説</a></li>
+<li><a href="#org86cb23e">2.5. request payloadの例</a></li>
+<li><a href="#org3c3a881">2.6. response payload</a>
+<ul>
+<li><a href="#orge357f89">2.6.1. 成功した場合</a></li>
+<li><a href="#org6867b61">2.6.2. 失敗した場合</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgbc2318f">3. タグ情報 一覧取得用API</a>
+<ul>
+<li><a href="#org1a82138">3.1. 基本情報</a></li>
+<li><a href="#org56eeef1">3.2. request header</a></li>
+<li><a href="#org24e41f9">3.3. request body</a></li>
+<li><a href="#org245ed53">3.4. 返却値の解説</a></li>
+<li><a href="#orgdfafd08">3.5. request payloadの例</a></li>
+<li><a href="#orga1889b0">3.6. response payload</a>
+<ul>
+<li><a href="#org5e59da9">3.6.1. 成功した場合</a></li>
+<li><a href="#orgbc9df3f">3.6.2. 失敗した場合</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0720f54">4. ロール一覧 取得用API</a>
+<ul>
+<li><a href="#orgd5e83d5">4.1. 基本情報</a></li>
+<li><a href="#org4984523">4.2. request header</a></li>
+<li><a href="#org4eff00d">4.3. request body</a></li>
+<li><a href="#org7f9da0b">4.4. 返却値の解説</a></li>
+<li><a href="#org5026c62">4.5. request payloadの例</a></li>
+<li><a href="#org70ccb63">4.6. response payloadの例</a></li>
+</ul>
+</li>
+<li><a href="#orgdc833ff">5. ユーザ一覧 取得用API</a>
+<ul>
+<li><a href="#orgcd7a085">5.1. 基本情報</a></li>
+<li><a href="#orga652f28">5.2. request header</a></li>
+<li><a href="#orga9bf961">5.3. request body</a></li>
+<li><a href="#org01d2889">5.4. 返却値の解説</a></li>
+<li><a href="#org1fcb6dd">5.5. request payloadの例</a></li>
+<li><a href="#orgfa7a512">5.6. response payloadの例</a></li>
+</ul>
+</li>
+<li><a href="#org19bf57e">6. ファイルアップロードAPI</a>
+<ul>
+<li><a href="#orgc8d3f1b">6.1. 基本情報</a></li>
+<li><a href="#org1e295a5">6.2. request header</a></li>
+<li><a href="#orgd519133">6.3. request body</a></li>
+<li><a href="#orgd9bfaf4">6.4. 返却値の解説</a></li>
+<li><a href="#org60373eb">6.5. request payloadの例</a></li>
+<li><a href="#orgb75999b">6.6. response payloadの例</a>
+<ul>
+<li><a href="#orge16284d">6.6.1. 成功</a></li>
+<li><a href="#orgde3de0d">6.6.2. 失敗</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgd000cbd">7. ファイル一覧 取得用API</a>
+<ul>
+<li><a href="#orgb74cbc5">7.1. 基本情報</a></li>
+<li><a href="#org0cb8868">7.2. request header</a></li>
+<li><a href="#org71575cc">7.3. request body</a></li>
+<li><a href="#orgb39f994">7.4. 返却値の解説</a></li>
+<li><a href="#org25224e3">7.5. request payloadの例</a></li>
+<li><a href="#org9d37a49">7.6. response payloadの例</a>
+<ul>
+<li><a href="#org885b8b2">7.6.1. 成功した場合</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgac89463">8. ファイル存在確認 取得用API</a>
+<ul>
+<li><a href="#orgc6231bf">8.1. 基本情報</a></li>
+<li><a href="#orgef642dc">8.2. request header</a></li>
+<li><a href="#org80a0a22">8.3. request body</a></li>
+<li><a href="#org14d4af6">8.4. 返却値の解説</a></li>
+<li><a href="#orga9af840">8.5. request payloadの例</a></li>
+<li><a href="#orgb16a713">8.6. response payloadの例</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc4d9247" class="outline-2">
+<h2 id="orgc4d9247"><span class="section-number-2">1</span> ログインAPI</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-org43a1005" class="outline-3">
+<h3 id="org43a1005"><span class="section-number-3">1.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+url: /api/login,<br />
+method: post<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3d0a7d5" class="outline-3">
+<h3 id="org3d0a7d5"><span class="section-number-3">1.2</span> request header</h3>
+<div class="outline-text-3" id="text-1-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+    Content-Type: application/json
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfadf9f9" class="outline-3">
+<h3 id="orgfadf9f9"><span class="section-number-3">1.3</span> request body</h3>
+<div class="outline-text-3" id="text-1-3">
+<div class="org-src-container">
+<pre class="src src-js">{
+  account_name: ログインid(string),
+  password: パスワード(平文)(string),
+  tenant_name: テナント名(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgff490f8" class="outline-3">
+<h3 id="orgff490f8"><span class="section-number-3">1.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-1-4">
+<ul class="org-ul">
+<li>正常に完了した場合、http_status 200<br /></li>
+<li>何らかの異常があった場合、http_status 400 or 500(ユーザエラーを含む)<br /></li>
+<li>上記は他のAPIも同様<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-js">{
+  status: {
+    success: "成功(true)/失敗(false)",
+    message: "ログインに成功しました/ログインに失敗しました",
+    errors: {  // エラーの場合、errorsオジェクト内に詳細情報が格納される
+      account_name: "ユーザが存在しませんなど(string)",
+      password: "パスワードに誤りがあります(string)",
+      unknown: "その他例外(Object)",
+    }
+  },
+
+  body: {
+    token: "認証トークン(string)",
+    user: {
+      _id: "ユーザのプライマリキー(string)",
+      type: "ユーザ種別(string)",
+      account_name: "ログインID(string)",
+      name: "ユーザの表示名(string)",
+      email: "メールアドレス(string)",
+      enabled: "ユーザが有効/無効(bool)",
+      tenant_id: "テナントのプライマリキー(string)",
+      groups: [
+	"グループのプライマリキー(string)"
+      ],
+      tenant: {
+	_id: "テナントのプライマリキー(string)", // 上位オブジェクトのtenant_idと同じ
+	name: "テナント名(顧客名)",
+	home_dir_id: "テナントのホームディレクトリのプライマリキー(string)",
+	trash_dir_id: "ごみ箱のプライマリキー(string)",
+	threshold: "容量制限の値(number)"
+      }
+    }
+  }
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org08b94c1" class="outline-3">
+<h3 id="org08b94c1"><span class="section-number-3">1.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-1-5">
+<div class="org-src-container">
+<pre class="src src-js">POST /api/login HTTP/1.1
+Host: localhost:3333
+Content-Type: application/json
+Cache-Control: no-cache
+Postman-Token: 5f1c40f7-b4bc-465a-0cc3-9bf29627641f
+{
+  "account_name": "hanako",
+  "password": "test",
+  "tenant_name": "test"
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org75d0834" class="outline-3">
+<h3 id="org75d0834"><span class="section-number-3">1.6</span> response payloadの例</h3>
+<div class="outline-text-3" id="text-1-6">
+</div><div id="outline-container-org67b103d" class="outline-4">
+<h4 id="org67b103d"><span class="section-number-4">1.6.1</span> 成功した場合</h4>
+<div class="outline-text-4" id="text-1-6-1">
+<ul class="org-ul">
+<li>body.tokenの値が各種APIにアクセスする際に必要<br /></li>
+<li>tokenの利用方法については後述<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true,
+	"message": "ログインに成功しました"
+    },
+    "body": {
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OWYwNGM0NjQ2OGQ1YzY4OTdlOWZhYzYiLCJ0eXBlIjoidXNlciIsImFjY291bnRfbmFtZSI6ImhhbmFrbyIsIm5hbWUiOiJoYW5ha28iLCJlbWFpbCI6InRlc3QiLCJlbmFibGVkIjp0cnVlLCJ0ZW5hbnRfaWQiOiI1OWYwNGM0NTQ2OGQ1YzY4OTdlOWZhYzMiLCJncm91cHMiOlsiNTlmMDRjNDU0NjhkNWM2ODk3ZTlmYWM0Il0sInRlbmFudCI6eyJfaWQiOiI1OWYwNGM0NTQ2OGQ1YzY4OTdlOWZhYzMiLCJuYW1lIjoidGVzdCIsImhvbWVfZGlyX2lkIjoiNTlmMDRjNDQ0NjhkNWM2ODk3ZTlmYWJlIiwidHJhc2hfZGlyX2lkIjoiNTlmMDRjNDQ0NjhkNWM2ODk3ZTlmYWJmIiwidGhyZXNob2xkIjoxMDczNzQxODI0MDB9LCJpYXQiOjE1MDg5NzkwNjgsImV4cCI6MTUwOTU4Mzg2OH0.mEOUy-Xw5vji_XMGj8FZL0hYzwzQBe5S4wWtkLLpPEk",
+	"user": {
+	    "_id": "59f04c46468d5c6897e9fac6",
+	    "type": "user",
+	    "account_name": "hanako",
+	    "name": "hanako",
+	    "email": "test",
+	    "enabled": true,
+	    "tenant_id": "59f04c45468d5c6897e9fac3",
+	    "groups": [
+		"59f04c45468d5c6897e9fac4"
+	    ],
+	    "tenant": {
+		"_id": "59f04c45468d5c6897e9fac3",
+		"name": "test",
+		"home_dir_id": "59f04c44468d5c6897e9fabe",
+		"trash_dir_id": "59f04c44468d5c6897e9fabf",
+		"threshold": 107374182400
+	    }
+	}
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgefc2cfc" class="outline-4">
+<h4 id="orgefc2cfc"><span class="section-number-4">1.6.2</span> 失敗した場合</h4>
+<div class="outline-text-4" id="text-1-6-2">
+<ul class="org-ul">
+<li>アカウント名が空、null, undefined<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "ログインに失敗しました",
+	"errors": {
+	    "account_name": "ユーザ名が空です"
+	}
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>ユーザがマスタに存在しない場合<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "ログインに失敗しました",
+	"errors": {
+	    "account_name": "ユーザが存在しません"
+	}
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>パスワードに誤りがあった場合<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "ログインに失敗しました",
+	"errors": {
+	    "password": "パスワードに誤りがあります"
+	}
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>その他例外<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "ログインに失敗しました",
+	"errors": {
+	    "unknown": {
+		"stack": "TypeError: Cannot set property 'bar' of undefined\n    at _callee$ (/Users/y_wakayama/repos/react/walter-02/server/lib/controllers/login.js:15:7)\n    at tryCatch (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:65:40)\n    at GeneratorFunctionPrototype.invoke [as _invoke] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:303:22)\n    at GeneratorFunctionPrototype.prototype.(anonymous function) [as next] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:117:21)\n    at onFulfilled (/Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:65:19)\n    at /Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:54:5\n    at co (/Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:50:10)\n    at authentication (/Users/y_wakayama/repos/react/walter-02/server/lib/controllers/login.js:11:3)\n    at Layer.handle [as handle_request] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/layer.js:95:5)\n    at next (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/route.js:137:13)\n    at Route.dispatch (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/route.js:112:3)\n    at Layer.handle [as handle_request] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/layer.js:95:5)\n    at /Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/index.js:281:22\n    at Function.process_params (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/index.js:335:12)\n    at next (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/index.js:275:10)\n    at Function.handle (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/index.js:174:3)",
+		"message": "Cannot set property 'bar' of undefined"
+	    }
+	}
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org90c6d00" class="outline-3">
+<h3 id="org90c6d00"><span class="section-number-3">1.7</span> 備考</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+payload.bodyのtokenはクラウドストレージのAPIを利用する際に必要。<br />
+tokenの利用方法については以下のAPIに記載。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org71a54b2" class="outline-2">
+<h2 id="org71a54b2"><span class="section-number-2">2</span> メタ情報 一覧取得用API</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+アップロードAPIのbodyを構築する際に必要なメタ情報の<br />
+プライマリキーを取得するためのapi<br />
+</p>
+</div>
+
+<div id="outline-container-org7ba253c" class="outline-3">
+<h3 id="org7ba253c"><span class="section-number-3">2.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+url: /api/v1/files/search_items?meta_only=true<br />
+method: get<br />
+query: {<br />
+  meta_only: boolean // メタ情報のみを取得するので連携時はtrue<br />
+}<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2a93537" class="outline-3">
+<h3 id="org2a93537"><span class="section-number-3">2.2</span> request header</h3>
+<div class="outline-text-3" id="text-2-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga1606fe" class="outline-3">
+<h3 id="orga1606fe"><span class="section-number-3">2.3</span> request body</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+getなので特になし<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3fea714" class="outline-3">
+<h3 id="org3fea714"><span class="section-number-3">2.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-2-4">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": "成功(true)/失敗(false) (bool)",
+	"message": "処理結果の概要"
+    },
+    "body": [
+	{
+	    "_id": "メタ情報のプライマリキー",
+	    "key": "メタ情報の表示名",
+	    "key_type": "meta(固定)",
+	    "value_type": "String, Numberなどの型情報"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org86cb23e" class="outline-3">
+<h3 id="org86cb23e"><span class="section-number-3">2.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-2-5">
+<div class="org-src-container">
+<pre class="src src-js">GET /api/v1/files/search_items?meta_only=true HTTP/1.1
+Host: localhost:3333
+X-Auth-Cloud-Storage: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OWYwNGM0NjQ2OGQ1YzY4OTdlOWZhYzYiLCJ0eXBlIjoidXNlciIsImFjY291bnRfbmFtZSI6ImhhbmFrbyIsIm5hbWUiOiJoYW5ha28iLCJlbWFpbCI6InRlc3QiLCJwYXNzd29yZCI6ImVlMjZiMGRkNGFmN2U3NDlhYTFhOGVlM2MxMGFlOTkyM2Y2MTg5ODA3NzJlNDczZjg4MTlhNWQ0OTQwZTBkYjI3YWMxODVmOGEwZTFkNWY4NGY4OGJjODg3ZmQ2N2IxNDM3MzJjMzA0Y2M1ZmE5YWQ4ZTZmNTdmNTAwMjhhOGZmIiwiZW5hYmxlZCI6dHJ1ZSwidGVuYW50X2lkIjoiNTlmMDRjNDU0NjhkNWM2ODk3ZTlmYWMzIiwiZ3JvdXBzIjpbIjU5ZjA0YzQ1NDY4ZDVjNjg5N2U5ZmFjNCJdLCJ0ZW5hbnQiOnsiX2lkIjoiNTlmMDRjNDU0NjhkNWM2ODk3ZTlmYWMzIiwibmFtZSI6InRlc3QiLCJob21lX2Rpcl9pZCI6IjU5ZjA0YzQ0NDY4ZDVjNjg5N2U5ZmFiZSIsInRyYXNoX2Rpcl9pZCI6IjU5ZjA0YzQ0NDY4ZDVjNjg5N2U5ZmFiZiIsInRocmVzaG9sZCI6MTA3Mzc0MTgyNDAwfSwiaWF0IjoxNTA4OTIwNDE0LCJleHAiOjE1MDk1MjUyMTR9.qFJV0rS_j6WGVgTVJWlrrTRSwF5ew-0nx3lKfWEnZ-8
+Content-Type: application/json
+Cache-Control: no-cache
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3c3a881" class="outline-3">
+<h3 id="org3c3a881"><span class="section-number-3">2.6</span> response payload</h3>
+<div class="outline-text-3" id="text-2-6">
+</div><div id="outline-container-orge357f89" class="outline-4">
+<h4 id="orge357f89"><span class="section-number-4">2.6.1</span> 成功した場合</h4>
+<div class="outline-text-4" id="text-2-6-1">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true,
+	"message": "正常に取得が完了"
+    },
+    "body": [
+	{
+	    "_id": "59f04c46468d5c6897e9facf",
+	    "key": "取引先コード",
+	    "key_type": "meta",
+	    "value_type": "String"
+	},
+	{
+	    "_id": "59f04c46468d5c6897e9fad0",
+	    "key": "取引先名",
+	    "key_type": "meta",
+	    "value_type": "String"
+	},
+	{
+	    "_id": "59f04c46468d5c6897e9fad1",
+	    "key": "明細番号",
+	    "key_type": "meta",
+	    "value_type": "Number"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6867b61" class="outline-4">
+<h4 id="org6867b61"><span class="section-number-4">2.6.2</span> 失敗した場合</h4>
+<div class="outline-text-4" id="text-2-6-2">
+<ul class="org-ul">
+<li>tokenが空<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "トークンの検証に失敗",
+	"errors": {
+	    "token": "トークンが空のため検証に失敗"
+	}
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>tokenのverifyに失敗<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "トークンの検証に失敗",
+	"errors": {
+	    "unknown": {
+		"stack": "JsonWebTokenError: invalid token\n    at Object.module.exports [as verify] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/jsonwebtoken/verify.js:89:17)\n    at /Users/y_wakayama/repos/react/walter-02/server/lib/controllers/before.js:17:11\n    at verifyPromise (/Users/y_wakayama/repos/react/walter-02/server/lib/controllers/before.js:14:12)\n    at _callee$ (/Users/y_wakayama/repos/react/walter-02/server/lib/controllers/before.js:31:29)\n    at tryCatch (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:65:40)\n    at GeneratorFunctionPrototype.invoke [as _invoke] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:303:22)\n    at GeneratorFunctionPrototype.prototype.(anonymous function) [as next] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:117:21)\n    at onFulfilled (/Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:65:19)\n    at /Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:54:5\n    at co (/Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:50:10)\n    at verifyToken (/Users/y_wakayama/repos/react/walter-02/server/lib/controllers/before.js:24:3)\n    at Layer.handle [as handle_request] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/layer.js:95:5)\n    at next (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/route.js:137:13)\n    at Route.dispatch (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/route.js:112:3)\n    at Layer.handle [as handle_request] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/layer.js:95:5)\n    at /Users/y_wakayama/repos/react/walter-02/server/node_modules/express/lib/router/index.js:281:22",
+		"name": "JsonWebTokenError",
+		"message": "invalid token"
+	    }
+	}
+    }
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>その他エラー<br /></li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "取得時にエラーが発生",
+	"errors": {
+	    "unknown": {
+		"stack": "TypeError: Cannot read property 'bar' of undefined\n    at _callee5$ (/Users/y_wakayama/repos/react/walter-02/server/lib/controllers/files.js:242:7)\n    at tryCatch (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:65:40)\n    at GeneratorFunctionPrototype.invoke [as _invoke] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:303:22)\n    at GeneratorFunctionPrototype.prototype.(anonymous function) [as next] (/Users/y_wakayama/repos/react/walter-02/server/node_modules/babel-polyfill/node_modules/regenerator-runtime/runtime.js:117:21)\n    at onFulfilled (/Users/y_wakayama/repos/react/walter-02/server/node_modules/co/index.js:65:19)\n    at process._tickDomainCallback (internal/process/next_tick.js:135:7)",
+		"message": "Cannot read property 'bar' of undefined"
+	    }
+	}
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbc2318f" class="outline-2">
+<h2 id="orgbc2318f"><span class="section-number-2">3</span> タグ情報 一覧取得用API</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-org1a82138" class="outline-3">
+<h3 id="org1a82138"><span class="section-number-3">3.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+url: /api/v1/tags<br />
+method: get<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org56eeef1" class="outline-3">
+<h3 id="org56eeef1"><span class="section-number-3">3.2</span> request header</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org24e41f9" class="outline-3">
+<h3 id="org24e41f9"><span class="section-number-3">3.3</span> request body</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+getなので特になし<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org245ed53" class="outline-3">
+<h3 id="org245ed53"><span class="section-number-3">3.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-3-4">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": "成功(true)/失敗(false) (bool)",
+	"message": "処理結果の概要"
+    },
+    "body": [
+	{
+	    "_id": "タグのプライマリキー",
+	    "color": "タグの色設定",
+	    "label": "表示名",
+	    "tenant_id": "テナントのプライマリキー"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdfafd08" class="outline-3">
+<h3 id="orgdfafd08"><span class="section-number-3">3.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-3-5">
+<div class="org-src-container">
+<pre class="src src-js">GET /api/v1/tags HTTP/1.1
+Host: localhost:3333
+x-auth-cloud-storage: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZmMDEiLCJ0eXBlIjoidXNlciIsImFjY291bnRfbmFtZSI6ImhhbmFrbyIsIm5hbWUiOiJoYW5ha28iLCJlbWFpbCI6InRlc3QiLCJlbmFibGVkIjp0cnVlLCJ0ZW5hbnRfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJncm91cHMiOlsiNTlmMmU0YTZkMTAxN2Q0NjFjOWNmZWZmIl0sInRlbmFudCI6eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJuYW1lIjoidGVzdCIsImhvbWVfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWY5IiwidHJhc2hfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWZhIiwidGhyZXNob2xkIjoxMDczNzQxODI0MDB9LCJpYXQiOjE1MDkwOTA0ODksImV4cCI6MTUwOTY5NTI4OX0.FoFMywqmXmMr0MtNjZQoplKkQjaOSaHv9B2YriMo2yU
+Cache-Control: no-cache
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga1889b0" class="outline-3">
+<h3 id="orga1889b0"><span class="section-number-3">3.6</span> response payload</h3>
+<div class="outline-text-3" id="text-3-6">
+</div><div id="outline-container-org5e59da9" class="outline-4">
+<h4 id="org5e59da9"><span class="section-number-4">3.6.1</span> 成功した場合</h4>
+<div class="outline-text-4" id="text-3-6-1">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true
+    },
+    "body": [
+	{
+	    "_id": "59f2e4a8d1017d461c9cff03",
+	    "color": "#000",
+	    "label": "重要",
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	},
+	{
+	    "_id": "59f2e4a8d1017d461c9cff04",
+	    "color": "#111",
+	    "label": "業務",
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbc9df3f" class="outline-4">
+<h4 id="orgbc9df3f"><span class="section-number-4">3.6.2</span> 失敗した場合</h4>
+<div class="outline-text-4" id="text-3-6-2">
+<p>
+メタ情報取得APIと同様<br />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0720f54" class="outline-2">
+<h2 id="org0720f54"><span class="section-number-2">4</span> ロール一覧 取得用API</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-orgd5e83d5" class="outline-3">
+<h3 id="orgd5e83d5"><span class="section-number-3">4.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+url: /api/v1/role_files<br />
+method: get<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4984523" class="outline-3">
+<h3 id="org4984523"><span class="section-number-3">4.2</span> request header</h3>
+<div class="outline-text-3" id="text-4-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4eff00d" class="outline-3">
+<h3 id="org4eff00d"><span class="section-number-3">4.3</span> request body</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+getなので特になし<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7f9da0b" class="outline-3">
+<h3 id="org7f9da0b"><span class="section-number-3">4.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-4-4">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true
+    },
+    "body": [
+	{
+	    "_id": "ロールのプライマリキー",
+	    "name": "表示名",
+	    "description": "",
+	    "actions": [ // 実行可能な操作の一覧
+		{
+		    "_id": "アクションのプライマリキー",
+		    "name": "名称",
+		    "label": "表示名"
+		},
+	    ],
+	    "tenant_id": "テナントのプライマリキー"
+	},
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5026c62" class="outline-3">
+<h3 id="org5026c62"><span class="section-number-3">4.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-4-5">
+<div class="org-src-container">
+<pre class="src src-js">GET /api/v1/role_files HTTP/1.1
+Host: localhost:3333
+x-auth-cloud-storage: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZmMDEiLCJ0eXBlIjoidXNlciIsImFjY291bnRfbmFtZSI6ImhhbmFrbyIsIm5hbWUiOiJoYW5ha28iLCJlbWFpbCI6InRlc3QiLCJlbmFibGVkIjp0cnVlLCJ0ZW5hbnRfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJncm91cHMiOlsiNTlmMmU0YTZkMTAxN2Q0NjFjOWNmZWZmIl0sInRlbmFudCI6eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJuYW1lIjoidGVzdCIsImhvbWVfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWY5IiwidHJhc2hfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWZhIiwidGhyZXNob2xkIjoxMDczNzQxODI0MDB9LCJpYXQiOjE1MDkwOTA0ODksImV4cCI6MTUwOTY5NTI4OX0.FoFMywqmXmMr0MtNjZQoplKkQjaOSaHv9B2YriMo2yU
+Cache-Control: no-cache
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org70ccb63" class="outline-3">
+<h3 id="org70ccb63"><span class="section-number-3">4.6</span> response payloadの例</h3>
+<div class="outline-text-3" id="text-4-6">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true
+    },
+    "body": [
+	{
+	    "_id": "59f2e4aad1017d461c9cff1c",
+	    "name": "読み取りのみ",
+	    "description": "",
+	    "actions": [
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0d",
+		    "name": "list",
+		    "label": "一覧表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0e",
+		    "name": "detail",
+		    "label": "詳細表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0f",
+		    "name": "history",
+		    "label": "履歴情報表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff10",
+		    "name": "download",
+		    "label": "ダウンロード"
+		}
+	    ],
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	},
+	{
+	    "_id": "59f2e4aad1017d461c9cff1d",
+	    "name": "編集可能",
+	    "description": "読み取り + 書き込み",
+	    "actions": [
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0d",
+		    "name": "list",
+		    "label": "一覧表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0e",
+		    "name": "detail",
+		    "label": "詳細表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0f",
+		    "name": "history",
+		    "label": "履歴情報表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff10",
+		    "name": "download",
+		    "label": "ダウンロード"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff11",
+		    "name": "change-name",
+		    "label": "ファイル名変更"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff12",
+		    "name": "change-tag",
+		    "label": "タグ変更"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff13",
+		    "name": "change-meta-info",
+		    "label": "メタ情報変更"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff14",
+		    "name": "upload",
+		    "label": "アップロード"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff15",
+		    "name": "makedir",
+		    "label": "フォルダ作成"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff17",
+		    "name": "copy",
+		    "label": "複製"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff18",
+		    "name": "restore",
+		    "label": "復元"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff19",
+		    "name": "delete",
+		    "label": "削除"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff1a",
+		    "name": "revert",
+		    "label": "ゴミ箱から元に戻す"
+		}
+	    ],
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	},
+	{
+	    "_id": "59f2e4aad1017d461c9cff1e",
+	    "name": "フルコントロール",
+	    "description": "読み取り + 書き込み + 権限変更",
+	    "actions": [
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0d",
+		    "name": "list",
+		    "label": "一覧表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0e",
+		    "name": "detail",
+		    "label": "詳細表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff0f",
+		    "name": "history",
+		    "label": "履歴情報表示"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff10",
+		    "name": "download",
+		    "label": "ダウンロード"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff11",
+		    "name": "change-name",
+		    "label": "ファイル名変更"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff12",
+		    "name": "change-tag",
+		    "label": "タグ変更"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff13",
+		    "name": "change-meta-info",
+		    "label": "メタ情報変更"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff14",
+		    "name": "upload",
+		    "label": "アップロード"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff15",
+		    "name": "makedir",
+		    "label": "フォルダ作成"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff17",
+		    "name": "copy",
+		    "label": "複製"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff18",
+		    "name": "restore",
+		    "label": "復元"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff19",
+		    "name": "delete",
+		    "label": "削除"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff1a",
+		    "name": "revert",
+		    "label": "ゴミ箱から元に戻す"
+		},
+		{
+		    "_id": "59f2e4a9d1017d461c9cff1b",
+		    "name": "authority",
+		    "label": "権限変更"
+		}
+	    ],
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdc833ff" class="outline-2">
+<h2 id="orgdc833ff"><span class="section-number-2">5</span> ユーザ一覧 取得用API</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-orgcd7a085" class="outline-3">
+<h3 id="orgcd7a085"><span class="section-number-3">5.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+url: /api/v1/users<br />
+method: get<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga652f28" class="outline-3">
+<h3 id="orga652f28"><span class="section-number-3">5.2</span> request header</h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga9bf961" class="outline-3">
+<h3 id="orga9bf961"><span class="section-number-3">5.3</span> request body</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+getなので特になし<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org01d2889" class="outline-3">
+<h3 id="org01d2889"><span class="section-number-3">5.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-5-4">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true
+    },
+    "body": [
+	{
+	    "_id": "ユーザのプライマリキー",
+	    "type": "種別",
+	    "account_name": "ログインID",
+	    "name": "表示名",
+	    "email": "メールアドレス",
+	    "password": "パスワードをhash化したもの",
+	    "enabled": "有効(true)/無効(false)",
+	    "groups": [
+		{
+		    "所属しているグループの情報"
+		}
+	    ],
+	    "tenant_id": "テナントのプライマリキー"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1fcb6dd" class="outline-3">
+<h3 id="org1fcb6dd"><span class="section-number-3">5.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-5-5">
+<div class="org-src-container">
+<pre class="src src-js">GET /api/v1/users HTTP/1.1
+Host: localhost:3333
+x-auth-cloud-storage: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZmMDEiLCJ0eXBlIjoidXNlciIsImFjY291bnRfbmFtZSI6ImhhbmFrbyIsIm5hbWUiOiJoYW5ha28iLCJlbWFpbCI6InRlc3QiLCJlbmFibGVkIjp0cnVlLCJ0ZW5hbnRfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJncm91cHMiOlsiNTlmMmU0YTZkMTAxN2Q0NjFjOWNmZWZmIl0sInRlbmFudCI6eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJuYW1lIjoidGVzdCIsImhvbWVfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWY5IiwidHJhc2hfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWZhIiwidGhyZXNob2xkIjoxMDczNzQxODI0MDB9LCJpYXQiOjE1MDkwOTA0ODksImV4cCI6MTUwOTY5NTI4OX0.FoFMywqmXmMr0MtNjZQoplKkQjaOSaHv9B2YriMo2yU
+Cache-Control: no-cache
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfa7a512" class="outline-3">
+<h3 id="orgfa7a512"><span class="section-number-3">5.6</span> response payloadの例</h3>
+<div class="outline-text-3" id="text-5-6">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true
+    },
+    "body": [
+	{
+	    "_id": "59f2e4a6d1017d461c9cff01",
+	    "type": "user",
+	    "account_name": "hanako",
+	    "name": "hanako",
+	    "email": "test",
+	    "password": "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+	    "enabled": true,
+	    "groups": [
+		{
+		    "_id": "59f2e4a6d1017d461c9cfeff",
+		    "name": "全社",
+		    "description": "全社員が所属するグループ",
+		    "role_files": [],
+		    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+		}
+	    ],
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	},
+	{
+	    "_id": "59f2e4a7d1017d461c9cff02",
+	    "type": "user",
+	    "account_name": "taro",
+	    "name": "taro",
+	    "email": "taro",
+	    "password": "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+	    "enabled": true,
+	    "groups": [
+		{
+		    "_id": "59f2e4a6d1017d461c9cfeff",
+		    "name": "全社",
+		    "description": "全社員が所属するグループ",
+		    "role_files": [],
+		    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+		}
+	    ],
+	    "tenant_id": "59f2e4a6d1017d461c9cfefe"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org19bf57e" class="outline-2">
+<h2 id="org19bf57e"><span class="section-number-2">6</span> ファイルアップロードAPI</h2>
+<div class="outline-text-2" id="text-6">
+</div><div id="outline-container-orgc8d3f1b" class="outline-3">
+<h3 id="orgc8d3f1b"><span class="section-number-3">6.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+url: /api/v1/files<br />
+method: post<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1e295a5" class="outline-3">
+<h3 id="org1e295a5"><span class="section-number-3">6.2</span> request header</h3>
+<div class="outline-text-3" id="text-6-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd519133" class="outline-3">
+<h3 id="orgd519133"><span class="section-number-3">6.3</span> request body</h3>
+<div class="outline-text-3" id="text-6-3">
+<div class="org-src-container">
+<pre class="src src-js">{
+    files: [
+	{
+	    name: "ファイル名(string)",
+	    size: "ファイルサイズ(number)",
+	    mime_type: "text/plainなど",
+	    base64: "ファイルをbase64 encodeした結果の文字列",
+	    checksum: "ファイルのチェックサム(md5, hex)",
+	    meta_infos: [  // 付与したいメタ情報
+		{
+		    "_id": "メタ情報のプライマリキー",
+		    "value": "メタ情報の値"
+		}
+	    ],
+	    authorities: [  // 付与したい権限
+		{
+		    role_files: "ロールのプライマリキー",
+		    users: "ユーザのプライマリキー"
+		}
+	    ],
+	    tags: [
+		"タグのプライマリキー"
+	    ]
+	}
+    ]
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd9bfaf4" class="outline-3">
+<h3 id="orgd9bfaf4"><span class="section-number-3">6.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-6-4">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": "成功(true), 失敗(false)",
+	"message": "処理結果の概要"
+    },
+    "body": [
+      { "アップロードしたファイルの詳細(長いので省略)" }
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org60373eb" class="outline-3">
+<h3 id="org60373eb"><span class="section-number-3">6.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-6-5">
+<div class="org-src-container">
+<pre class="src src-js">POST /api/v1/files HTTP/1.1
+Host: localhost:3333
+X-Auth-Cloud-Storage: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZmMDEiLCJ0eXBlIjoidXNlciIsImFjY291bnRfbmFtZSI6ImhhbmFrbyIsIm5hbWUiOiJoYW5ha28iLCJlbWFpbCI6InRlc3QiLCJlbmFibGVkIjp0cnVlLCJ0ZW5hbnRfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJncm91cHMiOlsiNTlmMmU0YTZkMTAxN2Q0NjFjOWNmZWZmIl0sInRlbmFudCI6eyJfaWQiOiI1OWYyZTRhNmQxMDE3ZDQ2MWM5Y2ZlZmUiLCJuYW1lIjoidGVzdCIsImhvbWVfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWY5IiwidHJhc2hfZGlyX2lkIjoiNTlmMmU0YTRkMTAxN2Q0NjFjOWNmZWZhIiwidGhyZXNob2xkIjoxMDczNzQxODI0MDB9LCJpYXQiOjE1MDkwOTA0ODksImV4cCI6MTUwOTY5NTI4OX0.FoFMywqmXmMr0MtNjZQoplKkQjaOSaHv9B2YriMo2yU
+Content-Type: application/json
+Cache-Control: no-cache
+
+{
+    "dir_id": null,
+    "files":[
+	{
+	    "name":"1.txt",
+	    "size":11,
+	    "mime_type":"text/plain",
+	    "modified":1505899012000,
+	    "base64":"data:text/plain;base64,Zm9vCg==",
+	    "checksum": "c38dd16ee4e53db37652552a7184ddba",
+	    "meta_infos": [
+	    {
+		"_id": "59f2e4a8d1017d461c9cff0b",
+		"value": "foo"
+	    }
+	    ],
+	    "tags": [
+		"59f2e4a8d1017d461c9cff03"
+	    ]
+	}
+	]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb75999b" class="outline-3">
+<h3 id="orgb75999b"><span class="section-number-3">6.6</span> response payloadの例</h3>
+<div class="outline-text-3" id="text-6-6">
+</div><div id="outline-container-orge16284d" class="outline-4">
+<h4 id="orge16284d"><span class="section-number-4">6.6.1</span> 成功</h4>
+<div class="outline-text-4" id="text-6-6-1">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true
+    },
+    "body": [
+	{
+	    "__v": 0,
+	    "name": "1.txt",
+	    "mime_type": "text/plain",
+	    "size": 11,
+	    "is_dir": false,
+	    "dir_id": "59f2e4a4d1017d461c9cfef9",
+	    "is_display": true,
+	    "is_star": false,
+	    "_id": "59f43549625dd209c50a0c84",
+	    "is_crypted": true,
+	    "authority_files": [
+		{
+		    "__v": 0,
+		    "role_files": {
+			"_id": "59f2e4aad1017d461c9cff1e",
+			"name": "フルコントロール",
+			"description": "読み取り + 書き込み + 権限変更",
+			"tenant_id": "59f2e4a6d1017d461c9cfefe",
+			"actions": [
+			    "59f2e4a9d1017d461c9cff0d",
+			    "59f2e4a9d1017d461c9cff0e",
+			    "59f2e4a9d1017d461c9cff0f",
+			    "59f2e4a9d1017d461c9cff10",
+			    "59f2e4a9d1017d461c9cff11",
+			    "59f2e4a9d1017d461c9cff12",
+			    "59f2e4a9d1017d461c9cff13",
+			    "59f2e4a9d1017d461c9cff14",
+			    "59f2e4a9d1017d461c9cff15",
+			    "59f2e4a9d1017d461c9cff17",
+			    "59f2e4a9d1017d461c9cff18",
+			    "59f2e4a9d1017d461c9cff19",
+			    "59f2e4a9d1017d461c9cff1a",
+			    "59f2e4a9d1017d461c9cff1b"
+			]
+		    },
+		    "files": "59f43549625dd209c50a0c84",
+		    "users": {
+			"_id": "59f2e4a6d1017d461c9cff01",
+			"type": "user",
+			"account_name": "hanako",
+			"name": "hanako",
+			"email": "test",
+			"password": "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+			"enabled": true,
+			"tenant_id": "59f2e4a6d1017d461c9cfefe",
+			"groups": [
+			    "59f2e4a6d1017d461c9cfeff"
+			]
+		    },
+		    "_id": "59f43549625dd209c50a0c85"
+		}
+	    ],
+	    "histories": [
+		{
+		    "body": "",
+		    "action": "新規作成",
+		    "user": {
+			"_id": "59f2e4a6d1017d461c9cff01",
+			"type": "user",
+			"account_name": "hanako",
+			"name": "hanako",
+			"email": "test",
+			"password": "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+			"enabled": true,
+			"tenant_id": "59f2e4a6d1017d461c9cfefe",
+			"groups": [
+			    "59f2e4a6d1017d461c9cfeff"
+			]
+		    },
+		    "modified": "2017-10-28 04:44:09"
+		}
+	    ],
+	    "tags": [
+		"59f2e4a8d1017d461c9cff03"
+	    ],
+	    "is_deleted": false,
+	    "modified": "2017-10-28T07:44:09.000Z"
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgde3de0d" class="outline-4">
+<h4 id="orgde3de0d"><span class="section-number-4">6.6.2</span> 失敗</h4>
+<div class="outline-text-4" id="text-6-6-2">
+<ul class="org-ul">
+<li>ファイル名が空もしくは未未定だった場合<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": false,
+	"message": "ファイルのアップロードに失敗しました", // エラーの概要
+	// エラーの詳細が配列で格納される
+	"errors": [
+	    { "name": "ファイル名が空のためファイルのアップロードに失敗しました" }
+	]
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd000cbd" class="outline-2">
+<h2 id="orgd000cbd"><span class="section-number-2">7</span> ファイル一覧 取得用API</h2>
+<div class="outline-text-2" id="text-7">
+</div><div id="outline-container-orgb74cbc5" class="outline-3">
+<h3 id="orgb74cbc5"><span class="section-number-3">7.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+url: /ai/v1/files<br />
+method: get<br />
+query: {<br />
+  dir_id: number<br />
+}<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0cb8868" class="outline-3">
+<h3 id="org0cb8868"><span class="section-number-3">7.2</span> request header</h3>
+<div class="outline-text-3" id="text-7-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org71575cc" class="outline-3">
+<h3 id="org71575cc"><span class="section-number-3">7.3</span> request body</h3>
+<div class="outline-text-3" id="text-7-3">
+<p>
+getなので特になし<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb39f994" class="outline-3">
+<h3 id="orgb39f994"><span class="section-number-3">7.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-7-4">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true,
+	"total": 1
+    },
+    "body": [
+	{
+	    "_id": "ファイルのプライマリキー",
+	    "name": "ファイル名",
+	    "mime_type": "mime",
+	    "size": "ファイルサイズ(number)",
+	    "is_dir": "フォルダかどうか(boolean)",
+	    "dir_id": "フォルダのプライマリキー",
+	    "is_display": "表示するかどうか(boolean)",
+	    "is_star": "お気に入りかどうか(boolean)",
+	    "is_crypted": "暗号化されているかどうか(boolean)",
+	    "histories": "履歴情報(array)",
+	    "tags": "タグのプライマリキー(array)",
+	    "is_deleted": "削除対象かどうか(boolean)",
+	    "modified": "2017-11-15T01:03:36.000Z",
+	    "preview_id": null,
+	    "authorities": "権限の情報(array)",
+	    "dirs": "フォルダの階層情報(array)",
+	    "meta_infos": "メタ情報一覧(array)",
+	    "actions": "ユーザが実行可能な操作一覧(array)",
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org25224e3" class="outline-3">
+<h3 id="org25224e3"><span class="section-number-3">7.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-7-5">
+<div class="org-src-container">
+<pre class="src src-js">GET /api/v1/files HTTP/1.1
+Host: localhost:3333
+x-auth-cloud-storage: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YTBhYjM5YjAxNDYwYjUwM2RjNDc2ZjIiLCJhY2NvdW50X25hbWUiOiJ0YXJvIiwibmFtZSI6InRhcm8iLCJlbWFpbCI6InRhcm8iLCJlbmFibGVkIjp0cnVlLCJ0ZW5hbnRfaWQiOiI1YTBhYjM5YTAxNDYwYjUwM2RjNDc2ZWUiLCJncm91cHMiOlsiNWEwYWIzOWEwMTQ2MGI1MDNkYzQ3NmVmIl0sInR5cGUiOiJ1c2VyIiwidGVuYW50Ijp7Il9pZCI6IjVhMGFiMzlhMDE0NjBiNTAzZGM0NzZlZSIsIm5hbWUiOiJ0ZXN0IiwiaG9tZV9kaXJfaWQiOiI1YTBhYjM5ODAxNDYwYjUwM2RjNDc2ZTkiLCJ0cmFzaF9kaXJfaWQiOiI1YTBhYjM5ODAxNDYwYjUwM2RjNDc2ZWEiLCJ0aHJlc2hvbGQiOjEwNzM3NDE4MjQwMH0sImlhdCI6MTUxMDcwNzc5MX0.X-UE-u3qEd0LujkTvnUXFf6LkGwyi9mOT3Gh1cm5TwQ
+Cache-Control: no-cache
+Postman-Token: 4a4630bc-77fd-9880-2ce5-cc3c4cc92c4d
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9d37a49" class="outline-3">
+<h3 id="org9d37a49"><span class="section-number-3">7.6</span> response payloadの例</h3>
+<div class="outline-text-3" id="text-7-6">
+</div><div id="outline-container-org885b8b2" class="outline-4">
+<h4 id="org885b8b2"><span class="section-number-4">7.6.1</span> 成功した場合</h4>
+<div class="outline-text-4" id="text-7-6-1">
+<div class="org-src-container">
+<pre class="src src-js">{
+    "status": {
+	"success": true,
+	"total": 1
+    },
+    "body": [
+	{
+	    "_id": "5a0b9268fd47970338583dee",
+	    "name": "foo.txt",
+	    "mime_type": "text/plain",
+	    "size": 4,
+	    "is_dir": false,
+	    "dir_id": "5a0ab39801460b503dc476e9",
+	    "is_display": true,
+	    "is_star": false,
+	    "is_crypted": true,
+	    "histories": [
+		{
+		    "body": "",
+		    "action": "新規作成",
+		    "user": {
+			"_id": "5a0ab39b01460b503dc476f2",
+			"account_name": "taro",
+			"name": "taro",
+			"email": "taro",
+			"password": "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+			"enabled": true,
+			"tenant_id": "5a0ab39a01460b503dc476ee",
+			"groups": [
+			    "5a0ab39a01460b503dc476ef"
+			],
+			"type": "user"
+		    },
+		    "modified": "2017-11-15 10:03:36"
+		}
+	    ],
+	    "tags": [],
+	    "is_deleted": false,
+	    "modified": "2017-11-15T01:03:36.000Z",
+	    "preview_id": null,
+	    "authorities": [
+		{
+		    "role_files": {
+			"_id": "5a0ab39d01460b503dc47712",
+			"name": "フルコントロール",
+			"description": "読み取り + 書き込み + 権限変更",
+			"actions": [
+			    "5a0ab39c01460b503dc47701",
+			    "5a0ab39c01460b503dc47702",
+			    "5a0ab39c01460b503dc47703",
+			    "5a0ab39c01460b503dc47704",
+			    "5a0ab39c01460b503dc47705",
+			    "5a0ab39c01460b503dc47706",
+			    "5a0ab39c01460b503dc47707",
+			    "5a0ab39c01460b503dc47708",
+			    "5a0ab39c01460b503dc47709",
+			    "5a0ab39c01460b503dc4770b",
+			    "5a0ab39c01460b503dc4770c",
+			    "5a0ab39c01460b503dc4770d",
+			    "5a0ab39c01460b503dc4770e",
+			    "5a0ab39c01460b503dc4770f"
+			],
+			"tenant_id": "5a0ab39a01460b503dc476ee"
+		    },
+		    "users": {
+			"_id": "5a0ab39b01460b503dc476f2",
+			"type": "user",
+			"account_name": "taro",
+			"name": "taro",
+			"email": "taro",
+			"password": "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff",
+			"enabled": true,
+			"groups": [
+			    "5a0ab39a01460b503dc476ef"
+			],
+			"tenant_id": "5a0ab39a01460b503dc476ee"
+		    },
+		    "actions": [
+			{
+			    "_id": "5a0ab39c01460b503dc47701",
+			    "name": "list",
+			    "label": "一覧表示"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47702",
+			    "name": "detail",
+			    "label": "詳細表示"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47703",
+			    "name": "history",
+			    "label": "履歴情報表示"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47704",
+			    "name": "download",
+			    "label": "ダウンロード"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47705",
+			    "name": "change-name",
+			    "label": "ファイル名変更"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47706",
+			    "name": "change-tag",
+			    "label": "タグ変更"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47707",
+			    "name": "change-meta-info",
+			    "label": "メタ情報変更"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47708",
+			    "name": "upload",
+			    "label": "アップロード"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc47709",
+			    "name": "makedir",
+			    "label": "フォルダ作成"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc4770b",
+			    "name": "copy",
+			    "label": "複製"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc4770c",
+			    "name": "restore",
+			    "label": "復元"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc4770d",
+			    "name": "delete",
+			    "label": "削除"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc4770e",
+			    "name": "revert",
+			    "label": "ゴミ箱から元に戻す"
+			},
+			{
+			    "_id": "5a0ab39c01460b503dc4770f",
+			    "name": "authority",
+			    "label": "権限変更"
+			}
+		    ]
+		}
+	    ],
+	    "dirs": [
+		{
+		    "_id": "5a0ab39901460b503dc476eb",
+		    "ancestor": {
+			"_id": "5a0ab39801460b503dc476e9",
+			"name": "Top",
+			"modified": "2017-01-01 10:00",
+			"is_dir": true,
+			"dir_id": 0,
+			"is_display": false,
+			"authority_files": []
+		    },
+		    "descendant": "5a0ab39801460b503dc476e9",
+		    "depth": 0
+		}
+	    ],
+	    "meta_infos": [],
+	    "actions": [
+		{
+		    "_id": "5a0ab39c01460b503dc47701",
+		    "name": "list",
+		    "label": "一覧表示"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47702",
+		    "name": "detail",
+		    "label": "詳細表示"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47703",
+		    "name": "history",
+		    "label": "履歴情報表示"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47704",
+		    "name": "download",
+		    "label": "ダウンロード"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47705",
+		    "name": "change-name",
+		    "label": "ファイル名変更"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47706",
+		    "name": "change-tag",
+		    "label": "タグ変更"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47707",
+		    "name": "change-meta-info",
+		    "label": "メタ情報変更"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47708",
+		    "name": "upload",
+		    "label": "アップロード"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc47709",
+		    "name": "makedir",
+		    "label": "フォルダ作成"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc4770b",
+		    "name": "copy",
+		    "label": "複製"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc4770c",
+		    "name": "restore",
+		    "label": "復元"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc4770d",
+		    "name": "delete",
+		    "label": "削除"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc4770e",
+		    "name": "revert",
+		    "label": "ゴミ箱から元に戻す"
+		},
+		{
+		    "_id": "5a0ab39c01460b503dc4770f",
+		    "name": "authority",
+		    "label": "権限変更"
+		}
+	    ]
+	}
+    ]
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgac89463" class="outline-2">
+<h2 id="orgac89463"><span class="section-number-2">8</span> ファイル存在確認 取得用API</h2>
+<div class="outline-text-2" id="text-8">
+</div><div id="outline-container-orgc6231bf" class="outline-3">
+<h3 id="orgc6231bf"><span class="section-number-3">8.1</span> 基本情報</h3>
+<div class="outline-text-3" id="text-8-1">
+<p>
+url: /api/v1/files/exists<br />
+method: post<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgef642dc" class="outline-3">
+<h3 id="orgef642dc"><span class="section-number-3">8.2</span> request header</h3>
+<div class="outline-text-3" id="text-8-2">
+<div class="org-src-container">
+<pre class="src src-js">{
+  Content-Type: application/json
+  X-Auth-Cloud-Storage: token本体(ログインAPIで取得した認証トークン)(string)
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org80a0a22" class="outline-3">
+<h3 id="org80a0a22"><span class="section-number-3">8.3</span> request body</h3>
+<div class="outline-text-3" id="text-8-3">
+<ul class="org-ul">
+<li>dir_idは必須<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-js">{
+  dir_id: "テナントのhome_dir_id", // ログインAPIの返却値(body.tenant.home_dir_id)
+  files: [
+    { name: "検査したいファイル名(string)" }
+  ]
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org14d4af6" class="outline-3">
+<h3 id="org14d4af6"><span class="section-number-3">8.4</span> 返却値の解説</h3>
+<div class="outline-text-3" id="text-8-4">
+<ul class="org-ul">
+<li>重複していてもhttp(200)が返却される<br /></li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-js">{
+  status: {
+    success: "成功(true)/失敗(false)",
+    errors: {  // エラーの場合、errorsオジェクト内に詳細情報が格納される
+    }
+  },
+
+  body: [
+    {
+      name: "検査したいファイル名(string)",
+      is_exists: "bool" // trueの場合は同じファイル名が存在する
+    }
+  ]
+};
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga9af840" class="outline-3">
+<h3 id="orga9af840"><span class="section-number-3">8.5</span> request payloadの例</h3>
+<div class="outline-text-3" id="text-8-5">
+<div class="org-src-container">
+<pre class="src src-js">POST /api/v1/files/exists HTTP/1.1
+Host: localhost:3333
+Content-Type: application/json
+Cache-Control: no-cache
+{
+  "dir_id": "xxxyyy",
+  "files": [
+    { name: "exists_file_name.txt" },    // 既に存在するファイル名
+    { name: "not_exists_file_name.txt" } // 存在しないファイル名
+  ]
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb16a713" class="outline-3">
+<h3 id="orgb16a713"><span class="section-number-3">8.6</span> response payloadの例</h3>
+<div class="outline-text-3" id="text-8-6">
+<div class="org-src-container">
+<pre class="src src-js">{
+  "status": {
+      "success": true,
+  },
+  "body": [
+    { name: "exists_file_name.txt", is_exists: true },     // 既に存在するファイル名
+    { name: "not_exists_file_name.txt", is_exists: false } // 存在しないファイル名
+  ]
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: y_wakayama</p>
+<p class="date">Created: 2018-01-11 木 09:47</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
