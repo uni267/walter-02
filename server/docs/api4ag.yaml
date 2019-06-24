@@ -86,6 +86,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/GrantTimestampResError'
 
+  '/api/v1/files/{fileId}/timestamp/verify':
+    post:
+      summary: 指定のファイルのタイムスタンプを検証
+      description: 指定のファイル（fileId）のタイムスタンプを検証する。
+      security:
+        - TokenAuth: []
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 
+            リクエストに成功。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyTimestampRes'
+        '400':
+          description: リクエストに失敗。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyTimestampResError'
+
+
   /api/v1/files/download:
     get:
       summary: ファイルをダウンロード
@@ -376,7 +404,42 @@ components:
                   errors:
                     type: array
                     example: []
-        
+
+    VerifyTimestampRes:
+      properties:
+        status:
+          $ref: '#/components/schemas/VerifyTimestampResStatus'
+        body:
+          $ref: '#/components/schemas/GrantTimestampResBody'
+    VerifyTimestampResError:
+      properties:
+        status:
+          $ref: '#/components/schemas/VerifyTimestampResStatusError'
+    VerifyTimestampResStatus:
+      properties:
+        success:
+          type: boolean
+          example: true
+          description:
+            リクエストの成功(true)固定
+    VerifyTimestampResStatusError:
+      properties:
+        success:
+          type: boolean
+          example: false
+          description:
+            リクエストの失敗(false)固定
+        message:
+          type: string
+          example: タイムスタンプの検証に失敗しました
+          description:
+            「タイムスタンプの検証に失敗しました」固定
+        errors:
+          type: object
+          example: {}
+          description:
+            empty固定
+
     Uploadfiles:
       properties:
         dir_id:
