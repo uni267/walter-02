@@ -29,6 +29,7 @@
     "debug_test": "mocha --compilers js:babel-core/register --require babel-polyfill --timeout 15000 lib/**/kafkaclient/*.spec.js --inspect-brk=9229"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "7.1.0",
     "axios": "^0.18.0",
     "babel-runtime": "6.26.0",
     "body-parser": "1.17.2",
@@ -70,6 +71,7 @@
     "mocha": "3.5.3",
     "morgan": "1.8.2",
     "nodemon": "1.18.7",
-    "power-assert": "1.4.4"
+    "power-assert": "1.4.4",
+    "sinon": "7.3.2"
   }
 }
