@@ -31,7 +31,7 @@ const task = async () => {
     console.log(`テナント ${tenant.name}(${tenant._id}) の設定を更新します。。。`)
 
     const mapping = await esClient.indices.getMapping({ index: [tenant._id], include_type_name: true })
-    const props = mapping[tenant._id.toString()].mappings.files.properties.file.properties
+    const props = mapping.body[tenant._id.toString()].mappings.files.properties.file.properties
     const newFileProps = {
       properties: {
         file: {
