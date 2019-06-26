@@ -175,23 +175,15 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       };
 
       const offset = page * constants.FILE_LIMITS_PER_PAGE;
+      let esResult
       if(!export_excel){
         esQuery["from"] = offset;
         esQuery["size"] = parseInt( offset ) + 30;
-      }else{
-        esQuery["from"] = 0;
-        esQuery["size"] = 0;
-      }
-
-      let esResult = await esClient.search(esQuery);
-      const { total } = esResult.hits;
-
-      if(export_excel){
-        // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
-        esQuery["size"] = total;
         esResult = await esClient.search(esQuery);
+      }else{
+        esResult = await esClient.searchAll(esQuery);
       }
-
+      const total = esResult.hits.total.value;
       const esResultIds = esResult.hits.hits
       .map(hit => {
         return mongoose.Types.ObjectId( hit._id );
@@ -486,8 +478,8 @@ export const search = async (req, res, next, export_excel=false) => {
       }
     };
     let esResultDir = await esClient.searchAll(esQueryDir);
-    esQueryDir["size"] = esResultDir.hits.total;
-    esResultDir = await esClient.search(esQueryDir);      
+    //esQueryDir["size"] = esResultDir.hits.total;
+    //esResultDir = await esClient.search(esQueryDir);      
 
     // 取得した一覧とTopが閲覧可能なフォルダとなる
     const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
@@ -585,23 +577,15 @@ export const search = async (req, res, next, export_excel=false) => {
     };
 
     const offset = _page * constants.FILE_LIMITS_PER_PAGE;
+    let esResult
     if(!export_excel){
       esQuery["from"] = offset;
       esQuery["size"] = parseInt( offset ) + 30;
-    }else{
-      esQuery["from"] = 0;
-      esQuery["size"] = 0;
-    }
-
-    let esResult = await esClient.search(esQuery);
-    const { total } = esResult.hits;
-
-    if(export_excel){
-      // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
-      esQuery["size"] = total;
       esResult = await esClient.search(esQuery);
+    }else{
+      esResult = await esClient.searchAll(esQuery);
     }
-
+    const total = esResult.hits.total.value;
     const esResultIds = esResult.hits.hits
     .map(hit => {
       return mongoose.Types.ObjectId( hit._id );
@@ -886,8 +870,8 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
     };
 
     let esResultDir = await esClient.searchAll(esQueryDir);
-    esQueryDir["size"] = esResultDir.hits.total;
-    esResultDir = await esClient.search(esQueryDir);      
+    // esQueryDir["size"] = esResultDir.hits.total;
+    // esResultDir = await esClient.search(esQueryDir);      
 
     // 取得した一覧とTopが閲覧可能なフォルダとなる
     const authorizedDirIds = [
@@ -1092,23 +1076,15 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
     };
 
     const offset = _page * constants.FILE_LIMITS_PER_PAGE;
-
+    let esResult
     if (! export_excel) {
       esQuery["from"] = offset;
       esQuery["size"] = parseInt( offset ) + 30;
-    } else {
-      esQuery["from"] = 0;
-      esQuery["size"] = 0;
-    }
-
-    let esResult = await esClient.search(esQuery);
-    const { total } = esResult.hits;
-
-    if(export_excel){
-      esQuery["size"] = total;
       esResult = await esClient.search(esQuery);
+    } else {
+      esResult = await esClient.searchAll(esQuery);
     }
-
+    const total = esResult.hits.total.value;
     const esResultIds = esResult.hits.hits
     .map(hit => {
       return mongoose.Types.ObjectId( hit._id );

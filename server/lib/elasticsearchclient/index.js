@@ -183,17 +183,13 @@ esClient.getFile = async (tenant_id, file_id) => {
   return result.hits.hits[0]._source.file
 }
 
-
-
 // 検索結果として全件を返す
-esClient.searchAll = co.wrap(
-  function* (query){
+esClient.searchAll = async (query) => {
     // elasticsearchが無制限にレコードを取得できないので一度totalを取得してから再検索する
-    const result = yield esClient.search(query);
+    const result = await esClient.count(query);
     query["from"] = 0;
-    query["size"] = result.hits.total;
-    return yield esClient.search(query);
+    query["size"] = result.count;  //result.hits.total.value;
+    return await esClient.search(query);
   }
-);
 
 export default esClient;
