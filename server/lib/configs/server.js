@@ -65,17 +65,20 @@ export const SECURITY_CONF = {
 // elasticsearchの設定
 export const ELASTICSEARCH_CONF = {
   development: {
-    host: "elastic",
+    host: "elastic",  //deplicated
+    url: "http://elastic",
     port: "9200",
     logLevel: "error"
   },
   integration: {
-    host: "192.168.99.100",
+    host: "192.168.99.100", //deplicated
+    url: "http://192.168.99.100",
     port: "9200",
     logLevel: "error"
   },
   production: {
-    host: process.env.ELASTIC_HOST_NAME,
+    host: process.env.ELASTIC_HOST_NAME,  //deplicated
+    url: process.env.ELASTIC_URL, // protocol + ELASTIC_HOST_NAME ex) http://elastic.host.name
     port: "9200",
     logLevel: "error"
   }
