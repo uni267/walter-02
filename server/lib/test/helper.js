@@ -1,4 +1,6 @@
 import * as fs from "fs";
+import Tenant from "../models/Tenant";
+import User from "../models/Tenant";
 
 export const loadResourceFile = name => {
   return fs.readFileSync("./lib/test/resources/" + name);
@@ -12,6 +14,16 @@ export const sleep = time => {
   });
 }
 
+export const getUser = async (tenant_name, account_name) => {
+  const tenant = await Tenant.findOne({
+    name: tenant_name
+  })
+  const user = await User.findOne({
+    tenant_id: tenant.id.toString(),
+    account_name
+  })
+  return user
+}
 
 export const getUUID = ()=>{
     // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
