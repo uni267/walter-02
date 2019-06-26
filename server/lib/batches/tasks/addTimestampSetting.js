@@ -30,7 +30,7 @@ const task = async () => {
 
     console.log(`テナント ${tenant.name}(${tenant._id}) の設定を更新します。。。`)
 
-    const mapping = await esClient.indices.getMapping({ index: [tenant._id] })
+    const mapping = await esClient.indices.getMapping({ index: [tenant._id], include_type_name: true })
     const props = mapping[tenant._id.toString()].mappings.files.properties.file.properties
     const newFileProps = {
       properties: {
@@ -43,7 +43,7 @@ const task = async () => {
         }
       }
     }
-    await esClient.indices.putMapping({index: [tenant._id], type: "files", body:JSON.stringify(newFileProps)});
+    await esClient.indices.putMapping({index: [tenant._id], type: "files", body:JSON.stringify(newFileProps), include_type_name: true});
 
     // タイムスタンプ関連のアクションを追加（全テナント共有）
     const appSetting = await AppSetting.findOne({ tenant_id: tenant._id, name: AppSetting.TIMESTAMP_PERMISSION })
