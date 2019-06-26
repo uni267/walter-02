@@ -145,7 +145,7 @@ const task = () => {
     console.log(`check old indedices:${tenant_id}`);
     const isExists = yield esClient.indices.exists( { index: tenant_id } );
 
-    if( isExists ){
+    if( isExists.body ){
       console.log(`delete index: ${tenant_id}`);
       yield esClient.indices.delete({ index: tenant_id });
     }
