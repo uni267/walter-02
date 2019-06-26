@@ -1,6 +1,6 @@
 import util from "util";
-//import elasticsearch from "elasticsearch";
-import  elasticsearch from "@elastic/elasticsearch"
+import elasticsearch from "elasticsearch";
+//import  elasticsearch from "@elastic/elasticsearch"
 import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
 import { ELASTIC_INDEXING_TIMEOUT } from "../configs/constants";
@@ -31,16 +31,16 @@ switch (mode) {
     break;
   }
 
-// const esClient = new elasticsearch.Client({
-//   host: erasticsearchUrl,
-//   log: erasticsearchErrorLevel,
-//   timeout: ELASTIC_INDEXING_TIMEOUT
-// });
 const esClient = new elasticsearch.Client({
-  node: erasticsearchUrl,
-  //log: erasticsearchErrorLevel,
-  requestTimeout: ELASTIC_INDEXING_TIMEOUT
+  host: erasticsearchUrl,
+  log: erasticsearchErrorLevel,
+  timeout: ELASTIC_INDEXING_TIMEOUT
 });
+//const esClient = new elasticsearch.Client({
+//  node: erasticsearchUrl,
+//  //log: erasticsearchErrorLevel,
+//  requestTimeout: ELASTIC_INDEXING_TIMEOUT
+//});
 esClient.createIndex = async (tenant_id, files) =>{
   try {
     const bulkBody = [];

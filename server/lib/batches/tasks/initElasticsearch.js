@@ -132,7 +132,7 @@ const task = () => {
       const mappings = {
         index: tenant_id,
         type: type,
-        includeTypeName: true,
+        include_type_name: true,
         body:{
           properties: {
             file:{
