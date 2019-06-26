@@ -1,6 +1,5 @@
 import util from "util";
-import elasticsearch from "elasticsearch";
-//import  elasticsearch from "@elastic/elasticsearch"
+import  elasticsearch from "@elastic/elasticsearch"
 import { ELASTICSEARCH_CONF } from "../configs/server";
 import co from "co";
 import { ELASTIC_INDEXING_TIMEOUT } from "../configs/constants";
@@ -14,33 +13,27 @@ let erasticsearchErrorLevel;
 switch (mode) {
 
   case "integration":
-    erasticsearchUrl = `${ELASTICSEARCH_CONF.integration.host}:${ELASTICSEARCH_CONF.integration.port}`;
+    erasticsearchUrl = `${ELASTICSEARCH_CONF.integration.url}:${ELASTICSEARCH_CONF.integration.port}`;
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.integration.logLevel;
     break;
 
   case "production":
     if (! process.env.ELASTIC_HOST_NAME) throw new Error("env.ELASTIC_HOST_NAME is not set");
 
-    erasticsearchUrl = `${ELASTICSEARCH_CONF.production.host}:${ELASTICSEARCH_CONF.production.port}`;
+    erasticsearchUrl = `${ELASTICSEARCH_CONF.production.url}:${ELASTICSEARCH_CONF.production.port}`;
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.production.logLevel;
     break;
 
   default:
-    erasticsearchUrl = `${ELASTICSEARCH_CONF.development.host}:${ELASTICSEARCH_CONF.development.port}`;
+    erasticsearchUrl = `${ELASTICSEARCH_CONF.development.url}:${ELASTICSEARCH_CONF.development.port}`;
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.development.logLevel;
     break;
   }
 
 const esClient = new elasticsearch.Client({
-  host: erasticsearchUrl,
-  log: erasticsearchErrorLevel,
-  timeout: ELASTIC_INDEXING_TIMEOUT
+ node: erasticsearchUrl,
+ requestTimeout: ELASTIC_INDEXING_TIMEOUT
 });
-//const esClient = new elasticsearch.Client({
-//  node: erasticsearchUrl,
-//  //log: erasticsearchErrorLevel,
-//  requestTimeout: ELASTIC_INDEXING_TIMEOUT
-//});
 esClient.createIndex = async (tenant_id, files) =>{
   try {
     const bulkBody = [];
@@ -180,7 +173,7 @@ esClient.getFile = async (tenant_id, file_id) => {
       }
     }
   })
-  return result.hits.hits[0]._source.file
+  return result.body.hits.hits[0]._source.file
 }
 
 // 検索結果として全件を返す

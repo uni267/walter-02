@@ -196,7 +196,7 @@ export const reCreateElasticCache = () => {
       for(let i = 0 ; i< folder_ids.length; i++){
         const folder_id = folder_ids[i];
 
-        const folder_count = yield File.find({_id: folder_id, is_display: true}).count();
+        const folder_count = yield File.find({_id: folder_id, is_display: true}).countDocuments();
         if(folder_count > 0) { // is_display:trueの場合のみ、フォルダを検索対象にする（Topは対象外になる）
           const folder = yield File.searchFileOne({_id: folder_id});
           const result = yield esClient.createIndex(tenant._id.toString(), [folder]);

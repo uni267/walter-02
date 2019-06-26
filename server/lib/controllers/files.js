@@ -183,8 +183,8 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       }else{
         esResult = await esClient.searchAll(esQuery);
       }
-      const total = esResult.hits.total.value;
-      const esResultIds = esResult.hits.hits
+      const total = esResult.body.hits.total.value;
+      const esResultIds = esResult.body.hits.hits
       .map(hit => {
         return mongoose.Types.ObjectId( hit._id );
       });
@@ -482,7 +482,7 @@ export const search = async (req, res, next, export_excel=false) => {
     //esResultDir = await esClient.search(esQueryDir);      
 
     // 取得した一覧とTopが閲覧可能なフォルダとなる
-    const authorizedDirIds = [ ...(esResultDir.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
+    const authorizedDirIds = [ ...(esResultDir.body.hits.hits.map(file=> file._id)), res.user.tenant.home_dir_id.toString()];
 
     // 検索対象のフィールドを取得する
     const searchFields = (await DisplayItem.aggregate([
@@ -585,8 +585,8 @@ export const search = async (req, res, next, export_excel=false) => {
     }else{
       esResult = await esClient.searchAll(esQuery);
     }
-    const total = esResult.hits.total.value;
-    const esResultIds = esResult.hits.hits
+    const total = esResult.body.hits.total.value;
+    const esResultIds = esResult.body.hits.hits
     .map(hit => {
       return mongoose.Types.ObjectId( hit._id );
     });
@@ -638,7 +638,7 @@ export const search = async (req, res, next, export_excel=false) => {
         file.full_text = es_file.full_text
         file.meta_text = es_file.meta_text
         file.search_result = ''
-        const hits = esResult.hits.hits.filter(hit => hit._id === file._id.toString())
+        const hits = esResult.body.hits.hits.filter(hit => hit._id === file._id.toString())
         if(hits.length > 0 ){
           file.search_result = (hits[0].highlight && hits[0].highlight['file.full_text'][0]) || ''
         }
@@ -875,7 +875,7 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
 
     // 取得した一覧とTopが閲覧可能なフォルダとなる
     const authorizedDirIds = [
-      ...(esResultDir.hits.hits.map(file=> file._id)),
+      ...(esResultDir.body.hits.hits.map(file=> file._id)),
       res.user.tenant.home_dir_id.toString()
     ];
 
@@ -1084,8 +1084,8 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
     } else {
       esResult = await esClient.searchAll(esQuery);
     }
-    const total = esResult.hits.total.value;
-    const esResultIds = esResult.hits.hits
+    const total = esResult.body.hits.total.value;
+    const esResultIds = esResult.body.hits.hits
     .map(hit => {
       return mongoose.Types.ObjectId( hit._id );
     });

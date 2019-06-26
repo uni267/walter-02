@@ -77,7 +77,7 @@ export const checkSwift = (checked, count = 0) => {
 };
 
 export const checkElastic = (checked, count = 0) => {
-  esClient.ping({ requestTimeout: constants.ELASTIC_CONNECTION_TIMEOUT }, err => {
+  esClient.ping({}, { requestTimeout: constants.ELASTIC_CONNECTION_TIMEOUT }, err => {
     if (err) {
       console.log("elasticsearch connection failed", count + 1);
       logger.info("elasticsearch connection failed", count + 1);
