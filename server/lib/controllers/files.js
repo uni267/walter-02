@@ -2838,6 +2838,8 @@ export const deleteFileLogical = async (req,res,next) => {
     if (file_id === undefined ||
       file_id === null ||
       file_id === "") throw "file_id is empty";
+ 
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
     const user = await User.findById(res.user._id);
     const file = await File.findById(file_id);
@@ -2886,6 +2888,9 @@ export const deleteFileLogical = async (req,res,next) => {
     switch (e) {
     case "file_id is empty":
       errors.file_id = "対象のファイルが見つかりません";
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正です";
       break;
     case "file is empty":
       errors.file = "対象のファイルが見つかりません";
