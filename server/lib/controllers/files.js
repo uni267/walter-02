@@ -2841,6 +2841,8 @@ export const deleteFileLogical = async (req,res,next) => {
 
     const user = await User.findById(res.user._id);
     const file = await File.findById(file_id);
+    if (!file) throw "file is empty";
+    if (file.is_deleted) throw "file is empty";
 
     const history = {
       modified: moment().format("YYYY-MM-DD hh:mm:ss"),
