@@ -387,7 +387,7 @@ export const download = async (req, res, next) => {
         status: {
           success: false,
           message: "ファイルのダウンロードに失敗しました",
-          errors: e
+          errors
         }
       });
     }

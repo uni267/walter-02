@@ -10,6 +10,11 @@ import TsaApi from "../apis/tsaClient";
 import { Swift } from "../storages/Swift";
 import fs from "fs";
 import util from "util";
+import {
+  ValidationError,
+  RecordNotFoundException,
+  PermisstionDeniedException
+} from "../errors/AppError";
 
 export const grantToken = async (req, res, next) => {
   try {
@@ -46,6 +51,7 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
 
     const file = await File.findById(file_id);
     if (!file) throw `File ${file_id} is not found`
+    if (file.is_deleted) throw new ValidationError( "file is deleted" );
     if (file.is_dir) throw "File is a kind of directory";
 
     const readStream = await new Swift().downloadFile(tenant.name, file);
@@ -137,6 +143,7 @@ export const verifyToken = async (req, res, next) => {
 
     const file = await File.findById(file_id);
     if (!file) throw `File ${file_id} is not found`
+    if (file.is_deleted) throw new ValidationError( "file is deleted" );
     if (file.is_dir) throw "File is a kind of directory";
 
     const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
