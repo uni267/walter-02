@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import File from "../models/File";
 import FileMetaInfo from "../models/FileMetaInfo";
 import MetaInfo from "../models/MetaInfo";
@@ -19,6 +20,13 @@ import {
 export const grantToken = async (req, res, next) => {
   try {
     const { file_id } = req.params;
+    if ( file_id === null || file_id === undefined || file_id === "") throw new ValidationError( "file_id is empty" );
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw new ValidationError( "file_id is invalid" );
+    const file = await File.findById(file_id);
+    if (file === null) throw new ValidationError( "file is empty" );
+    if (file.is_deleted) throw new ValidationError( "file is deleted" );
+    if (file.is_dir) throw new ValidationError( "File is a kind of directory");
+
     const meta_info = await grantTimestampToken(file_id, res.user.tenant._id)
 
     res.json({
@@ -29,13 +37,24 @@ export const grantToken = async (req, res, next) => {
   catch (e) {
     logger.error(e)
     let errors = {};
-    switch (e) {
+    switch(e.message) {
       case "file_id is empty":
-      errors.file_id = e;
-      break;
+        errors.file_id = "ファイルIDが空です";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正です";
+        break;
+      case "file is empty":
+      case "file is deleted":
+        errors.file_id = "指定されたファイルが存在ません";
+        break;
+      case "File is a kind of directory":
+        errors.file_id = "対象がフォルダです";
+        break;
       default:
-      break;
+        errors.unknown = e;
     }
+
     res.status(400).json({
       status: { success: false, message: "タイムスタンプの発行に失敗しました" , errors }
     });
@@ -137,17 +156,17 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
 export const verifyToken = async (req, res, next) => {
   try {
     const { file_id } = req.params;
+    if ( file_id === null || file_id === undefined || file_id === "") throw new ValidationError( "file_id is empty" );
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw new ValidationError( "file_id is invalid" );
+    const file = await File.findById(file_id);
+    if (file === null) throw new ValidationError( "file is empty" );
+    if (file.is_deleted) throw new ValidationError( "file is deleted" );
+    if (file.is_dir) throw new ValidationError( "File is a kind of directory");
 
     const tsaAuth = res.user.tenant.tsaAuth
-    if (!tsaAuth || !tsaAuth.user || !tsaAuth.pass) throw "TSA authentication info is not found"
-
-    const file = await File.findById(file_id);
-    if (!file) throw `File ${file_id} is not found`
-    if (file.is_deleted) throw new ValidationError( "file is deleted" );
-    if (file.is_dir) throw "File is a kind of directory";
+    if (!tsaAuth || !tsaAuth.user || !tsaAuth.pass) throw new ValidationError("TSA authentication info is not found")
 
     const metaInfo = await MetaInfo.findOne({ name: "timestamp" })
-
 
     let fileMetaInfo = await FileMetaInfo.findOne({ file_id: file._id, meta_info_id: metaInfo._id })
 
@@ -167,7 +186,7 @@ export const verifyToken = async (req, res, next) => {
     if (!fileMetaInfo || fileMetaInfo.value.length === 0) {
       inspectresult = (await tsaApi.inspect( file._id.toString(), encodedFile )).data;
       if(!inspectresult.hasToken){
-        throw "The file does not have timestamp token"
+        throw new ValidationError("The file does not have timestamp token")
       }
       timestamp = inspectresult.timestampToken;
     }else{
@@ -203,7 +222,7 @@ export const verifyToken = async (req, res, next) => {
     }
     const updatedFile = await File.searchFileOne({_id: file._id})
     const tsMetaInfo = updatedFile.meta_infos.find(m => m.name === metaInfo.name)
-    if (!tsMetaInfo) throw "Failed to create timestamp meta info."
+    if (!tsMetaInfo) throw new ValidationError("Failed to create timestamp meta info.")
 
     await esClient.createIndex(res.user.tenant._id, [updatedFile]);
 
@@ -217,6 +236,34 @@ export const verifyToken = async (req, res, next) => {
   catch (e) {
     logger.error(e)
     let errors = {};
+
+    switch(e.message) {
+      case "file_id is empty":
+        errors.file_id = "ファイルIDが空です";
+        break;
+      case "file_id is invalid":
+        errors.file_id = "ファイルIDが不正です";
+        break;
+      case "file is empty":
+      case "file is deleted":
+        errors.file_id = "指定されたファイルが存在しません";
+        break;
+      case "File is a kind of directory":
+        errors.file_id = "対象がフォルダです";
+        break;
+      case "TSA authentication info is not found":
+        errors.tsa_auth = "TSA認証情報が見つかりません";
+        break;
+      case "The file does not have timestamp token":
+        errors.file_id = "ファイルにタイムスタンプが付与されていません";
+        break;
+      case "Failed to create timestamp meta info.":
+        errors.verify = "タイムスタンプ検証情報の生成に失敗しました";
+        break;
+      default:
+        errors.unknown = e;
+    }
+
     switch (e) {
     case "file_id is empty":
       errors.file_id = e;
