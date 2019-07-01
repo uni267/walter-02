@@ -461,10 +461,19 @@ components:
           description:
             「タイムスタンプの発行に失敗しました」固定
         errors:
-          type: object
-          example: {}
-          description:
-            empty固定
+          properties:
+            file_id:
+              type: string
+              example: ファイルIDが空です
+              description: ファイルIDに関するエラー
+            tsa_auth:
+              type: string
+              example: TSA認証情報が見つかりません
+              description: タイムスタンプ認証局に関するエラー
+            unknown:
+              type: string
+              example: 例外が発生しました
+              description: 不明な箇所に関するエラー
     GrantTimestampResBody:
       properties:
         meta_info:
@@ -570,11 +579,19 @@ components:
           description:
             「タイムスタンプの検証に失敗しました」固定
         errors:
-          type: object
-          example: {}
-          description:
-            empty固定
-
+          properties:
+            file_id:
+              type: string
+              example: ファイルIDが空です
+              description: ファイルIDに関するエラー
+            tsa_auth:
+              type: string
+              example: TSA認証情報が見つかりません
+              description: タイムスタンプ認証局に関するエラー
+            unknown:
+              type: string
+              example: 例外が発生しました
+              description: 不明な箇所に関するエラー
     Uploadfiles:
       properties:
         dir_id:
