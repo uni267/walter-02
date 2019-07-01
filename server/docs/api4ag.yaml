@@ -274,7 +274,7 @@ components:
               properties:
                 file_id:
                   type: string
-                  example: 対象のファイルが見つかりません
+                  example: ファイルIDが不正です
                 file:
                   type: string
                   example: 対象のファイルが見つかりません
@@ -607,7 +607,7 @@ components:
               checksum:
                 type: string
                 example: 2bdf57f7ab102b8fcaa80979f24abf76
-                description: ファイルのチェックサム(md5, hex)
+                description: ファイルのチェックサム(md5, hex)。DATA-URI文字列全体のMD5ハッシュ。
               authorities:
                 type: array
                 example: []
