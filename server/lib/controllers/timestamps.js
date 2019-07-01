@@ -22,10 +22,6 @@ export const grantToken = async (req, res, next) => {
     const { file_id } = req.params;
     if ( file_id === null || file_id === undefined || file_id === "") throw new ValidationError( "file_id is empty" );
     if (! mongoose.Types.ObjectId.isValid(file_id)) throw new ValidationError( "file_id is invalid" );
-    const file = await File.findById(file_id);
-    if (file === null) throw new ValidationError( "file is empty" );
-    if (file.is_deleted) throw new ValidationError( "file is deleted" );
-    if (file.is_dir) throw new ValidationError( "File is a kind of directory");
 
     const meta_info = await grantTimestampToken(file_id, res.user.tenant._id)
 
@@ -51,6 +47,9 @@ export const grantToken = async (req, res, next) => {
       case "File is a kind of directory":
         errors.file_id = "対象がフォルダです";
         break;
+      case "TSA authentication info is not found":
+          errors.tsa_auth = "TSA認証情報が見つかりません";
+          break;
       default:
         errors.unknown = e;
     }
@@ -66,12 +65,12 @@ export const grantTimestampToken = async (file_id, tenant_id) => {
     let tsMetaInfo
     const tenant =  await Tenant.findById(tenant_id)
     if (!tenant) throw `Tenant ${tenant_id} is not found`
-    if (!tenant.tsaAuth || !tenant.tsaAuth.user || !tenant.tsaAuth.pass) throw "TSA authentication info is not found"
+    if (!tenant.tsaAuth || !tenant.tsaAuth.user || !tenant.tsaAuth.pass) throw new ValidationError("TSA authentication info is not found")
 
     const file = await File.findById(file_id);
-    if (!file) throw `File ${file_id} is not found`
+    if (!file) throw new ValidationError( "file is empty")
     if (file.is_deleted) throw new ValidationError( "file is deleted" );
-    if (file.is_dir) throw "File is a kind of directory";
+    if (file.is_dir) throw new ValidationError("File is a kind of directory");
 
     const readStream = await new Swift().downloadFile(tenant.name, file);
     const encodedFile = await (new Promise((resolve, reject) => {
