@@ -46,3 +46,18 @@ export const LIST_SEARCH_DETAIL = "LIST_SEARCH_DETAIL";
 // apiのタイムアウト時間(ミリsec)
 export const DEFAULT_API_TIMEOUT = 500 * 1000;
 export const PREVIEW_API_TIMEOUT = 20 * 1000;
+
+// AppSetting
+const AppSetting = {}
+
+AppSetting.UNVISIBLE_FILES_TOGGLE = "unvisible_files_toggle"; //非表示属性のファイルを表示/非表示するトグルを表示するか
+AppSetting.CHANGE_USER_PASSWORD_PERMISSION = "change_user_password_permission"; //ユーザにパスワード変更の権限を許可するか
+AppSetting.INHERIT_PARENT_DIR_AUTH = "inherit_parent_dir_auth"; //親フォルダの割り当てられたユーザファイル操作権限を継承する
+AppSetting.SHOW_TRASH_ICON_BY_OWN_AUTH = "show_trash_icon_by_own_auth"; //ごみ箱アイコンの表示をTrashフォルダの権限に負う
+AppSetting.TIMESTAMP_PERMISSION = "timestamp_permission"; //タイムスタンプサービスの利用を許可する
+AppSetting.FULL_TEXT_SEARCH_ENABLED = "full_text_search_enabled"; //全文検索機能を使用するか
+AppSetting.EXPORT_EXCEL_FOR_FILELIST = "export_excel_for_filelist"; //ファイル一覧のexcel出力を許可する。
+AppSetting.NOTIFICATION_FROM_APP = "notification_from_app"; //アプリケーションからの通知を許可する。
+AppSetting.HELP_ICON_ON_APP_BAR = "help_icon_on_app_bar"; //APPバーにマニュアルへのリンクを表示する。
+export const APP_SETTING = AppSetting
+

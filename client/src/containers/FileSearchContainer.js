@@ -18,6 +18,9 @@ import Toggle from 'material-ui/Toggle';
 // actions
 import * as FileActions from "../actions/files";
 
+import { APP_SETTING } from "../constants";
+import appSettingsHelper from '../helper/appSettingsHelper'
+
 // etc
 import { find } from "lodash";
 
@@ -43,14 +46,15 @@ class FileSearchContainer extends Component {
 
   unvisibleToggle = () => {
     let element = null;
-
-    if (this.props.appSettings) {
-      element = this.props.appSettings.enable
+    const unvisivle_file_toggle = appSettingsHelper.getItem(this.props.appSettings, APP_SETTING.UNVISIBLE_FILES_TOGGLE)
+    console.log(unvisivle_file_toggle)
+    if (unvisivle_file_toggle) {
+      element = unvisivle_file_toggle.enable
           ? (
             <div style={{ ...styles.buttonContainer, marginTop: 20 }}>
               <Toggle
                 label="非表示ファイルを表示する"
-                toggled={this.props.appSettings.value}
+                toggled={unvisivle_file_toggle.default_value}
                 thumbStyle={{ backgroundColor: "#ffcccc" }}
                 trackStyle={{ backgroundColor: "#ff9d9d" }}
                 style={{ maxWidth: 270 }}
@@ -78,7 +82,10 @@ class FileSearchContainer extends Component {
           </div>
 
           <div style={{paddingRight: 10}} >
-            <AddDownloadBtn { ...this.props } />
+          { appSettingsHelper.getValue(this.props.appSettings, APP_SETTING.EXPORT_EXCEL_FOR_FILELIST) ?
+              <AddDownloadBtn { ...this.props } />
+              : null
+            }
           </div>
 
         </div>
@@ -116,7 +123,7 @@ const mapStateToProps = (state, ownProps) => {
     disableDownloadBtnSimple: state.fileSimpleSearch.search_value === undefined,
     disableDownloadBtnDetail: state.fileDetailSearch.searchedItems === undefined,
     fileSimpleSearch: state.fileSimpleSearch,
-    appSettings: find(state.appSettings, setting => setting.name === "unvisible_files_toggle" )
+    appSettings: state.appSettings,
   };
 };
 

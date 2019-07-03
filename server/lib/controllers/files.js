@@ -1781,12 +1781,7 @@ export const upload = async (req, res, next) => {
       authorityFile.role_files = role._id;
 
       // フォルダの権限を継承する設定かどうか？      
-      const inheritAuthSetting = await AppSetting.findOne({
-        tenant_id: user.tenant_id,
-        name: AppSetting.INHERIT_PARENT_DIR_AUTH
-      });
-
-      const inheritAuthEnabled = inheritAuthSetting && inheritAuthSetting.enable;
+      const inheritAuthEnabled = (await AppSetting.getSettings(tenant_id))[AppSetting.INHERIT_PARENT_DIR_AUTH]
 
       let authorityFiles = [];
 
@@ -1916,12 +1911,9 @@ export const upload = async (req, res, next) => {
       const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
       await esClient.createIndex(tenant_id, indexingFile);
       
-      const fullTextSetting = await AppSetting.findOne({
-        tenant_id: user.tenant_id,
-        name: AppSetting.FULL_TEXT_SEARCH_ENABLED
-      });
+      const fullTextSettingEnabled = (await AppSetting.getSettings(tenant_id))[AppSetting.FULL_TEXT_SEARCH_ENABLED]
       
-      if(fullTextSetting && fullTextSetting.enable === true){
+      if (fullTextSettingEnabled){
         const kafka_payloads = _.filter(files, file => !file.hasError ).map( file => ({
           topic: constants.KAFKA_TOPIC_TIKA_NAME,
           messages: JSON.stringify({

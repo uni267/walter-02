@@ -16,119 +16,113 @@ import RoleFile from "../models/RoleFile";
 
 const router = Router();
 
-export const index = (req, res, next) => {
-  co(function* () {
-    try {
-      const files = yield filesController.index(req, res, next, true, true);
-      const displayItems = yield displayItemsController.excel(req, res, next, true);
+export const index = async (req, res, next) => {
+  try {
+    const files = await filesController.index(req, res, next, true, true);
+    const displayItems = await displayItemsController.excel(req, res, next, true);
 
-      const tags = yield Tag.find({
-        $or: [
-          { tenant_id: res.user.tenant_id },
-          { user_id: res.user._id }
-        ]
-      });
+    const tags = await Tag.find({
+      $or: [
+        { tenant_id: res.user.tenant_id },
+        { user_id: res.user._id }
+      ]
+    });
 
-      const roles = yield RoleFile.find({ tenant_id: res.user.tenant_id });
+    const roles = await RoleFile.find({ tenant_id: res.user.tenant_id });
 
-      const readStream = yield exportExcelBook(displayItems,tags,roles,files);
+    const readStream = await exportExcelBook(displayItems,tags,roles,files);
 
-      fs.createReadStream(readStream.path)
-      .on("data", data => res.write(data) )
-      .on("end", () => res.end() );
+    fs.createReadStream(readStream.path)
+    .on("data", data => res.write(data) )
+    .on("end", () => res.end() );
+  }
+  catch (e) {
+    // TODO: エラー処理を追加する
+    let errors = {};
+
+    switch (e) {
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      // TODO: エラー処理を追加する
-      let errors = {};
-
-      switch (e) {
-      default:
-        errors.unknown = e;
-        break;
-      }
-      logger.error(e);
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
+    logger.error(e);
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+  }
 };
 
-export const search = (req, res, next) => {
-  co(function* () {
-    try {
-      const files = yield filesController.search(req, res, next, true);
-      const displayItems = yield displayItemsController.excel(req, res, next, true);
+export const search = async (req, res, next) => {
+  try {
+    const files = await filesController.search(req, res, next, true);
+    const displayItems = await displayItemsController.excel(req, res, next, true);
 
-      const tags = yield Tag.find({
-        $or: [
-          { tenant_id: res.user.tenant_id },
-          { user_id: res.user._id }
-        ]
-      });
+    const tags = await Tag.find({
+      $or: [
+        { tenant_id: res.user.tenant_id },
+        { user_id: res.user._id }
+      ]
+    });
 
-      const roles = yield RoleFile.find({ tenant_id: res.user.tenant_id });
+    const roles = await RoleFile.find({ tenant_id: res.user.tenant_id });
 
-      const readStream = yield exportExcelBook(displayItems,tags,roles,files);
-      fs.createReadStream(readStream.path)
-      .on("data", data => res.write(data) )
-      .on("end", () => res.end() );
+    const readStream = await exportExcelBook(displayItems,tags,roles,files);
+    fs.createReadStream(readStream.path)
+    .on("data", data => res.write(data) )
+    .on("end", () => res.end() );
+  }
+  catch (e) {
+    // TODO: エラー処理を追加する
+    let errors = {};
+
+    switch (e) {
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      // TODO: エラー処理を追加する
-      let errors = {};
-
-      switch (e) {
-      default:
-        errors.unknown = e;
-        break;
-      }
-      logger.error(e);
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
+    logger.error(e);
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+  }
 };
 
-export const searchDetail = (req, res, next) => {
-  co(function* () {
-    try {
-      const files = yield filesController.searchDetail(req, res, next, true);
-      const displayItems = yield displayItemsController.excel(req, res, next, true);
+export const searchDetail = async (req, res, next) => {
+  try {
+    const files = await filesController.searchDetail(req, res, next, true);
+    const displayItems = await displayItemsController.excel(req, res, next, true);
 
-      const tags = yield Tag.find({
-        $or: [
-          { tenant_id: res.user.tenant_id },
-          { user_id: res.user._id }
-        ]
-      });
+    const tags = await Tag.find({
+      $or: [
+        { tenant_id: res.user.tenant_id },
+        { user_id: res.user._id }
+      ]
+    });
 
-      const roles = yield RoleFile.find({ tenant_id: res.user.tenant_id });
+    const roles = await RoleFile.find({ tenant_id: res.user.tenant_id });
 
-      const readStream = yield exportExcelBook(displayItems,tags,roles,files);
-      fs.createReadStream(readStream.path)
-      .on("data", data => res.write(data) )
-      .on("end", () => res.end() );
+    const readStream = await exportExcelBook(displayItems,tags,roles,files);
+    fs.createReadStream(readStream.path)
+    .on("data", data => res.write(data) )
+    .on("end", () => res.end() );
+  }
+  catch (e) {
+    // TODO: エラー処理を追加する
+    let errors = {};
+
+    switch (e) {
+    default:
+      errors.unknown = e;
+      break;
     }
-    catch (e) {
-      // TODO: エラー処理を追加する
-      let errors = {};
-
-      switch (e) {
-      default:
-        errors.unknown = e;
-        break;
-      }
-      logger.error(e);
-      res.status(400).json({
-        status: { success: false, errors }
-      });
-    }
-  });
+    logger.error(e);
+    res.status(400).json({
+      status: { success: false, errors }
+    });
+  }
 };
 // private ---
-const exportExcelBook = co.wrap( function*(displayItems, tags,roles, files){
+const exportExcelBook = async (displayItems, tags, roles, files) => {
   const workbook = new Excel.Workbook();
   const worksheet = workbook.addWorksheet('ファイル一覧');
 
@@ -173,6 +167,14 @@ const exportExcelBook = co.wrap( function*(displayItems, tags,roles, files){
       };
     }
   });
+
+  // timestampが出力対象の場合
+  let header_timestamps = [];
+  if (true) {
+    
+  }
+
+
 
   let header_tags = [];
   // tagが出力対象の場合
@@ -261,7 +263,7 @@ const exportExcelBook = co.wrap( function*(displayItems, tags,roles, files){
 
   //出力
   const stream = fs.createWriteStream("/tmp/stream.tmp");
-  yield workbook.xlsx.write(stream);
+  await workbook.xlsx.write(stream);
 
   return stream;
-});
+};

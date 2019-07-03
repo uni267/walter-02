@@ -23,6 +23,10 @@ import * as _ from "lodash";
 // components
 import Notification from "../Notification";
 
+import { APP_SETTING } from "../../constants";
+import appSettingsHelper from '../../helper/appSettingsHelper'
+
+
 const style = {
   textDecoration: "none",
   color: "white"
@@ -73,23 +77,26 @@ const AppNavBar = ({
     );
 
     // パスワード変更を許可するか
-    const changeUserPasswordSetting = _.find(appSettings, { name: "change_user_password_permission" });
-    const changeUserPasswordEnable = changeUserPasswordSetting ? changeUserPasswordSetting.value : false;
+    //const changeUserPasswordSetting = _.find(appSettings, { name: "change_user_password_permission" });
+    const changeUserPasswordEnable = appSettingsHelper.getValue(appSettings, APP_SETTING.CHANGE_USER_PASSWORD_PERMISSION)
 
     return (
       <div style={{paddingRight: 70}}>
-        <div id="notificationRoot" style={{display:"inline"}}>
-        { unreadNotificationCount > 0 ?(
-          <Badge
-          badgeContent={unreadNotificationCount}
-          style={{padding: 5}}
-          secondary={true} >
-            {notificationIcon}
-          </Badge>
-        ):(
-          notificationIcon
-        )}
-        </div>
+        { appSettingsHelper.getValue(appSettings, APP_SETTING.NOTIFICATION_FROM_APP) ?
+          <div id="notificationRoot" style={{display:"inline"}}>
+            { unreadNotificationCount > 0 ?(
+              <Badge
+              badgeContent={unreadNotificationCount}
+              style={{padding: 5}}
+              secondary={true} >
+                {notificationIcon}
+              </Badge>
+            ):(
+              notificationIcon
+            )}
+          </div>
+          :null
+        }
 
         <Popover
           open={notificationsIsOpen.open}
@@ -118,11 +125,14 @@ const AppNavBar = ({
           </List>
         </IconMenu>
 
-        <IconButton iconStyle={{ color: "white" }} onClick={() => {
+        { appSettingsHelper.getValue(appSettings, APP_SETTING.HELP_ICON_ON_APP_BAR) ?
+          <IconButton iconStyle={{ color: "white" }} onClick={() => {
             window.open(`/manuals/${tenant.name}/manual.pdf`, '_blank');
           }} >
-          <HelpIcon />
-        </IconButton>
+            <HelpIcon />
+          </IconButton>
+          :null
+        }
       </div>
     );
 

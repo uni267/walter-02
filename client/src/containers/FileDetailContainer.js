@@ -38,9 +38,11 @@ import MoveFileDialog from "../components/File/MoveFileDialog";
 // actions
 import * as FileActions from "../actions/files";
 
-import { FILE_DETAIL, PERMISSION_AUTHORITY, PERMISSION_FILE_AUTHORITY } from "../constants";
+import { FILE_DETAIL, PERMISSION_AUTHORITY, PERMISSION_FILE_AUTHORITY, APP_SETTING } from "../constants";
 
 import { find, findIndex, uniq, chain, value } from "lodash";
+
+import appSettingsHelper from '../helper/appSettingsHelper'
 
 const styles = {
   fileImageWrapper: {
@@ -454,13 +456,16 @@ class FileDetailContainer extends Component {
               {this.renderHistories()}
               {this.renderTimestamp()}
 
-              <Card style={styles.innerCard}>
-                <CardHeader title="テキスト" />
-                <CardText>
-                {this.props.file.full_text}
-                {this.props.file.meta_text}
-                </CardText>
-              </Card>
+              { appSettingsHelper.getValue(this.props.appSettings, APP_SETTING.FULL_TEXT_SEARCH_ENABLED) ?
+                <Card style={styles.innerCard}>
+                  <CardHeader title="テキスト" />
+                  <CardText>
+                  {this.props.file.full_text}
+                  {this.props.file.meta_text}
+                  </CardText>
+                </Card>
+                : null
+              }
 
             </div>
 
@@ -511,7 +516,8 @@ const mapStateToProps = (state, ownProps) => {
     moveFileState: state.moveFile,
     selectedDir: state.selectedDir,
     deleteFileState: state.deleteFile,
-    changeFileNameState: state.changeFileName
+    changeFileNameState: state.changeFileName,
+    appSettings: state.appSettings,
   };
 };
 
