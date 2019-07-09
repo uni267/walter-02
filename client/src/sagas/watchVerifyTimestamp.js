@@ -17,13 +17,14 @@ function* watchVerifyTimestamp() {
 
       if (meta_info && meta_info.name === "timestamp") {
         let updateFile
-        if(file.meta_infos.length > 0){
+
+        if(file.meta_infos.filter(m => m.name === "timestamp").length > 0) { //既存のタイムスタンプ情報が存在する場合
            updateFile = {
-            ...file, meta_infos: file.meta_infos.map(m => m.name === "timestamp" ? meta_info : m )
+            ...file, meta_infos: file.meta_infos.map(m => m.name === "timestamp" ? meta_info : m )  //既存情報の差し替え
           }
         }else{
            updateFile = {
-            ...file, meta_infos: [meta_info]
+            ...file, meta_infos: ( file.meta_info.length > 0 ? [...file.meta_info, meta_info] : [meta_info]) //今回のタイムスタンプ情報を追加
           }
         }
 
