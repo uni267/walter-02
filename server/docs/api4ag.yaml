@@ -4,7 +4,7 @@ info:
   title: クラウドストレージ API仕様
   description: クラウドストレージのAPI仕様
 servers:
-  - url: http://cloudstorage-1477926303.ap-northeast-1.elb.amazonaws.com
+  - url: http://cloudstorage.tsunag.biz
 paths:
   /api/login:
     post:
@@ -633,6 +633,19 @@ components:
                 type: array
                 example: []
                 description: 空配列固定
+              meta_infos:
+                type: array
+                description: 空配列固定
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      example: 5d23eea9de5e8e0038809f1a
+                      description: meta_infoマスタのid
+                    value:
+                      type: string
+                      example: hello
+                      description: メタ情報の値
 
     UploadfilesRes:
       properties:
