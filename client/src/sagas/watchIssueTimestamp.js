@@ -17,11 +17,11 @@ function* watchIssueTimestamp() {
 
       if (meta_info && meta_info.name === "timestamp") {
         let meta_infos
-        if (file.meta_infos.length > 0) {
-          meta_infos = file.meta_infos.map(m => m.name === "timestamp" ? meta_info : m )
+        if (file.meta_infos.filter(m => m.name === "timestamp").length > 0) { //既存のタイムスタンプ情報が存在する場合
+          meta_infos = file.meta_infos.map(m => m.name === "timestamp" ? meta_info : m )  //既存情報の差し替え
         }
         else {
-          meta_infos = [meta_info]
+          meta_infos = file.meta_info.length > 0 ? [...file.meta_info, meta_info] : [meta_info] //今回のタイムスタンプ情報を追加
         }
         const updateFile = {
           ...file, meta_infos
