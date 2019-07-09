@@ -24,7 +24,7 @@ function* watchVerifyTimestamp() {
           }
         }else{
            updateFile = {
-            ...file, meta_infos: ( file.meta_info.length > 0 ? [...file.meta_info, meta_info] : [meta_info]) //今回のタイムスタンプ情報を追加
+            ...file, meta_infos: ( file.meta_infos.length > 0 ? [...file.meta_infos, meta_info] : [meta_info]) //今回のタイムスタンプ情報を追加
           }
         }
 
@@ -34,6 +34,7 @@ function* watchVerifyTimestamp() {
       }
     }
     catch (e) {
+      console.log(e)
       const { message, errors } = errorParser(e,"タイムスタンプの検証に失敗しました");
       if(!errors.unknown){
         yield put(commonActions.openException(message, errors[ Object.keys(errors)[0] ]));
