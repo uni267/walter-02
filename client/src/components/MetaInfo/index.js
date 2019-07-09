@@ -160,7 +160,7 @@ class MetaInfo extends Component {
     return (
       <div>
         {this.props.file.meta_infos.map(
-          (meta, idx) => this.renderMetaInfo(meta, idx)
+          (meta, idx) => ( meta.name !== "timestamp" ? this.renderMetaInfo(meta, idx) : null )
         )}
 
         {this.state.addable ? this.newMetaTable() : null}

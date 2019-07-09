@@ -316,9 +316,7 @@ class FileDetailContainer extends Component {
       <Card style={styles.innerCard}>
         <CardHeader title="メタ情報" />
         <CardText>
-          {this.props.file.meta_infos.map( (meta, idx) => {
-            if(meta.name !== "timestamp") render(meta, idx); 
-          })}
+          {this.props.file.meta_infos.map((meta, idx) => ( meta.name !== "timestamp" ? render(meta, idx) : null ) )}
         </CardText>
         <CardActions>{button}</CardActions>
       </Card>
