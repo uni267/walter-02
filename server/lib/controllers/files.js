@@ -1493,7 +1493,7 @@ export const upload = async (req, res, next) => {
     });
 
     // postされたメタ情報の_idがマスタに存在するかのチェック用
-    const metainfos = await MetaInfo.find({ tenant_id: res.user.tenant_id });
+    const master_metainfos = await MetaInfo.find({ tenant_id: res.user.tenant_id });
 
     // メタ情報のチェック
     files = files.map( file => {
@@ -1551,7 +1551,7 @@ export const upload = async (req, res, next) => {
       // メタ情報idが存在するかのチェック
       const intersec = intersection(
         file.meta_infos.map( meta => meta._id),
-        metainfos.map( meta => meta._id.toString() )
+        master_metainfos.map( meta => meta._id.toString() )
       );
 
       if (file.meta_infos.length !== intersec.length) {
@@ -1566,7 +1566,7 @@ export const upload = async (req, res, next) => {
 
       // 日付型チェック
       const date_is_invalid = file.meta_infos.filter( meta => {
-        const _meta = metainfos.filter( m => m._id.toString() === meta._id )[0];
+        const _meta = master_metainfos.filter( m => m._id.toString() === meta._id )[0];
 
         if (_meta.value_type === "Date") {
           return ! moment(meta.value).isValid();
@@ -1905,7 +1905,8 @@ export const upload = async (req, res, next) => {
     if (changedFiles.length > 0) {
       const changedFileIds = changedFiles.map(file => file._id);
 
-      await Promise.all(changedFiles.map(async f => await grantTimestamp(f, res.user.tenant._id))).catch(e => Promise.reject(e))
+      // 自動タイムスタンプ（対象外であれば処理されない）
+      await Promise.all(changedFiles.map(async f => await autoGrantTimestamp(f, res.user.tenant._id))).catch(e => Promise.reject(e))
       
       const sortOption = await createSortOption();
       const indexingFile = await File.searchFiles({ _id: { $in:changedFileIds } },0,changedFileIds.length, sortOption );
@@ -1982,9 +1983,9 @@ export const upload = async (req, res, next) => {
   }
 };
 
-const grantTimestamp = async (file, tenant_id) => {
-  const updatedFile = await File.searchFileOne({_id: file._id})
-  const autoGrantTsInfo = updatedFile.meta_infos.find(m => m.name === metaInfo.name)
+const autoGrantTimestamp = async (file, tenant_id) => {
+  const parentDir = await File.searchFileOne({_id: file.dir_id})  
+  const autoGrantTsInfo = parentDir.meta_infos.find(m => m.name === "auto_grant_timestamp")
   if (autoGrantTsInfo && autoGrantTsInfo.value) await grantTimestampToken(file._id, tenant_id)
 }
 
@@ -2834,6 +2835,8 @@ export const deleteFileLogical = async (req,res,next) => {
     if (!file) throw "file is empty";
     if (file.is_deleted) throw "file is empty";
 
+    const { tenant_id } = res.user;
+
     const history = {
       modified: moment().format("YYYY-MM-DD hh:mm:ss"),
       user: user,
@@ -2857,18 +2860,35 @@ export const deleteFileLogical = async (req,res,next) => {
     };
     file.histories = file.histories.concat(history);
 
-    file.is_deleted = true;
-    const deletedFile = await file.save();
-
-    // elasticsearch index作成
-    const { tenant_id }= res.user;
-    const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id) });
-    //await esClient.createIndex(tenant_id,[updatedFile]);
-    await esClient.syncDocument(tenant_id, updatedFile);
+    let deletedFiles
+    // if (file.is_dir) {
+    //   const deletingDirs = await Dir.find({ ancestor: file._id });
+    //   const deletingDirIds = deletingDirs.map(dir => dir.descendant)
+    //   const deletingFiles = await File.find({
+    //     $or: [
+    //       { _id: { $in: deletingDirIds } },
+    //       { dir_id: { $in: deletingDirIds} }
+    //     ]
+    //   });
+    //   for (let i in deletingFiles) {
+    //     deletingFiles[i].is_deleted = true;
+    //     await deletingFiles[i].save();
+    //     // フォルダ内のファイルについて elasticsearch index更新
+    //     const updatedFile = await File.searchFileOne({ _id: deletingFiles[i]._id });
+    //     await esClient.syncDocument(tenant_id, updatedFile);
+    //   }
+    //   deletedFiles = deletingFiles
+    // } else {
+      file.is_deleted = true;
+      await file.save();
+      const updatedFile = await File.searchFileOne({ _id: file._id });
+      await esClient.syncDocument(tenant_id, updatedFile);
+      deletedFiles = [updatedFile]
+    // }
 
     res.json({
       status: { success: true },
-      body: deletedFile
+      body: deletedFiles
     });
 
   } catch (e) {
