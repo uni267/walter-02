@@ -44,7 +44,7 @@ class MetaInfo extends Component {
       this.props.deleteMetaInfoToFile(file, metaInfo);
     };
 
-    const value = meta.value_type === "Date"
+    const value = meta.value_type === "Array" ? "[...]" :  meta.value_type === "Date"
           ? moment(meta.value).format("YYYY-MM-DD HH:mm")
           : meta.value;
 
