@@ -103,6 +103,12 @@ const task = () => {
           search_analyzer: "full_text_analyzer",
           analyzer: "full_text_analyzer"
         },
+        tstExpirationDate: {
+          "type": "date"
+        },
+        tstStatus: {
+          "type": "keyword"
+        },
       };
 
       // meta_infoのマッピング
