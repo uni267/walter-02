@@ -51,7 +51,7 @@ export const grantToken = async (req, res, next) => {
           errors.tsa_auth = "TSA認証情報が見つかりません";
           break;
       default:
-        errors.unknown = e;
+        errors.unknown = e.message;
     }
 
     res.status(400).json({
