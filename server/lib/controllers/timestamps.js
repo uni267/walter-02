@@ -293,7 +293,7 @@ export const downloadToken = async (req, res, next) => {
     const timestamp = fileMetaInfo.value[fileMetaInfo.value.length-1]
 
     const contents = Buffer.from(timestamp.token, "base64");
-    const tmpFilePath = '/tmp/ts_token_of_'+file_id
+    const tmpFilePath = '/tmp/ts_token_of_'+file_id+ require('crypto').randomBytes(8).toString('hex')
     fs.writeFile(tmpFilePath, contents, function() {
       const readStream = fs.createReadStream(tmpFilePath)
       readStream.on("data", data => res.write(data) );
