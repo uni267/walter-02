@@ -298,8 +298,12 @@ export const downloadToken = async (req, res, next) => {
       const readStream = fs.createReadStream(tmpFilePath)
       readStream.on("data", data => res.write(data) );
       readStream.on("end", () => {
-       res.end();
-       fs.unlinkSync(tmpFilePath)
+        res.end();
+        try {
+          fs.unlinkSync(tmpFilePath)
+        }  catch (e) {
+            logger.error(e)
+        }
       });
     });
   }
