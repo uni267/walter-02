@@ -87,33 +87,6 @@ class Swift {
       const decipher = crypto.createDecipher("aes-256-cbc", constants.CRYPTO_PASSWORD);
       const stream = this.client.download({ container: container_name, remote: file._id.toString() })
       file.is_cripted ? resolve(stream.pipe(decipher)) : resolve(stream);
-      /*
-      if(file.is_cripted) {
-        resolve(stream.pipe(decipher));
-      } else {
-        resolve(stream);
-      } */
-/*
-      if(file.is_crypted){
-        const decipher = crypto.createDecipher("aes-256-cbc", constants.CRYPTO_PASSWORD);
-        this.client.download({
-          container: container_name,
-          remote: file._id.toString()
-        }, (err, result) => {
-          if (err) reject(err);
-          resolve(result.pipe(decipher));
-         });
-      }else{
-        resolve(
-          this.client.download({
-            container: container_name,
-            remote: file._id.toString()
-          }, (err, result) => {
-            if (err) reject(err);
-          })
-        );
-      }
-*/
     });
   };
   upload(container_name, srcFilePath, dstFileName) {
