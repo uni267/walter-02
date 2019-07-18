@@ -297,7 +297,10 @@ export const downloadToken = async (req, res, next) => {
     fs.writeFile(tmpFilePath, contents, function() {
       const readStream = fs.createReadStream(tmpFilePath)
       readStream.on("data", data => res.write(data) );
-      readStream.on("end", () => res.end() );
+      readStream.on("end", () => {
+       res.end();
+       fs.unlinkSync(tmpFilePath)
+      });
     });
   }
   catch (e) {
