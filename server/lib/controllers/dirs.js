@@ -18,7 +18,7 @@ import AppSetting from "../models/AppSetting";
 
 import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
-import { getAllowedFileIds, checkFilePermission, extractFileActions } from "./files";
+import { isAllowedFileIds,getAllowedFileIds, checkFilePermission, extractFileActions } from "./files";
 import { find } from "lodash";
 import * as constants from "../configs/constants";
 import {
@@ -620,6 +620,7 @@ export const view = (req, res, next) => {
       }
       if( !mongoose.Types.ObjectId.isValid( dir_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
+      /*
       const file_ids = yield getAllowedFileIds(
         res.user._id, constants.PERMISSION_VIEW_DETAIL
       );
@@ -636,6 +637,11 @@ export const view = (req, res, next) => {
       };
 
       const file = yield File.searchFileOne(conditions);
+      */
+      const file_ids = yield isAllowedFileIds(dir_id,res.user._id, constants.PERMISSION_VIEW_DETAIL)
+      if(!file_ids)   throw new PermisstionDeniedException("指定されたファイルが見つかりません");
+
+      const file = yield File.searchFileOne({_id: mongoose.Types.ObjectId(dir_id)});
 
       if (file === null || file === "" || file === undefined) {
         throw new RecordNotFoundException("指定されたファイルが見つかりません");
