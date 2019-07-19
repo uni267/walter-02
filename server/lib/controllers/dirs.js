@@ -98,7 +98,7 @@ export const tree = (req, res, next) => {
 
       if (! ObjectId.isValid(root_id)) throw "root_id is invalid";
 
-      const permittionIds = yield getAllowedFileIds(res.user._id, PERMISSION_VIEW_LIST);
+      //const permittionIds = yield getAllowedFileIds(res.user._id, PERMISSION_VIEW_LIST);
 
       const root = yield File.findById(root_id);
 
@@ -108,7 +108,7 @@ export const tree = (req, res, next) => {
         {
           $match: {
             ancestor: root._id, depth: 1,
-            descendant: { $in: permittionIds }
+            //descendant: { $in: permittionIds }
           }
         },
         { $lookup:
@@ -143,7 +143,7 @@ export const tree = (req, res, next) => {
       } else {
 
         const children = dirs.map(dir => {
-          if (dir.descendant.is_display) {
+          if (dir.descendant.is_display && isAllowedFileIds(dir.descendant._id, res.user._id, PERMISSION_VIEW_LIST)) {
             return {
               _id: dir.descendant._id,
               name: dir.descendant.name
