@@ -88,8 +88,8 @@ export const index = (req, res, next) => {
   });
 };
 
-export const tree = (req, res, next) => {
-  co(function* () {
+export const tree = async (req, res, next) => {
+//  co(function* () {
     try {
       const { root_id } = req.query;
       if (root_id === undefined ||
@@ -100,11 +100,11 @@ export const tree = (req, res, next) => {
 
       //const permittionIds = yield getAllowedFileIds(res.user._id, PERMISSION_VIEW_LIST);
 
-      const root = yield File.findById(root_id);
+      const root = await File.findById(root_id);
 
       if (root === null) throw "root is empty";
 
-      const dirs = yield Dir.aggregate([
+      const dirs = await Dir.aggregate([
         {
           $match: {
             ancestor: root._id, depth: 1,
@@ -142,8 +142,8 @@ export const tree = (req, res, next) => {
         });
       } else {
 
-        const children = dirs.map(dir => {
-          if (dir.descendant.is_display && ( isAllowedFileId(dir.descendant._id, res.user._id, PERMISSION_VIEW_LIST))) {
+        const children = (await Promise.all(dirs.map(async dir => {
+          if (dir.descendant.is_display && ( await isAllowedFileId(dir.descendant._id, res.user._id, PERMISSION_VIEW_LIST))) {
             return {
               _id: dir.descendant._id,
               name: dir.descendant.name
@@ -151,7 +151,7 @@ export const tree = (req, res, next) => {
           } else {
             return null;
           }
-        }).filter( child => child !== null);
+        }))).filter( child => child !== null);
 
         res.json({
           status: { success: true },
@@ -190,7 +190,7 @@ export const tree = (req, res, next) => {
         }
       });
     }
-  });
+//  });
 };
 
 export const create = (req, res, next) => {
