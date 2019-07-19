@@ -89,6 +89,7 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       if(_dir === null) throw new RecordNotFoundException("dir is not found");
 
       // 権限チェック
+      /*
       const file_ids = [
         ...(await getAllowedFileIds(res.user._id, constants.PERMISSION_VIEW_LIST )),
         res.user.tenant.home_dir_id,
@@ -96,6 +97,8 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       ];
 
       if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
+      */
+      if(!(await isAllowedFileIds(dir_id,res.user._id, constants.PERMISSION_VIEW_LIST))) throw new PermisstionDeniedException("permission denied");
 
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
       const sortOption = await createSortOption(sort, order);
@@ -176,6 +179,13 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
 
       const offset = page * constants.FILE_LIMITS_PER_PAGE;
       let esResult
+      let esCount
+      const query_for_count = {...esQuery}
+      if(query_for_count.sort){
+        delete query_for_count.sort;
+      }
+      delete query_for_count.body.highlight;
+      esCount = await esClient.count(query_for_count);
       if(!export_excel){
         esQuery["from"] = offset;
         esQuery["size"] = parseInt( offset ) + 30;
@@ -183,7 +193,7 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
       }else{
         esResult = await esClient.searchAll(esQuery);
       }
-      const total = esResult.body.hits.total.value;
+      const total = esCount.body.count;
       const esResultIds = esResult.body.hits.hits
       .map(hit => {
         return mongoose.Types.ObjectId( hit._id );
@@ -281,6 +291,7 @@ export const view = async (req, res, next) => {
     }
     if( !mongoose.Types.ObjectId.isValid( file_id ) ) throw new ValidationError("ファイルIDが不正なためファイルの取得に失敗しました");
 
+    /*
     const file_ids = await getAllowedFileIds(
       res.user._id, constants.PERMISSION_VIEW_DETAIL
     );
@@ -297,6 +308,10 @@ export const view = async (req, res, next) => {
     };
 
     const file = await File.searchFileOne(conditions);
+    */
+    const file = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id)});
+
+    if(!isAllowedFileIds(file_id,res.user._id, constants.PERMISSION_VIEW_DETAIL)) throw new PermisstionDeniedException("指定されたファイルが見つかりません");
 
     if (file === null || file === "" || file === undefined) {
       throw new RecordNotFoundException("指定されたファイルが見つかりません");
@@ -572,12 +587,19 @@ export const search = async (req, res, next, export_excel=false) => {
               "post_tags": "</b>"
             }
           }
-        }            
+        }
       }
     };
 
     const offset = _page * constants.FILE_LIMITS_PER_PAGE;
     let esResult
+    let esCount
+    const query_for_count = {...esQuery}
+    if(query_for_count.sort){
+      delete query_for_count.sort;
+     }
+    delete query_for_count.body.highlight;
+    esCount = await esClient.count(query_for_count);
     if(!export_excel){
       esQuery["from"] = offset;
       esQuery["size"] = parseInt( offset ) + 30;
@@ -585,7 +607,7 @@ export const search = async (req, res, next, export_excel=false) => {
     }else{
       esResult = await esClient.searchAll(esQuery);
     }
-    const total = esResult.body.hits.total.value;
+    const total = esCount.body.count;
     const esResultIds = esResult.body.hits.hits
     .map(hit => {
       return mongoose.Types.ObjectId( hit._id );
@@ -1077,6 +1099,12 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
 
     const offset = _page * constants.FILE_LIMITS_PER_PAGE;
     let esResult
+    let esCount
+    const query_for_count = {...esQuery}
+    if(query_for_count.sort){
+      delete query_for_count.sort;
+    }
+    esCount = await esClient.count(query_for_count);
     if (! export_excel) {
       esQuery["from"] = offset;
       esQuery["size"] = parseInt( offset ) + 30;
@@ -1084,7 +1112,7 @@ export const searchDetail = async (req, res, next, export_excel=false) => {
     } else {
       esResult = await esClient.searchAll(esQuery);
     }
-    const total = esResult.body.hits.total.value;
+    const total = esCount.body.count;
     const esResultIds = esResult.body.hits.hits
     .map(hit => {
       return mongoose.Types.ObjectId( hit._id );
@@ -3314,11 +3342,26 @@ export const getAllowedFileIds = async (user_id, permission) => {
   return new Promise((resolve, reject) => resolve(file_ids) );
 };
 
+export const isAllowedFileIds = async (file_id,user_id, permission) => {
+  const action = await Action.findOne({ name:permission });
+  const role = (await RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+  const user = await User.findById(user_id);
+  const authorities = await AuthorityFile.find(
+    {
+      $or : [
+        { users: mongoose.Types.ObjectId(user_id) },
+        { groups: {$in: user.groups } }],
+      role_files: {$in: role },
+      files: mongoose.Types.ObjectId(file_id)
+    });
+    const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
+    return new Promise((resolve, reject) => resolve(file_ids) );
+}
 /**
  * ファイルに対するアクションの権限があるかどうかを判断する
- * @param {*} file_id 
- * @param {*} user_id 
- * @param {*} permission 
+ * @param {*} file_id
+ * @param {*} user_id
+ * @param {*} permission
  */
 export const checkFilePermission = async (file_id, user_id, permission) => {
   const action = await Action.findOne({ name:permission });
