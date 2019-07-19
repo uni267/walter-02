@@ -98,7 +98,7 @@ export const index = async (req, res, next, export_excel=false, no_limit=false) 
 
       if(findIndex(file_ids, mongoose.Types.ObjectId(dir_id)) === -1) throw new PermisstionDeniedException("permission denied");
       */
-      if(!(await isAllowedFileIds(dir_id,res.user._id, constants.PERMISSION_VIEW_LIST))) throw new PermisstionDeniedException("permission denied");
+      if(!(await isAllowedFileId(dir_id,res.user._id, constants.PERMISSION_VIEW_LIST))) throw new PermisstionDeniedException("permission denied");
 
       if ( typeof order === "string" && order !== "asc" && order !== "desc" ) throw new ValidationError("sort is empty");
       const sortOption = await createSortOption(sort, order);
@@ -311,7 +311,7 @@ export const view = async (req, res, next) => {
     */
     const file = await File.searchFileOne({_id: mongoose.Types.ObjectId(file_id)});
 
-    if(!isAllowedFileIds(file_id,res.user._id, constants.PERMISSION_VIEW_DETAIL)) throw new PermisstionDeniedException("指定されたファイルが見つかりません");
+    if(!(await isAllowedFileId(file_id,res.user._id, constants.PERMISSION_VIEW_DETAIL))) throw new PermisstionDeniedException("指定されたファイルが見つかりません");
 
     if (file === null || file === "" || file === undefined) {
       throw new RecordNotFoundException("指定されたファイルが見つかりません");
@@ -3340,7 +3340,7 @@ export const getAllowedFileIds = async (user_id, permission) => {
   return new Promise((resolve, reject) => resolve(file_ids) );
 };
 
-export const isAllowedFileIds = async (file_id,user_id, permission) => {
+export const isAllowedFileId = async (file_id,user_id, permission) => {
   const action = await Action.findOne({ name:permission });
   const role = (await RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
   const user = await User.findById(user_id);
@@ -3353,7 +3353,8 @@ export const isAllowedFileIds = async (file_id,user_id, permission) => {
       files: mongoose.Types.ObjectId(file_id)
     });
     const file_ids = authorities.filter( authority => (authority.files !== undefined)).map( authority => authority.files );
-    return new Promise((resolve, reject) => resolve(file_ids) );
+    const result = file_ids && file_ids.length > 0 ? true : false;
+    return new Promise((resolve, reject) => resolve(result) );
 }
 /**
  * ファイルに対するアクションの権限があるかどうかを判断する

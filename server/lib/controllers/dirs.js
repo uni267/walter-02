@@ -18,7 +18,7 @@ import AppSetting from "../models/AppSetting";
 
 import { ILLIGAL_CHARACTERS, PERMISSION_VIEW_LIST } from "../configs/constants";
 
-import { isAllowedFileIds,getAllowedFileIds, checkFilePermission, extractFileActions } from "./files";
+import { isAllowedFileId,getAllowedFileIds, checkFilePermission, extractFileActions } from "./files";
 import { find } from "lodash";
 import * as constants from "../configs/constants";
 import {
@@ -143,7 +143,7 @@ export const tree = (req, res, next) => {
       } else {
 
         const children = dirs.map(dir => {
-          if (dir.descendant.is_display && isAllowedFileIds(dir.descendant._id, res.user._id, PERMISSION_VIEW_LIST)) {
+          if (dir.descendant.is_display && ( isAllowedFileId(dir.descendant._id, res.user._id, PERMISSION_VIEW_LIST))) {
             return {
               _id: dir.descendant._id,
               name: dir.descendant.name
@@ -638,7 +638,7 @@ export const view = (req, res, next) => {
 
       const file = yield File.searchFileOne(conditions);
       */
-      const file_ids = yield isAllowedFileIds(dir_id,res.user._id, constants.PERMISSION_VIEW_DETAIL)
+      const file_ids = yield isAllowedFileId(dir_id,res.user._id, constants.PERMISSION_VIEW_DETAIL)
       if(!file_ids)   throw new PermisstionDeniedException("指定されたファイルが見つかりません");
 
       const file = yield File.searchFileOne({_id: mongoose.Types.ObjectId(dir_id)});
