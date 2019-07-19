@@ -2195,13 +2195,11 @@ export const addMeta = async (req, res, next) => {
 
     const { meta, value } = req.body;
 
-    if (meta._id === undefined || meta._id === null || meta._id === "") throw "metainfo_id is empty";
+    if (!meta || meta._id === undefined || meta._id === null || meta._id === "") throw "metainfo_id is empty";
 
     if (! mongoose.Types.ObjectId.isValid(meta._id)) throw "metainfo_id is invalid";
 
-    if (value === undefined ||
-        value === null ||
-        value === "") throw "metainfo value is empty";
+    if (!value || value === "") throw "metainfo value is empty";
 
     // const [ file, metaInfo ] = await [
     //   File.findById(file_id),
