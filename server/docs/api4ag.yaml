@@ -5,6 +5,12 @@ info:
   description: クラウドストレージのAPI仕様
 servers:
   - url: http://cloudstorage.tsunag.biz
+  - url: http://localhost:3333
+  - url: http://54.64.22.157:13333
+  - url: http://52.198.153.81:3333
+  - url: http://3.113.25.195:3333
+  - url: http://3.113.9.212:3333
+  - url: http://52.194.187.24:3000
 paths:
   /api/login:
     post:
@@ -141,9 +147,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/DownloadFileResError'
 
+  /api/v1/files/{fileId}:
+    delete:
+      summary: 指定のファイルをゴミ箱へ移動
+      description: 指定のファイル（fileId）をゴミ箱へ移動する。
+      security:
+        - TokenAuth: []
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 
+            リクエストに成功。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileRes'
+        '400':
+          description: リクエストに失敗。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFileResError'
+
+
   /api/v1/files/{fileId}/delete:
     delete:
-      summary: 指定のファイルを削除
+      summary: 指定のファイルを論理削除
       description: 指定のファイル（fileId）を削除する。
       security:
         - TokenAuth: []
@@ -635,7 +669,6 @@ components:
                 description: 空配列固定
               meta_infos:
                 type: array
-                description: 空配列固定
                 items:
                   properties:
                     _id:
