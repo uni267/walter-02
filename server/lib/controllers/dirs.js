@@ -117,24 +117,6 @@ export const tree = async (req, res, next) => {
             //descendant: { $in: permittionIds }
           }
         },
-        /* to future dir glood
-        { $lookup:
-          {
-            from: "authorityfile",
-            localField: "descendant",
-            foreignField: "files",
-            as: "descendant"
-          }
-        },
-        {
-            $match: {
-              $or : [
-                { users: mongoose.Types.ObjectId(res.user._id) },
-                { groups: {$in: user.groups } }],
-              role_files: {$in: role }
-            }
-        },
-        */
         { $lookup:
           {
             from: "files",
@@ -153,6 +135,24 @@ export const tree = async (req, res, next) => {
             ]
           }
         }
+        /* to future dir glood
+        ,{ $lookup:
+          {
+            from: "authority_files",
+            localField: "descendant._id",
+            foreignField: "files",
+            as: "auth"
+          }
+        },
+        {
+            $match: {
+              $or : [
+                { "auth.users": mongoose.Types.ObjectId(res.user._id) },
+                { "auth.groups": {$in: user.groups } }],
+              "auth.role_files": {$in: role }
+            }
+        }
+        */
       ]);
 
       if (dirs.length === 0) {
