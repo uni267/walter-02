@@ -101,6 +101,12 @@ export const tree = async (req, res, next) => {
       //const permittionIds = yield getAllowedFileIds(res.user._id, PERMISSION_VIEW_LIST);
 
       const root = await File.findById(root_id);
+      /* to future dir glood
+        const action = await Action.findOne({ name:PERMISSION_VIEW_LIST });
+        const user = await User.findById(res.user._id);
+        const role = (await RoleFile.find({ actions:{$all : [action._id] } },{'_id':1})).map( role => mongoose.Types.ObjectId(role._id) );
+
+      */
 
       if (root === null) throw "root is empty";
 
@@ -111,6 +117,24 @@ export const tree = async (req, res, next) => {
             //descendant: { $in: permittionIds }
           }
         },
+        /* to future dir glood
+        { $lookup:
+          {
+            from: "authorityfile",
+            localField: "descendant",
+            foreignField: "files",
+            as: "descendant"
+          }
+        },
+        {
+            $match: {
+              $or : [
+                { users: mongoose.Types.ObjectId(res.user._id) },
+                { groups: {$in: user.groups } }],
+              role_files: {$in: role }
+            }
+        },
+        */
         { $lookup:
           {
             from: "files",
@@ -248,7 +272,7 @@ export const create = (req, res, next) => {
         && auth.users !== null
         && auth.users.toString() === user._id.toString()
         && auth.role_files.toString() === role._id.toString();
-      } 
+      }
 
       if (inheritAuthEnabled) {
         // 親フォルダの権限継承用
