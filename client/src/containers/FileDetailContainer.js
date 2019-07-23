@@ -152,7 +152,7 @@ class FileDetailContainer extends Component {
     const editable = this.props.file.actions.filter( act => (
       act.name === PERMISSION_AUTHORITY || act.name === PERMISSION_FILE_AUTHORITY
     )).length > 0;
-
+    /* 動作しないので排除
     const button = editable
           ? (
             <RaisedButton
@@ -160,7 +160,7 @@ class FileDetailContainer extends Component {
               label="編集"
               />
           ) : null;
-
+    */
     return (
       <Card style={styles.innerCard}>
         <CardHeader title="メンバー" />
@@ -169,7 +169,6 @@ class FileDetailContainer extends Component {
             renderAuthority(auth, idx)
           ))}
         </CardText>
-        <CardActions>{button}</CardActions>
       </Card>
     );
   };
