@@ -26,13 +26,15 @@ import Tag from "../../models/Tag";
 import DisplayItem from "../../models/DisplayItem";
 import MetaInfo from "../../models/MetaInfo";
 
-const task = async () => {
-  try{
-    console.log('start')
+import initElasticsearch from "./initElasticsearch";
 
-    if (!process.argv[3]) throw new Error("引数にテナント名を指定する必要があります");
-    const tenantName = process.argv[3]
-    const _tenant = await Tenant.findOne({ name: tenantName })
+const task = async (tenant_name) => {
+  try{
+    console.log(`add tenant '${tenant_name}' start.....`)
+
+    if (!tenant_name) throw new Error("引数にテナント名を指定する必要があります");
+    //const tenant_name = process.argv[3]
+    const _tenant = await Tenant.findOne({ name: tenant_name })
     if (_tenant) throw new Error("すでに存在しているテナントです");
 
     const now = new Date()
@@ -73,7 +75,7 @@ const task = async () => {
     //  tenants collection
     // ===============================
     const tenant = new Tenant();
-    tenant.name = tenantName;
+    tenant.name = tenant_name;
     tenant.home_dir_id = topDir._id;
     tenant.trash_dir_id = trashDir._id;
     tenant.threshold = 1024 * 1024 * 1024 * 100;
@@ -104,9 +106,9 @@ const task = async () => {
 
     const user1 = new User();
     user1.type = "user";
-    user1.account_name = tenantName + '2';
+    user1.account_name = tenant_name + '2';
     user1.name = user1.account_name
-    user1.email = user1.account_name + '@' + tenantName;
+    user1.email = user1.account_name + '@' + tenant_name;
     user1.password = pass;
     user1.enabled = true;
     user1.groups = [(await Group.findOne({ name: "全社", tenant_id: tenant._id }, { _id: 1 }))._id];
@@ -115,9 +117,9 @@ const task = async () => {
     console.log(`一般ユーザー ${user1.account_name}が作成されました`)
     const user2 = new User();
     user2.type = "user";
-    user2.account_name = tenantName + '1';
+    user2.account_name = tenant_name + '1';
     user2.name = user2.account_name;
-    user2.email = user2.account_name + '@' + tenantName;
+    user2.email = user2.account_name + '@' + tenant_name;
     user2.password = pass;
     user2.enabled = true;
     user2.groups = [
@@ -434,16 +436,16 @@ const task = async () => {
       },
     ])
 
-
+    await initElasticsearch(tenant_name)
   }
   catch (e) {
     console.log(util.inspect(e, false, null));
     logger.error(e);
-    process.exit();
+    //process.exit();
   }
   finally {
     console.log("################# add tenant end #################");
-    process.exit();
+    //process.exit();
   }
 
 }

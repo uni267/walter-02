@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import * as _ from "lodash";
 
 import { SERVER_CONF } from "../../configs/server";
 
@@ -32,8 +33,7 @@ import MetaInfo from "../../models/MetaInfo";
 
 
 const drop_collection = async collection_name => {
-  console.log(mongoose.connection.db)
-  return new Promise( (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     mongoose.connection.db.dropCollection(collection_name, (err, result) => {
       if (err) reject(err);
       resolve(result);
@@ -41,32 +41,55 @@ const drop_collection = async collection_name => {
   });
 }
 
+
+const connect = (uri) => {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(uri, { useNewUrlParser: true }, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve();        
+      }
+    })    
+  });
+}
+
+
 const task = async () => {
   try{
     //2019/05/16 このバッチは動作しない 
     console.log('initDatabase running...')
+    await connect(`mongodb://54.64.22.157:17017/walter`)
+
+    console.log('conected!')
+
     // ===============================
     //  all collection drop
     // ===============================
-    await drop_collection('files')
-    await drop_collection('dirs')
-    await drop_collection('tenants')
-    await drop_collection('groups')
-    await drop_collection('users')
-    await drop_collection('tags')
-    await drop_collection('meta_infos')
-    await drop_collection('display_items')
-    await drop_collection('actions')
-    await drop_collection('menus')
-    await drop_collection('role_files')
-    await drop_collection('role_menus')
-    await drop_collection('previews')
-    await drop_collection('authority_files')
-    await drop_collection('authority_menus')
-    await drop_collection('notifications')
-    await drop_collection('file_meta_infos')
-    await drop_collection('download_infos')
-    await drop_collection('app_settings')
+    const exists_list = (await mongoose.connection.db.listCollections().toArray()).map(item => item.name)
+    const target_collections = _.intersection(exists_list, [
+      'files',
+      'dirs',
+      'tenants',
+      'groups',
+      'users',
+      'tags',
+      'meta_infos',
+      'display_items',
+      'actions',
+      'menus',
+      'role_files',
+      'role_menus',
+      'previews',
+      'authority_files',
+      'authority_menus',
+      'notifications',
+      'file_meta_infos',
+      'download_infos',
+      'app_settings',
+    ])
+
+    await Promise.all(await _.map(target_collections, async col => await drop_collection(col)))
 
     // ===============================
     //  files collection
@@ -252,11 +275,11 @@ const task = async () => {
     console.log(e)
     console.log(util.inspect(e, false, null));
     logger.error(e);
-    process.exit();
+    //process.exit();
   }
   finally {
-    logger.info("################# init wak tenant end #################");
-    process.exit();
+    logger.info("################# init database end #################");
+    //process.exit();
   }
 
 }

@@ -1,13 +1,14 @@
 import analyze from "./analyze";
 import initElasticsearch from "./initElasticsearch";
-import moveInvisibleFiles from "./moveInvisibleFiles";
-import createAdmin from "./createAdmin";
-import deleteAdmin from "./deleteAdmin";
+//import moveInvisibleFiles from "./moveInvisibleFiles";
+//import createAdmin from "./createAdmin";
+//import deleteAdmin from "./deleteAdmin";
 
 import addTenant from "./addTenant";
 import initTenantW from "./initTenantW";
 import {reCreateElasticCache} from "./initElasticsearch";
 import addTimestampSetting from "./addTimestampSetting";
+import initDb from "./initDatabase";
 
 export const AnalyzeTask = () => analyze();
 
@@ -25,3 +26,5 @@ export const addTenantTask = () => addTenant();
 export const initTenantWTask = () => initTenantW();
 
 export const addTimestampSettingTask = () => addTimestampSetting();
+
+export const initDbTask = () => initDb();

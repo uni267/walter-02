@@ -12,38 +12,38 @@ import AppSetting from "../../models/AppSetting";
 import MetaInfo from "../../models/MetaInfo";
 import DisplayItem from "../../models/DisplayItem";
 
-const task = async () => {
+const task = async (tenantName, tsaUser, tsaPass) => {
   try{
     console.log('追加済のテナントに対し、タイムスタンプ機能を追加します。')
     console.log('-------- Start --------')
 
-    if (!process.argv[3]) throw "引数にテナント名を指定する必要があります。"
-    if (!process.argv[4]) throw "サイバーリンクスTSA認証局のユーザIDを指定してください。"
-    if (!process.argv[5]) throw "サイバーリンクスTSA認証局のユーザPWを指定してください。"
+    if (!tenantName) throw "引数にテナント名を指定する必要があります。"
+    if (!tsaUser) throw "サイバーリンクスTSA認証局のユーザIDを指定してください。"
+    if (!tsaPass) throw "サイバーリンクスTSA認証局のユーザPWを指定してください。"
 
-    const tenantName = process.argv[3]
+    //const tenantName = process.argv[3]
     const tenant = await Tenant.findOne({ name: tenantName})
     if (!tenant) throw "存在しないテナントです。"
 
-    const tsaUser = process.argv[4]
-    const tsaPass = process.argv[5]
+    //const tsaUser = process.argv[4]
+    //const tsaPass = process.argv[5]
 
     console.log(`テナント ${tenant.name}(${tenant._id}) の設定を更新します。。。`)
 
-    const mapping = await esClient.indices.getMapping({ index: [tenant._id], include_type_name: true })
-    const props = mapping.body[tenant._id.toString()].mappings.files.properties.file.properties
-    const newFileProps = {
-      properties: {
-        file: {
-          properties: {
-            ...props,
-            tstStatus: { "type": "keyword" },
-            tstExpirationDate: { "type": "date" },
-          }
-        }
-      }
-    }
-    await esClient.indices.putMapping({index: [tenant._id], type: "files", body:JSON.stringify(newFileProps), include_type_name: true});
+    // const mapping = await esClient.indices.getMapping({ index: [tenant._id], include_type_name: true })
+    // const props = mapping.body[tenant._id.toString()].mappings.files.properties.file.properties
+    // const newFileProps = {
+    //   properties: {
+    //     file: {
+    //       properties: {
+    //         ...props,
+    //         tstStatus: { "type": "keyword" },
+    //         tstExpirationDate: { "type": "date" },
+    //       }
+    //     }
+    //   }
+    // }
+    // await esClient.indices.putMapping({index: [tenant._id], type: "files", body:JSON.stringify(newFileProps), include_type_name: true});
 
     // タイムスタンプ関連のアクションを追加（全テナント共有）
     const appSetting = await AppSetting.findOne({ tenant_id: tenant._id, name: AppSetting.TIMESTAMP_PERMISSION })
@@ -56,14 +56,14 @@ const task = async () => {
       });
     }
     else {
-      await appSetting.update({
+      await appSetting.updateOne({
         $set: {
           enable: true
         }
       })
     }
 
-    await tenant.update({
+    await tenant.updateOne({
       $set: {
         tsaAuth: {
           user: tsaUser,
@@ -166,12 +166,12 @@ const task = async () => {
     console.log(e)
     console.log(util.inspect(e, false, null));
     logger.error(e);
-    process.exit();
+    //process.exit();
   }
   finally {
     console.log('-------- Finish --------')
     logger.info("################# add timestamp setting end #################");
-    process.exit();
+    //process.exit();
   }
 
 }
