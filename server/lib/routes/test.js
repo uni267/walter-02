@@ -3,7 +3,6 @@
 import { Router } from "express";
 import mongoose, { Schema } from "mongoose";
 import multer from "multer";
-import morgan from "morgan";
 import co from "co";
 import User from "../models/User";
 import Group from "../models/Group";

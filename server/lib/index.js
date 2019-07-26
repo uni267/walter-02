@@ -1,6 +1,5 @@
 import express from "express";
 import bodyParser from "body-parser";
-// import morgan from "morgan";
 import path from "path";
 import log4js from "log4js";
 import { EventEmitter } from "events";
@@ -105,7 +104,6 @@ app.use("/api/v1/files/binary", streamMiddleware, (req, res, next) => {
 
 app.use(bodyParser.urlencoded({limit: constants.FILE_MAX_UPLOAD_SIZE, extended: true}));
 app.use(bodyParser.json({limit: constants.FILE_MAX_UPLOAD_SIZE }));
-// app.use(morgan({ format: "dev", immediate: true }));
 app.use(express.static(path.join(__dirname, '../../client/build')));
 app.use(log4js.connectLogger(logger, {
   level: 'info',

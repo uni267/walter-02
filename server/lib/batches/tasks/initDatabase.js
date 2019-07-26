@@ -32,7 +32,7 @@ import DisplayItem from "../../models/DisplayItem";
 import MetaInfo from "../../models/MetaInfo";
 
 
-const drop_collection = async collection_name => {
+const drop_collection = collection_name => {
   return new Promise((resolve, reject) => {
     mongoose.connection.db.dropCollection(collection_name, (err, result) => {
       if (err) reject(err);

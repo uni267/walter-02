@@ -5,7 +5,6 @@ import co from "co";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import moment from "moment";
-import morgan from "morgan";
 import { exec } from "child_process";
 import util from "util";
 import crypto from "crypto";
