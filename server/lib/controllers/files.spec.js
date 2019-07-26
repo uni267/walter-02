@@ -16,44 +16,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 
 
-let tenent, user
-const connectDB = (tenant_name) => {
-  mongoServer = new MongoMemoryServer();
-  mongoServer
-    .getConnectionString()
-    .then((mongoUri) => {
-      return mongoose.connect(mongoUri, { useNewUrlParser: true }, (err) => {
-        if (err) done(err);
-      });
-    })
-    .then(async () => {
-      await initDb()
-      await addTenant(tenant_name)
-      // tenant = await Tenant.findOne({ name: tenant_name })
-      // user = await User.findOne({ account_name: `${tenant_name}1` })
-
-    });
-}
-
-// const connectDB = () => {
-//   return new Promise((resolve, reject) => {
-//     mongoServer = new MongoMemoryServer();
-//     mongoServer
-//       .getConnectionString()
-//       .then((mongoUri) => {
-//         return mongoose.connect(mongoUri, { useNewUrlParser: true }, (err) => {
-//           if (err) reject(err);
-//         });
-//       })
-//       .then(() => resolve());
-//   })
-// }
-const closeDB = async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-}
-
-
+jest.setTimeout(30000);
 const tenant_name = 'test'
 
 
@@ -77,7 +40,6 @@ describe('lib/controllers/files', () => {
   afterAll(async () => {
     await mongoose.disconnect();
     await mongoServer.stop();
-        //await closeDB()
   })  
 
   beforeEach(() => {
@@ -89,33 +51,28 @@ describe('lib/controllers/files', () => {
   })
 
   
-  describe(`index()`, () => {
+  describe(`upload()`, () => {
     const default_req = {
       body: {
-        files: {}
+        files: []
       }
     }
     const default_res = {
-      user: {
-        tenant_id: '',
-        tenant: {}
-      }
+      user: {...user}
     }
-    it(`sample`, async () => {
-      expect(tenant.name).toBe(tenant_name)
-    })
-    it(`パラメータ不正`, async () => {
+    default_res.user.tenant = { ...tenant }
+    
+    it(`パラメータ不正: files is empty`, async () => {
       const req = { ...default_req }
+      req.body.files =[]  //ファイル情報を空にする
       const res_json = jest.fn()
-      //const res = { ...default_res, status: sinon.stub().returns({ json: res_json }) }
-      const res = { ...default_res, status: jest.fn() }
+      const res = { ...default_res, status: jest.fn(() => ({ json: res_json })) }
       await controller.upload(req, res)
-      //sinon.assert.calledWith(res.status, 400);
-      //const res_body = res_json.getCall(0).args[0]
-      //console.log(res_body)
 
-      expect(1).toBe(1)
-      //expect(res_body.status.success).equal(false)  ←ここを生かすとテストに失敗する
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      console.log(res_body)
+      expect(res_body.status.success).toBe(false)  // status.success = false
     });
   })
 });
