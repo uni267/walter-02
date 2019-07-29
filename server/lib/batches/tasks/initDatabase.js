@@ -59,7 +59,7 @@ const task = async () => {
   try{
     //2019/05/16 このバッチは動作しない 
     console.log('initDatabase running...')
-    await connect(`mongodb://54.64.22.157:17017/walter`)
+    //await connect(`mongodb://54.64.22.157:17017/walter`)
 
     console.log('conected!')
 

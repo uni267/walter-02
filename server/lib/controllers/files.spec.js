@@ -25,7 +25,7 @@ describe('lib/controllers/files', () => {
   const opts = { useNewUrlParser: true}; // remove this option if you use mongoose 5 and above  
   let tenant
   let user
-  beforeAll(async () => {
+  beforeAll(async (done) => {
     mongoServer = new MongoMemoryServer();
     const mongoUri = await mongoServer.getConnectionString();
     await mongoose.connect(mongoUri, opts, (err) => {
@@ -36,6 +36,8 @@ describe('lib/controllers/files', () => {
 
     tenant = await Tenant.findOne({ name: tenant_name })
     user = await User.findOne({ account_name: `${tenant_name}1` })
+    console.log('outer before all')
+    done()
   })
   afterAll(async () => {
     await mongoose.disconnect();
@@ -52,6 +54,11 @@ describe('lib/controllers/files', () => {
 
   
   describe(`upload()`, () => {
+    beforeAll(async () => {
+
+      console.log('outer before all')
+    })
+    
     const default_req = {
       body: {
         files: []
@@ -61,7 +68,11 @@ describe('lib/controllers/files', () => {
       user: {...user}
     }
     default_res.user.tenant = { ...tenant }
-    
+    it(`sample`, async () => {
+      expect(tenant_name).toBe(tenant.name)
+    })
+
+
     it(`パラメータ不正: files is empty`, async () => {
       const req = { ...default_req }
       req.body.files =[]  //ファイル情報を空にする
