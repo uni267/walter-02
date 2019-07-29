@@ -20,7 +20,7 @@
     "re-create-elastic-cache:prod": "node dist/batches/index.js reCreateElasticCache",
     "add-timestamp-setting:prod": "node dist/batches/index.js addTimestampSetting",
     "analyze": "babel-node batches/index.js analyze",
-    "test": "jest --detectOpenHandles --testTimeout=15000 controllers/files.spec.js",
+    "test": "jest --forceExit controllers/files.spec.js",
     "debug-re-create-elastic-cache": "babel-node batches/index.js reCreateElasticCache --inspect-brk=9229",
     "debug-add-timestamp-setting": "babel-node lib/batches/index.js addTimestampSetting --inspect-brk=9229",
     "move-unvisible-files": "babel-node batches/index.js moveUnvisibleFiles",
@@ -68,7 +68,7 @@
     "babel-jest": "24.8.0",
     "flow-bin": "0.54.1",
     "jest": "24.8.0",
-    "mongodb-memory-server-global": "5.1.5",
+    "mongodb-memory-server": "^5.1.9",
     "nodemon": "1.18.7"
   }
 }

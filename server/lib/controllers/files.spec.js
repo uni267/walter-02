@@ -16,7 +16,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 
 
-jest.setTimeout(30000);
+jest.setTimeout(20000);
 const tenant_name = 'test'
 
 
@@ -25,23 +25,22 @@ describe('lib/controllers/files', () => {
   const opts = { useNewUrlParser: true}; // remove this option if you use mongoose 5 and above  
   let tenant
   let user
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     mongoServer = new MongoMemoryServer();
     const mongoUri = await mongoServer.getConnectionString();
     await mongoose.connect(mongoUri, opts, (err) => {
-      if (err) console.error(err);
+      if (err) { console.error(err); }
     });
     await initDb()
     await addTenant(tenant_name)
 
     tenant = await Tenant.findOne({ name: tenant_name })
     user = await User.findOne({ account_name: `${tenant_name}1` })
-    console.log('outer before all')
-    done()
   })
   afterAll(async () => {
     await mongoose.disconnect();
     await mongoServer.stop();
+    console.log('---テスト終了処理の完了---')
   })  
 
   beforeEach(() => {
@@ -55,8 +54,9 @@ describe('lib/controllers/files', () => {
   
   describe(`upload()`, () => {
     beforeAll(async () => {
-
-      console.log('outer before all')
+      console.log('---テストの開始---')
+    })
+    afterAll(async () => {
     })
     
     const default_req = {
@@ -74,6 +74,7 @@ describe('lib/controllers/files', () => {
 
 
     it(`パラメータ不正: files is empty`, async () => {
+console.log('test start---')      
       const req = { ...default_req }
       req.body.files =[]  //ファイル情報を空にする
       const res_json = jest.fn()
@@ -82,8 +83,9 @@ describe('lib/controllers/files', () => {
 
       expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
       const res_body = res_json.mock.calls[0][0] //1回目の第一引数
-      console.log(res_body)
+      //console.log(res_body)
       expect(res_body.status.success).toBe(false)  // status.success = false
+console.log('test end---')      
     });
   })
 });
