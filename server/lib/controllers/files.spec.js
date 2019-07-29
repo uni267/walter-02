@@ -3,7 +3,6 @@ import initDb from "../batches/tasks/initDatabase";
 import addTenant from "../batches/tasks/addTenant";
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
-const mongod = new MongoMemoryServer();
 
 import moment from "moment";
 import * as _ from "lodash";
@@ -40,7 +39,6 @@ describe('lib/controllers/files', () => {
   afterAll(async () => {
     await mongoose.disconnect();
     await mongoServer.stop();
-    console.log('---テスト終了処理の完了---')
   })  
 
   beforeEach(() => {
@@ -54,7 +52,6 @@ describe('lib/controllers/files', () => {
   
   describe(`upload()`, () => {
     beforeAll(async () => {
-      console.log('---テストの開始---')
     })
     afterAll(async () => {
     })
@@ -74,7 +71,6 @@ describe('lib/controllers/files', () => {
 
 
     it(`パラメータ不正: files is empty`, async () => {
-console.log('test start---')      
       const req = { ...default_req }
       req.body.files =[]  //ファイル情報を空にする
       const res_json = jest.fn()
@@ -85,7 +81,6 @@ console.log('test start---')
       const res_body = res_json.mock.calls[0][0] //1回目の第一引数
       //console.log(res_body)
       expect(res_body.status.success).toBe(false)  // status.success = false
-console.log('test end---')      
     });
   })
 });
