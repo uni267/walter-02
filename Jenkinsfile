@@ -1,11 +1,12 @@
 def nowdt = ''
 pipeline {
-  environment{
-    NODE_ENV='test'
-  }
+
   agent none
   stages {
     stage('back-end-test') {
+      environment{
+        NODE_ENV='test'
+      }
       agent {
         docker 'cloudstoragesv:2019072900'
       }
@@ -92,11 +93,15 @@ pipeline {
       }
     }
     stage('Bild-Back-end') {
+      environment{
+        NODE_ENV='production'
+      }
       agent {
         docker 'cloudstoragesv:2019072900'
       }
       steps {
         dir(path: 'server') {
+          sh 'echo ${NODE_ENV}'
           sh 'npm install'
           sh 'npm run build'
         }
