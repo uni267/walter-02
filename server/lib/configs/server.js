@@ -18,7 +18,14 @@ export const SERVER_CONF = {
     db_host: process.env.MONGO_HOST_NAME,
     db_name: "walter",
     port: 3333
-  }
+  },
+  test: {
+    url: ``,  // mongodb-memory-serverを使用するので、ここには接続しない
+    db_host: ``,
+    db_name: "walter",
+    port: 3333
+  },
+
 };
 
 export const STORAGE_CONF = {
@@ -46,6 +53,14 @@ export const STORAGE_CONF = {
     username: "test:tester",
     password: "testing",
     authUrl: `http://${process.env.SWIFT_HOST_NAME}:8080/auth/v1.0`,
+    version: 1
+  },
+
+  test: { //mockを使うので使用しない
+    provider: "openstack",  
+    username: "test:tester",
+    password: "testing",
+    authUrl: ``,
     version: 1
   }
 };
@@ -81,7 +96,13 @@ export const ELASTICSEARCH_CONF = {
     url: process.env.ELASTIC_URL, // protocol + ELASTIC_HOST_NAME ex) http://elastic.host.name
     port: "9200",
     logLevel: "error"
-  }
+  },
+  test: {
+    url: "http://elastic",
+    port: "9200",
+    logLevel: "error"
+  },
+
 };
 
 // Timestamp APIの設定
@@ -103,7 +124,13 @@ export const TIMESTAMP_API_CONF = {
     port: "80",
     apiVersion: 'v1',
     logLevel: "error"
-  }
+  },
+  test: {
+    url: "http://tsacli",
+    port: "8080",
+    apiVersion: "v1",
+    logLevel: "error"
+  },
 }
 // tikaの設定
 export const TIKA_CONF = {
@@ -118,7 +145,11 @@ export const TIKA_CONF = {
   production: {
     host: process.env.TIKA_HOST_NAME,
     port: "9998",
-  }
+  },
+  test: {
+    host: "tika",
+    port: "9998",
+  },
 };
 
 // kafkaの設定
@@ -138,5 +169,9 @@ export const KAFKA_CONF = {
   production: {
     host: process.env.KAFKA_HOST_NAME,
     port: "19092",
-  }
+  },
+  test: {
+    host: "kafka",
+    port: "19092",
+  },
 };
