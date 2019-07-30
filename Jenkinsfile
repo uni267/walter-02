@@ -12,7 +12,7 @@ pipeline {
             dir(path: 'server') {
               sh 'curl -X GET http://172.17.0.2:9200/'
               sh 'npm install'
-              sh 'mkdit test'
+              sh 'mkdir test'
             }
           }
         }
