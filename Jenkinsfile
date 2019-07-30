@@ -96,7 +96,7 @@ pipeline {
     }
     stage('Build-Back-end') {
       environment{
-        NODE_ENV='production'
+        NODE_ENV=''
       }
       agent {
         docker 'cloudstoragesv:2019072900'
