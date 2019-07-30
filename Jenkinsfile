@@ -1,6 +1,5 @@
 def nowdt = ''
 pipeline {
-
   agent none
   stages {
     stage('back-end-test') {
@@ -70,6 +69,9 @@ pipeline {
       }
     }
     stage('Build-Front-end') {
+      environment{
+        NODE_ENV='production'
+      }
       agent {
         docker 'node:8.15'
       }
@@ -92,7 +94,7 @@ pipeline {
         }
       }
     }
-    stage('Bild-Back-end') {
+    stage('Build-Back-end') {
       environment{
         NODE_ENV='production'
       }
