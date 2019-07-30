@@ -1,7 +1,7 @@
 def nowdt = ''
 pipeline {
   environment{
-    NODE_ENV=test
+    NODE_ENV='test'
   }
   agent none
   stages {
