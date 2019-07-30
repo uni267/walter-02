@@ -2,6 +2,52 @@ def nowdt = ''
 pipeline {
   agent none
   stages {
+    stage('back-end-test') {
+      agent {
+        docker 'cloudstoragesv:2019072900'
+      }
+      stages {
+        stage('npminstall') {
+          steps {
+            dir(path: 'server') {
+              sh 'curl -X GET http://172.17.0.2:9200/'
+              sh 'npm install'
+            }
+          }
+        }
+        stage('runtest'){
+          steps {
+            parallel (
+              file1:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=file_result.json --json ./lib/controllers/files.spec.js"
+                }
+              },
+              action:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=files_spec_result.json --json ./lib/routes/test/actions.spec.js"
+                  }
+              },
+              file2:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=file_result2.json --json ./lib/controllers/files.spec.js"
+                }
+              }
+            )
+          }
+        }
+      }
+      post{
+        always {
+          script {
+            nowdt = sh(script: "date '+%Y%m%d%H%M'",returnStdout:true)
+            archiveArtifacts artifacts: "server/file_result.json" , fingerprint: true
+            archiveArtifacts artifacts: "server/files_spec_result.json" , fingerprint: true
+            archiveArtifacts artifacts: "server/file_result2.json" , fingerprint: true
+          }
+        }
+      }
+    }
     stage('Front-end') {
       agent {
         docker 'node:8.15'
@@ -16,7 +62,6 @@ pipeline {
         success {
           script {
               sh(script: "ls")
-              nowdt = sh(script: "date '+%Y%m%d%H%M'",returnStdout:true)
               def fname="clientbuild_"+nowdt.trim()+".tgz"
               def rncmd="tar -czf "+ fname + " client/build"
               sh rncmd
@@ -28,7 +73,7 @@ pipeline {
     }
     stage('Back-end') {
       agent {
-        docker 'node:10.16'
+        docker 'cloudstoragesv:2019072900'
       }
       steps {
         dir(path: 'server') {
@@ -69,7 +114,7 @@ pipeline {
                 sh "git config --global user.email 'you@example.com'"
                 sh "git config --global user.name 'jenkins'"
                 sh "git commit -m 'release'"
-                sh "git push $url -u develop release/"+nowdt
+                sh "git push $url -u topic/jest release/"+nowdt
           }
         }
       }
