@@ -20,17 +20,33 @@ pipeline {
             parallel (
               file1:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=file_result.json --json ./lib/controllers/files.spec.js"
+                  sh "npm run test -- --outputFile=./test/file_result.json --json ./lib/controllers/files.spec.js"
+                  sh "npm run test -- --outputFile=./test/file2_result.json --json ./lib/controllers/files.spec.js"
                 }
-              },
-              action:{
-                dir(path: 'server') {
-                  sh "npm run test -- --outputFile=files_spec_result.json --json ./lib/routes/test/actions.spec.js"
-                  }
               },
               file2:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=file_result2.json --json ./lib/controllers/files.spec.js"
+                  sh "npm run test -- --outputFile=./test/file7_result.json --json ./lib/controllers/files.spec.js"
+                }
+              },
+              file3:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=./test/file3_result.json --json ./lib/controllers/files.spec.js"
+                }
+              },
+              file4:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=./test/file4_result.json --json ./lib/controllers/files.spec.js"
+                }
+              },
+              file5:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=./test/file5_result.json --json ./lib/controllers/files.spec.js"
+                }
+              },
+              file6:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=./test/file6_result.json --json ./lib/controllers/files.spec.js"
                 }
               }
             )
@@ -41,9 +57,8 @@ pipeline {
         always {
           script {
             nowdt = sh(script: "date '+%Y%m%d%H%M'",returnStdout:true)
-            archiveArtifacts artifacts: "server/file_result.json" , fingerprint: true
-            archiveArtifacts artifacts: "server/files_spec_result.json" , fingerprint: true
-            archiveArtifacts artifacts: "server/file_result2.json" , fingerprint: true
+            sh "tar czf test.tgz server/test"
+            archiveArtifacts artifacts: "test.tgz" , fingerprint: true
           }
         }
       }
