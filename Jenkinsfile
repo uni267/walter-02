@@ -70,7 +70,7 @@ pipeline {
     }
     stage('Build-Front-end') {
       environment{
-        NODE_ENV='production'
+        NODE_ENV='test'
       }
       agent {
         docker 'node:8.15'
@@ -96,7 +96,7 @@ pipeline {
     }
     stage('Build-Back-end') {
       environment{
-        NODE_ENV=''
+        NODE_ENV='build'
       }
       agent {
         docker 'cloudstoragesv:2019072900'
