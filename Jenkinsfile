@@ -7,11 +7,12 @@ pipeline {
         docker 'cloudstoragesv:2019072900'
       }
       stages {
-        stage('npminstall') {
+        stage('test-init') {
           steps {
             dir(path: 'server') {
               sh 'curl -X GET http://172.17.0.2:9200/'
               sh 'npm install'
+              sh 'mkdit test'
             }
           }
         }
@@ -63,7 +64,7 @@ pipeline {
         }
       }
     }
-    stage('Front-end') {
+    stage('Build-Front-end') {
       agent {
         docker 'node:8.15'
       }
@@ -86,7 +87,7 @@ pipeline {
         }
       }
     }
-    stage('Back-end') {
+    stage('Bild-Back-end') {
       agent {
         docker 'cloudstoragesv:2019072900'
       }
