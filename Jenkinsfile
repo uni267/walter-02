@@ -32,7 +32,13 @@ pipeline {
                 dir(path: 'server') {
                   sh "npm run test -- --outputFile=./test/action_result.json --json ./lib/routes/test/action.spec.js"
                 }
+              },
+              dir:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=./test/dir_result.json --json ./lib/controllers/dirs.spec.js"
+                }
               }
+
             )
           }
         }
