@@ -23,7 +23,7 @@
     "re-create-elastic-cache:prod": "node dist/batches/index.js reCreateElasticCache",
     "add-timestamp-setting:prod": "node dist/batches/index.js addTimestampSetting",
     "analyze": "babel-node batches/index.js analyze",
-    "test": "NODE_ENV=test jest controllers/files.spec.js",
+    "test": "NODE_ENV=test jest ",
     "debug-re-create-elastic-cache": "babel-node batches/index.js reCreateElasticCache --inspect-brk=9229",
     "debug-add-timestamp-setting": "babel-node lib/batches/index.js addTimestampSetting --inspect-brk=9229",
     "move-unvisible-files": "babel-node batches/index.js moveUnvisibleFiles",
