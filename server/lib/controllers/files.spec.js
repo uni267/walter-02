@@ -15,7 +15,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 
 
-jest.setTimeout(20000);
+jest.setTimeout(40000);
 const tenant_name = 'test'
 
 const sample_file = {
