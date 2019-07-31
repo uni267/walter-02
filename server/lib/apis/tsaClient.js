@@ -9,6 +9,9 @@ const mode = process.env.NODE_ENV;
 let baseURL;
 
 switch (mode) {
+  case "test":
+    baseURL = `${TIMESTAMP_API_CONF.test.url}:${TIMESTAMP_API_CONF.test.port}/${TIMESTAMP_API_CONF.test.apiVersion}`;
+    break;
   case "integration":
     baseURL = `${TIMESTAMP_API_CONF.integration.url}:${TIMESTAMP_API_CONF.integration.port}/${TIMESTAMP_API_CONF.integration.apiVersion}`;
     break;

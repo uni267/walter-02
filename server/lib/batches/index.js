@@ -12,6 +12,7 @@ import { reCreateElasticCache } from "./tasks/initElasticsearch";
 import initElasticsearch from "./tasks/initElasticsearch";
 import addTimestampSetting from "./tasks/addTimestampSetting";
 import initDb from "./tasks/initDatabase";
+import createSwift from "./tasks/createSwiftContainer";
 
 // 環境変数
 // 開発 => development、社内テスト => integration、本番 => production
@@ -78,8 +79,10 @@ mongoose.connect(`${url}/${db_name}`, {useNewUrlParser: true}).then( async () =>
       await tasks.deleteAdminTask();
       break;
     case "initDb":
-      //await tasks.initDbTask();
       await initDb();
+      break;
+    case "createSwift":
+      await createSwift(process.argv[3])
       break;
     default:
       throw new Error("引数が不正です。");

@@ -12,6 +12,9 @@ class Swift {
     let config;
 
     switch (mode) {
+      case "test":
+        config = STORAGE_CONF.test;
+        break;
     case "integration":
       config = STORAGE_CONF.integration;
       break;
@@ -23,7 +26,6 @@ class Swift {
       config = STORAGE_CONF.development;
       break;
     }
-
     this.client = pkgcloud.storage.createClient(config);
   }
 
@@ -35,6 +37,16 @@ class Swift {
       });
     });
   }
+
+  createContainer(tenant_name) {
+    return new Promise((resolve, reject) => {
+      this.client.createContainer({ name: tenant_name }, (err, container) => {
+        if (err) return reject(err);
+        return resolve(container);
+      });
+    });
+  }
+
 
   getFiles(container_name) {
     return new Promise( (resolve, reject) => {
