@@ -57,10 +57,10 @@ export const STORAGE_CONF = {
   },
 
   test: {
-    provider: "openstack",  
+    provider: "openstack",
     username: "test:tester",
     password: "testing",
-    authUrl: ``,
+    authUrl: `http://172.17.0.3:8080/auth/v1.0`,
     version: 1
   }
 };
@@ -98,7 +98,7 @@ export const ELASTICSEARCH_CONF = {
     logLevel: "error"
   },
   test: {
-    url: "http://elastic",
+    url: "http://172.16.0.2",
     port: "9200",
     logLevel: "error"
   },
