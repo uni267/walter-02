@@ -56,7 +56,7 @@ export const STORAGE_CONF = {
     version: 1
   },
 
-  test: { //mockを使うので使用しない
+  test: {
     provider: "openstack",  
     username: "test:tester",
     password: "testing",
