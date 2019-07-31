@@ -98,7 +98,7 @@ export const ELASTICSEARCH_CONF = {
     logLevel: "error"
   },
   test: {
-    url: "http://172.16.0.2",
+    url: "http://172.17.0.2",
     port: "9200",
     logLevel: "error"
   },
