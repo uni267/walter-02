@@ -217,8 +217,8 @@ export const tree = async (req, res, next) => {
 //  });
 };
 
-export const create = (req, res, next) => {
-  co(function*(){
+export const create = async (req, res, next) => {
+//  co(function*(){
     try {
       const { dir_name } = req.body;
       let dir_id = req.body.dir_id;
@@ -233,9 +233,9 @@ export const create = (req, res, next) => {
 
       if (dir_name.match( new RegExp(ILLIGAL_CHARACTERS.join("|") ))) throw "dir_name is invalid";
 
-      const user = yield User.findById(res.user._id);
+      const user = await User.findById(res.user._id);
 
-      const isPermitted = yield checkFilePermission( dir_id ,user._id , constants.PERMISSION_MAKE_DIR);
+      const isPermitted = await checkFilePermission( dir_id ,user._id , constants.PERMISSION_MAKE_DIR);
 
       if( isPermitted === false ) throw "permission denied";
 
@@ -251,15 +251,15 @@ export const create = (req, res, next) => {
       dir.histories = [];
       dir.authorities = [];
 
-      const role = yield RoleFile.findOne({
+      const role = await RoleFile.findOne({
         tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
         name: "フルコントロール" // @fixme
       });
 
-      const tenant = yield Tenant.findById(res.user.tenant_id);
+      const tenant = await Tenant.findById(res.user.tenant_id);
 
       // フォルダの権限を継承する設定かどうか？
-      const inheritAuthSetting = yield AppSetting.findOne({
+      const inheritAuthSetting = await AppSetting.findOne({
         tenant_id: mongoose.Types.ObjectId(res.user.tenant_id),
         name: AppSetting.INHERIT_PARENT_DIR_AUTH
       });
@@ -276,8 +276,8 @@ export const create = (req, res, next) => {
 
       if (inheritAuthEnabled) {
         // 親フォルダの権限継承用
-        const parent = yield File.findById(dir_id);
-        const inheritAuths = yield AuthorityFile.find({ files: parent._id });
+        const parent = await File.findById(dir_id);
+        const inheritAuths = await AuthorityFile.find({ files: parent._id });
 
         const _authorityFiles = inheritAuths.map( ihr => {
           return new AuthorityFile({
@@ -294,8 +294,8 @@ export const create = (req, res, next) => {
       // 作成したユーザが所有者となる
       if (inheritAuthEnabled) {
         // 作成したユーザが親フォルダと同一であれば追加しない(雪ダルマになるので)
-        const parent = yield File.findById(dir_id);
-        const inheritAuths = yield AuthorityFile.find({ files: parent._id });
+        const parent = await File.findById(dir_id);
+        const inheritAuths = await AuthorityFile.find({ files: parent._id });
         const duplicateAuths = inheritAuths.filter( ihr => {
           return is_current_user_and_role(ihr)
         });
@@ -334,25 +334,25 @@ export const create = (req, res, next) => {
         dir_id: mongoose.Types.ObjectId(dir_id)
       };
 
-      const _dir = yield File.find(validationConditions);
+      const _dir = await File.find(validationConditions);
 
       if (_dir.length > 0) throw "name is duplication";
 
-      const newDir = yield dir.save();
-      const newAuthorities = yield authorityFiles.map( af => af.save() );
-      // const { newDir, newAuthority} = yield { newDir: dir.save(), newAuthority: authority.save() };
+      const newDir = await dir.save();
+      const newAuthorities = await authorityFiles.map( af => af.save() );
+      // const { newDir, newAuthority} = await { newDir: dir.save(), newAuthority: authority.save() };
 
       // elasticsearch index作成
       const { tenant_id }= res.user;
-      const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(newDir._id) });
-      yield esClient.createIndex(tenant_id,[updatedFile]);
+      const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(newDir._id) });
+      await esClient.createIndex(tenant_id,[updatedFile]);
 
-      const descendantDirs = yield Dir.find({ descendant: dir.dir_id }).sort({ depth: 1 });
+      const descendantDirs = await Dir.find({ descendant: dir.dir_id }).sort({ depth: 1 });
 
       const conditions = { _id: descendantDirs.map( dir => dir.ancestor ) };
       const fields = { name: 1 };
 
-      const files = yield File.find(conditions).select(fields);
+      const files = await File.find(conditions).select(fields);
 
       const sorted = descendantDirs.map( dir => files.filter( file => file.id == dir.ancestor )).reduce( (a,b) => a.concat(b));
 
@@ -374,7 +374,7 @@ export const create = (req, res, next) => {
           };
         }
       });
-      const savedDirs = yield Dir.collection.insert(dirTree);
+      const savedDirs = await Dir.collection.insert(dirTree);
 
       res.json({
         status: { success: true },
@@ -383,7 +383,7 @@ export const create = (req, res, next) => {
 
     } catch (e) {
       let errors = {};
-
+      console.log(e)
       switch (e) {
       case "dir_id is empty":
         errors.dir_id = "フォルダIDが空のためフォルダの作成に失敗しました";
@@ -416,7 +416,7 @@ export const create = (req, res, next) => {
         }
       });
     }
-  });
+//  });
 };
 
 export const move = (req, res, next) => {
