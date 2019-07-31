@@ -26,32 +26,11 @@ pipeline {
               file1:{
                 dir(path: 'server') {
                   sh "npm run test -- --outputFile=./test/file_result.json --json ./lib/controllers/files.spec.js"
-                  sh "npm run test -- --outputFile=./test/file2_result.json --json ./lib/controllers/files.spec.js"
                 }
               },
               file2:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/file7_result.json --json ./lib/controllers/files.spec.js"
-                }
-              },
-              file3:{
-                dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/file3_result.json --json ./lib/controllers/files.spec.js"
-                }
-              },
-              file4:{
-                dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/file4_result.json --json ./lib/controllers/files.spec.js"
-                }
-              },
-              file5:{
-                dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/file5_result.json --json ./lib/controllers/files.spec.js"
-                }
-              },
-              file6:{
-                dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/file6_result.json --json ./lib/controllers/files.spec.js"
+                  sh "npm run test -- --outputFile=./test/action_result.json --json ./lib/routes/test/action.spec.js"
                 }
               }
             )
