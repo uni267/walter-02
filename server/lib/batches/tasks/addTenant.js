@@ -27,6 +27,7 @@ import DisplayItem from "../../models/DisplayItem";
 import MetaInfo from "../../models/MetaInfo";
 
 import initElasticsearch from "./initElasticsearch";
+import createSwift from "./createSwiftContainer";
 
 const task = async (tenant_name) => {
   try{
@@ -437,6 +438,7 @@ const task = async (tenant_name) => {
     ])
 
     await initElasticsearch(tenant_name)
+    await createSwift(tenant_name)
   }
   catch (e) {
     console.log(util.inspect(e, false, null));

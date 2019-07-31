@@ -11,9 +11,11 @@ let erasticsearchUrl;
 let erasticsearchErrorLevel;
 
 switch (mode) {
-
+  case "test":
+    erasticsearchUrl = `${ELASTICSEARCH_CONF.test.url}:${ELASTICSEARCH_CONF.test.port}`;
+    break;
   case "integration":
-    erasticsearchUrl = `${ELASTICSEARCH_CONF.integration.url}:${ELASTICSEARCH_CONF.integration.port}`;
+    erasticsearchUrl = `${ELASTICSEARCH_CONF.development.url}:${ELASTICSEARCH_CONF.development.port}`;
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.integration.logLevel;
     break;
 
@@ -29,7 +31,7 @@ switch (mode) {
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.development.logLevel;
     break;
   }
-
+console.log('erasticsearchUrl::: ' + erasticsearchUrl)
 const esClient = new elasticsearch.Client({
  node: erasticsearchUrl,
  requestTimeout: ELASTIC_INDEXING_TIMEOUT
