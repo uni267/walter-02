@@ -1,18 +1,10 @@
-import mongoose from "mongoose";
-import initDb from "../batches/tasks/initDatabase";
-import addTenant from "../batches/tasks/addTenant";
-
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as memMongo from "../test/memmongo";
 
 import moment from "moment";
 import * as _ from "lodash";
-//import defaults from "superagentdefaults";
-//import * as test_helper from "../test/helper";
 import { Swift } from "../storages/Swift";
 
 import * as controller from "../controllers/dirs";
-import User from "../models/User";
-import Tenant from "../models/Tenant";
 
 
 jest.setTimeout(40000);
@@ -21,29 +13,15 @@ const tenant_name = 'dirs_' + 'test'
 
 describe('lib/controllers/dirs', () => {
   let default_res
-  let mongoServer;
-  const opts = { useNewUrlParser: true };
-  let tenant
-  let user
+  let initData
   beforeAll(async () => {
-    mongoServer = new MongoMemoryServer();
-    const mongoUri = await mongoServer.getConnectionString();
-    await mongoose.connect(mongoUri, opts, (err) => {
-      if (err) { console.error(err); }
-    });
-    await initDb()
-    await addTenant(tenant_name)
-
-    tenant = (await Tenant.findOne({ name: tenant_name })).toObject()
-    user = (await User.findOne({ account_name: `${tenant_name}1` })).toObject()
+    initData = await memMongo.connect(tenant_name)
     default_res = {
-      user: { ...user, tenant_id: tenant._id, tenant: { ...tenant } }
+      user: { ...initData.user, tenant_id: initData.tenant._id, tenant: { ...initData.tenant } }
     }
   })
   afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
-    console.log("lib/controllers/dirs test terminated")
+    await memMongo.disconnect()
   })
 
 
@@ -64,7 +42,7 @@ describe('lib/controllers/dirs', () => {
     })
     it(`dir_name is empty`, async () => {
       const req = {
-        body: { dir_id: tenant.home_dir_id, dir_name: null }
+        body: { dir_id: initData.tenant.home_dir_id, dir_name: null }
       }
       const res_json = jest.fn()
       const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
@@ -76,7 +54,7 @@ describe('lib/controllers/dirs', () => {
     })
     it(`成功`, async () => {
       const req = {
-        body: { dir_id: tenant.home_dir_id, dir_name: 'new_name' }
+        body: { dir_id: initData.tenant.home_dir_id, dir_name: 'new_name' }
       }
       const res_json = jest.fn()
       const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }

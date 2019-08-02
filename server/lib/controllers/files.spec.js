@@ -1,18 +1,10 @@
-import mongoose from "mongoose";
-import initDb from "../batches/tasks/initDatabase";
-import addTenant from "../batches/tasks/addTenant";
-
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as memMongo from "../test/memmongo";
 
 import moment from "moment";
 import * as _ from "lodash";
-//import defaults from "superagentdefaults";
-//import * as test_helper from "../test/helper";
 import { Swift } from "../storages/Swift";
 
 import * as controller from "../controllers/files";
-import User from "../models/User";
-import Tenant from "../models/Tenant";
 
 
 jest.setTimeout(40000);
@@ -31,30 +23,17 @@ const sample_file = {
 
 describe('lib/controllers/files', () => {
   let default_res
-  let mongoServer;
-  const opts = { useNewUrlParser: true };
-  let tenant
-  let user
+  let initData
   beforeAll(async () => {
-    mongoServer = new MongoMemoryServer();
-    const mongoUri = await mongoServer.getConnectionString();
-    await mongoose.connect(mongoUri, opts, (err) => {
-      if (err) { console.error(err); }
-    });
-    await initDb()
-    await addTenant(tenant_name)
-
-    tenant = (await Tenant.findOne({ name: tenant_name })).toObject()
-    user = (await User.findOne({ account_name: `${tenant_name}1` })).toObject()
+    initData = await memMongo.connect(tenant_name)
     default_res = {
-      user: { ...user, tenant_id: tenant._id, tenant: { ...tenant } }
+      user: { ...initData.user, tenant_id: initData.tenant._id, tenant: { ...initData.tenant } }
     }
   })
   afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
-    console.log("....terminated")
+    await memMongo.disconnect()
   })
+
   const upload_file = async (files_array, dir_id) => {
     const req = {
       body: { files: files_array, dir_id }
@@ -71,7 +50,7 @@ describe('lib/controllers/files', () => {
 
   describe(`upload()`, () => {
     it(`テナント情報の取得`, async () => {
-      expect(tenant_name).toBe(tenant.name)
+      expect(tenant_name).toBe(initData.tenant.name)
     })
 
     it(`files is empty`, async () => {
@@ -89,7 +68,7 @@ describe('lib/controllers/files', () => {
       expect(res_body.status.errors.files).toBeTruthy() //エラーが存在する
     });
     it(`1ファイル成功`, async () => {
-      const result = await upload_file([{ ...sample_file }], tenant.home_dir_id)
+      const result = await upload_file([{ ...sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         expect(result.res.status.success).toBe(true)
         expect(result.res.body.length).toBe(1) //１ファイルの結果が返る
@@ -98,7 +77,7 @@ describe('lib/controllers/files', () => {
       }
     });
     it(`3ファイル成功`, async () => {
-      const result = await upload_file([{ ...sample_file }, { ...sample_file }, { ...sample_file }], tenant.home_dir_id)
+      const result = await upload_file([{ ...sample_file }, { ...sample_file }, { ...sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         expect(result.res.status.success).toBe(true)
         expect(result.res.body.length).toBe(3) //3ファイルの結果が返る
@@ -112,7 +91,7 @@ describe('lib/controllers/files', () => {
     let file_id =null
     beforeAll(async () => {
       // 事前にファイルをアップロード
-      const result = await upload_file([{ ...sample_file }], tenant.home_dir_id)
+      const result = await upload_file([{ ...sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         file_id = result.res.body[0]._id
       } else {
@@ -154,7 +133,7 @@ describe('lib/controllers/files', () => {
     let file_id = null
     beforeAll(async () => {
       // 事前にファイルをアップロード
-      const result = await upload_file([{ ...sample_file }], tenant.home_dir_id)
+      const result = await upload_file([{ ...sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         file_id = result.res.body[0]._id
       } else {
