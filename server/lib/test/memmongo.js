@@ -6,6 +6,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import User from "../models/User";
 import Tenant from "../models/Tenant";
+import AppSetting from "../models/AppSetting";
+import RoleFile from "../models/RoleFile";
 
 
 let mongoServer;
@@ -36,6 +38,9 @@ export const connect = async (tenant_name) => {
   const initData = {}
   initData.tenant = (await Tenant.findOne({ name: tenant_name })).toObject()
   initData.user = (await User.findOne({ account_name: `${tenant_name}1` })).toObject()
+  initData.appSettings = (await AppSetting.find({ tenant_id: initData.tenant._id }))
+  initData.roleFile = (await RoleFile.find({ tenant_id: initData.tenant._id }))
+  initData.roleFileFull = initData.roleFile.filter(role => role.name === 'フルコントロール')[0]
   return initData
 }
 

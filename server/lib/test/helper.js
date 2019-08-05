@@ -1,4 +1,6 @@
 import * as fs from "fs";
+import * as _ from "lodash";
+
 import Tenant from "../models/Tenant";
 import User from "../models/Tenant";
 
@@ -40,4 +42,16 @@ export const getUUID = ()=>{
         }
     }
     return chars.join("");
+}
+
+export const verifyAuth = (parentAuthes, childAuthes, user, full_controll_id) => {
+  const compare = (a, b) => (a ? a.toString() : '') === (b ? b.toString() : '')
+  const diff = _.differenceWith(childAuthes, parentAuthes, (a, b) => {
+    return compare(a.role_files, b.role_files) && compare(a.users, b.users) && compare(a.groups === b.groups) && !a.is_default && !b.is_default
+  })
+  //console.log(diff)
+  if (user === null && diff.length === 0) return true
+  // 差がある場合は、ユーザー自身のフルコントロールが追加されている
+  if (user && compare(diff[0].users, user._id) && compare(diff[0].role_files, full_controll_id) && diff[0].is_default) return true
+  return false
 }
