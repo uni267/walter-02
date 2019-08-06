@@ -13,11 +13,7 @@ pipeline {
         stage('test-init') {
           steps {
             dir(path: 'server') {
-            sh 'curl -X GET http://172.17.0.2:9200/'
-            sh 'curl -X GET http://172.17.0.2:9200/'
-            sh 'curl -X GET http://172.17.0.2:9200/'
-              sh 'curl -X GET http://172.17.0.2:9200/'
-              sh 'curl -X GET http://172.17.0.2:9200/'
+              sh 'echo initstart'
               sh 'curl -X GET http://172.17.0.2:9200/'
               sh 'echo ${NODE_ENV}'
               sh 'npm install'
