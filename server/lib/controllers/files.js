@@ -2435,131 +2435,125 @@ export const toggleStar = async (req, res, next) => {
  * @param {*} res 
  * @param {*} next 
  */
-const _addAuthority = (file, user, group, role, tenant_id) => {
-  return co(function*() {
-    const authority = new AuthorityFile();
-    authority.files = file;
-    authority.role_files = role;
+const _addAuthority = async (file, user, group, role, tenant_id) => {
+  const authority = new AuthorityFile();
+  authority.files = file;
+  authority.role_files = role;
 
-    if(user !== undefined && user !== null){
-      const _user = yield User.findById(user._id);
-      if (_user === null) throw "user is empty";
-      authority.users = _user;
-      const duplicated = yield AuthorityFile.findOne({
-        files: authority.files,
-        users: authority.users,
-        role_files: authority.role_files
-      });
+  if(user !== undefined && user !== null){
+    const _user = await User.findById(user._id);
+    if (_user === null) throw "user is empty";
+    authority.users = _user;
+    const duplicated = await AuthorityFile.findOne({
+      files: authority.files,
+      users: authority.users,
+      role_files: authority.role_files
+    });
 
-      if (duplicated !== null) throw "role set is duplicate";
-    }else{
-      const _group = yield Group.findById(group._id);
-      if (_group === null) throw new RecordNotFoundException("group is empty");
-      authority.groups = _group;
+    if (duplicated !== null) throw "role set is duplicate";  
+  }else{
+    const _group = await Group.findById(group._id);
+    if (_group === null) throw new RecordNotFoundException("group is empty");
+    authority.groups = _group;
 
-      const duplicated = yield AuthorityFile.findOne({
-        files: authority.files,
-        groups: authority.groups,
-        role_files: authority.role_files
-      });
+    const duplicated = await AuthorityFile.findOne({
+      files: authority.files,
+      groups: authority.groups,
+      role_files: authority.role_files
+    });
+    if (duplicated !== null) throw "role set is duplicate";
+  }
 
-      if (duplicated !== null) throw "role set is duplicate";
-    }
-
-    const createdAuthority = yield authority.save();
-    // elasticsearch index作成
-    const updatedFile = yield File.searchFileOne({_id: mongoose.Types.ObjectId(file._id) });
-    const esResult = yield esClient.createIndex(tenant_id,[updatedFile]);
-    return new Promise( (resolve, reject) => resolve(esResult) );
-  });
+  const createdAuthority = await authority.save();
+  // elasticsearch index作成
+  const updatedFile = await File.searchFileOne({_id: mongoose.Types.ObjectId(file._id) });
+  const esResult = await esClient.createIndex(tenant_id, [updatedFile]);
+  return esResult
 };
 
-export const addAuthority = (req, res, next) => {
-  co(function* () {
-    try {
-      const { file_id } = req.params;
-      const { user, group, role } = req.body;
-      const { tenant_id } = res.user;
+export const addAuthority = async (req, res, next) => {
+  try {
+    const { file_id } = req.params;
+    const { user, group, role } = req.body;
+    const { tenant_id } = res.user;
 
-      if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
+    if(file_id === undefined || file_id === null || file_id === "") throw "file_id is empty";
 
-      if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
+    if (! mongoose.Types.ObjectId.isValid(file_id)) throw "file_id is invalid";
 
-      const file = yield File.findById(file_id);
-      if (file === null) throw "file is empty";
+    const file = await File.findById(file_id);
+    if (file === null) throw "file is empty";
 
-      const _role = yield RoleFile.findById(role._id);
-      if (_role === null) throw "role is empty";
+    const _role = await RoleFile.findById(role._id);
+    if (_role === null) throw "role is empty";
 
-      const createdAuthority = yield _addAuthority(file, user, group, _role, res.user.tenant_id);
+    const createdAuthority = await _addAuthority(file, user, group, _role, res.user.tenant_id);
 
-      // 配下のフォルダに権限を浸透させる
-      if (file.is_dir === true) {
-        const childrenDirIds = (yield Dir.find({ ancestor: file._id, depth: { $gte: 0 } })).map( d => d.descendant );
-        const children = yield File.find({ dir_id: { $in: childrenDirIds } });
-        for (let idx in children) {
-          const child = children[idx];
+    // 配下のフォルダに権限を浸透させる
+    if (file.is_dir === true) {
+      const childrenDirIds = (await Dir.find({ ancestor: file._id, depth: { $gte: 0 } })).map( d => d.descendant );
+      const children = await File.find({ dir_id: { $in: childrenDirIds } });
+      for (let idx in children) {
+        const child = children[idx];
 
-          if ( user !== undefined && user !== null ) {
-            const _authority = yield AuthorityFile.findOne({ files: child._id, users: user._id, role_files: _role.id });
-            if (_authority === null) {
-              yield _addAuthority(child, user, group, _role, res.user.tenant_id);
-            }
-          } else if ( group !== undefined && group !== null ) {
-            const _authority = yield AuthorityFile.findOne({ files: child._id, groups: group._id, role_files: _role.id });
-            if (_authority === null) {
-              yield _addAuthority(child, user, group, _role, res.user.tenant_id);
-            }
+        if ( user !== undefined && user !== null ) {
+          const _authority = await AuthorityFile.findOne({ files: child._id, users: user._id, role_files: _role.id });
+          if (_authority === null) {
+            await _addAuthority(child, user, group, _role, res.user.tenant_id);
+          }
+        } else if ( group !== undefined && group !== null ) {
+          const _authority = await AuthorityFile.findOne({ files: child._id, groups: group._id, role_files: _role.id });
+          if (_authority === null) {
+            await _addAuthority(child, user, group, _role, res.user.tenant_id);
           }
         }
       }
-
-      res.json({
-        status: { success: true },
-        body: createdAuthority
-      });
-
     }
-    catch (e) {
-      const errors = {};
-      switch (e) {
-      case "file_id is empty":
-        errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
-        break;
-      case "file_id is invalid":
-        errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
-        break;
-      case "file is empty":
-        errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
-        break;
-      case "user is empty":
-        errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
-        break;
-      case "user_id is invalid":
-        errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
-        break;
-      case "role is empty":
-        errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
-        break;
-      case "user.type is empty":
-        errors.user = "ユーザの種類が不明です";
-        break;
-      case "group is empty":
-        errors.group = "追加対象のユーザが見つかりません";
-        break;
-      case "role set is duplicate":
-        errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
-        break;
-      default:
-        errors.unknown = e;
-        break;
-      }
-      logger.error(e);
-      res.status(400).json({
-        status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
-      });
+
+    res.json({
+      status: { success: true },
+      body: createdAuthority
+    });
+  }
+  catch (e) {
+    const errors = {};
+    switch (e) {
+    case "file_id is empty":
+      errors.file_id = "ファイルIDが空のためファイルへの権限の追加に失敗しました";
+      break;
+    case "file_id is invalid":
+      errors.file_id = "ファイルIDが不正のためファイルへの権限の追加に失敗しました";
+      break;
+    case "file is empty":
+      errors.file_id = "指定されたファイルが存在しないためファイルへの権限の追加に失敗しました";
+      break;
+    case "user is empty":
+      errors.user_id = "指定されたユーザが存在しないためファイルへの権限の追加に失敗しました";
+      break;
+    case "user_id is invalid":
+      errors.user_id = "ユーザIDが不正のためファイルへの権限の追加に失敗しました";
+      break;
+    case "role is empty":
+      errors.role_file_id = "指定された権限が存在しないためファイルへの権限の追加に失敗しました";
+      break;
+    case "user.type is empty":
+      errors.user = "ユーザの種類が不明です";
+      break;
+    case "group is empty":
+      errors.group = "追加対象のユーザが見つかりません";
+      break;
+    case "role set is duplicate":
+      errors.role_set = "指定されたユーザ、権限は既に登録されているためファイルへの権限の追加に失敗しました";
+      break;
+    default:
+      errors.unknown = e;
+      break;
     }
-  });
+    logger.error(e);
+    res.status(400).json({
+      status: { success: false, message: "ファイルへの権限の追加に失敗しました", errors }
+    });
+  }
 };
 
 /**

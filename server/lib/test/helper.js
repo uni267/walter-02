@@ -44,12 +44,20 @@ export const getUUID = ()=>{
     return chars.join("");
 }
 
-export const verifyAuth = (parentAuthes, childAuthes, user, full_controll_id) => {
-  const compare = (a, b) => (a ? a.toString() : '') === (b ? b.toString() : '')
-  const diff = _.differenceWith(childAuthes, parentAuthes, (a, b) => {
-    return compare(a.role_files, b.role_files) && compare(a.users, b.users) && compare(a.groups === b.groups) && !a.is_default && !b.is_default
+const compare = (a, b) => (a ? a.toString() : '') === (b ? b.toString() : '')
+
+export const authDiff = (auth1, auth2) => {
+  const diff1 = _.differenceWith(auth1, auth2, (a, b) => {
+    return compare(a.role_files, b.role_files) && compare(a.users, b.users) && compare(a.groups, b.groups)
   })
-  //console.log(diff)
+  const diff2 = _.differenceWith(auth2, auth1, (a, b) => {
+    return compare(a.role_files, b.role_files) && compare(a.users, b.users) && compare(a.groups, b.groups)
+  })
+  return diff1.concat(diff2)
+}
+
+export const verifyAuth = (auth1, auth2, user, full_controll_id) => {
+  const diff = authDiff(auth1, auth2)
   if (user === null && diff.length === 0) return true
   // 差がある場合は、ユーザー自身のフルコントロールが追加されている
   if (user && compare(diff[0].users, user._id) && compare(diff[0].role_files, full_controll_id) && diff[0].is_default) return true

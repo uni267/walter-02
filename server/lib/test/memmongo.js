@@ -8,6 +8,7 @@ import User from "../models/User";
 import Tenant from "../models/Tenant";
 import AppSetting from "../models/AppSetting";
 import RoleFile from "../models/RoleFile";
+import Group from "../models/Group";
 
 
 let mongoServer;
@@ -40,7 +41,11 @@ export const connect = async (tenant_name) => {
   initData.user = (await User.findOne({ account_name: `${tenant_name}1` })).toObject()
   initData.appSettings = (await AppSetting.find({ tenant_id: initData.tenant._id }))
   initData.roleFile = (await RoleFile.find({ tenant_id: initData.tenant._id }))
-  initData.roleFileFull = initData.roleFile.filter(role => role.name === 'フルコントロール')[0]
+  initData.roleFileFull = initData.roleFile.filter(role => role.name === 'フルコントロール')[0].toObject()
+  initData.roleFileReadonly = initData.roleFile.filter(role => role.name === '読み取りのみ')[0].toObject()
+  initData.group = (await Group.find({ tenant_id: initData.tenant._id }))
+  initData.groupMgr = initData.group.filter(role => role.name === '管理者')[0].toObject()
+  initData.groupNorm = initData.group.filter(role => role.name === '全社')[0].toObject()
   return initData
 }
 
