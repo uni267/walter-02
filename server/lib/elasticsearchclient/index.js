@@ -31,7 +31,7 @@ switch (mode) {
     erasticsearchErrorLevel = ELASTICSEARCH_CONF.development.logLevel;
     break;
   }
-console.log('erasticsearchUrl::: ' + erasticsearchUrl)
+
 const esClient = new elasticsearch.Client({
  node: erasticsearchUrl,
  requestTimeout: ELASTIC_INDEXING_TIMEOUT

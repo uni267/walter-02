@@ -13,7 +13,7 @@ import AuthorityFile from "../models/AuthorityFile";
 import { DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
 
 jest.setTimeout(40000);
-const tenant_name = 'files_' + 'test'
+const tenant_name = 'test'
 
 
 describe('lib/controllers/files', () => {
@@ -40,7 +40,7 @@ describe('lib/controllers/files', () => {
     await memMongo.disconnect()
   })
 
-  const upload_file = async (files_array, dir_id) => {
+  const _upload_file = async (files_array, dir_id) => {
     const req = {
       body: { files: files_array, dir_id }
     }
@@ -54,6 +54,24 @@ describe('lib/controllers/files', () => {
     }
   }
 
+  const _add_authority = async (file_id, user, group, role) => {
+    const req = {
+      params: { file_id },
+      body: {
+        user: user,
+        group: group,
+        role: role,
+      }
+    }
+    const res_error_json = jest.fn()
+    const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_error_json })) }
+    await controller.addAuthority(req, res)
+    if (res.json.mock.calls.length === 0) {
+      return { success: false, errors: res_error_json.mock.calls[0][0].status.errors}
+    } else {
+      return { success: true, res: res.json.mock.calls[0][0] }
+    }
+  }
   describe(`upload()`, () => {
     it(`テナント情報の取得`, async () => {
       expect(tenant_name).toBe(initData.tenant.name)
@@ -75,7 +93,7 @@ describe('lib/controllers/files', () => {
     });
     it(`1ファイル成功 appSettings.inherit_parent_dir_auth === true`, async () => {
       await updateAppSetting_InheritParentDirAuth(true)
-      const result = await upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         expect(result.res.status.success).toBe(true)
         expect(result.res.body.length).toBe(1) //１ファイルの結果が返る
@@ -90,7 +108,7 @@ describe('lib/controllers/files', () => {
     });
     it(`3ファイル成功 appSettings.inherit_parent_dir_auth === true`, async () => {
       await updateAppSetting_InheritParentDirAuth(true)
-      const result = await upload_file([{ ...filesData.sample_file }, { ...filesData.sample_file }, { ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }, { ...filesData.sample_file }, { ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         expect(result.res.status.success).toBe(true)
         expect(result.res.body.length).toBe(3) //3ファイルの結果が返る
@@ -105,7 +123,7 @@ describe('lib/controllers/files', () => {
     });
     it(`1ファイル成功 appSettings.inherit_parent_dir_auth === false`, async () => {
       await updateAppSetting_InheritParentDirAuth(false)
-      const result = await upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         expect(result.res.status.success).toBe(true)
         expect(result.res.body.length).toBe(1) //１ファイルの結果が返る
@@ -117,7 +135,7 @@ describe('lib/controllers/files', () => {
     });
     it(`3ファイル成功 appSettings.inherit_parent_dir_auth === false`, async () => {
       await updateAppSetting_InheritParentDirAuth(false)
-      const result = await upload_file([{ ...filesData.sample_file }, { ...filesData.sample_file }, { ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }, { ...filesData.sample_file }, { ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         expect(result.res.status.success).toBe(true)
         expect(result.res.body.length).toBe(3) //3ファイルの結果が返る
@@ -136,7 +154,7 @@ describe('lib/controllers/files', () => {
     beforeAll(async () => {
       await updateAppSetting_InheritParentDirAuth(true)
       // 事前にファイルをアップロード
-      const result = await upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         file_id = result.res.body[0]._id
       } else {
@@ -179,7 +197,7 @@ describe('lib/controllers/files', () => {
     beforeAll(async () => {
       await updateAppSetting_InheritParentDirAuth(true)
       // 事前にファイルをアップロード
-      const result = await upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         file_id = result.res.body[0]._id
       } else {
@@ -237,7 +255,7 @@ describe('lib/controllers/files', () => {
     beforeAll(async () => {
       await updateAppSetting_InheritParentDirAuth(true)
       // 事前にファイルをアップロード
-      const result = await upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         file_id = result.res.body[0]._id
       } else {
@@ -258,12 +276,12 @@ describe('lib/controllers/files', () => {
   describe(`toggleStar()`, () => {
   })
 
-  describe.only(`addAuthority()`, () => {
+  describe(`addAuthority()`, () => {
     let file_id = null
     beforeAll(async () => {
       await updateAppSetting_InheritParentDirAuth(true)
       // 事前にファイルをアップロード
-      const result = await upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
       if (result.success) {
         file_id = result.res.body[0]._id
       } else {
@@ -382,9 +400,145 @@ describe('lib/controllers/files', () => {
       expect(diff.length).toBe(0) //変更前後で不一致なし
     })
   })
-  describe(`removeAuthority()`, () => {
-  })
-  describe(`moveTrash()`, () => {
+  describe.only(`removeAuthority()`, () => {
+    let file_id = null
+    beforeAll(async () => {
+      await updateAppSetting_InheritParentDirAuth(true)
+      // 事前にファイルをアップロード
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      if (result.success) {
+        file_id = result.res.body[0]._id
+        const result2 = await _add_authority(file_id, { ...initData.user }, null, { ...initData.roleFileReadonly })
+        if (result2.success) {
+          const result3 = await _add_authority(file_id, null, {...initData.groupMgr}, { ...initData.roleFileReadonly })
+          if (result3.success) {
+          } else {
+            console.log(result3.errors)
+          }
+        } else {
+          console.log(result2.errors)
+        }
+      } else {
+        console.log(result.errors)
+      }
+    })
+    it(`file_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id: null }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeAuthority(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("ファイルへの権限の削除に失敗しました")
+    })
+    it(`成功 ユーザーの読み取り権限削除(user)`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        query: {
+          user_id: initData.user._id,
+          group_id: null,
+          role_id: initData.roleFileReadonly._id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.removeAuthority(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(1) //変更前後で不一致は一件
+        expect(diff[0].users.toString()).toBe(initData.user._id.toString()) //差分権限のuser_idが一致
+        expect(diff[0].group).toBeFalsy() //差分権限のgroup_idが一致
+        expect(diff[0].role_files.toString()).toBe(initData.roleFileReadonly._id.toString()) //差分権限のrolefile_idが一致
+      }
+    })
+    it(`role is empty (user)`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        query: {
+          user_id: initData.user._id,
+          group_id: null,
+          role_id: initData.roleFileReadonly._id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.removeAuthority(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(0) //変更前後で不一致なし
+      }
+    })
+    it(`成功 ユーザーの読み取り権限削除(group)`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        query: {
+          user_id: null,
+          group_id: initData.groupMgr._id,
+          role_id: initData.roleFileReadonly._id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.removeAuthority(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(1) //変更前後で不一致は一件
+        expect(diff[0].groups.toString()).toBe(initData.groupMgr._id.toString()) //差分権限のgroup_idが一致
+        expect(diff[0].user).toBeFalsy() //差分権限のuser_idが一致
+        expect(diff[0].role_files.toString()).toBe(initData.roleFileReadonly._id.toString()) //差分権限のrolefile_idが一致
+      }
+    })
+    it(`role is empty (group)`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        query: {
+          user_id: null,
+          group_id: initData.groupMgr._id,
+          role_id: initData.roleFileReadonly._id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.removeAuthority(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(0) //変更前後で不一致なし
+      }
+    })
+   })
+   describe(`moveTrash()`, () => {
   })
   describe(`deleteFileLogical()`, () => {
   })
