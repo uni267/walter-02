@@ -1,22 +1,21 @@
 import * as memMongo from "../test/memmongo";
 
-import moment from "moment";
 import * as _ from "lodash";
-import { Swift } from "../storages/Swift";
 
 import * as controller from "../controllers/files";
 import * as dir_controller from "../controllers/dirs";
+import * as metainfo_controller from "../controllers/metaInfos";
 
 import * as filesData from "../test/filesdata";
 import * as testHelper from "../test/helper";
 import AppSetting from "../models/AppSetting";
 import AuthorityFile from "../models/AuthorityFile";
+import FileMetaInfo from "../models/FileMetaInfo";
 import File from "../models/File";
-import { DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
+import Tag from "../models/Tag";
 
 jest.setTimeout(40000);
 const tenant_name = 'test'
-
 
 describe('lib/controllers/files', () => {
   let default_res
@@ -86,6 +85,20 @@ describe('lib/controllers/files', () => {
     } else {
       return { success: true, res: res.json.mock.calls[0][0] }
     }
+  }
+  const _add_metainfo = async (value_type) => {
+    const req = {
+      body: {
+        metainfo: {
+          name: testHelper.getUUID(), label: testHelper.getUUID(), value_type 
+        }
+      }
+    }
+    const res_json = jest.fn()
+    const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+    await metainfo_controller.add(req, res)
+    const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+    return res_body.body
   }
   describe(`upload()`, () => {
     it(`テナント情報の取得`, async () => {
@@ -932,12 +945,272 @@ describe('lib/controllers/files', () => {
     })
   })
   describe(`addTag()`, () => {
+    let file_id = null
+    let tag_id = null
+    beforeAll(async () => {
+      await updateAppSetting_InheritParentDirAuth(true)
+      // 事前にファイルをアップロード
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      if (result.success) {
+        file_id = result.res.body[0]._id
+        tag_id = (await Tag.findOne({}))._id
+      } else {
+        console.log(result.errors)
+      }
+    })
+    it(`file_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id: null }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addTag(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("タグの追加に失敗しました")
+    })
+    it(`tag_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        body: {_id: ''}
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addTag(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("タグの追加に失敗しました")
+    })
+    it(`成功`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        body: {_id: tag_id}
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addTag(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const file = (await File.findOne({ _id: file_id }))
+        expect(file.tags[0]._id.toString()).toBe(tag_id.toString())
+      }
+    })
   })
   describe(`removeTag()`, () => {
+    let file_id = null
+    let tag_id = null
+    beforeAll(async () => {
+      await updateAppSetting_InheritParentDirAuth(true)
+      // 事前にファイルをアップロード
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      if (result.success) {
+        file_id = result.res.body[0]._id
+        tag_id = (await Tag.findOne({}))._id
+        const req = {
+          params: { file_id },
+          body: {_id: tag_id}
+        }
+        const res_json = jest.fn()
+        const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+        await controller.addTag(req, res)
+      } else {
+        console.log(result.errors)
+      }
+    })
+    it(`file_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id: null }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeTag(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("タグの削除に失敗しました")
+    })
+    it(`tag_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        body: {_id: ''}
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeTag(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("タグの削除に失敗しました")
+    })
+    it(`成功`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id, tag_id },
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeTag(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const file = (await File.findOne({ _id: file_id }))
+        expect(file.tags.length).toBe(0)  // no tags
+      }
+    })
   })
   describe(`addMeta()`, () => {
+    let file_id = null
+    let meta = null
+    beforeAll(async () => {
+      await updateAppSetting_InheritParentDirAuth(true)
+      // 事前にファイルをアップロード
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      if (result.success) {
+        file_id = result.res.body[0]._id
+        meta = await _add_metainfo('String')
+      } else {
+        console.log(result.errors)
+      }
+    })
+    it(`file_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id: null },
+        body: { meta: { _id: null }, value: '' }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addMeta(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("メタ情報の追加に失敗しました")
+    })
+    it(`meta_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        body: { meta: { _id: null }, value: '' }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addMeta(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("メタ情報の追加に失敗しました")
+    })
+    it(`metainfo value is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        body: { meta: { _id: meta.id }, value: '' }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addMeta(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("メタ情報の追加に失敗しました")
+    })
+    it(`成功`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id },
+        body: { meta: { _id: meta.id }, value: 'qqqqq' }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.addMeta(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const metainfo = (await FileMetaInfo.findOne({ file_id: file_id }))
+        console.log(metainfo)
+        expect(metainfo.meta_info_id.toString()).toBe(req.body.meta._id)
+        expect(metainfo.value).toBe(req.body.value)
+      }
+    })
   })
-  describe(`removeMeta()`, () => {
+  describe.only(`removeMeta()`, () => {
+    let file_id = null
+    let meta = null
+    beforeAll(async () => {
+      await updateAppSetting_InheritParentDirAuth(true)
+      // 事前にファイルをアップロード
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      if (result.success) {
+        file_id = result.res.body[0]._id
+        meta = await _add_metainfo('String')
+        const req = {
+          params: { file_id },
+          body: { meta: { _id: meta.id }, value: 'qqqqq' }
+        }
+        const res_json = jest.fn()
+        const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+        await controller.addMeta(req, res)
+      } else {
+        console.log(result.errors)
+      }
+    })
+    it(`file_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id: null },
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeMeta(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("メタ情報の削除に失敗しました")
+    })
+    it(`meta_id is empty`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id, meta_id:null },
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeMeta(req, res)
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("メタ情報の削除に失敗しました")
+    })
+    it(`成功`, async () => {
+      if (!file_id) { expect('').toBe('前処理に失敗'); return }
+      const req = {
+        params: { file_id, meta_id: meta.id },
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      await controller.removeMeta(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const metainfo = (await FileMetaInfo.findOne({ file_id: file_id }))
+        expect(metainfo).toBeFalsy()
+      }
+    })
   })
   describe(`toggleStar()`, () => {
   })
