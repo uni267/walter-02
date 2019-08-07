@@ -11,6 +11,7 @@ import * as filesData from "../test/filesdata";
 import * as testHelper from "../test/helper";
 import AppSetting from "../models/AppSetting";
 import AuthorityFile from "../models/AuthorityFile";
+import File from "../models/File";
 import { DH_CHECK_P_NOT_SAFE_PRIME } from "constants";
 
 jest.setTimeout(40000);
@@ -264,32 +265,6 @@ describe('lib/controllers/files', () => {
       }
     })
   })
-  describe(`move()`, () => {
-    let file_id = null
-    beforeAll(async () => {
-      await updateAppSetting_InheritParentDirAuth(true)
-      // 事前にファイルをアップロード
-      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
-      if (result.success) {
-        file_id = result.res.body[0]._id
-      } else {
-        console.log(result.errors)
-      }
-      // 事前にフォルダ作成
-      // フォルダの権限を削除
-    })
-  })
-  describe(`addTag()`, () => {
-  })
-  describe(`removeTag()`, () => {
-  })
-  describe(`addMeta()`, () => {
-  })
-  describe(`removeMeta()`, () => {
-  })
-  describe(`toggleStar()`, () => {
-  })
-
   describe(`addAuthority()`, () => {
     let file_id = null
     beforeAll(async () => {
@@ -761,6 +736,210 @@ describe('lib/controllers/files', () => {
         })
       }
     })
+  })
+  describe(`move()`, () => {
+    let file_id = null
+    beforeAll(async () => {
+      await updateAppSetting_InheritParentDirAuth(true)
+    })
+    it(`files is empty`, async () => {
+      const req = {
+        params: { file_id: null },
+        body: {
+          dir_id: initData.tenant.home_dir_id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, status: jest.fn(() => ({ json: res_json })) }
+      await controller.move(req, res)
+
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("ファイルの移動に失敗しました")
+      expect(res_body.status.errors.file_id).toBeTruthy() 
+    });
+    it(`dir_id is empty`, async () => {
+      const result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+      const file_id = result.res.body[0]._id
+      const req = {
+        params: { file_id },
+        body: {
+          dir_id: null,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, status: jest.fn(() => ({ json: res_json })) }
+      await controller.move(req, res)
+
+      expect(res.status.mock.calls[0][0]).toBe(400) // http response statusは400
+      const res_body = res_json.mock.calls[0][0] //1回目の第一引数
+      expect(res_body.status.success).toBe(false)
+      expect(res_body.status.message).toBe("ファイルの移動に失敗しました")
+      expect(res_body.status.errors.dir_id).toBeTruthy() //権限が正しい
+    });
+    it(`成功 子フォルダへ移動 権限の増加(user)`, async () => {
+      let child_dir_id 
+      await (async() => {
+        let result
+        // TOP直下へ親フォルダ作成
+        result = await _create_dir({ ...initData.user }, initData.tenant.home_dir_id, 'parent'+ testHelper.getUUID())
+        child_dir_id = result.res.body._id
+        // 親フォルダへファイルアップロード
+        result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+        file_id = result.res.body[0]._id
+        // 親フォルダへ権限追加
+        result = await _add_authority(child_dir_id, { ...initData.user }, null, { ...initData.roleFileReadonly })
+      })()
+      const req = {
+        params: { file_id },
+        body: {
+          dir_id: child_dir_id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.move(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const file_upd = (await File.findOne({ _id: file_id }))
+        expect(file_upd.dir_id.toString()).toBe(child_dir_id.toString()) //所属フォルダが変更されている
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(1) //変更前後で不一致は一件
+        expect(diff[0].users.toString()).toBe(initData.user._id.toString()) //差分権限のuser_idが一致
+        expect(diff[0].group).toBeFalsy() //差分権限のgroup_idが一致
+        expect(diff[0].role_files.toString()).toBe(initData.roleFileReadonly._id.toString()) //差分権限のrolefile_idが一致
+      }
+    })
+    it(`成功 子フォルダへ移動 権限の増加(group)`, async () => {
+      let child_dir_id 
+      await (async() => {
+        let result
+        // TOP直下へ親フォルダ作成
+        result = await _create_dir({ ...initData.user }, initData.tenant.home_dir_id, 'parent'+ testHelper.getUUID())
+        child_dir_id = result.res.body._id
+        // 親フォルダへファイルアップロード
+        result = await _upload_file([{ ...filesData.sample_file }], initData.tenant.home_dir_id)
+        file_id = result.res.body[0]._id
+        // 親フォルダへ権限追加
+        result = await _add_authority(child_dir_id, null, { ...initData.groupMgr }, { ...initData.roleFileReadonly })
+      })()
+      const req = {
+        params: { file_id },
+        body: {
+          dir_id: child_dir_id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.move(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const file_upd = (await File.findOne({ _id: file_id }))
+        expect(file_upd.dir_id.toString()).toBe(child_dir_id.toString()) //所属フォルダが変更されている
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(1) //変更前後で不一致は一件
+        expect(diff[0].groups.toString()).toBe(initData.groupMgr._id.toString()) //差分権限のgroup_idが一致
+        expect(diff[0].user).toBeFalsy() //差分権限のuser_idが一致
+        expect(diff[0].role_files.toString()).toBe(initData.roleFileReadonly._id.toString()) //差分権限のrolefile_idが一致
+      }
+    })
+    it(`成功 親フォルダへ移動 権限の現象(user)`, async () => {
+      let child_dir_id 
+      await (async() => {
+        let result
+        // TOP直下へ親フォルダ作成
+        result = await _create_dir({ ...initData.user }, initData.tenant.home_dir_id, 'parent'+ testHelper.getUUID())
+        child_dir_id = result.res.body._id
+        // 親フォルダへ権限追加
+        result = await _add_authority(child_dir_id, { ...initData.user }, null, { ...initData.roleFileReadonly })
+        // 親フォルダへファイルアップロード
+        result = await _upload_file([{ ...filesData.sample_file }], child_dir_id)
+        file_id = result.res.body[0]._id
+      })()
+      const req = {
+        params: { file_id },
+        body: {
+          dir_id: initData.tenant.home_dir_id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.move(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const file_upd = (await File.findOne({ _id: file_id }))
+        expect(file_upd.dir_id.toString()).toBe(initData.tenant.home_dir_id.toString()) //所属フォルダが変更されている
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(1) //変更前後で不一致は一件
+        expect(diff[0].users.toString()).toBe(initData.user._id.toString()) //差分権限のuser_idが一致
+        expect(diff[0].group).toBeFalsy() //差分権限のgroup_idが一致
+        expect(diff[0].role_files.toString()).toBe(initData.roleFileReadonly._id.toString()) //差分権限のrolefile_idが一致
+      }
+    })
+    it(`成功 親フォルダへ移動 権限の現象(group)`, async () => {
+      let child_dir_id 
+      await (async() => {
+        let result
+        // TOP直下へ親フォルダ作成
+        result = await _create_dir({ ...initData.user }, initData.tenant.home_dir_id, 'parent'+ testHelper.getUUID())
+        child_dir_id = result.res.body._id
+        // 親フォルダへ権限追加
+        result = await _add_authority(child_dir_id, null, { ...initData.groupMgr }, { ...initData.roleFileReadonly })
+        // 親フォルダへファイルアップロード
+        result = await _upload_file([{ ...filesData.sample_file }], child_dir_id)
+        file_id = result.res.body[0]._id
+      })()
+      const req = {
+        params: { file_id },
+        body: {
+          dir_id: initData.tenant.home_dir_id,
+        }
+      }
+      const res_json = jest.fn()
+      const res = { user: { ...default_res.user }, json: jest.fn(), status: jest.fn(() => ({ json: res_json })) }
+      const myAuthorityFiles_org = (await AuthorityFile.find({ files: file_id }))
+      await controller.move(req, res)
+      if (res.json.mock.calls.length === 0) {
+        expect(res_json.mock.calls[0][0].status.errors).toBe('failed')
+      } else {
+        const res_body = res.json.mock.calls[0][0] //1回目の第一引数
+        expect(res_body.status.success).toBe(true)
+        const file_upd = (await File.findOne({ _id: file_id }))
+        expect(file_upd.dir_id.toString()).toBe(initData.tenant.home_dir_id.toString()) //所属フォルダが変更されている
+        const myAuthorityFiles_upd = (await AuthorityFile.find({ files: file_id }))
+        const diff = testHelper.authDiff(myAuthorityFiles_org, myAuthorityFiles_upd)
+        expect(diff.length).toBe(1) //変更前後で不一致は一件
+        expect(diff[0].groups.toString()).toBe(initData.groupMgr._id.toString()) //差分権限のgroup_idが一致
+        expect(diff[0].user).toBeFalsy() //差分権限のuser_idが一致
+        expect(diff[0].role_files.toString()).toBe(initData.roleFileReadonly._id.toString()) //差分権限のrolefile_idが一致
+      }
+    })
+  })
+  describe(`addTag()`, () => {
+  })
+  describe(`removeTag()`, () => {
+  })
+  describe(`addMeta()`, () => {
+  })
+  describe(`removeMeta()`, () => {
+  })
+  describe(`toggleStar()`, () => {
   })
   describe(`moveTrash()`, () => {
   })

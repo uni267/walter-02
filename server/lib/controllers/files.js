@@ -1349,7 +1349,7 @@ export const move = async (req, res, next) => {
 
     switch (e) {
     case "file_id is empty":
-      errors.file_id = "";
+      errors.file_id = "指定されたファイルIDが存在しないためファイルの移動に失敗しました";
       break;
     case "file_id is invalid":
       errors.file_id = "ファイルIDが不正のためファイルの移動に失敗しました";
