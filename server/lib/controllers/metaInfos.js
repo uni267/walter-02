@@ -53,8 +53,8 @@ export const index = (req, res, next) => {
   });
 };
 
-export const add = (req, res, next) => {
-  co(function*() {
+export const add = async (req, res, next) => {
+//  co(function*() {
     try{
 
       const { metainfo } = req.body;
@@ -68,7 +68,7 @@ export const add = (req, res, next) => {
         throw "name is too long";
       }
 
-      const checkDuplicateName = yield MetaInfo.findOne({ name: metainfo.name, tenant_id: tenant_id });
+      const checkDuplicateName = await MetaInfo.findOne({ name: metainfo.name, tenant_id: tenant_id });
       if (checkDuplicateName !== null) throw "name is duplicate";
 
       if (metainfo.label === undefined ||
@@ -89,11 +89,11 @@ export const add = (req, res, next) => {
 
       metainfo.tenant_id = tenant_id;
 
-      let _metainfo = yield MetaInfo.findOne({ label: metainfo.label, tenant_id: tenant_id });
+      let _metainfo = await MetaInfo.findOne({ label: metainfo.label, tenant_id: tenant_id });
       if(_metainfo !== null) throw "label is duplicate";
 
       const __metainfo = new MetaInfo(metainfo);
-      const createdMetainfo = yield __metainfo.save();
+      const createdMetainfo = await __metainfo.save();
 
       res.json({
         status: { success: true},
@@ -139,7 +139,7 @@ export const add = (req, res, next) => {
       });
     }
 
-  });
+//  });
 };
 
 export const view = (req, res, next) => {
