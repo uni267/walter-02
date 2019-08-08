@@ -36,7 +36,7 @@ pipeline {
               },
               metainfo:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/metainfo_result.json --forceExit --json ./lib/routes/test/metainfo.spec.js"
+                  sh "npm run test -- --outputFile=./test/metainfo_result.json --forceExit --json ./lib/controllers/metainfo.spec.js"
                 }
               },
               dir:{
