@@ -29,9 +29,14 @@ pipeline {
                   sh "npm run test -- --outputFile=./test/file_result.json --json ./lib/controllers/files.spec.js"
                 }
               },
-              file2:{
+              action:{
                 dir(path: 'server') {
                   sh "npm run test -- --outputFile=./test/action_result.json --json ./lib/routes/test/action.spec.js"
+                }
+              },
+              metainfo:{
+                dir(path: 'server') {
+                  sh "npm run test -- --outputFile=./test/action_result.json --json ./lib/routes/test/metainfo.spec.js"
                 }
               },
               dir:{
