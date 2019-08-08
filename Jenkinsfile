@@ -26,22 +26,22 @@ pipeline {
             parallel (
               file1:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/file_result.json --json ./lib/controllers/files.spec.js"
+                  sh "npm run test -- --outputFile=./test/file_result.json --forceExit --json ./lib/controllers/files.spec.js"
                 }
               },
               action:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/action_result.json --json ./lib/routes/test/action.spec.js"
+                  sh "npm run test -- --outputFile=./test/action_result.json --forceExit --json ./lib/routes/test/action.spec.js"
                 }
               },
               metainfo:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/metainfo_result.json --json ./lib/routes/test/metainfo.spec.js"
+                  sh "npm run test -- --outputFile=./test/metainfo_result.json --forceExit --json ./lib/routes/test/metainfo.spec.js"
                 }
               },
               dir:{
                 dir(path: 'server') {
-                  sh "npm run test -- --outputFile=./test/dir_result.json --json ./lib/controllers/dirs.spec.js"
+                  sh "npm run test -- --outputFile=./test/dir_result.json --forceExit --json ./lib/controllers/dirs.spec.js"
                 }
               }
 
